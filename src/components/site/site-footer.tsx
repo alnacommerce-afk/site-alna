@@ -1,5 +1,6 @@
 import { Clock, Instagram, Mail, MapPin, Phone } from "lucide-react";
 
+import logoAlnaTransparent from "@/assets/brand/logo-alna-transparent.png";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 
 const CATEGORY_LINKS = [
@@ -32,7 +33,7 @@ export function SiteFooter() {
 
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <span className="text-2xl font-black italic tracking-tight">ALNA</span>
+          <img src={logoAlnaTransparent} alt="Alna Commerce" className="h-12 w-auto" />
           <p className="mt-3 text-sm text-white/70">
             Utensílios de madeira para cozinha e itens de cama, mesa e banho que trazem
             praticidade e bem-estar para sua casa.
