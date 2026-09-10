@@ -12,7 +12,7 @@ import {
   parseCentsFromInput,
   parseDecimalInput,
   slugify,
-} from "@/lib/admin/money";
+} from "@/lib/money";
 import {
   defaultProductFormValues,
   emptyVariant,
