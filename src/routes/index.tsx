@@ -9,6 +9,7 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
+import ugcModelo from "@/assets/brand/ugc-modelo.png";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton, WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
@@ -419,7 +420,13 @@ function AboutSection() {
             Conhecer nossa história
           </a>
         </div>
-        <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[#12294f]/10 via-[#f5a623]/10 to-[#16a34a]/10" />
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[#12294f]/15 via-[#f5a623]/10 to-[#16a34a]/15">
+          <img
+            src={ugcModelo}
+            alt="Cliente satisfeita usando os produtos da Alna Commerce"
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
+        </div>
       </div>
     </section>
   );

@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { CreditCard, Search, ShieldCheck, ShoppingCart, Truck, User } from "lucide-react";
 import { toast } from "sonner";
 
+import logoAlna from "@/assets/brand/logo-alna.jpeg";
+
 const NAV_ITEMS = [
   { label: "HOME", href: "/" },
   { label: "LOJA", href: "#destaques" },
@@ -33,7 +35,7 @@ export function SiteHeader() {
 
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
         <Link to="/" className="shrink-0">
-          <span className="text-2xl font-black italic tracking-tight text-[#12294f]">ALNA</span>
+          <img src={logoAlna} alt="Alna Commerce" className="h-10 w-auto" />
         </Link>
 
         <div className="hidden flex-1 items-center md:flex">
