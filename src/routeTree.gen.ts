@@ -10,33 +10,89 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
+import { Route as AdminCatalogoNovoRouteImport } from './routes/admin/catalogo/novo'
+import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalogo/$id/editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCatalogoIndexRoute = AdminCatalogoIndexRouteImport.update({
+  id: '/admin/catalogo/',
+  path: '/admin/catalogo/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCatalogoNovoRoute = AdminCatalogoNovoRouteImport.update({
+  id: '/admin/catalogo/novo',
+  path: '/admin/catalogo/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCatalogoIdEditarRoute = AdminCatalogoIdEditarRouteImport.update({
+  id: '/admin/catalogo/$id/editar',
+  path: '/admin/catalogo/$id/editar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
+  '/admin/catalogo/': typeof AdminCatalogoIndexRoute
+  '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
+  '/admin/catalogo': typeof AdminCatalogoIndexRoute
+  '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
+  '/admin/catalogo/': typeof AdminCatalogoIndexRoute
+  '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin/login'
+    | '/admin/catalogo/novo'
+    | '/admin/catalogo/'
+    | '/admin/catalogo/$id/editar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin/login'
+    | '/admin/catalogo/novo'
+    | '/admin/catalogo'
+    | '/admin/catalogo/$id/editar'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin/login'
+    | '/admin/catalogo/novo'
+    | '/admin/catalogo/'
+    | '/admin/catalogo/$id/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
+  AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
+  AdminCatalogoIdEditarRoute: typeof AdminCatalogoIdEditarRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +104,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/catalogo/': {
+      id: '/admin/catalogo/'
+      path: '/admin/catalogo'
+      fullPath: '/admin/catalogo/'
+      preLoaderRoute: typeof AdminCatalogoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/catalogo/novo': {
+      id: '/admin/catalogo/novo'
+      path: '/admin/catalogo/novo'
+      fullPath: '/admin/catalogo/novo'
+      preLoaderRoute: typeof AdminCatalogoNovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/catalogo/$id/editar': {
+      id: '/admin/catalogo/$id/editar'
+      path: '/admin/catalogo/$id/editar'
+      fullPath: '/admin/catalogo/$id/editar'
+      preLoaderRoute: typeof AdminCatalogoIdEditarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
+  AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,
+  AdminCatalogoIdEditarRoute: AdminCatalogoIdEditarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
