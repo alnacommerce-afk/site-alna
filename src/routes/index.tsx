@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import {
   Headset,
   ShieldCheck,
@@ -9,43 +8,14 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
-import ugcModelo from "@/assets/brand/ugc-modelo.png";
+import bannerCozinha from "@/assets/brand/banner-cozinha.webp";
+import bannerQuarto from "@/assets/brand/banner-quarto.webp";
+import bannerMesa from "@/assets/brand/banner-mesa.webp";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton, WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 
 const SITE_URL = "https://www.alna.cc";
-
-const HERO_SLIDES = [
-  {
-    eyebrow: "PARA SUA CASA",
-    title: "Funcionalidade que faz bem.",
-    description:
-      "Utensílios de madeira para cozinha e itens de cama, mesa e banho que transformam o seu dia a dia.",
-    cta: "COMPRAR AGORA",
-    href: "#destaques",
-    gradient: "from-[#12294f] via-[#2b4a75] to-[#8b5e3c]",
-  },
-  {
-    eyebrow: "PARA SUA CASA",
-    title: "Qualidade que você sente.",
-    description:
-      "Utensílios de madeira e itens de cama, mesa e banho selecionados para o seu dia a dia.",
-    cta: "CONHEÇA NOSSAS CATEGORIAS",
-    href: "#categorias",
-    gradient: "from-[#1b3a66] via-[#3b5f8a] to-[#a97a4f]",
-  },
-  {
-    eyebrow: "PARA O SEU LAR",
-    title: "Conforto e estilo em cada detalhe.",
-    description:
-      "Cama, mesa e banho e utilidades para deixar sua casa mais acolhedora e funcional.",
-    cta: "VER PRODUTOS",
-    href: "#destaques",
-    gradient: "from-[#12294f] via-[#274a72] to-[#c99a63]",
-  },
-];
 
 const BENEFITS = [
   {
@@ -178,88 +148,73 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function HeroCarousel() {
-  const [api, setApi] = useState<CarouselApi>();
-  const [selected, setSelected] = useState(0);
-
-  useEffect(() => {
-    if (!api) return;
-    const onSelect = () => setSelected(api.selectedScrollSnap());
-    api.on("select", onSelect);
-    const timer = setInterval(() => api.scrollNext(), 6000);
-    return () => {
-      api.off("select", onSelect);
-      clearInterval(timer);
-    };
-  }, [api]);
-
+function CampaignHero() {
   return (
-    <div className="relative">
-      <Carousel setApi={setApi} opts={{ loop: true }}>
-        <CarouselContent className="-ml-0">
-          {HERO_SLIDES.map((slide, index) => (
-            <CarouselItem key={slide.title} className="pl-0">
-              <div
-                className={`relative flex min-h-[420px] items-center overflow-hidden bg-gradient-to-br ${slide.gradient} px-6 py-16 sm:px-12`}
-              >
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 opacity-10 [background-image:repeating-linear-gradient(45deg,white_0,white_1px,transparent_1px,transparent_14px)]"
-                />
-                <div className="relative mx-auto w-full max-w-6xl">
-                  <span className="inline-block rounded-full bg-[#f5a623] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#12294f]">
-                    {slide.eyebrow}
-                  </span>
-                  {index === 0 ? (
-                    <h1 className="mt-4 max-w-xl text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-                      {slide.title}
-                    </h1>
-                  ) : (
-                    <p className="mt-4 max-w-xl text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-                      {slide.title}
-                    </p>
-                  )}
-                  <p className="mt-4 max-w-md text-sm text-white/85 sm:text-base">
-                    {slide.description}
-                  </p>
-                  <a
-                    href={slide.href}
-                    className="mt-6 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-bold text-[#12294f] transition-colors hover:bg-white/90"
-                  >
-                    {slide.cta} →
-                  </a>
-                </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-        {HERO_SLIDES.map((slide, index) => (
-          <button
-            key={slide.title}
-            type="button"
-            aria-label={`Ir para o slide ${index + 1}`}
-            onClick={() => api?.scrollTo(index)}
-            className={`h-2 w-2 rounded-full transition-colors ${
-              selected === index ? "bg-white" : "bg-white/40"
-            }`}
-          />
-        ))}
+    <section className="relative min-h-[520px] overflow-hidden bg-[#12294f] sm:min-h-[560px]">
+      <img
+        src={bannerCozinha}
+        alt="Cliente organizando utensílios de madeira na cozinha com produtos Alna Commerce"
+        className="absolute inset-0 h-full w-full object-cover object-[80%_15%]"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-r from-[#12294f] via-[#12294f]/85 to-[#12294f]/10"
+      />
+      <div className="relative mx-auto flex min-h-[520px] max-w-6xl items-center px-4 py-16 sm:min-h-[560px] sm:py-24">
+        <div className="max-w-md">
+          <span className="inline-block rounded-full bg-[#f5a623] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#12294f]">
+            Para sua casa
+          </span>
+          <h1 className="mt-4 text-5xl font-black leading-[0.95] text-white sm:text-6xl">
+            Até 20%
+            <span className="block text-[#f5a623]">OFF</span>
+          </h1>
+          <p className="mt-4 max-w-sm text-sm text-white/85 sm:text-base">
+            Em utensílios de madeira, cama, mesa e banho selecionados — enquanto durarem os
+            estoques.
+          </p>
+          <a
+            href="#destaques"
+            className="mt-6 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-bold text-[#12294f] transition-colors hover:bg-white/90"
+          >
+            COMPRAR AGORA →
+          </a>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-function PromoBanner() {
+function LifestyleBanner() {
   return (
-    <section className="bg-[#f5a623]">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4 py-4 text-center sm:flex-row sm:gap-4">
-        <p className="text-lg font-extrabold text-[#12294f] sm:text-2xl">ATÉ 20% OFF</p>
-        <p className="text-sm font-medium text-[#12294f]/90">
-          Em produtos selecionados de cama, mesa e banho — enquanto durarem os estoques.
-        </p>
+    <section className="relative min-h-[420px] overflow-hidden bg-[#12294f]">
+      <img
+        src={bannerMesa}
+        alt="Cliente organizando a mesa de jantar com utensílios de madeira e louças Alna Commerce"
+        className="absolute inset-0 h-full w-full object-cover object-[35%_15%]"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-l from-[#12294f] via-[#12294f]/80 to-[#12294f]/10"
+      />
+      <div className="relative mx-auto flex min-h-[420px] max-w-6xl items-center justify-end px-4 py-14">
+        <div className="max-w-sm text-right">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#f5a623]">
+            Cama, mesa e banho
+          </p>
+          <h2 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
+            Transforme sua mesa em um momento especial.
+          </h2>
+          <p className="mt-3 text-sm text-white/80">
+            Louças, utensílios de madeira e toalhas que unem beleza e praticidade em cada detalhe.
+          </p>
+          <a
+            href="#destaques"
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-[#16a34a] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#16a34a]/90"
+          >
+            Ver produtos →
+          </a>
+        </div>
       </div>
     </section>
   );
@@ -422,8 +377,8 @@ function AboutSection() {
         </div>
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[#12294f]/15 via-[#f5a623]/10 to-[#16a34a]/15">
           <img
-            src={ugcModelo}
-            alt="Cliente satisfeita usando os produtos da Alna Commerce"
+            src={bannerQuarto}
+            alt="Cliente relaxando com toalhas e roupa de cama macias da Alna Commerce"
             className="absolute inset-0 h-full w-full object-cover object-top"
           />
         </div>
@@ -458,10 +413,10 @@ function Index() {
   return (
     <div className="min-h-screen bg-white">
       <SiteHeader />
-      <HeroCarousel />
-      <PromoBanner />
+      <CampaignHero />
       <CategoriesSection categories={categories} />
       <FeaturedProductsSection products={featuredProducts} />
+      <LifestyleBanner />
       <WhyBuySection />
       <AboutSection />
       <FaleConoscoBand />
