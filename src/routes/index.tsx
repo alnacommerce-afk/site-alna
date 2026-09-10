@@ -8,7 +8,7 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
-import bannerCozinha from "@/assets/brand/banner-cozinha.webp";
+import heroModelo from "@/assets/brand/hero-modelo.webp";
 import bannerQuarto from "@/assets/brand/banner-quarto.webp";
 import bannerMesa from "@/assets/brand/banner-mesa.webp";
 import { SiteHeader } from "@/components/site/site-header";
@@ -150,35 +150,42 @@ export const Route = createFileRoute("/")({
 
 function CampaignHero() {
   return (
-    <section className="relative min-h-[520px] overflow-hidden bg-[#12294f] sm:min-h-[560px]">
-      <img
-        src={bannerCozinha}
-        alt="Cliente organizando utensílios de madeira na cozinha com produtos Alna Commerce"
-        className="absolute inset-0 h-full w-full object-cover object-[80%_15%]"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-r from-[#12294f] via-[#12294f]/85 to-[#12294f]/10"
-      />
-      <div className="relative mx-auto flex min-h-[520px] max-w-6xl items-center px-4 py-16 sm:min-h-[560px] sm:py-24">
-        <div className="max-w-md">
-          <span className="inline-block rounded-full bg-[#f5a623] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#12294f]">
-            Para sua casa
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#fcfbf8] via-[#fcfbf8] to-[#f5e6bd]">
+      <div className="mx-auto grid max-w-6xl gap-2 px-4 py-10 sm:grid-cols-2 sm:items-center sm:gap-4 sm:py-14">
+        <div className="relative z-10 text-center sm:text-left">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
+            Setembro chegou
           </span>
-          <h1 className="mt-4 text-5xl font-black leading-[0.95] text-white sm:text-6xl">
-            Até 20%
-            <span className="block text-[#f5a623]">OFF</span>
+          <h1 className="mt-4 text-5xl font-black leading-[0.9] text-[#12294f] sm:text-6xl md:text-7xl">
+            Tudo até
+            <span className="block text-[#f5a623]">20% OFF</span>
           </h1>
-          <p className="mt-4 max-w-sm text-sm text-white/85 sm:text-base">
-            Em utensílios de madeira, cama, mesa e banho selecionados — enquanto durarem os
-            estoques.
+          <p className="mx-auto mt-4 max-w-sm text-sm text-[#12294f]/70 sm:mx-0 sm:text-base">
+            O mês inteiro com preços especiais em utensílios de madeira, cama, mesa e banho.
+            Renove sua casa sem pesar no bolso — só até o fim de setembro.
           </p>
           <a
             href="#destaques"
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-bold text-[#12294f] transition-colors hover:bg-white/90"
+            className="mt-6 inline-flex items-center gap-2 rounded-md bg-[#12294f] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#12294f]/90"
           >
-            COMPRAR AGORA →
+            GARANTIR MEU DESCONTO →
           </a>
+        </div>
+
+        <div className="relative mx-auto flex h-[320px] w-full max-w-xs items-end justify-center sm:h-[440px] sm:max-w-none md:h-[500px]">
+          <img
+            src={heroModelo}
+            alt="Cliente da Alna Commerce sorrindo e indicando as ofertas de setembro"
+            className="relative z-10 h-full w-auto object-contain object-bottom"
+          />
+          <span className="absolute left-4 top-4 z-20 flex h-16 w-16 -rotate-6 flex-col items-center justify-center rounded-full bg-[#f5a623] text-center shadow-lg sm:left-10 sm:top-10 sm:h-20 sm:w-20">
+            <span className="text-lg font-black leading-none text-[#12294f] sm:text-xl">
+              20%
+            </span>
+            <span className="text-[9px] font-bold uppercase tracking-wide text-[#12294f]/80">
+              off
+            </span>
+          </span>
         </div>
       </div>
     </section>
