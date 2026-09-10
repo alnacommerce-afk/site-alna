@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { CreditCard, Search, ShieldCheck, ShoppingCart, Truck, User } from "lucide-react";
 import { toast } from "sonner";
 
-import logoAlna from "@/assets/brand/logo-alna.jpeg";
+import logoAlna from "@/assets/brand/logo-alna.png";
 
 const NAV_ITEMS = [
   { label: "HOME", href: "/" },

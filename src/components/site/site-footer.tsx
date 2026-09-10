@@ -1,6 +1,6 @@
 import { Clock, Instagram, Mail, MapPin, Phone } from "lucide-react";
 
-import logoAlnaTransparent from "@/assets/brand/logo-alna-transparent.png";
+import logoAlnaTransparent from "@/assets/brand/logo-alna.png";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 
 const CATEGORY_LINKS = [
