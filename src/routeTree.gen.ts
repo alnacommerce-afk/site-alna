@@ -14,9 +14,13 @@ import { Route as LojaRouteImport } from './routes/loja'
 import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
 import { Route as PoliticaDeTrocaEDevolucaoRouteImport } from './routes/politica-de-troca-e-devolucao'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
+import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
+import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
 import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
 import { Route as AdminCatalogoNovoRouteImport } from './routes/admin/catalogo/novo'
+import { Route as AdminCategoriasIndexRouteImport } from './routes/admin/categorias/index'
 import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalogo/$id/editar'
 
 const IndexRoute = IndexRouteImport.update({
@@ -45,9 +49,24 @@ const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
   path: '/termos-de-uso',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminConexoesRoute = AdminConexoesRouteImport.update({
+  id: '/admin/conexoes',
+  path: '/admin/conexoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
+  id: '/admin/configuracoes',
+  path: '/admin/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMetricasRoute = AdminMetricasRouteImport.update({
+  id: '/admin/metricas',
+  path: '/admin/metricas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCatalogoIndexRoute = AdminCatalogoIndexRouteImport.update({
@@ -58,6 +77,11 @@ const AdminCatalogoIndexRoute = AdminCatalogoIndexRouteImport.update({
 const AdminCatalogoNovoRoute = AdminCatalogoNovoRouteImport.update({
   id: '/admin/catalogo/novo',
   path: '/admin/catalogo/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCategoriasIndexRoute = AdminCategoriasIndexRouteImport.update({
+  id: '/admin/categorias/',
+  path: '/admin/categorias/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCatalogoIdEditarRoute = AdminCatalogoIdEditarRouteImport.update({
@@ -72,9 +96,13 @@ export interface FileRoutesByFullPath {
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/conexoes': typeof AdminConexoesRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/metricas': typeof AdminMetricasRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
+  '/admin/categorias/': typeof AdminCategoriasIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRoutesByTo {
@@ -83,9 +111,13 @@ export interface FileRoutesByTo {
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/conexoes': typeof AdminConexoesRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/metricas': typeof AdminMetricasRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo': typeof AdminCatalogoIndexRoute
+  '/admin/categorias': typeof AdminCategoriasIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRoutesById {
@@ -95,9 +127,13 @@ export interface FileRoutesById {
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/conexoes': typeof AdminConexoesRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/metricas': typeof AdminMetricasRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
+  '/admin/categorias/': typeof AdminCategoriasIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRouteTypes {
@@ -108,9 +144,13 @@ export interface FileRouteTypes {
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
     | '/termos-de-uso'
+    | '/admin/conexoes'
+    | '/admin/configuracoes'
     | '/admin/login'
+    | '/admin/metricas'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
+    | '/admin/categorias/'
     | '/admin/catalogo/$id/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,9 +159,13 @@ export interface FileRouteTypes {
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
     | '/termos-de-uso'
+    | '/admin/conexoes'
+    | '/admin/configuracoes'
     | '/admin/login'
+    | '/admin/metricas'
     | '/admin/catalogo/novo'
     | '/admin/catalogo'
+    | '/admin/categorias'
     | '/admin/catalogo/$id/editar'
   id:
     | '__root__'
@@ -130,9 +174,13 @@ export interface FileRouteTypes {
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
     | '/termos-de-uso'
+    | '/admin/conexoes'
+    | '/admin/configuracoes'
     | '/admin/login'
+    | '/admin/metricas'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
+    | '/admin/categorias/'
     | '/admin/catalogo/$id/editar'
   fileRoutesById: FileRoutesById
 }
@@ -142,9 +190,13 @@ export interface RootRouteChildren {
   PoliticaDePrivacidadeRoute: typeof PoliticaDePrivacidadeRoute
   PoliticaDeTrocaEDevolucaoRoute: typeof PoliticaDeTrocaEDevolucaoRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
+  AdminConexoesRoute: typeof AdminConexoesRoute
+  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMetricasRoute: typeof AdminMetricasRoute
   AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
   AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
+  AdminCategoriasIndexRoute: typeof AdminCategoriasIndexRoute
   AdminCatalogoIdEditarRoute: typeof AdminCatalogoIdEditarRoute
 }
 
@@ -185,11 +237,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermosDeUsoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/conexoes': {
+      id: '/admin/conexoes'
+      path: '/admin/conexoes'
+      fullPath: '/admin/conexoes'
+      preLoaderRoute: typeof AdminConexoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/configuracoes': {
+      id: '/admin/configuracoes'
+      path: '/admin/configuracoes'
+      fullPath: '/admin/configuracoes'
+      preLoaderRoute: typeof AdminConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/metricas': {
+      id: '/admin/metricas'
+      path: '/admin/metricas'
+      fullPath: '/admin/metricas'
+      preLoaderRoute: typeof AdminMetricasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/catalogo/': {
@@ -204,6 +277,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/catalogo/novo'
       fullPath: '/admin/catalogo/novo'
       preLoaderRoute: typeof AdminCatalogoNovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/categorias/': {
+      id: '/admin/categorias/'
+      path: '/admin/categorias'
+      fullPath: '/admin/categorias/'
+      preLoaderRoute: typeof AdminCategoriasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/catalogo/$id/editar': {
@@ -222,9 +302,13 @@ const rootRouteChildren: RootRouteChildren = {
   PoliticaDePrivacidadeRoute: PoliticaDePrivacidadeRoute,
   PoliticaDeTrocaEDevolucaoRoute: PoliticaDeTrocaEDevolucaoRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
+  AdminConexoesRoute: AdminConexoesRoute,
+  AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMetricasRoute: AdminMetricasRoute,
   AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
   AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,
+  AdminCategoriasIndexRoute: AdminCategoriasIndexRoute,
   AdminCatalogoIdEditarRoute: AdminCatalogoIdEditarRoute,
 }
 export const routeTree = rootRouteImport

@@ -64,6 +64,33 @@ export type Database = {
           },
         ]
       }
+      integration_connections: {
+        Row: {
+          id: string
+          label: string
+          notes: string | null
+          public_config: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          label: string
+          notes?: string | null
+          public_config?: Json
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          notes?: string | null
+          public_config?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
@@ -366,6 +393,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_settings: {
+        Row: {
+          address_city: string | null
+          address_state: string | null
+          business_hours: string | null
+          cnpj: string | null
+          email: string | null
+          facebook_url: string | null
+          id: string
+          instagram_handle: string | null
+          phone: string | null
+          razao_social: string | null
+          store_name: string
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address_city?: string | null
+          address_state?: string | null
+          business_hours?: string | null
+          cnpj?: string | null
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_handle?: string | null
+          phone?: string | null
+          razao_social?: string | null
+          store_name?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address_city?: string | null
+          address_state?: string | null
+          business_hours?: string | null
+          cnpj?: string | null
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_handle?: string | null
+          phone?: string | null
+          razao_social?: string | null
+          store_name?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Headset,
   ShieldCheck,
@@ -244,9 +244,10 @@ function CategoriesSection({ categories }: { categories: CategoryRow[] }) {
       ) : (
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {categories.map((category) => (
-            <a
+            <Link
               key={category.id}
-              href="#destaques"
+              to="/loja"
+              search={{ categoria: category.slug }}
               className="group overflow-hidden rounded-xl border border-[#12294f]/10 bg-white shadow-sm transition-shadow hover:shadow-md"
             >
               <div className="aspect-square overflow-hidden bg-[#fcfbf8]">
@@ -265,7 +266,7 @@ function CategoriesSection({ categories }: { categories: CategoryRow[] }) {
               <div className="p-3 text-center">
                 <p className="text-sm font-semibold text-[#12294f]">{category.name}</p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}

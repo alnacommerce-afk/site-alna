@@ -1,17 +1,44 @@
+import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Clock, Instagram, Mail, MapPin, Phone } from "lucide-react";
 
+import { supabase } from "@/integrations/supabase/client";
 import logoAlnaTransparent from "@/assets/brand/logo-alna.png";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 
-const CATEGORY_LINKS = [
-  { label: "Cozinha", href: "#categorias" },
-  { label: "Louça e Artigos para Servir", href: "#categorias" },
-  { label: "Utensílios de Preparação", href: "#categorias" },
-  { label: "Toalhas e Roupões", href: "#categorias" },
-];
+type CategoryLink = { id: string; name: string; slug: string };
+type Settings = {
+  cnpj: string | null;
+  razao_social: string | null;
+  phone: string | null;
+  email: string | null;
+  instagram_handle: string | null;
+  address_city: string | null;
+  address_state: string | null;
+  business_hours: string | null;
+};
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
+  const [categories, setCategories] = useState<CategoryLink[]>([]);
+  const [settings, setSettings] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from("categories")
+      .select("id, name, slug")
+      .order("position")
+      .then(({ data }) => setCategories(data ?? []));
+
+    supabase
+      .from("site_settings")
+      .select(
+        "cnpj, razao_social, phone, email, instagram_handle, address_city, address_state, business_hours",
+      )
+      .eq("id", "default")
+      .single()
+      .then(({ data }) => setSettings(data));
+  }, []);
 
   return (
     <footer className="bg-[#12294f] text-white">
@@ -38,8 +65,10 @@ export function SiteFooter() {
             Utensílios de madeira para cozinha e itens de cama, mesa e banho que trazem
             praticidade e bem-estar para sua casa.
           </p>
-          <p className="mt-4 text-xs text-white/50">CNPJ: 57.135.009/0001-27</p>
-          <p className="text-xs text-white/50">Razão Social: ALNA COMMERCE</p>
+          <p className="mt-4 text-xs text-white/50">CNPJ: {settings?.cnpj ?? "57.135.009/0001-27"}</p>
+          <p className="text-xs text-white/50">
+            Razão Social: {settings?.razao_social ?? "ALNA COMMERCE"}
+          </p>
         </div>
 
         <div>
@@ -48,22 +77,22 @@ export function SiteFooter() {
           </h3>
           <ul className="space-y-2 text-sm text-white/70">
             <li>
-              <a href="/" className="hover:text-white">
+              <Link to="/" className="hover:text-white">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/loja" className="hover:text-white">
+              <Link to="/loja" search={{ categoria: undefined }} className="hover:text-white">
                 Loja
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#sobre" className="hover:text-white">
+              <a href="/#sobre" className="hover:text-white">
                 Sobre
               </a>
             </li>
             <li>
-              <a href="#fale-conosco" className="hover:text-white">
+              <a href="/#fale-conosco" className="hover:text-white">
                 Contato
               </a>
             </li>
@@ -75,13 +104,21 @@ export function SiteFooter() {
             Categorias
           </h3>
           <ul className="space-y-2 text-sm text-white/70">
-            {CATEGORY_LINKS.map((item) => (
-              <li key={item.label}>
-                <a href={item.href} className="hover:text-white">
-                  {item.label}
-                </a>
-              </li>
-            ))}
+            {categories.length === 0 ? (
+              <li className="text-white/40">Em breve</li>
+            ) : (
+              categories.map((category) => (
+                <li key={category.id}>
+                  <Link
+                    to="/loja"
+                    search={{ categoria: category.slug }}
+                    className="hover:text-white"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              ))
+            )}
           </ul>
 
           <h3 className="mb-3 mt-6 text-sm font-semibold uppercase tracking-wide text-white/90">
@@ -89,19 +126,19 @@ export function SiteFooter() {
           </h3>
           <ul className="space-y-2 text-sm text-white/70">
             <li>
-              <a href="/politica-de-privacidade" className="hover:text-white">
+              <Link to="/politica-de-privacidade" className="hover:text-white">
                 Política de Privacidade
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/termos-de-uso" className="hover:text-white">
+              <Link to="/termos-de-uso" className="hover:text-white">
                 Termos de Uso
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/politica-de-troca-e-devolucao" className="hover:text-white">
+              <Link to="/politica-de-troca-e-devolucao" className="hover:text-white">
                 Trocas e Devoluções
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -112,23 +149,26 @@ export function SiteFooter() {
           </h3>
           <ul className="space-y-2 text-sm text-white/70">
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 shrink-0" /> (51) 99491-1125
+              <Phone className="h-4 w-4 shrink-0" /> {settings?.phone ?? "(51) 99491-1125"}
             </li>
             <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 shrink-0" /> contato@alna.cc
+              <Mail className="h-4 w-4 shrink-0" /> {settings?.email ?? "contato@alna.cc"}
             </li>
             <li className="flex items-center gap-2">
-              <Instagram className="h-4 w-4 shrink-0" /> @alnaoficial_
+              <Instagram className="h-4 w-4 shrink-0" /> @
+              {settings?.instagram_handle ?? "alnaoficial_"}
             </li>
             <li className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 shrink-0" /> Brusque, Santa Catarina
+              <MapPin className="h-4 w-4 shrink-0" />{" "}
+              {settings
+                ? `${settings.address_city}, ${settings.address_state}`
+                : "Brusque, Santa Catarina"}
             </li>
             <li className="flex items-start gap-2">
               <Clock className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                Segunda a Sexta: 8h às 18h
-                <br />
-                Sábado: 8h às 12h
+                {settings?.business_hours ??
+                  "Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h"}
               </span>
             </li>
           </ul>

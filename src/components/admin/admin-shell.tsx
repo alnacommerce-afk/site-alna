@@ -35,6 +35,34 @@ export function AdminShell({ children }: { children: ReactNode }) {
           >
             Catálogo
           </Link>
+          <Link
+            to="/admin/categorias"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Categorias
+          </Link>
+          <Link
+            to="/admin/metricas"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Métricas
+          </Link>
+          <Link
+            to="/admin/conexoes"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Conexões de API
+          </Link>
+          <Link
+            to="/admin/configuracoes"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Configurações
+          </Link>
         </nav>
         <Button
           variant="ghost"

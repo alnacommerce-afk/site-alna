@@ -1,22 +1,43 @@
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { CreditCard, Search, ShieldCheck, ShoppingCart, Truck, User } from "lucide-react";
+import {
+  ChevronDown,
+  CreditCard,
+  Search,
+  ShieldCheck,
+  ShoppingCart,
+  Truck,
+  User,
+} from "lucide-react";
 import { toast } from "sonner";
 
+import { supabase } from "@/integrations/supabase/client";
 import logoAlna from "@/assets/brand/logo-alna.png";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const NAV_ITEMS = [
-  { label: "HOME", href: "/" },
-  { label: "LOJA", href: "/loja" },
-  { label: "CATEGORIAS", href: "#categorias" },
-  { label: "SOBRE", href: "#sobre" },
-  { label: "CONTATO", href: "#fale-conosco" },
-];
+type CategoryLink = { id: string; name: string; slug: string };
 
 function comingSoon() {
   toast.info("Essa área ainda está em construção — em breve por aqui!");
 }
 
 export function SiteHeader() {
+  const [categories, setCategories] = useState<CategoryLink[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("categories")
+      .select("id, name, slug")
+      .order("position")
+      .then(({ data }) => setCategories(data ?? []));
+  }, []);
+
   return (
     <header className="relative z-30 bg-white shadow-sm">
       <div className="bg-[#16a34a] text-white">
@@ -70,15 +91,49 @@ export function SiteHeader() {
 
       <nav className="border-t border-[#12294f]/10">
         <div className="mx-auto flex max-w-6xl items-center gap-6 overflow-x-auto px-4 py-2.5 text-sm font-semibold tracking-wide text-[#12294f]">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="shrink-0 whitespace-nowrap hover:text-[#16a34a]"
-            >
-              {item.label}
-            </a>
-          ))}
+          <Link to="/" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+            HOME
+          </Link>
+          <Link
+            to="/loja"
+            search={{ categoria: undefined }}
+            className="shrink-0 whitespace-nowrap hover:text-[#16a34a]"
+          >
+            LOJA
+          </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex shrink-0 items-center gap-1 whitespace-nowrap outline-none hover:text-[#16a34a]">
+              CATEGORIAS
+              <ChevronDown className="h-3.5 w-3.5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {categories.length === 0 ? (
+                <DropdownMenuItem disabled>Nenhuma categoria ainda</DropdownMenuItem>
+              ) : (
+                categories.map((category) => (
+                  <DropdownMenuItem key={category.id} asChild>
+                    <Link to="/loja" search={{ categoria: category.slug }}>
+                      {category.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/loja" search={{ categoria: undefined }}>
+                  Ver todas as categorias
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <a href="/#sobre" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+            SOBRE
+          </a>
+          <a href="/#fale-conosco" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+            CONTATO
+          </a>
         </div>
       </nav>
     </header>

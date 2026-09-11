@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
@@ -41,6 +41,9 @@ const SORT_LABELS: Record<SortOption, string> = {
 };
 
 export const Route = createFileRoute("/loja")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    categoria: typeof search["categoria"] === "string" ? (search["categoria"] as string) : undefined,
+  }),
   loader: async () => {
     const [{ data: categories }, { data: products }] = await Promise.all([
       supabase.from("categories").select("id, name, slug").order("position"),
@@ -151,6 +154,7 @@ function ProductGridCard({ product }: { product: ProductCard }) {
 
 function LojaPage() {
   const { categories, products } = Route.useLoaderData();
+  const { categoria } = Route.useSearch();
 
   const priceBounds = useMemo(() => {
     if (products.length === 0) return { min: 0, max: 100 };
@@ -161,7 +165,14 @@ function LojaPage() {
     };
   }, [products]);
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    () => categories.find((c) => c.slug === categoria)?.id ?? null,
+  );
+
+  useEffect(() => {
+    setSelectedCategoryId(categories.find((c) => c.slug === categoria)?.id ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoria]);
   const [priceRange, setPriceRange] = useState<[number, number]>([
     priceBounds.min,
     priceBounds.max,
