@@ -70,6 +70,7 @@ export type Database = {
           label: string
           notes: string | null
           public_config: Json
+          secret_id: string | null
           status: string
           updated_at: string
         }
@@ -78,6 +79,7 @@ export type Database = {
           label: string
           notes?: string | null
           public_config?: Json
+          secret_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -86,6 +88,7 @@ export type Database = {
           label?: string
           notes?: string | null
           public_config?: Json
+          secret_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -182,6 +185,9 @@ export type Database = {
           customer_name: string | null
           customer_phone: string | null
           id: string
+          label_generated_count: number
+          label_url: string | null
+          melhor_envio_shipment_id: string | null
           payment_id: string | null
           payment_provider: string | null
           payment_status: string | null
@@ -190,6 +196,7 @@ export type Database = {
           status: Database["public"]["Enums"]["order_status"]
           subtotal_cents: number
           total_cents: number
+          tracking_code: string | null
           updated_at: string
           user_id: string | null
         }
@@ -199,6 +206,9 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           id?: string
+          label_generated_count?: number
+          label_url?: string | null
+          melhor_envio_shipment_id?: string | null
           payment_id?: string | null
           payment_provider?: string | null
           payment_status?: string | null
@@ -207,6 +217,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["order_status"]
           subtotal_cents?: number
           total_cents?: number
+          tracking_code?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -216,6 +227,9 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           id?: string
+          label_generated_count?: number
+          label_url?: string | null
+          melhor_envio_shipment_id?: string | null
           payment_id?: string | null
           payment_provider?: string | null
           payment_status?: string | null
@@ -224,6 +238,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["order_status"]
           subtotal_cents?: number
           total_cents?: number
+          tracking_code?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -468,12 +483,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      clear_integration_secret: {
+        Args: { p_integration_id: string }
+        Returns: undefined
+      }
+      get_integration_secret: {
+        Args: { p_integration_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      set_integration_secret: {
+        Args: { p_integration_id: string; p_secret_value: string }
+        Returns: undefined
       }
     }
     Enums: {

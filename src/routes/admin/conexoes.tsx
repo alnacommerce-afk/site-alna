@@ -6,8 +6,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/admin/conexoes")({
   head: () => ({
@@ -21,16 +33,20 @@ type Connection = {
   label: string;
   status: "pending" | "connected";
   notes: string | null;
+  secret_id: string | null;
 };
+
+const SECRET_INTEGRATIONS = new Set(["melhor_envio", "payment_gateway", "resend"]);
 
 const CONNECTION_HELP: Record<string, string> = {
   melhor_envio:
-    "Calcula o frete automaticamente no carrinho. Peça o token de API na sua conta Melhor Envio e me envie para eu configurar como credencial segura no servidor — a chave nunca fica salva nesta tela.",
+    "Calcula o frete automaticamente e permite gerar etiquetas de envio. Cole abaixo o token de API (Painel Melhor Envio → Gerenciar → Tokens).",
   payment_gateway:
-    "Ainda não escolhemos o gateway (Mercado Pago, Stripe, etc.). Quando decidirmos, a chave secreta também é configurada como credencial segura no servidor, nunca aqui.",
+    "Cole a chave secreta do gateway escolhido (Mercado Pago, Stripe, etc.) assim que ele for definido.",
   meta_instagram:
-    "Exige um catálogo de produtos publicado, domínio verificado no Meta Business Manager e as páginas de política já publicadas no site (Privacidade, Termos, Trocas e Devoluções).",
-  resend: "Envia e-mails transacionais (confirmação de pedido, contato). A chave de API é configurada como credencial segura no servidor.",
+    "Exige um catálogo de produtos publicado, domínio verificado no Meta Business Manager e as páginas de política já publicadas no site (Privacidade, Termos, Trocas e Devoluções). Não usa uma chave simples — a conexão é feita por OAuth no painel do Meta.",
+  resend:
+    "Envia e-mails transacionais (confirmação de pedido, contato). Cole abaixo a API key gerada em resend.com/api-keys.",
   google_search_console:
     "A verificação por meta tag já está publicada no site. Basta adicionar a propriedade em search.google.com/search-console usando o domínio.",
 };
@@ -39,12 +55,15 @@ function ConexoesPage() {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [loading, setLoading] = useState(true);
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({});
+  const [secretDraft, setSecretDraft] = useState<Record<string, string>>({});
+  const [savingSecretFor, setSavingSecretFor] = useState<string | null>(null);
+  const [connectionToClear, setConnectionToClear] = useState<Connection | null>(null);
 
   async function load() {
     setLoading(true);
     const { data, error } = await supabase
       .from("integration_connections")
-      .select("id, label, status, notes")
+      .select("id, label, status, notes, secret_id")
       .order("label");
 
     if (error) {
@@ -89,14 +108,54 @@ function ConexoesPage() {
     toast.success("Anotação salva.");
   }
 
+  async function saveSecret(id: string) {
+    const value = (secretDraft[id] ?? "").trim();
+    if (!value) {
+      toast.error("Cole a chave antes de salvar.");
+      return;
+    }
+
+    setSavingSecretFor(id);
+    const { error } = await supabase.rpc("set_integration_secret", {
+      p_integration_id: id,
+      p_secret_value: value,
+    });
+    setSavingSecretFor(null);
+
+    if (error) {
+      toast.error("Não foi possível salvar a chave.");
+      return;
+    }
+    setSecretDraft((prev) => ({ ...prev, [id]: "" }));
+    toast.success("Chave salva com segurança. Marcado como conectado.");
+    load();
+  }
+
+  async function confirmClearSecret() {
+    if (!connectionToClear) return;
+    const id = connectionToClear.id;
+    setConnectionToClear(null);
+
+    const { error } = await supabase.rpc("clear_integration_secret", {
+      p_integration_id: id,
+    });
+
+    if (error) {
+      toast.error("Não foi possível remover a chave.");
+      return;
+    }
+    toast.success("Chave removida.");
+    load();
+  }
+
   return (
     <AdminShell>
       <div className="mb-6">
         <h1 className="text-xl font-semibold">Conexões de API</h1>
         <p className="text-sm text-muted-foreground">
-          Status das integrações externas da loja. Chaves e tokens de API nunca são digitados ou
-          salvos nesta tela — eles são configurados como credenciais seguras direto no servidor,
-          para evitar exposição acidental.
+          Cole aqui as chaves de cada integração. Elas são guardadas criptografadas no Supabase
+          Vault — depois de salvas, nem esta tela nem o banco de dados mostram o valor de volta;
+          só o servidor consegue usá-las para chamar as APIs externas.
         </p>
       </div>
 
@@ -104,55 +163,120 @@ function ConexoesPage() {
         <p className="text-sm text-muted-foreground">Carregando...</p>
       ) : (
         <div className="grid max-w-3xl gap-4">
-          {connections.map((connection) => (
-            <Card key={connection.id}>
-              <CardContent className="space-y-3 p-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-medium text-[#12294f]">{connection.label}</p>
-                    <Badge
-                      variant={connection.status === "connected" ? "default" : "secondary"}
-                      className="mt-1"
-                    >
-                      {connection.status === "connected" ? "Conectado" : "Pendente"}
-                    </Badge>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={() => toggleStatus(connection)}>
-                    {connection.status === "connected"
-                      ? "Marcar como pendente"
-                      : "Marcar como conectado"}
-                  </Button>
-                </div>
+          {connections.map((connection) => {
+            const needsSecret = SECRET_INTEGRATIONS.has(connection.id);
+            const hasSecret = !!connection.secret_id;
 
-                <p className="text-xs text-muted-foreground">
-                  {CONNECTION_HELP[connection.id]}
-                </p>
-
-                <div className="space-y-1">
-                  <Textarea
-                    rows={2}
-                    placeholder="Anotações (ex: conta usada, data de ativação)"
-                    value={notesDraft[connection.id] ?? ""}
-                    onChange={(e) =>
-                      setNotesDraft((prev) => ({ ...prev, [connection.id]: e.target.value }))
-                    }
-                    className="text-sm"
-                  />
-                  <div className="flex justify-end">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => saveNotes(connection.id)}
-                    >
-                      Salvar anotação
-                    </Button>
+            return (
+              <Card key={connection.id}>
+                <CardContent className="space-y-3 p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="font-medium text-[#12294f]">{connection.label}</p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <Badge
+                          variant={connection.status === "connected" ? "default" : "secondary"}
+                        >
+                          {connection.status === "connected" ? "Conectado" : "Pendente"}
+                        </Badge>
+                        {hasSecret ? (
+                          <span className="text-xs text-muted-foreground">
+                            Chave configurada ✓
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                    {!needsSecret ? (
+                      <Button variant="outline" size="sm" onClick={() => toggleStatus(connection)}>
+                        {connection.status === "connected"
+                          ? "Marcar como pendente"
+                          : "Marcar como conectado"}
+                      </Button>
+                    ) : null}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+
+                  <p className="text-xs text-muted-foreground">
+                    {CONNECTION_HELP[connection.id]}
+                  </p>
+
+                  {needsSecret ? (
+                    <div className="space-y-2 rounded-md border border-dashed p-3">
+                      <Label htmlFor={`secret-${connection.id}`} className="text-xs">
+                        {hasSecret ? "Substituir chave" : "Chave / Token de API"}
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id={`secret-${connection.id}`}
+                          type="password"
+                          autoComplete="off"
+                          placeholder={hasSecret ? "•••••••••••••••• (salva)" : "Cole a chave aqui"}
+                          value={secretDraft[connection.id] ?? ""}
+                          onChange={(e) =>
+                            setSecretDraft((prev) => ({ ...prev, [connection.id]: e.target.value }))
+                          }
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => saveSecret(connection.id)}
+                          disabled={savingSecretFor === connection.id}
+                        >
+                          {savingSecretFor === connection.id ? "Salvando..." : "Salvar"}
+                        </Button>
+                      </div>
+                      {hasSecret ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={() => setConnectionToClear(connection)}
+                        >
+                          Remover chave
+                        </Button>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  <div className="space-y-1">
+                    <Textarea
+                      rows={2}
+                      placeholder="Anotações (ex: conta usada, data de ativação)"
+                      value={notesDraft[connection.id] ?? ""}
+                      onChange={(e) =>
+                        setNotesDraft((prev) => ({ ...prev, [connection.id]: e.target.value }))
+                      }
+                      className="text-sm"
+                    />
+                    <div className="flex justify-end">
+                      <Button variant="ghost" size="sm" onClick={() => saveNotes(connection.id)}>
+                        Salvar anotação
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
+
+      <AlertDialog
+        open={!!connectionToClear}
+        onOpenChange={(open) => !open && setConnectionToClear(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover chave</AlertDialogTitle>
+            <AlertDialogDescription>
+              Remover a chave salva de "{connectionToClear?.label}"? A integração voltará a
+              ficar pendente até uma nova chave ser salva.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmClearSecret}>Remover</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminShell>
   );
 }
