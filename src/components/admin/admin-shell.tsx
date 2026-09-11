@@ -26,8 +26,18 @@ export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen">
       <aside className="flex w-56 shrink-0 flex-col border-r bg-muted/30 p-4">
-        <div className="mb-6 text-sm font-semibold">Alna Admin</div>
+        <Link to="/admin" className="mb-6 block text-sm font-semibold">
+          Alna Admin
+        </Link>
         <nav className="flex flex-col gap-1 text-sm">
+          <Link
+            to="/admin"
+            activeOptions={{ exact: true }}
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Visão Geral
+          </Link>
           <Link
             to="/admin/catalogo"
             className="rounded-md px-3 py-2 hover:bg-accent"

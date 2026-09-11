@@ -14,6 +14,7 @@ import { Route as LojaRouteImport } from './routes/loja'
 import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
 import { Route as PoliticaDeTrocaEDevolucaoRouteImport } from './routes/politica-de-troca-e-devolucao'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
@@ -47,6 +48,11 @@ const PoliticaDeTrocaEDevolucaoRoute =
 const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
   id: '/termos-de-uso',
   path: '/termos-de-uso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminConexoesRoute = AdminConexoesRouteImport.update({
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/admin/': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/admin': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo': typeof AdminCatalogoIndexRoute
   '/admin/categorias': typeof AdminCategoriasIndexRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/admin/': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/admin/'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
     | '/admin/categorias/'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/admin'
     | '/admin/catalogo/novo'
     | '/admin/catalogo'
     | '/admin/categorias'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/admin/'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
     | '/admin/categorias/'
@@ -194,6 +206,7 @@ export interface RootRouteChildren {
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
   AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
   AdminCategoriasIndexRoute: typeof AdminCategoriasIndexRoute
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       path: '/termos-de-uso'
       fullPath: '/termos-de-uso'
       preLoaderRoute: typeof TermosDeUsoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/conexoes': {
@@ -306,6 +326,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
+  AdminIndexRoute: AdminIndexRoute,
   AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
   AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,
   AdminCategoriasIndexRoute: AdminCategoriasIndexRoute,

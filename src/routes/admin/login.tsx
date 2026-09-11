@@ -33,7 +33,7 @@ function AdminLoginPage() {
       toast.error(error.message);
       return;
     }
-    router.navigate({ to: "/admin/catalogo" });
+    router.navigate({ to: "/admin" });
   }
 
   async function handleSignUp(event: FormEvent<HTMLFormElement>) {
