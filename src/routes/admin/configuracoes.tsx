@@ -29,6 +29,11 @@ type SettingsForm = {
   businessHours: string;
   instagramHandle: string;
   facebookUrl: string;
+  shippingOriginZip: string;
+  shippingOriginStreet: string;
+  shippingOriginNumber: string;
+  shippingOriginNeighborhood: string;
+  shippingCarrierPreference: string;
 };
 
 const emptyForm: SettingsForm = {
@@ -43,6 +48,11 @@ const emptyForm: SettingsForm = {
   businessHours: "",
   instagramHandle: "",
   facebookUrl: "",
+  shippingOriginZip: "",
+  shippingOriginStreet: "",
+  shippingOriginNumber: "",
+  shippingOriginNeighborhood: "",
+  shippingCarrierPreference: "",
 };
 
 function ConfiguracoesPage() {
@@ -76,6 +86,11 @@ function ConfiguracoesPage() {
         businessHours: data.business_hours ?? "",
         instagramHandle: data.instagram_handle ?? "",
         facebookUrl: data.facebook_url ?? "",
+        shippingOriginZip: data.shipping_origin_zip ?? "",
+        shippingOriginStreet: data.shipping_origin_street ?? "",
+        shippingOriginNumber: data.shipping_origin_number ?? "",
+        shippingOriginNeighborhood: data.shipping_origin_neighborhood ?? "",
+        shippingCarrierPreference: data.shipping_carrier_preference ?? "",
       });
       setLoading(false);
     }
@@ -102,6 +117,11 @@ function ConfiguracoesPage() {
         business_hours: form.businessHours || null,
         instagram_handle: form.instagramHandle || null,
         facebook_url: form.facebookUrl || null,
+        shipping_origin_zip: form.shippingOriginZip || null,
+        shipping_origin_street: form.shippingOriginStreet || null,
+        shipping_origin_number: form.shippingOriginNumber || null,
+        shipping_origin_neighborhood: form.shippingOriginNeighborhood || null,
+        shipping_carrier_preference: form.shippingCarrierPreference || null,
       })
       .eq("id", "default");
 
@@ -223,6 +243,63 @@ function ConfiguracoesPage() {
               value={form.businessHours}
               onChange={(e) => setField("businessHours", e.target.value)}
             />
+          </div>
+
+          <div className="space-y-4 border-t pt-4">
+            <div>
+              <h2 className="text-sm font-semibold text-[#12294f]">Envio / Frete</h2>
+              <p className="text-xs text-muted-foreground">
+                Endereço de origem usado pelo Melhor Envio para calcular o frete e gerar
+                etiquetas. Transportadora fixada em J&T Express — nenhuma outra opção é
+                oferecida no checkout.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label htmlFor="shipping-carrier">Transportadora</Label>
+                <Input
+                  id="shipping-carrier"
+                  value={form.shippingCarrierPreference}
+                  onChange={(e) => setField("shippingCarrierPreference", e.target.value)}
+                  placeholder="J&T Express"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="shipping-zip">CEP de origem</Label>
+                <Input
+                  id="shipping-zip"
+                  value={form.shippingOriginZip}
+                  onChange={(e) => setField("shippingOriginZip", e.target.value)}
+                  placeholder="88353-575"
+                />
+              </div>
+              <div className="space-y-1 sm:col-span-2">
+                <Label htmlFor="shipping-street">Rua</Label>
+                <Input
+                  id="shipping-street"
+                  value={form.shippingOriginStreet}
+                  onChange={(e) => setField("shippingOriginStreet", e.target.value)}
+                  placeholder="Rua Jardim Centenário"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="shipping-number">Número</Label>
+                <Input
+                  id="shipping-number"
+                  value={form.shippingOriginNumber}
+                  onChange={(e) => setField("shippingOriginNumber", e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="shipping-neighborhood">Bairro</Label>
+                <Input
+                  id="shipping-neighborhood"
+                  value={form.shippingOriginNeighborhood}
+                  onChange={(e) => setField("shippingOriginNeighborhood", e.target.value)}
+                  placeholder="Águas Claras"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end border-t pt-4">

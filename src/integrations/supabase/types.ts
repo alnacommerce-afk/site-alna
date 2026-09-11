@@ -421,6 +421,11 @@ export type Database = {
           instagram_handle: string | null
           phone: string | null
           razao_social: string | null
+          shipping_carrier_preference: string | null
+          shipping_origin_neighborhood: string | null
+          shipping_origin_number: string | null
+          shipping_origin_street: string | null
+          shipping_origin_zip: string | null
           store_name: string
           updated_at: string
           whatsapp: string | null
@@ -436,6 +441,11 @@ export type Database = {
           instagram_handle?: string | null
           phone?: string | null
           razao_social?: string | null
+          shipping_carrier_preference?: string | null
+          shipping_origin_neighborhood?: string | null
+          shipping_origin_number?: string | null
+          shipping_origin_street?: string | null
+          shipping_origin_zip?: string | null
           store_name?: string
           updated_at?: string
           whatsapp?: string | null
@@ -451,6 +461,11 @@ export type Database = {
           instagram_handle?: string | null
           phone?: string | null
           razao_social?: string | null
+          shipping_carrier_preference?: string | null
+          shipping_origin_neighborhood?: string | null
+          shipping_origin_number?: string | null
+          shipping_origin_street?: string | null
+          shipping_origin_zip?: string | null
           store_name?: string
           updated_at?: string
           whatsapp?: string | null
