@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@tanstack/react-router";
-import { Trash2 } from "lucide-react";
+import { Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Form,
   FormControl,
@@ -47,6 +49,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
+type AiSuggestion = {
+  titleSuggestion: string;
+  focusKeyword: string;
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string[];
+  imageAltTexts: string[];
+};
 
 type ImageItem = {
   key: string;
@@ -87,6 +98,8 @@ export function ProductForm({ productId }: { productId?: string }) {
   const [images, setImages] = useState<ImageItem[]>([]);
   const [originalImages, setOriginalImages] = useState<ExistingImage[]>([]);
   const [originalVariantIds, setOriginalVariantIds] = useState<string[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiTitleSuggestion, setAiTitleSuggestion] = useState<string | null>(null);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -95,6 +108,71 @@ export function ProductForm({ productId }: { productId?: string }) {
 
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "variants" });
   const title = form.watch("title");
+  const description = form.watch("description");
+  const categoryId = form.watch("categoryId");
+  const seoKeywords = form.watch("seoKeywords") ?? [];
+
+  async function runAiComplementa() {
+    if (!title.trim()) {
+      toast.error("Preencha o título antes de usar a IA complementa.");
+      return;
+    }
+
+    setAiLoading(true);
+    try {
+      let categoryName: string | null = null;
+      if (categoryId) {
+        const { data } = await supabase
+          .from("categories")
+          .select("name")
+          .eq("id", categoryId)
+          .maybeSingle();
+        categoryName = data?.name ?? null;
+      }
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) throw new Error("Sessão expirada. Faça login novamente.");
+
+      const response = await fetch(
+        `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/product-seo-assist`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            title,
+            description: description ?? "",
+            categoryName,
+            imageCount: images.length,
+          }),
+        },
+      );
+
+      const result = (await response.json()) as AiSuggestion & { error?: string };
+      if (!response.ok || result.error) {
+        throw new Error(result.error ?? "Erro ao consultar a IA.");
+      }
+
+      setAiTitleSuggestion(result.titleSuggestion);
+      form.setValue("focusKeyword", result.focusKeyword);
+      form.setValue("seoTitle", result.seoTitle);
+      form.setValue("seoDescription", result.seoDescription);
+      form.setValue("seoKeywords", result.seoKeywords);
+
+      setImages((prev) =>
+        prev.map((img, i) => ({ ...img, altText: result.imageAltTexts[i] ?? img.altText })),
+      );
+
+      toast.success("IA complementa: sugestões aplicadas. Confira a sugestão de título.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao consultar a IA.");
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (mode !== "edit" || !productId) return;
@@ -103,7 +181,9 @@ export function ProductForm({ productId }: { productId?: string }) {
     async function loadProduct() {
       const { data: product, error } = await supabase
         .from("products")
-        .select("title, slug, description, video_url, status, category_id")
+        .select(
+          "title, slug, description, video_url, status, category_id, ncm, origem, cfop_venda_mesmo_estado, cfop_venda_outros_estados, cfop_exportacao, csosn, cest, focus_keyword, seo_title, seo_description, seo_keywords",
+        )
         .eq("id", editingProductId)
         .single();
 
@@ -143,14 +223,18 @@ export function ProductForm({ productId }: { productId?: string }) {
           packageWidthCm: formatDecimalToInput(v.package_width_cm),
           packageLengthCm: formatDecimalToInput(v.package_length_cm),
           packageWeightKg: formatDecimalToInput(v.package_weight_kg),
-          ncm: v.ncm ?? "",
-          origem: v.origem ?? "",
-          cfopVendaMesmoEstado: v.cfop_venda_mesmo_estado ?? "",
-          cfopVendaOutrosEstados: v.cfop_venda_outros_estados ?? "",
-          cfopExportacao: v.cfop_exportacao ?? "",
-          csosn: v.csosn ?? "",
-          cest: v.cest ?? "",
         })),
+        ncm: product.ncm ?? "",
+        origem: product.origem ?? "",
+        cfopVendaMesmoEstado: product.cfop_venda_mesmo_estado ?? "",
+        cfopVendaOutrosEstados: product.cfop_venda_outros_estados ?? "",
+        cfopExportacao: product.cfop_exportacao ?? "",
+        csosn: product.csosn ?? "",
+        cest: product.cest ?? "",
+        focusKeyword: product.focus_keyword ?? "",
+        seoTitle: product.seo_title ?? "",
+        seoDescription: product.seo_description ?? "",
+        seoKeywords: product.seo_keywords ?? [],
       });
       setOriginalVariantIds((variants ?? []).map((v) => v.id));
 
@@ -184,10 +268,6 @@ export function ProductForm({ productId }: { productId?: string }) {
     setImages((prev) => [...prev, ...newItems]);
   }
 
-  function updateImageAlt(key: string, altText: string) {
-    setImages((prev) => prev.map((img) => (img.key === key ? { ...img, altText } : img)));
-  }
-
   function removeImage(key: string) {
     setImages((prev) => prev.filter((img) => img.key !== key));
   }
@@ -198,13 +278,26 @@ export function ProductForm({ productId }: { productId?: string }) {
       return;
     }
     if (images.some((img) => !img.altText.trim())) {
-      toast.error('Preencha o texto alternativo ("alt") de todas as fotos.');
+      toast.error('Use o botão "IA complementa" para gerar o texto alternativo das fotos.');
       return;
     }
 
     setSaving(true);
     try {
       let currentProductId: string;
+      const fiscalAndSeoPayload = {
+        ncm: values.ncm || null,
+        origem: values.origem || null,
+        cfop_venda_mesmo_estado: values.cfopVendaMesmoEstado || null,
+        cfop_venda_outros_estados: values.cfopVendaOutrosEstados || null,
+        cfop_exportacao: values.cfopExportacao || null,
+        csosn: values.csosn || null,
+        cest: values.cest || null,
+        focus_keyword: values.focusKeyword || null,
+        seo_title: values.seoTitle || null,
+        seo_description: values.seoDescription || null,
+        seo_keywords: values.seoKeywords ?? [],
+      };
 
       if (mode === "create") {
         const slug = await generateUniqueSlug(values.title);
@@ -217,6 +310,7 @@ export function ProductForm({ productId }: { productId?: string }) {
             video_url: values.videoUrl || null,
             status: values.status,
             slug,
+            ...fiscalAndSeoPayload,
           })
           .select("id")
           .single();
@@ -232,6 +326,7 @@ export function ProductForm({ productId }: { productId?: string }) {
             description: values.description || null,
             video_url: values.videoUrl || null,
             status: values.status,
+            ...fiscalAndSeoPayload,
           })
           .eq("id", currentProductId);
         if (error) throw error;
@@ -262,13 +357,6 @@ export function ProductForm({ productId }: { productId?: string }) {
           package_width_cm: parseDecimalInput(variant.packageWidthCm),
           package_length_cm: parseDecimalInput(variant.packageLengthCm),
           package_weight_kg: parseDecimalInput(variant.packageWeightKg),
-          ncm: variant.ncm || null,
-          origem: variant.origem || null,
-          cfop_venda_mesmo_estado: variant.cfopVendaMesmoEstado || null,
-          cfop_venda_outros_estados: variant.cfopVendaOutrosEstados || null,
-          cfop_exportacao: variant.cfopExportacao || null,
-          csosn: variant.csosn || null,
-          cest: variant.cest || null,
         };
 
         if (variant.id) {
@@ -333,10 +421,26 @@ export function ProductForm({ productId }: { productId?: string }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed bg-muted/30 p-4">
+          <div>
+            <p className="text-sm font-medium text-[#12294f]">IA complementa</p>
+            <p className="text-xs text-muted-foreground">
+              Pesquisa os melhores termos de SEO para este anúncio e preenche automaticamente
+              palavra-chave de foco, meta título/descrição, termos de busca e o texto alternativo
+              das fotos. O título só é atualizado se você aceitar a sugestão.
+            </p>
+          </div>
+          <Button type="button" variant="secondary" disabled={aiLoading} onClick={runAiComplementa}>
+            <Sparkles className="mr-2 h-4 w-4" />
+            {aiLoading ? "Analisando..." : "IA complementa"}
+          </Button>
+        </div>
+
         <Tabs defaultValue="basico">
           <TabsList>
             <TabsTrigger value="basico">Básico</TabsTrigger>
             <TabsTrigger value="midia">Mídia</TabsTrigger>
+            <TabsTrigger value="fiscal">Fiscal</TabsTrigger>
             <TabsTrigger value="variacoes">Variações ({fields.length})</TabsTrigger>
           </TabsList>
 
@@ -346,7 +450,38 @@ export function ProductForm({ productId }: { productId?: string }) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Título ({title?.length ?? 0}/60)</FormLabel>
+                  <div className="flex items-center gap-1.5">
+                    <FormLabel>Título ({title?.length ?? 0}/60)</FormLabel>
+                    {aiTitleSuggestion && aiTitleSuggestion !== field.value ? (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-amber-500 hover:text-amber-600"
+                            aria-label="Sugestão de título da IA"
+                          >
+                            <Sparkles className="h-4 w-4" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 space-y-2">
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Sugestão de título (SEO)
+                          </p>
+                          <p className="text-sm">{aiTitleSuggestion}</p>
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => {
+                              field.onChange(aiTitleSuggestion);
+                              setAiTitleSuggestion(null);
+                            }}
+                          >
+                            Usar sugestão
+                          </Button>
+                        </PopoverContent>
+                      </Popover>
+                    ) : null}
+                  </div>
                   <FormControl>
                     <Input
                       {...field}
@@ -422,6 +557,62 @@ export function ProductForm({ productId }: { productId?: string }) {
                 </FormItem>
               )}
             />
+
+            <div className="space-y-3 rounded-lg border p-4">
+              <p className="text-sm font-medium text-[#12294f]">SEO (preenchido pela IA complementa)</p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="focusKeyword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Palavra-chave de foco</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Ex: tábua de madeira para frios" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="seoTitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">SEO title (meta título)</FormLabel>
+                      <FormControl>
+                        <Input {...field} maxLength={60} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="seoDescription"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">SEO description (meta descrição)</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={2} maxLength={160} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {seoKeywords.length > 0 ? (
+                <div>
+                  <p className="mb-1 text-xs font-medium text-muted-foreground">
+                    Termos de busca relacionados
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {seoKeywords.map((keyword) => (
+                      <Badge key={keyword} variant="secondary">
+                        {keyword}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
           </TabsContent>
 
           <TabsContent value="midia" className="space-y-4">
@@ -436,7 +627,8 @@ export function ProductForm({ productId }: { productId?: string }) {
                 className="mt-1"
               />
               <p className="mt-1 text-xs text-muted-foreground">
-                O texto alternativo (alt) é obrigatório em cada foto para melhorar o SEO de imagens.
+                O texto alternativo (alt) de cada foto é gerado automaticamente pela IA
+                complementa — não precisa preencher manualmente.
               </p>
             </div>
 
@@ -454,11 +646,9 @@ export function ProductForm({ productId }: { productId?: string }) {
                       />
                       <div className="flex-1 space-y-1">
                         <Label className="text-xs">Texto alternativo (alt)</Label>
-                        <Input
-                          value={img.altText}
-                          onChange={(event) => updateImageAlt(img.key, event.target.value)}
-                          placeholder="Ex: Tábua de madeira redonda para frios"
-                        />
+                        <p className="text-sm text-muted-foreground">
+                          {img.altText || "Ainda não gerado — use a IA complementa."}
+                        </p>
                       </div>
                       <Button
                         type="button"
@@ -473,6 +663,99 @@ export function ProductForm({ productId }: { productId?: string }) {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="fiscal" className="space-y-4">
+            <p className="text-xs text-muted-foreground">
+              Dados fiscais do produto — armazenados para uso futuro na emissão de nota fiscal.
+              Um único conjunto de valores vale para todas as variações deste produto.
+            </p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="ncm"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>NCM</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="origem"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Origem</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="csosn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CSOSN</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cest"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CEST</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cfopVendaMesmoEstado"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CFOP venda mesmo estado</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cfopVendaOutrosEstados"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CFOP venda outros estados</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cfopExportacao"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CFOP exportação</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="variacoes" className="space-y-4">
@@ -572,8 +855,8 @@ export function ProductForm({ productId }: { productId?: string }) {
                   </div>
 
                   <Accordion type="single" collapsible>
-                    <AccordionItem value="envio-fiscal">
-                      <AccordionTrigger className="text-sm">Envio e dados fiscais</AccordionTrigger>
+                    <AccordionItem value="envio">
+                      <AccordionTrigger className="text-sm">Envio</AccordionTrigger>
                       <AccordionContent className="space-y-4">
                         <div>
                           <p className="mb-2 text-xs font-medium text-muted-foreground">
@@ -629,98 +912,6 @@ export function ProductForm({ productId }: { productId?: string }) {
                                   <FormLabel>Peso (kg)</FormLabel>
                                   <FormControl>
                                     <Input {...field} inputMode="decimal" />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="mb-2 text-xs font-medium text-muted-foreground">
-                            Dados fiscais — armazenados para uso futuro na emissão de nota fiscal.
-                          </p>
-                          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.ncm`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>NCM</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.origem`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Origem</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.csosn`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>CSOSN</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.cest`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>CEST</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.cfopVendaMesmoEstado`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>CFOP venda mesmo estado</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.cfopVendaOutrosEstados`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>CFOP venda outros estados</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.cfopExportacao`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>CFOP exportação</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
                                   </FormControl>
                                 </FormItem>
                               )}

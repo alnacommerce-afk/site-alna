@@ -36,9 +36,11 @@ type Connection = {
   secret_id: string | null;
 };
 
-const SECRET_INTEGRATIONS = new Set(["melhor_envio", "payment_gateway", "resend"]);
+const SECRET_INTEGRATIONS = new Set(["melhor_envio", "payment_gateway", "resend", "ai_seo"]);
 
 const CONNECTION_HELP: Record<string, string> = {
+  ai_seo:
+    "Usada pelo botão \"IA complementa\" no cadastro de produtos, para sugerir título, meta descrição, palavra-chave de foco, termos de busca alternativos e o texto alternativo das fotos. Cole abaixo uma chave gratuita do Google AI Studio (aistudio.google.com/apikey).",
   melhor_envio:
     "Calcula o frete automaticamente e permite gerar etiquetas de envio. Cole abaixo o token de API (Painel Melhor Envio → Gerenciar → Tokens).",
   payment_gateway:

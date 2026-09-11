@@ -12,13 +12,6 @@ export const variantFormSchema = z.object({
   packageWidthCm: z.string().optional(),
   packageLengthCm: z.string().optional(),
   packageWeightKg: z.string().optional(),
-  ncm: z.string().optional(),
-  origem: z.string().optional(),
-  cfopVendaMesmoEstado: z.string().optional(),
-  cfopVendaOutrosEstados: z.string().optional(),
-  cfopExportacao: z.string().optional(),
-  csosn: z.string().optional(),
-  cest: z.string().optional(),
 });
 
 export const productFormSchema = z.object({
@@ -28,6 +21,19 @@ export const productFormSchema = z.object({
   videoUrl: z.string().trim().url("Informe uma URL válida").optional().or(z.literal("")),
   status: z.enum(["draft", "published"]),
   variants: z.array(variantFormSchema).min(1, "Adicione pelo menos uma variação"),
+  // Fiscal — um único conjunto de dados para o produto, aplicado a todas as variações.
+  ncm: z.string().optional(),
+  origem: z.string().optional(),
+  cfopVendaMesmoEstado: z.string().optional(),
+  cfopVendaOutrosEstados: z.string().optional(),
+  cfopExportacao: z.string().optional(),
+  csosn: z.string().optional(),
+  cest: z.string().optional(),
+  // SEO — preenchido automaticamente pelo botão "IA complementa".
+  focusKeyword: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  seoKeywords: z.array(z.string()).optional(),
 });
 
 export type VariantFormValues = z.infer<typeof variantFormSchema>;
@@ -44,13 +50,6 @@ export const emptyVariant: VariantFormValues = {
   packageWidthCm: "",
   packageLengthCm: "",
   packageWeightKg: "",
-  ncm: "",
-  origem: "",
-  cfopVendaMesmoEstado: "",
-  cfopVendaOutrosEstados: "",
-  cfopExportacao: "",
-  csosn: "",
-  cest: "",
 };
 
 export const defaultProductFormValues: ProductFormValues = {
@@ -60,4 +59,15 @@ export const defaultProductFormValues: ProductFormValues = {
   videoUrl: "",
   status: "draft",
   variants: [emptyVariant],
+  ncm: "",
+  origem: "",
+  cfopVendaMesmoEstado: "",
+  cfopVendaOutrosEstados: "",
+  cfopExportacao: "",
+  csosn: "",
+  cest: "",
+  focusKeyword: "",
+  seoTitle: "",
+  seoDescription: "",
+  seoKeywords: [],
 };

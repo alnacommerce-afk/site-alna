@@ -281,18 +281,11 @@ export type Database = {
       }
       product_variants: {
         Row: {
-          cest: string | null
-          cfop_exportacao: string | null
-          cfop_venda_mesmo_estado: string | null
-          cfop_venda_outros_estados: string | null
           compare_at_price_cents: number | null
           created_at: string
-          csosn: string | null
           gtin_ean: string | null
           id: string
           name: string
-          ncm: string | null
-          origem: string | null
           package_height_cm: number | null
           package_length_cm: number | null
           package_weight_kg: number | null
@@ -304,18 +297,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          cest?: string | null
-          cfop_exportacao?: string | null
-          cfop_venda_mesmo_estado?: string | null
-          cfop_venda_outros_estados?: string | null
           compare_at_price_cents?: number | null
           created_at?: string
-          csosn?: string | null
           gtin_ean?: string | null
           id?: string
           name: string
-          ncm?: string | null
-          origem?: string | null
           package_height_cm?: number | null
           package_length_cm?: number | null
           package_weight_kg?: number | null
@@ -327,18 +313,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          cest?: string | null
-          cfop_exportacao?: string | null
-          cfop_venda_mesmo_estado?: string | null
-          cfop_venda_outros_estados?: string | null
           compare_at_price_cents?: number | null
           created_at?: string
-          csosn?: string | null
           gtin_ean?: string | null
           id?: string
           name?: string
-          ncm?: string | null
-          origem?: string | null
           package_height_cm?: number | null
           package_length_cm?: number | null
           package_weight_kg?: number | null
@@ -362,10 +341,19 @@ export type Database = {
       products: {
         Row: {
           category_id: string | null
+          cest: string | null
+          cfop_exportacao: string | null
+          cfop_venda_mesmo_estado: string | null
+          cfop_venda_outros_estados: string | null
           created_at: string
+          csosn: string | null
           description: string | null
+          focus_keyword: string | null
           id: string
+          ncm: string | null
+          origem: string | null
           seo_description: string | null
+          seo_keywords: string[]
           seo_title: string | null
           slug: string
           status: Database["public"]["Enums"]["product_status"]
@@ -375,10 +363,19 @@ export type Database = {
         }
         Insert: {
           category_id?: string | null
+          cest?: string | null
+          cfop_exportacao?: string | null
+          cfop_venda_mesmo_estado?: string | null
+          cfop_venda_outros_estados?: string | null
           created_at?: string
+          csosn?: string | null
           description?: string | null
+          focus_keyword?: string | null
           id?: string
+          ncm?: string | null
+          origem?: string | null
           seo_description?: string | null
+          seo_keywords?: string[]
           seo_title?: string | null
           slug: string
           status?: Database["public"]["Enums"]["product_status"]
@@ -388,10 +385,19 @@ export type Database = {
         }
         Update: {
           category_id?: string | null
+          cest?: string | null
+          cfop_exportacao?: string | null
+          cfop_venda_mesmo_estado?: string | null
+          cfop_venda_outros_estados?: string | null
           created_at?: string
+          csosn?: string | null
           description?: string | null
+          focus_keyword?: string | null
           id?: string
+          ncm?: string | null
+          origem?: string | null
           seo_description?: string | null
+          seo_keywords?: string[]
           seo_title?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["product_status"]
