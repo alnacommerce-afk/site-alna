@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LojaRouteImport } from './routes/loja'
 import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
 import { Route as PoliticaDeTrocaEDevolucaoRouteImport } from './routes/politica-de-troca-e-devolucao'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
@@ -21,6 +22,11 @@ import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalo
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LojaRoute = LojaRouteImport.update({
+  id: '/loja',
+  path: '/loja',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PoliticaDePrivacidadeRoute = PoliticaDePrivacidadeRouteImport.update({
@@ -62,6 +68,7 @@ const AdminCatalogoIdEditarRoute = AdminCatalogoIdEditarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
     | '/termos-de-uso'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
     | '/termos-de-uso'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
     | '/termos-de-uso'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LojaRoute: typeof LojaRoute
   PoliticaDePrivacidadeRoute: typeof PoliticaDePrivacidadeRoute
   PoliticaDeTrocaEDevolucaoRoute: typeof PoliticaDeTrocaEDevolucaoRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loja': {
+      id: '/loja'
+      path: '/loja'
+      fullPath: '/loja'
+      preLoaderRoute: typeof LojaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/politica-de-privacidade': {
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LojaRoute: LojaRoute,
   PoliticaDePrivacidadeRoute: PoliticaDePrivacidadeRoute,
   PoliticaDeTrocaEDevolucaoRoute: PoliticaDeTrocaEDevolucaoRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,

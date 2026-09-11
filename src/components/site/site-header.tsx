@@ -6,7 +6,7 @@ import logoAlna from "@/assets/brand/logo-alna.png";
 
 const NAV_ITEMS = [
   { label: "HOME", href: "/" },
-  { label: "LOJA", href: "#destaques" },
+  { label: "LOJA", href: "/loja" },
   { label: "CATEGORIAS", href: "#categorias" },
   { label: "SOBRE", href: "#sobre" },
   { label: "CONTATO", href: "#fale-conosco" },

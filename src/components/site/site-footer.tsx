@@ -53,7 +53,7 @@ export function SiteFooter() {
               </a>
             </li>
             <li>
-              <a href="#destaques" className="hover:text-white">
+              <a href="/loja" className="hover:text-white">
                 Loja
               </a>
             </li>
