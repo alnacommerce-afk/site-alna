@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
+import { Route as PoliticaDeTrocaEDevolucaoRouteImport } from './routes/politica-de-troca-e-devolucao'
+import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
 import { Route as AdminCatalogoNovoRouteImport } from './routes/admin/catalogo/novo'
@@ -18,6 +21,22 @@ import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalo
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PoliticaDePrivacidadeRoute = PoliticaDePrivacidadeRouteImport.update({
+  id: '/politica-de-privacidade',
+  path: '/politica-de-privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PoliticaDeTrocaEDevolucaoRoute =
+  PoliticaDeTrocaEDevolucaoRouteImport.update({
+    id: '/politica-de-troca-e-devolucao',
+    path: '/politica-de-troca-e-devolucao',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
+  id: '/termos-de-uso',
+  path: '/termos-de-uso',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -43,6 +62,9 @@ const AdminCatalogoIdEditarRoute = AdminCatalogoIdEditarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
+  '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
+  '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
@@ -50,6 +72,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
+  '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
+  '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo': typeof AdminCatalogoIndexRoute
@@ -58,6 +83,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
+  '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
+  '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
@@ -67,6 +95,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/politica-de-privacidade'
+    | '/politica-de-troca-e-devolucao'
+    | '/termos-de-uso'
     | '/admin/login'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
@@ -74,6 +105,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/politica-de-privacidade'
+    | '/politica-de-troca-e-devolucao'
+    | '/termos-de-uso'
     | '/admin/login'
     | '/admin/catalogo/novo'
     | '/admin/catalogo'
@@ -81,6 +115,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/politica-de-privacidade'
+    | '/politica-de-troca-e-devolucao'
+    | '/termos-de-uso'
     | '/admin/login'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
@@ -89,6 +126,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PoliticaDePrivacidadeRoute: typeof PoliticaDePrivacidadeRoute
+  PoliticaDeTrocaEDevolucaoRoute: typeof PoliticaDeTrocaEDevolucaoRoute
+  TermosDeUsoRoute: typeof TermosDeUsoRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
   AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
@@ -102,6 +142,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/politica-de-privacidade': {
+      id: '/politica-de-privacidade'
+      path: '/politica-de-privacidade'
+      fullPath: '/politica-de-privacidade'
+      preLoaderRoute: typeof PoliticaDePrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/politica-de-troca-e-devolucao': {
+      id: '/politica-de-troca-e-devolucao'
+      path: '/politica-de-troca-e-devolucao'
+      fullPath: '/politica-de-troca-e-devolucao'
+      preLoaderRoute: typeof PoliticaDeTrocaEDevolucaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos-de-uso': {
+      id: '/termos-de-uso'
+      path: '/termos-de-uso'
+      fullPath: '/termos-de-uso'
+      preLoaderRoute: typeof TermosDeUsoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -137,6 +198,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PoliticaDePrivacidadeRoute: PoliticaDePrivacidadeRoute,
+  PoliticaDeTrocaEDevolucaoRoute: PoliticaDeTrocaEDevolucaoRoute,
+  TermosDeUsoRoute: TermosDeUsoRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
   AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,

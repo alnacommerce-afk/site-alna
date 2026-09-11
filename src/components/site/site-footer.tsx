@@ -83,6 +83,27 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
+
+          <h3 className="mb-3 mt-6 text-sm font-semibold uppercase tracking-wide text-white/90">
+            Políticas
+          </h3>
+          <ul className="space-y-2 text-sm text-white/70">
+            <li>
+              <a href="/politica-de-privacidade" className="hover:text-white">
+                Política de Privacidade
+              </a>
+            </li>
+            <li>
+              <a href="/termos-de-uso" className="hover:text-white">
+                Termos de Uso
+              </a>
+            </li>
+            <li>
+              <a href="/politica-de-troca-e-devolucao" className="hover:text-white">
+                Trocas e Devoluções
+              </a>
+            </li>
+          </ul>
         </div>
 
         <div>
