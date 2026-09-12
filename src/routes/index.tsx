@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  Flame,
   Headset,
   ShieldCheck,
   Truck,
@@ -8,7 +9,7 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
-import heroModelo from "@/assets/brand/hero-modelo.webp";
+import heroSetembro from "@/assets/brand/hero-setembro.webp";
 import bannerQuarto from "@/assets/brand/banner-quarto.webp";
 import bannerMesa from "@/assets/brand/banner-mesa.webp";
 import bannerFreteGratis from "@/assets/brand/banner-frete-gratis.webp";
@@ -157,43 +158,59 @@ export const Route = createFileRoute("/")({
 
 function CampaignHero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#fcfbf8] via-[#fcfbf8] to-[#f5e6bd]">
-      <div className="mx-auto grid max-w-6xl gap-2 px-4 py-10 sm:grid-cols-2 sm:items-center sm:gap-4 sm:py-14">
-        <div className="relative z-10 text-center sm:text-left">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
-            Setembro chegou
+    <section className="relative overflow-hidden bg-[#0f2247]">
+      <img
+        src={heroSetembro}
+        alt="Modelo da Alna Commerce sorrindo e chamando para conferir as ofertas de setembro, com frete grátis para todo o Brasil"
+        className="h-[460px] w-full object-cover object-center sm:h-[520px] md:h-[600px]"
+      />
+
+      <div className="absolute inset-0 flex flex-col items-center justify-between px-4 py-6 sm:py-8">
+        <div className="text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg">
+            Alna Commerce
           </span>
-          <h1 className="mt-4 text-5xl font-black leading-[0.9] text-[#12294f] sm:text-6xl md:text-7xl">
-            Tudo até
-            <span className="block text-[#f5a623]">20% OFF</span>
+          <h1 className="mt-3 text-3xl font-black uppercase leading-[0.95] text-white drop-shadow-md sm:text-5xl md:text-6xl">
+            Mês de Setembro
           </h1>
-          <p className="mx-auto mt-4 max-w-sm text-sm text-[#12294f]/70 sm:mx-0 sm:text-base">
-            O mês inteiro com preços especiais em utensílios de madeira, cama, mesa e banho.
-            Renove sua casa sem pesar no bolso — só até o fim de setembro.
-          </p>
           <a
             href="#destaques"
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-[#12294f] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#12294f]/90"
+            className="mt-4 hidden items-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90 sm:inline-flex"
           >
             GARANTIR MEU DESCONTO →
           </a>
         </div>
 
-        <div className="relative mx-auto flex h-[320px] w-full max-w-xs items-end justify-center sm:h-[440px] sm:max-w-none md:h-[500px]">
-          <img
-            src={heroModelo}
-            alt="Cliente da Alna Commerce sorrindo e indicando as ofertas de setembro"
-            className="relative z-10 h-full w-auto object-contain object-bottom"
-          />
-          <span className="absolute left-4 top-4 z-20 flex h-16 w-16 -rotate-6 flex-col items-center justify-center rounded-full bg-[#f5a623] text-center shadow-lg sm:left-10 sm:top-10 sm:h-20 sm:w-20">
-            <span className="text-lg font-black leading-none text-[#12294f] sm:text-xl">
-              20%
-            </span>
-            <span className="text-[9px] font-bold uppercase tracking-wide text-[#12294f]/80">
-              off
-            </span>
-          </span>
+        <div className="flex w-full max-w-4xl flex-col items-center gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex items-center gap-2.5 rounded-2xl bg-[#ec4899] px-4 py-2.5 shadow-xl sm:px-5 sm:py-3">
+            <Flame className="h-6 w-6 shrink-0 text-white sm:h-7 sm:w-7" />
+            <div className="text-left leading-tight">
+              <p className="text-[10px] font-bold uppercase text-white/90">Até</p>
+              <p className="text-2xl font-black text-white sm:text-3xl">20% OFF</p>
+              <p className="text-[10px] font-semibold uppercase text-white/90">em toda a loja</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 rounded-2xl bg-white px-4 py-2.5 shadow-xl sm:px-5 sm:py-3">
+            <Truck className="h-6 w-6 shrink-0 text-[#12294f] sm:h-7 sm:w-7" />
+            <div className="text-left leading-tight">
+              <p className="text-[10px] font-semibold uppercase text-[#12294f]/60">Aqui tem</p>
+              <p className="text-sm font-black uppercase text-[#12294f] sm:text-base">
+                Frete grátis
+              </p>
+              <p className="text-[10px] font-semibold uppercase text-[#12294f]/60">
+                para todo o Brasil
+              </p>
+            </div>
+          </div>
         </div>
+
+        <a
+          href="#destaques"
+          className="inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90 sm:hidden"
+        >
+          GARANTIR MEU DESCONTO →
+        </a>
       </div>
     </section>
   );
