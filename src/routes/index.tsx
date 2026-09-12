@@ -159,23 +159,8 @@ export const Route = createFileRoute("/")({
 function CampaignHero() {
   return (
     <section className="overflow-hidden bg-[#0f2247]">
-      <div className="px-4 pb-4 pt-8 text-center sm:pb-5 sm:pt-10">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg">
-          Alna Commerce
-        </span>
-        <h1 className="mt-3 text-3xl font-black uppercase leading-[0.95] text-white sm:text-5xl md:text-6xl">
-          Mês de Setembro
-        </h1>
-        <a
-          href="#destaques"
-          className="mt-4 inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90"
-        >
-          GARANTIR MEU DESCONTO →
-        </a>
-      </div>
-
-      {/* Photo is pre-cropped to chest-down (no face at all) so it can never end up
-          under the headline or badges — the model's face lives only in other photos. */}
+      {/* Photo is pre-cropped to chest-down (no face at all), so the badges anchored
+          to its top edge sit at chest height — never higher, never over her face. */}
       <div className="relative">
         <img
           src={heroSetembro}
@@ -183,7 +168,7 @@ function CampaignHero() {
           className="h-[260px] w-full object-cover object-center sm:h-[320px] md:h-[380px]"
         />
 
-        <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 px-4 pb-4 sm:flex-row sm:justify-center sm:gap-6 sm:pb-6">
+        <div className="absolute inset-x-0 top-0 flex flex-col items-center gap-3 px-4 pt-4 sm:flex-row sm:justify-center sm:gap-6 sm:pt-6">
           <div className="flex items-center gap-2.5 rounded-2xl bg-[#ec4899] px-4 py-2.5 shadow-xl sm:px-5 sm:py-3">
             <Flame className="h-6 w-6 shrink-0 text-white sm:h-7 sm:w-7" />
             <div className="text-left leading-tight">
@@ -206,6 +191,21 @@ function CampaignHero() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="px-4 pb-8 pt-4 text-center sm:pb-10 sm:pt-5">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg">
+          Alna
+        </span>
+        <h1 className="mt-3 text-3xl font-black uppercase leading-[0.95] text-white sm:text-5xl md:text-6xl">
+          Mês de Setembro
+        </h1>
+        <a
+          href="#destaques"
+          className="mt-4 inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90"
+        >
+          GARANTIR MEU DESCONTO →
+        </a>
       </div>
     </section>
   );
