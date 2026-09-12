@@ -216,19 +216,22 @@ function CampaignHero() {
 }
 
 function LifestyleBanner() {
+  // Below md, the section isn't wide enough to fit her face on the left AND the
+  // text block on the right without them colliding, so text stacks in its own
+  // band under the photo instead of overlaying it — same rule as the hero.
   return (
-    <section className="relative min-h-[420px] overflow-hidden bg-[#12294f]">
+    <section className="overflow-hidden bg-[#12294f] md:relative md:min-h-[420px]">
       <img
         src={bannerMesa}
         alt="Cliente organizando a mesa de jantar com utensílios de madeira e louças Alna Commerce"
-        className="absolute inset-0 h-full w-full object-cover object-[35%_15%]"
+        className="h-[260px] w-full object-cover object-[35%_15%] md:absolute md:inset-0 md:h-full"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-l from-[#12294f] via-[#12294f]/80 to-[#12294f]/10"
+        className="hidden md:block md:absolute md:inset-0 md:bg-gradient-to-l md:from-[#12294f] md:via-[#12294f]/80 md:to-[#12294f]/10"
       />
-      <div className="relative mx-auto flex min-h-[420px] max-w-6xl items-center justify-end px-4 py-14">
-        <div className="max-w-sm text-right">
+      <div className="px-4 py-8 text-center md:relative md:mx-auto md:flex md:min-h-[420px] md:max-w-6xl md:items-center md:justify-end md:py-14 md:text-right">
+        <div className="md:max-w-sm">
           <p className="text-xs font-bold uppercase tracking-widest text-[#f5a623]">
             Cama, mesa e banho
           </p>
@@ -359,23 +362,26 @@ function FeaturedProductsSection({ products }: { products: ProductRow[] }) {
 }
 
 function FreeShippingBanner({ thresholdCents }: { thresholdCents: number }) {
+  // Below md the section isn't wide enough to keep her pointing hand clear of the
+  // text at a readable size, so text stacks below the photo instead of overlaying
+  // it — same rule as the hero and the lifestyle banner.
   return (
-    <section className="relative overflow-hidden">
+    <section className="overflow-hidden bg-white md:relative">
       <img
         src={bannerFreteGratis}
         alt="Equipe Alna Commerce embalando pedido para envio com frete grátis"
-        className="h-[280px] w-full object-cover object-[70%_center] sm:h-[360px] md:h-[420px]"
+        className="h-[260px] w-full object-cover object-[85%_center] md:h-[420px]"
       />
-      <div className="absolute inset-0 flex items-center">
-        <div className="mx-auto w-full max-w-6xl px-4">
-          <div className="max-w-xs sm:max-w-sm">
+      <div className="px-4 py-8 text-center md:absolute md:inset-0 md:flex md:items-center md:py-0 md:text-left">
+        <div className="mx-auto max-w-xs md:mx-0 md:w-full md:max-w-6xl md:px-4">
+          <div className="md:max-w-sm">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#12294f] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Oferta especial
             </span>
-            <h2 className="mt-3 text-3xl font-black leading-[0.95] text-[#12294f] sm:text-4xl md:text-5xl">
+            <h2 className="mt-3 text-3xl font-black leading-[0.95] text-[#12294f] md:text-4xl lg:text-5xl">
               Frete grátis
             </h2>
-            <p className="mt-2 text-base font-bold text-[#12294f] sm:text-lg">
+            <p className="mt-2 text-base font-bold text-[#12294f] md:text-lg">
               em compras acima de {formatCentsToBRL(thresholdCents)}
             </p>
             <a
