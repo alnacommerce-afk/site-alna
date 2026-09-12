@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -114,7 +114,11 @@ function ProductGridCard({ product }: { product: ProductCard }) {
   const off = discountPercent(product.priceCents, product.compareAtPriceCents);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[#12294f]/10 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <Link
+      to="/produto/$slug"
+      params={{ slug: product.slug }}
+      className="block overflow-hidden rounded-xl border border-[#12294f]/10 bg-white shadow-sm transition-shadow hover:shadow-md"
+    >
       <div className="relative aspect-square bg-[#fcfbf8]">
         {off ? (
           <span className="absolute left-2 top-2 z-10 rounded-full bg-[#16a34a] px-2 py-0.5 text-[10px] font-bold text-white">
@@ -148,7 +152,7 @@ function ProductGridCard({ product }: { product: ProductCard }) {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

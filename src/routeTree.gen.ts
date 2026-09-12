@@ -19,6 +19,7 @@ import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
+import { Route as ProdutoSlugRouteImport } from './routes/produto/$slug'
 import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
 import { Route as AdminCatalogoNovoRouteImport } from './routes/admin/catalogo/novo'
 import { Route as AdminCategoriasIndexRouteImport } from './routes/admin/categorias/index'
@@ -75,6 +76,11 @@ const AdminMetricasRoute = AdminMetricasRouteImport.update({
   path: '/admin/metricas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProdutoSlugRoute = ProdutoSlugRouteImport.update({
+  id: '/produto/$slug',
+  path: '/produto/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCatalogoIndexRoute = AdminCatalogoIndexRouteImport.update({
   id: '/admin/catalogo/',
   path: '/admin/catalogo/',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
   '/admin': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo': typeof AdminCatalogoIndexRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/produto/$slug'
     | '/admin/'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/produto/$slug'
     | '/admin'
     | '/admin/catalogo/novo'
     | '/admin/catalogo'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/produto/$slug'
     | '/admin/'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
@@ -206,6 +218,7 @@ export interface RootRouteChildren {
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
+  ProdutoSlugRoute: typeof ProdutoSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
   AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
@@ -285,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMetricasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produto/$slug': {
+      id: '/produto/$slug'
+      path: '/produto/$slug'
+      fullPath: '/produto/$slug'
+      preLoaderRoute: typeof ProdutoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/catalogo/': {
       id: '/admin/catalogo/'
       path: '/admin/catalogo'
@@ -326,6 +346,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
+  ProdutoSlugRoute: ProdutoSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
   AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,

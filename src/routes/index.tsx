@@ -292,9 +292,11 @@ function FeaturedProductsSection({ products }: { products: ProductRow[] }) {
         ) : (
           <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {products.map((product) => (
-              <div
+              <Link
                 key={product.id}
-                className="overflow-hidden rounded-xl border border-[#12294f]/10 bg-white shadow-sm"
+                to="/produto/$slug"
+                params={{ slug: product.slug }}
+                className="overflow-hidden rounded-xl border border-[#12294f]/10 bg-white shadow-sm transition-shadow hover:shadow-md"
               >
                 <div className="relative aspect-square bg-[#fcfbf8]">
                   {product.compareAtPriceCents && product.compareAtPriceCents > product.maxPriceCents ? (
@@ -324,7 +326,7 @@ function FeaturedProductsSection({ products }: { products: ProductRow[] }) {
                       : `${formatCentsToBRL(product.minPriceCents)} – ${formatCentsToBRL(product.maxPriceCents)}`}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

@@ -244,6 +244,41 @@ export type Database = {
         }
         Relationships: []
       }
+      product_reviews: {
+        Row: {
+          author_name: string
+          comment: string | null
+          created_at: string
+          id: string
+          product_id: string
+          rating: number
+        }
+        Insert: {
+          author_name: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id: string
+          rating: number
+        }
+        Update: {
+          author_name?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_images: {
         Row: {
           alt_text: string
@@ -423,6 +458,7 @@ export type Database = {
           cnpj: string | null
           email: string | null
           facebook_url: string | null
+          free_shipping_threshold_cents: number
           id: string
           instagram_handle: string | null
           phone: string | null
@@ -443,6 +479,7 @@ export type Database = {
           cnpj?: string | null
           email?: string | null
           facebook_url?: string | null
+          free_shipping_threshold_cents?: number
           id?: string
           instagram_handle?: string | null
           phone?: string | null
@@ -463,6 +500,7 @@ export type Database = {
           cnpj?: string | null
           email?: string | null
           facebook_url?: string | null
+          free_shipping_threshold_cents?: number
           id?: string
           instagram_handle?: string | null
           phone?: string | null

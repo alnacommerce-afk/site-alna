@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import {
   ChevronDown,
   CreditCard,
+  Gift,
   Search,
   ShieldCheck,
   ShoppingCart,
@@ -12,6 +13,7 @@ import {
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { formatCentsToBRL } from "@/lib/money";
 import logoAlna from "@/assets/brand/logo-alna.png";
 import {
   DropdownMenu,
@@ -29,6 +31,9 @@ function comingSoon() {
 
 export function SiteHeader() {
   const [categories, setCategories] = useState<CategoryLink[]>([]);
+  const [freeShippingThresholdCents, setFreeShippingThresholdCents] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     supabase
@@ -36,16 +41,29 @@ export function SiteHeader() {
       .select("id, name, slug")
       .order("position")
       .then(({ data }) => setCategories(data ?? []));
+
+    supabase
+      .from("site_settings")
+      .select("free_shipping_threshold_cents")
+      .eq("id", "default")
+      .maybeSingle()
+      .then(({ data }) => setFreeShippingThresholdCents(data?.free_shipping_threshold_cents ?? null));
   }, []);
 
   return (
     <header className="relative z-30 bg-white shadow-sm">
       <div className="bg-[#16a34a] text-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 py-1.5 text-xs font-medium">
+          {freeShippingThresholdCents ? (
+            <span className="flex items-center gap-1.5 font-bold">
+              <Gift className="h-3.5 w-3.5" /> Frete grátis em compras acima de{" "}
+              {formatCentsToBRL(freeShippingThresholdCents)}
+            </span>
+          ) : null}
           <span className="flex items-center gap-1.5">
             <Truck className="h-3.5 w-3.5" /> Frete para todo o Brasil
           </span>
-          <span className="flex items-center gap-1.5">
+          <span className="hidden items-center gap-1.5 sm:flex">
             <CreditCard className="h-3.5 w-3.5" /> Parcele em até 12x sem juros
           </span>
           <span className="hidden items-center gap-1.5 sm:flex">

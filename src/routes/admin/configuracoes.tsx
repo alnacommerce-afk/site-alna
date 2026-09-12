@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { formatCentsToInput, parseCentsFromInput } from "@/lib/money";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ type SettingsForm = {
   shippingOriginNumber: string;
   shippingOriginNeighborhood: string;
   shippingCarrierPreference: string;
+  freeShippingThreshold: string;
 };
 
 const emptyForm: SettingsForm = {
@@ -53,6 +55,7 @@ const emptyForm: SettingsForm = {
   shippingOriginNumber: "",
   shippingOriginNeighborhood: "",
   shippingCarrierPreference: "",
+  freeShippingThreshold: "100,00",
 };
 
 function ConfiguracoesPage() {
@@ -91,6 +94,7 @@ function ConfiguracoesPage() {
         shippingOriginNumber: data.shipping_origin_number ?? "",
         shippingOriginNeighborhood: data.shipping_origin_neighborhood ?? "",
         shippingCarrierPreference: data.shipping_carrier_preference ?? "",
+        freeShippingThreshold: formatCentsToInput(data.free_shipping_threshold_cents) || "0,00",
       });
       setLoading(false);
     }
@@ -122,6 +126,7 @@ function ConfiguracoesPage() {
         shipping_origin_number: form.shippingOriginNumber || null,
         shipping_origin_neighborhood: form.shippingOriginNeighborhood || null,
         shipping_carrier_preference: form.shippingCarrierPreference || null,
+        free_shipping_threshold_cents: parseCentsFromInput(form.freeShippingThreshold),
       })
       .eq("id", "default");
 
@@ -298,6 +303,19 @@ function ConfiguracoesPage() {
                   onChange={(e) => setField("shippingOriginNeighborhood", e.target.value)}
                   placeholder="Águas Claras"
                 />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="free-shipping-threshold">Frete grátis a partir de (R$)</Label>
+                <Input
+                  id="free-shipping-threshold"
+                  value={form.freeShippingThreshold}
+                  onChange={(e) => setField("freeShippingThreshold", e.target.value)}
+                  placeholder="100,00"
+                  inputMode="decimal"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Exibido na barra verde no topo do site.
+                </p>
               </div>
             </div>
           </div>
