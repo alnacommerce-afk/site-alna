@@ -9,7 +9,7 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
-import heroSetembro from "@/assets/brand/hero-setembro-chest.webp";
+import heroSetembro from "@/assets/brand/hero-setembro-face.webp";
 import bannerQuarto from "@/assets/brand/banner-quarto.webp";
 import bannerMesa from "@/assets/brand/banner-mesa.webp";
 import bannerFreteGratis from "@/assets/brand/banner-frete-gratis.webp";
@@ -159,16 +159,17 @@ export const Route = createFileRoute("/")({
 function CampaignHero() {
   return (
     <section className="overflow-hidden bg-[#0f2247]">
-      {/* Photo is pre-cropped to chest-down (no face at all), so the badges anchored
-          to its top edge sit at chest height — never higher, never over her face. */}
+      {/* Photo is cropped to face + chest + reaching hands (waist/legs left out on
+          purpose). Badges are anchored to the BOTTOM edge, at hand/chest height,
+          so they're always well below her face — never over it. */}
       <div className="relative">
         <img
           src={heroSetembro}
-          alt="Modelo da Alna Commerce com os braços abertos, indicando as ofertas de setembro e o frete grátis"
-          className="h-[260px] w-full object-cover object-center sm:h-[320px] md:h-[380px]"
+          alt="Modelo da Alna Commerce sorrindo com os braços abertos, indicando as ofertas de setembro e o frete grátis"
+          className="h-[340px] w-full object-cover object-center sm:h-[420px] md:h-[500px]"
         />
 
-        <div className="absolute inset-x-0 top-0 flex flex-col items-center gap-3 px-4 pt-4 sm:flex-row sm:justify-center sm:gap-6 sm:pt-6">
+        <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 px-4 pb-4 sm:flex-row sm:justify-center sm:gap-6 sm:pb-6">
           <div className="flex items-center gap-2.5 rounded-2xl bg-[#ec4899] px-4 py-2.5 shadow-xl sm:px-5 sm:py-3">
             <Flame className="h-6 w-6 shrink-0 text-white sm:h-7 sm:w-7" />
             <div className="text-left leading-tight">
