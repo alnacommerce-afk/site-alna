@@ -370,7 +370,7 @@ function FreeShippingBanner({ thresholdCents }: { thresholdCents: number }) {
       <img
         src={bannerFreteGratis}
         alt="Equipe Alna Commerce embalando pedido para envio com frete grátis"
-        className="h-[260px] w-full object-cover object-[85%_center] md:h-[420px]"
+        className="h-[260px] w-full object-cover object-[85%_top] md:h-[460px]"
       />
       <div className="px-4 py-8 text-center md:absolute md:inset-0 md:flex md:items-center md:py-0 md:text-left">
         <div className="mx-auto max-w-xs md:mx-0 md:w-full md:max-w-6xl md:px-4">
@@ -378,10 +378,10 @@ function FreeShippingBanner({ thresholdCents }: { thresholdCents: number }) {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#12294f] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Oferta especial
             </span>
-            <h2 className="mt-3 text-3xl font-black leading-[0.95] text-[#12294f] md:text-4xl lg:text-5xl">
+            <h2 className="mt-3 text-3xl font-black leading-[0.95] text-[#12294f] md:text-4xl md:text-white lg:text-5xl">
               Frete grátis
             </h2>
-            <p className="mt-2 text-base font-bold text-[#12294f] md:text-lg">
+            <p className="mt-2 text-base font-bold text-[#12294f] md:text-lg md:text-white">
               em compras acima de {formatCentsToBRL(thresholdCents)}
             </p>
             <a
