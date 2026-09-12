@@ -159,17 +159,20 @@ export const Route = createFileRoute("/")({
 function CampaignHero() {
   return (
     <section className="overflow-hidden bg-[#0f2247]">
-      {/* Photo is cropped to face + chest + reaching hands (waist/legs left out on
-          purpose). Badges are anchored to the BOTTOM edge, at hand/chest height,
-          so they're always well below her face — never over it. */}
+      {/* The photo itself has a generous empty gap between her chin and her hands,
+          and even more empty background below her hands. object-top always keeps
+          that gap (and her whole face) fully in view — any cropping at wide
+          viewports only ever eats into the empty space at the bottom, never her
+          face — so the badges (positioned by % from the top, landing in that
+          empty zone) can never end up over her face. */}
       <div className="relative">
         <img
           src={heroSetembro}
           alt="Modelo da Alna Commerce sorrindo com os braços abertos, indicando as ofertas de setembro e o frete grátis"
-          className="h-[340px] w-full object-cover object-center sm:h-[420px] md:h-[500px]"
+          className="h-[480px] w-full object-cover object-top sm:h-[540px] md:h-[600px] lg:h-[660px] xl:h-[720px] 2xl:h-[780px]"
         />
 
-        <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 px-4 pb-4 sm:flex-row sm:justify-center sm:gap-6 sm:pb-6">
+        <div className="absolute inset-x-0 top-[58%] flex flex-col items-center gap-3 px-4 pb-4 sm:flex-row sm:justify-center sm:gap-6 sm:pb-6">
           <div className="flex items-center gap-2.5 rounded-2xl bg-[#ec4899] px-4 py-2.5 shadow-xl sm:px-5 sm:py-3">
             <Flame className="h-6 w-6 shrink-0 text-white sm:h-7 sm:w-7" />
             <div className="text-left leading-tight">
@@ -194,16 +197,16 @@ function CampaignHero() {
         </div>
       </div>
 
-      <div className="px-4 pb-8 pt-4 text-center sm:pb-10 sm:pt-5">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg">
+      <div className="px-4 pb-4 pt-3 text-center sm:pb-5 sm:pt-4">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white shadow-lg sm:px-4 sm:py-1.5 sm:text-xs">
           Alna
         </span>
-        <h1 className="mt-3 text-3xl font-black uppercase leading-[0.95] text-white sm:text-5xl md:text-6xl">
+        <h1 className="mt-2 text-2xl font-black uppercase leading-[0.95] text-white sm:text-4xl md:text-5xl">
           Mês de Setembro
         </h1>
         <a
           href="#destaques"
-          className="mt-4 inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90"
+          className="mt-3 inline-flex items-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90"
         >
           GARANTIR MEU DESCONTO →
         </a>
