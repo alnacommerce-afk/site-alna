@@ -9,7 +9,7 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
-import heroSetembro from "@/assets/brand/hero-setembro.webp";
+import heroSetembro from "@/assets/brand/hero-setembro-chest.webp";
 import bannerQuarto from "@/assets/brand/banner-quarto.webp";
 import bannerMesa from "@/assets/brand/banner-mesa.webp";
 import bannerFreteGratis from "@/assets/brand/banner-frete-gratis.webp";
@@ -158,30 +158,32 @@ export const Route = createFileRoute("/")({
 
 function CampaignHero() {
   return (
-    <section className="relative overflow-hidden bg-[#0f2247]">
-      <img
-        src={heroSetembro}
-        alt="Modelo da Alna Commerce sorrindo e chamando para conferir as ofertas de setembro, com frete grátis para todo o Brasil"
-        className="h-[460px] w-full object-cover object-center sm:h-[520px] md:h-[600px]"
-      />
+    <section className="overflow-hidden bg-[#0f2247]">
+      <div className="px-4 pb-4 pt-8 text-center sm:pb-5 sm:pt-10">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg">
+          Alna Commerce
+        </span>
+        <h1 className="mt-3 text-3xl font-black uppercase leading-[0.95] text-white sm:text-5xl md:text-6xl">
+          Mês de Setembro
+        </h1>
+        <a
+          href="#destaques"
+          className="mt-4 inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90"
+        >
+          GARANTIR MEU DESCONTO →
+        </a>
+      </div>
 
-      <div className="absolute inset-0 flex flex-col items-center justify-between px-4 py-6 sm:py-8">
-        <div className="text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg">
-            Alna Commerce
-          </span>
-          <h1 className="mt-3 text-3xl font-black uppercase leading-[0.95] text-white drop-shadow-md sm:text-5xl md:text-6xl">
-            Mês de Setembro
-          </h1>
-          <a
-            href="#destaques"
-            className="mt-4 hidden items-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90 sm:inline-flex"
-          >
-            GARANTIR MEU DESCONTO →
-          </a>
-        </div>
+      {/* Photo is pre-cropped to chest-down (no face at all) so it can never end up
+          under the headline or badges — the model's face lives only in other photos. */}
+      <div className="relative">
+        <img
+          src={heroSetembro}
+          alt="Modelo da Alna Commerce com os braços abertos, indicando as ofertas de setembro e o frete grátis"
+          className="h-[260px] w-full object-cover object-center sm:h-[320px] md:h-[380px]"
+        />
 
-        <div className="flex w-full max-w-4xl flex-col items-center gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 px-4 pb-4 sm:flex-row sm:justify-center sm:gap-6 sm:pb-6">
           <div className="flex items-center gap-2.5 rounded-2xl bg-[#ec4899] px-4 py-2.5 shadow-xl sm:px-5 sm:py-3">
             <Flame className="h-6 w-6 shrink-0 text-white sm:h-7 sm:w-7" />
             <div className="text-left leading-tight">
@@ -204,13 +206,6 @@ function CampaignHero() {
             </div>
           </div>
         </div>
-
-        <a
-          href="#destaques"
-          className="inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-bold text-[#12294f] shadow-lg transition-colors hover:bg-white/90 sm:hidden"
-        >
-          GARANTIR MEU DESCONTO →
-        </a>
       </div>
     </section>
   );
