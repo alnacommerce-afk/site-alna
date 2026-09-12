@@ -220,17 +220,17 @@ function LifestyleBanner() {
   // text block on the right without them colliding, so text stacks in its own
   // band under the photo instead of overlaying it — same rule as the hero.
   return (
-    <section className="overflow-hidden bg-[#12294f] md:relative md:min-h-[420px]">
+    <section className="overflow-hidden bg-[#12294f] md:relative md:min-h-[520px] lg:min-h-[600px] xl:min-h-[680px]">
       <img
         src={bannerMesa}
         alt="Cliente organizando a mesa de jantar com utensílios de madeira e louças Alna Commerce"
-        className="h-[260px] w-full object-cover object-[35%_15%] md:absolute md:inset-0 md:h-full"
+        className="h-[320px] w-full object-cover object-[35%_0%] md:absolute md:inset-0 md:h-full"
       />
       <div
         aria-hidden="true"
         className="hidden md:block md:absolute md:inset-0 md:bg-gradient-to-l md:from-[#12294f] md:via-[#12294f]/80 md:to-[#12294f]/10"
       />
-      <div className="px-4 py-8 text-center md:relative md:mx-auto md:flex md:min-h-[420px] md:max-w-6xl md:items-center md:justify-end md:py-14 md:text-right">
+      <div className="px-4 py-8 text-center md:relative md:mx-auto md:flex md:min-h-[520px] md:max-w-6xl md:items-center md:justify-end md:py-14 md:text-right lg:min-h-[600px] xl:min-h-[680px]">
         <div className="md:max-w-sm">
           <p className="text-xs font-bold uppercase tracking-widest text-[#f5a623]">
             Cama, mesa e banho
@@ -370,7 +370,7 @@ function FreeShippingBanner({ thresholdCents }: { thresholdCents: number }) {
       <img
         src={bannerFreteGratis}
         alt="Equipe Alna Commerce embalando pedido para envio com frete grátis"
-        className="h-[260px] w-full object-cover object-[85%_top] md:h-[460px]"
+        className="h-[320px] w-full object-cover object-[80%_0%] md:h-[520px] lg:h-[600px] xl:h-[680px]"
       />
       <div className="px-4 py-8 text-center md:absolute md:inset-0 md:flex md:items-center md:py-0 md:text-left">
         <div className="mx-auto max-w-xs md:mx-0 md:w-full md:max-w-6xl md:px-4">
