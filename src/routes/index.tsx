@@ -11,6 +11,7 @@ import { formatCentsToBRL } from "@/lib/money";
 import heroModelo from "@/assets/brand/hero-modelo.webp";
 import bannerQuarto from "@/assets/brand/banner-quarto.webp";
 import bannerMesa from "@/assets/brand/banner-mesa.webp";
+import bannerFreteGratis from "@/assets/brand/banner-frete-gratis.webp";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton, WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
@@ -54,7 +55,7 @@ type ProductRow = {
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const [{ data: categories }, { data: products }] = await Promise.all([
+    const [{ data: categories }, { data: products }, { data: settings }] = await Promise.all([
       supabase
         .from("categories")
         .select("id, name, slug, image_url")
@@ -71,6 +72,11 @@ export const Route = createFileRoute("/")({
         .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(5),
+      supabase
+        .from("site_settings")
+        .select("free_shipping_threshold_cents")
+        .eq("id", "default")
+        .maybeSingle(),
     ]);
 
     const featuredProducts: ProductRow[] = (products ?? []).map((p) => {
@@ -99,6 +105,7 @@ export const Route = createFileRoute("/")({
     return {
       categories: (categories ?? []) as CategoryRow[],
       featuredProducts,
+      freeShippingThresholdCents: settings?.free_shipping_threshold_cents ?? 10000,
     };
   },
   head: () => ({
@@ -335,6 +342,39 @@ function FeaturedProductsSection({ products }: { products: ProductRow[] }) {
   );
 }
 
+function FreeShippingBanner({ thresholdCents }: { thresholdCents: number }) {
+  return (
+    <section className="relative overflow-hidden">
+      <img
+        src={bannerFreteGratis}
+        alt="Equipe Alna Commerce embalando pedido para envio com frete grátis"
+        className="h-[280px] w-full object-cover object-[70%_center] sm:h-[360px] md:h-[420px]"
+      />
+      <div className="absolute inset-0 flex items-center">
+        <div className="mx-auto w-full max-w-6xl px-4">
+          <div className="max-w-xs sm:max-w-sm">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#12294f] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
+              Oferta especial
+            </span>
+            <h2 className="mt-3 text-3xl font-black leading-[0.95] text-[#12294f] sm:text-4xl md:text-5xl">
+              Frete grátis
+            </h2>
+            <p className="mt-2 text-base font-bold text-[#12294f] sm:text-lg">
+              em compras acima de {formatCentsToBRL(thresholdCents)}
+            </p>
+            <a
+              href="#destaques"
+              className="mt-5 inline-flex items-center gap-2 rounded-md bg-[#16a34a] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#16a34a]/90"
+            >
+              Aproveitar agora →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function WhyBuySection() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-14">
@@ -418,7 +458,7 @@ function FaleConoscoBand() {
 }
 
 function Index() {
-  const { categories, featuredProducts } = Route.useLoaderData();
+  const { categories, featuredProducts, freeShippingThresholdCents } = Route.useLoaderData();
 
   return (
     <div className="min-h-screen bg-white">
@@ -426,6 +466,7 @@ function Index() {
       <CampaignHero />
       <CategoriesSection categories={categories} />
       <FeaturedProductsSection products={featuredProducts} />
+      <FreeShippingBanner thresholdCents={freeShippingThresholdCents} />
       <LifestyleBanner />
       <WhyBuySection />
       <AboutSection />
