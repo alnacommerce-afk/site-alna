@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const SITE_URL = "https://www.alna.cc";
+const SITE_URL = "https://alnacommerce.com";
 const PIX_DISCOUNT = 0.04;
 
 type ImageRow = { id: string; storage_path: string; alt_text: string; position: number };

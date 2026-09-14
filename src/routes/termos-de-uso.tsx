@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 
-const SITE_URL = "https://www.alna.cc/termos-de-uso";
+const SITE_URL = "https://alnacommerce.com/termos-de-uso";
 
 export const Route = createFileRoute("/termos-de-uso")({
   head: () => ({
