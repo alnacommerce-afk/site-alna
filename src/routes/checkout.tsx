@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
 import { cardFeePercentFor, grossUpForCardFee, PIX_DISCOUNT } from "@/lib/payment-fees";
 import { useCart } from "@/lib/cart/cart-context";
+import { getStoredShippingZip, setStoredShippingZip } from "@/lib/cart/shipping-zip";
+import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
@@ -32,10 +34,6 @@ export const Route = createFileRoute("/checkout")({
 const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
 const INSTALLMENT_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-function onlyDigits(value: string) {
-  return value.replace(/\D/g, "");
-}
-
 function CheckoutPage() {
   const router = useRouter();
   const { items, subtotalCents, clear } = useCart();
@@ -45,7 +43,7 @@ function CheckoutPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
-  const [cep, setCep] = useState("");
+  const [cep, setCep] = useState(() => getStoredShippingZip());
   const [street, setStreet] = useState("");
   const [number, setNumber] = useState("");
   const [complement, setComplement] = useState("");
@@ -71,6 +69,7 @@ function CheckoutPage() {
   async function handleCepBlur() {
     const digits = onlyDigits(cep);
     if (digits.length !== 8) return;
+    setStoredShippingZip(digits);
 
     setLookingUpCep(true);
     setShippingError(null);
@@ -90,29 +89,23 @@ function CheckoutPage() {
     }
 
     setCalculatingShipping(true);
-    try {
-      const resp = await fetch(`${FUNCTIONS_URL}/calculate-shipping`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          destinationZip: digits,
-          items: items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
-        }),
-      });
-      const json = await resp.json();
-      if (!resp.ok) {
-        setShippingCents(null);
-        setShippingError(json.error ?? "Não foi possível calcular o frete.");
-      } else {
-        setShippingCents(json.priceCents);
-      }
-    } catch {
+    const result = await fetchShippingQuote(
+      digits,
+      items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
+    );
+    setCalculatingShipping(false);
+    if ("error" in result) {
       setShippingCents(null);
-      setShippingError("Não foi possível calcular o frete agora.");
-    } finally {
-      setCalculatingShipping(false);
+      setShippingError(result.error);
+    } else {
+      setShippingCents(result.priceCents);
     }
   }
+
+  useEffect(() => {
+    if (items.length > 0 && onlyDigits(cep).length === 8) void handleCepBlur();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length]);
 
   const baseTotalCents = shippingCents != null ? subtotalCents + shippingCents : null;
   const displayTotalCents =
@@ -269,7 +262,7 @@ function CheckoutPage() {
                   <span className="text-muted-foreground">Calculando frete (J&amp;T Express)...</span>
                 ) : shippingCents != null ? (
                   <span className="font-semibold text-[#12294f]">
-                    Frete J&amp;T Express: {formatCentsToBRL(shippingCents)}
+                    Frete J&amp;T Express: {shippingCents === 0 ? "Grátis" : formatCentsToBRL(shippingCents)}
                   </span>
                 ) : shippingError ? (
                   <span className="text-destructive">{shippingError}</span>
@@ -377,7 +370,13 @@ function CheckoutPage() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Frete (J&amp;T Express)</span>
-                <span>{shippingCents != null ? formatCentsToBRL(shippingCents) : "—"}</span>
+                <span>
+                  {shippingCents == null
+                    ? "—"
+                    : shippingCents === 0
+                      ? "Grátis"
+                      : formatCentsToBRL(shippingCents)}
+                </span>
               </div>
               <div className="flex items-center justify-between border-t pt-2 text-base font-bold text-[#12294f]">
                 <span>Total</span>

@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
       await Promise.all([
         adminClient
           .from("site_settings")
-          .select("shipping_origin_zip")
+          .select("shipping_origin_zip, free_shipping_threshold_cents")
           .eq("id", "default")
           .maybeSingle(),
         adminClient
@@ -61,6 +61,14 @@ Deno.serve(async (req) => {
       ]);
 
     if (variantsError) throw variantsError;
+
+    // Default here must match the one in src/routes/index.tsx (used when site_settings has no row).
+    const freeShippingThresholdCents = settings?.free_shipping_threshold_cents ?? 10000;
+    const subtotalCents = body.items.reduce((sum, item) => {
+      const variant = (variants ?? []).find((v) => v.id === item.variantId);
+      return sum + (variant?.price_cents ?? 0) * item.quantity;
+    }, 0);
+    const freeShipping = subtotalCents >= freeShippingThresholdCents;
 
     const originZip = onlyDigits(settings?.shipping_origin_zip ?? "");
     if (originZip.length !== 8) {
@@ -126,11 +134,15 @@ Deno.serve(async (req) => {
       );
     }
 
+    const originalPriceCents = Math.round(Number(jt.price) * 100);
+
     return jsonResponse({
       serviceId: jt.id,
       // Melhor Envio's internal company name for this carrier is "JeT" — show the real brand name.
       carrierName: "J&T Express",
-      priceCents: Math.round(Number(jt.price) * 100),
+      priceCents: freeShipping ? 0 : originalPriceCents,
+      originalPriceCents,
+      freeShipping,
       deliveryTimeDays: jt.delivery_time,
     });
   } catch (error) {

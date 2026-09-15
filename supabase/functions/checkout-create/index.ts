@@ -135,16 +135,19 @@ Deno.serve(async (req) => {
     // 2. Real shipping quote (J&T Express only), same logic as calculate-shipping.
     const { data: settings } = await admin
       .from("site_settings")
-      .select("shipping_origin_zip")
+      .select("shipping_origin_zip, free_shipping_threshold_cents")
       .eq("id", "default")
       .maybeSingle();
+    // Default here must match the one in src/routes/index.tsx (used when site_settings has no row).
+    const freeShippingThresholdCents = settings?.free_shipping_threshold_cents ?? 10000;
+    const freeShipping = subtotalCents >= freeShippingThresholdCents;
     const { data: meToken } = await admin.rpc("get_integration_secret", {
       p_integration_id: "melhor_envio",
     });
     const originZip = onlyDigits(settings?.shipping_origin_zip ?? "");
     const destinationZip = onlyDigits(body.shippingAddress.zip);
 
-    let shippingCostCents = 0;
+    let carrierShippingCents = 0;
     if (originZip.length === 8 && destinationZip.length === 8 && meToken) {
       const meProducts = body.items.map((item) => {
         const variant = variants.find((v) => v.id === item.variantId)!;
@@ -179,15 +182,18 @@ Deno.serve(async (req) => {
         const jt = (options as Array<Record<string, unknown>>).find(
           (o) => !o.error && String(o.id) === JT_EXPRESS_SERVICE_ID,
         );
-        if (jt) shippingCostCents = Math.round(Number(jt.price) * 100);
+        if (jt) carrierShippingCents = Math.round(Number(jt.price) * 100);
       }
     }
-    if (shippingCostCents === 0) {
+    if (carrierShippingCents === 0) {
       return jsonResponse(
         { error: "Não foi possível calcular o frete para esse CEP. Fale com a gente pelo WhatsApp." },
         422,
       );
     }
+    // The customer never pays for shipping above the free-shipping threshold — only the actually
+    // charged amount (0 when eligible) goes into the order and the Asaas charge.
+    const shippingCostCents = freeShipping ? 0 : carrierShippingCents;
 
     const baseTotalCents = subtotalCents + shippingCostCents;
     const totalCents =
