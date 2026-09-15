@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
@@ -9,10 +9,12 @@ import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-inf
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { OrderStatusPanel } from "@/components/checkout/order-status-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -35,8 +37,9 @@ const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
 const INSTALLMENT_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
 
 function CheckoutPage() {
-  const router = useRouter();
   const { items, subtotalCents, clear } = useCart();
+  const [resultOpen, setResultOpen] = useState(false);
+  const [resultOrderId, setResultOrderId] = useState<string | null>(null);
   const saved = useMemo(() => getSavedCheckoutInfo(), []);
 
   const [name, setName] = useState(saved.name ?? "");
@@ -135,6 +138,8 @@ function CheckoutPage() {
     }
 
     setSubmitting(true);
+    setResultOrderId(null);
+    setResultOpen(true);
     try {
       const resp = await fetch(`${FUNCTIONS_URL}/checkout-create`, {
         method: "POST",
@@ -159,6 +164,7 @@ function CheckoutPage() {
       });
       const json = await resp.json();
       if (!resp.ok) {
+        setResultOpen(false);
         toast.error(json.error ?? "Não foi possível finalizar o pedido.");
         return;
       }
@@ -176,8 +182,9 @@ function CheckoutPage() {
         state,
       });
       clear();
-      router.navigate({ to: "/pedido/$orderId", params: { orderId: json.orderId } });
+      setResultOrderId(json.orderId);
     } catch {
+      setResultOpen(false);
       toast.error("Não foi possível finalizar o pedido. Tente novamente.");
     } finally {
       setSubmitting(false);
@@ -408,6 +415,17 @@ function CheckoutPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={resultOpen} onOpenChange={setResultOpen}>
+        <DialogContent className="max-w-md">
+          <DialogTitle className="sr-only">Status do pagamento</DialogTitle>
+          {resultOrderId ? (
+            <OrderStatusPanel orderId={resultOrderId} />
+          ) : (
+            <p className="py-8 text-center text-sm text-muted-foreground">Processando pagamento...</p>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <SiteFooter />
     </div>

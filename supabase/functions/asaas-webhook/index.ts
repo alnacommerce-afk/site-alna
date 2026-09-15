@@ -2,6 +2,8 @@
 // against a token we generated ourselves (Vault, Admin > Conexões de API, id "asaas_webhook") —
 // register this same token in Asaas > Configurações > Integração > Webhooks when adding the URL.
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/send-email.ts";
+import { paymentConfirmedEmailHtml } from "../_shared/email-templates.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,11 +53,34 @@ Deno.serve(async (req) => {
     else if (FAILED_EVENTS.has(eventType)) orderStatus = "cancelled";
     else if (REFUNDED_EVENTS.has(eventType)) orderStatus = "cancelled";
 
+    // Fetch the order first so we know its PREVIOUS status — needed to send the "payment
+    // confirmed" e-mail exactly once, even if Asaas retries this webhook.
+    const { data: existingOrder } = await admin
+      .from("orders")
+      .select("id, status, customer_name, customer_email, total_cents")
+      .eq("payment_id", payment.id)
+      .maybeSingle();
+
     const update: Record<string, unknown> = { payment_status: payment.status ?? eventType };
     if (orderStatus) update.status = orderStatus;
 
     const { error } = await admin.from("orders").update(update).eq("payment_id", payment.id);
     if (error) throw error;
+
+    if (orderStatus === "paid" && existingOrder && existingOrder.status !== "paid" && existingOrder.customer_email) {
+      const resendKey = await admin
+        .rpc("get_integration_secret", { p_integration_id: "resend" })
+        .then((r) => r.data as string | null);
+      await sendEmail(resendKey, {
+        to: existingOrder.customer_email,
+        subject: `Pagamento confirmado #${existingOrder.id.slice(0, 8)} — Alna Commerce`,
+        html: paymentConfirmedEmailHtml({
+          orderId: existingOrder.id,
+          customerName: existingOrder.customer_name ?? "cliente",
+          totalCents: existingOrder.total_cents,
+        }),
+      });
+    }
 
     return jsonResponse({ ok: true });
   } catch (error) {

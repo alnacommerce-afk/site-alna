@@ -21,6 +21,9 @@ import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
+import { Route as ContaIndexRouteImport } from './routes/conta/index'
+import { Route as ContaLoginRouteImport } from './routes/conta/login'
+import { Route as ContaSenhaRouteImport } from './routes/conta/senha'
 import { Route as PedidoOrderIdRouteImport } from './routes/pedido/$orderId'
 import { Route as ProdutoSlugRouteImport } from './routes/produto/$slug'
 import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
@@ -90,6 +93,21 @@ const AdminMetricasRoute = AdminMetricasRouteImport.update({
   path: '/admin/metricas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContaIndexRoute = ContaIndexRouteImport.update({
+  id: '/conta/',
+  path: '/conta/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaLoginRoute = ContaLoginRouteImport.update({
+  id: '/conta/login',
+  path: '/conta/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaSenhaRoute = ContaSenhaRouteImport.update({
+  id: '/conta/senha',
+  path: '/conta/senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PedidoOrderIdRoute = PedidoOrderIdRouteImport.update({
   id: '/pedido/$orderId',
   path: '/pedido/$orderId',
@@ -138,9 +156,12 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/conta/login': typeof ContaLoginRoute
+  '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/conta/': typeof ContaIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
@@ -159,9 +180,12 @@ export interface FileRoutesByTo {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/conta/login': typeof ContaLoginRoute
+  '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/conta': typeof ContaIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo': typeof AdminCatalogoIndexRoute
   '/admin/categorias': typeof AdminCategoriasIndexRoute
@@ -181,9 +205,12 @@ export interface FileRoutesById {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/conta/login': typeof ContaLoginRoute
+  '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/conta/': typeof ContaIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
@@ -204,9 +231,12 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/conta/login'
+    | '/conta/senha'
     | '/pedido/$orderId'
     | '/produto/$slug'
     | '/admin/'
+    | '/conta/'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
     | '/admin/categorias/'
@@ -225,9 +255,12 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/conta/login'
+    | '/conta/senha'
     | '/pedido/$orderId'
     | '/produto/$slug'
     | '/admin'
+    | '/conta'
     | '/admin/catalogo/novo'
     | '/admin/catalogo'
     | '/admin/categorias'
@@ -246,9 +279,12 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/conta/login'
+    | '/conta/senha'
     | '/pedido/$orderId'
     | '/produto/$slug'
     | '/admin/'
+    | '/conta/'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
     | '/admin/categorias/'
@@ -268,9 +304,12 @@ export interface RootRouteChildren {
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
+  ContaLoginRoute: typeof ContaLoginRoute
+  ContaSenhaRoute: typeof ContaSenhaRoute
   PedidoOrderIdRoute: typeof PedidoOrderIdRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ContaIndexRoute: typeof ContaIndexRoute
   AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
   AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
   AdminCategoriasIndexRoute: typeof AdminCategoriasIndexRoute
@@ -364,6 +403,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMetricasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conta/': {
+      id: '/conta/'
+      path: '/conta'
+      fullPath: '/conta/'
+      preLoaderRoute: typeof ContaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta/login': {
+      id: '/conta/login'
+      path: '/conta/login'
+      fullPath: '/conta/login'
+      preLoaderRoute: typeof ContaLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta/senha': {
+      id: '/conta/senha'
+      path: '/conta/senha'
+      fullPath: '/conta/senha'
+      preLoaderRoute: typeof ContaSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pedido/$orderId': {
       id: '/pedido/$orderId'
       path: '/pedido/$orderId'
@@ -428,9 +488,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
+  ContaLoginRoute: ContaLoginRoute,
+  ContaSenhaRoute: ContaSenhaRoute,
   PedidoOrderIdRoute: PedidoOrderIdRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ContaIndexRoute: ContaIndexRoute,
   AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
   AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,
   AdminCategoriasIndexRoute: AdminCategoriasIndexRoute,

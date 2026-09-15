@@ -10,8 +10,6 @@ import {
   Truck,
   User,
 } from "lucide-react";
-import { toast } from "sonner";
-
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
@@ -25,10 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type CategoryLink = { id: string; name: string; slug: string };
-
-function comingSoon() {
-  toast.info("Essa área ainda está em construção — em breve por aqui!");
-}
 
 export function SiteHeader() {
   const [categories, setCategories] = useState<CategoryLink[]>([]);
@@ -91,13 +85,12 @@ export function SiteHeader() {
         </div>
 
         <nav className="ml-auto flex items-center gap-4 text-sm font-medium text-[#12294f]">
-          <button
-            type="button"
-            onClick={comingSoon}
+          <Link
+            to="/conta"
             className="hidden items-center gap-1.5 hover:text-[#16a34a] sm:flex"
           >
             <User className="h-4 w-4" /> Minha Conta
-          </button>
+          </Link>
           <Link
             to="/carrinho"
             className="flex items-center gap-1.5 hover:text-[#16a34a]"

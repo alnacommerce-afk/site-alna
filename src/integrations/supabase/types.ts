@@ -182,6 +182,7 @@ export type Database = {
         Row: {
           asaas_customer_id: string | null
           created_at: string
+          customer_document: string | null
           customer_email: string | null
           customer_name: string | null
           customer_phone: string | null
@@ -206,6 +207,7 @@ export type Database = {
         Insert: {
           asaas_customer_id?: string | null
           created_at?: string
+          customer_document?: string | null
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
@@ -230,6 +232,7 @@ export type Database = {
         Update: {
           asaas_customer_id?: string | null
           created_at?: string
+          customer_document?: string | null
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
@@ -473,8 +476,10 @@ export type Database = {
           phone: string | null
           razao_social: string | null
           shipping_carrier_preference: string | null
+          shipping_origin_city: string | null
           shipping_origin_neighborhood: string | null
           shipping_origin_number: string | null
+          shipping_origin_state: string | null
           shipping_origin_street: string | null
           shipping_origin_zip: string | null
           store_name: string
@@ -494,8 +499,10 @@ export type Database = {
           phone?: string | null
           razao_social?: string | null
           shipping_carrier_preference?: string | null
+          shipping_origin_city?: string | null
           shipping_origin_neighborhood?: string | null
           shipping_origin_number?: string | null
+          shipping_origin_state?: string | null
           shipping_origin_street?: string | null
           shipping_origin_zip?: string | null
           store_name?: string
@@ -515,8 +522,10 @@ export type Database = {
           phone?: string | null
           razao_social?: string | null
           shipping_carrier_preference?: string | null
+          shipping_origin_city?: string | null
           shipping_origin_neighborhood?: string | null
           shipping_origin_number?: string | null
+          shipping_origin_state?: string | null
           shipping_origin_street?: string | null
           shipping_origin_zip?: string | null
           store_name?: string
@@ -555,6 +564,7 @@ export type Database = {
         Args: { p_integration_id: string }
         Returns: undefined
       }
+      get_customer_user_id: { Args: { p_email: string }; Returns: string }
       get_integration_secret: {
         Args: { p_integration_id: string }
         Returns: string

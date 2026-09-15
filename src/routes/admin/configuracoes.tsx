@@ -34,6 +34,8 @@ type SettingsForm = {
   shippingOriginStreet: string;
   shippingOriginNumber: string;
   shippingOriginNeighborhood: string;
+  shippingOriginCity: string;
+  shippingOriginState: string;
   shippingCarrierPreference: string;
   freeShippingThreshold: string;
 };
@@ -54,6 +56,8 @@ const emptyForm: SettingsForm = {
   shippingOriginStreet: "",
   shippingOriginNumber: "",
   shippingOriginNeighborhood: "",
+  shippingOriginCity: "",
+  shippingOriginState: "",
   shippingCarrierPreference: "",
   freeShippingThreshold: "100,00",
 };
@@ -93,6 +97,8 @@ function ConfiguracoesPage() {
         shippingOriginStreet: data.shipping_origin_street ?? "",
         shippingOriginNumber: data.shipping_origin_number ?? "",
         shippingOriginNeighborhood: data.shipping_origin_neighborhood ?? "",
+        shippingOriginCity: data.shipping_origin_city ?? "",
+        shippingOriginState: data.shipping_origin_state ?? "",
         shippingCarrierPreference: data.shipping_carrier_preference ?? "",
         freeShippingThreshold: formatCentsToInput(data.free_shipping_threshold_cents) || "0,00",
       });
@@ -125,6 +131,8 @@ function ConfiguracoesPage() {
         shipping_origin_street: form.shippingOriginStreet || null,
         shipping_origin_number: form.shippingOriginNumber || null,
         shipping_origin_neighborhood: form.shippingOriginNeighborhood || null,
+        shipping_origin_city: form.shippingOriginCity || null,
+        shipping_origin_state: form.shippingOriginState || null,
         shipping_carrier_preference: form.shippingCarrierPreference || null,
         free_shipping_threshold_cents: parseCentsFromInput(form.freeShippingThreshold),
       })
@@ -303,6 +311,28 @@ function ConfiguracoesPage() {
                   onChange={(e) => setField("shippingOriginNeighborhood", e.target.value)}
                   placeholder="Águas Claras"
                 />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="shipping-city">Cidade de origem</Label>
+                <Input
+                  id="shipping-city"
+                  value={form.shippingOriginCity}
+                  onChange={(e) => setField("shippingOriginCity", e.target.value)}
+                  placeholder="Brusque"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="shipping-state">UF de origem</Label>
+                <Input
+                  id="shipping-state"
+                  value={form.shippingOriginState}
+                  onChange={(e) => setField("shippingOriginState", e.target.value)}
+                  maxLength={2}
+                  placeholder="SC"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Usado para gerar a etiqueta de envio (remetente).
+                </p>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="free-shipping-threshold">Frete grátis a partir de (R$)</Label>

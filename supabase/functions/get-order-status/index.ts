@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     const { data: order, error } = await admin
       .from("orders")
       .select(
-        "id, status, payment_status, payment_method, payment_id, total_cents, subtotal_cents, shipping_cost_cents, installment_count, created_at",
+        "id, status, payment_status, payment_method, payment_id, total_cents, subtotal_cents, shipping_cost_cents, installment_count, created_at, tracking_code, label_url, melhor_envio_shipment_id",
       )
       .eq("id", orderId)
       .maybeSingle();
@@ -50,7 +50,41 @@ Deno.serve(async (req) => {
       }
     }
 
-    return jsonResponse({ order, pix });
+    let tracking: {
+      status: string;
+      postedAt: string | null;
+      deliveredAt: string | null;
+    } | null = null;
+    if (order.tracking_code) {
+      const meToken = await admin
+        .rpc("get_integration_secret", { p_integration_id: "melhor_envio" })
+        .then((r) => r.data as string | null);
+      if (meToken) {
+        const trackResp = await fetch("https://melhorenvio.com.br/api/v2/me/shipment/tracking", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${meToken}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "User-Agent": "Alna Commerce (contato@alna.cc)",
+          },
+          body: JSON.stringify({ orders: [order.melhor_envio_shipment_id] }),
+        });
+        if (trackResp.ok) {
+          const json = await trackResp.json();
+          const entry = order.melhor_envio_shipment_id ? json[order.melhor_envio_shipment_id] : null;
+          if (entry) {
+            tracking = {
+              status: entry.status,
+              postedAt: entry.posted_at ?? null,
+              deliveredAt: entry.delivered_at ?? null,
+            };
+          }
+        }
+      }
+    }
+
+    return jsonResponse({ order: { ...order, tracking }, pix });
   } catch (error) {
     console.error("[get-order-status]", error);
     const message = error instanceof Error ? error.message : "Erro ao consultar o pedido.";

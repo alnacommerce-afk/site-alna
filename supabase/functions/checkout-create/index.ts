@@ -7,6 +7,9 @@
 //
 // Asaas API key: Supabase Vault, Admin > Conexões de API, integration id "payment_gateway".
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { randomPassword } from "../_shared/random-password.ts";
+import { sendEmail } from "../_shared/send-email.ts";
+import { orderReceivedEmailHtml } from "../_shared/email-templates.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -201,7 +204,27 @@ Deno.serve(async (req) => {
         ? Math.round(baseTotalCents * (1 - PIX_DISCOUNT))
         : grossUpForCardFee(baseTotalCents, installmentCount);
 
-    // 3. Find or create the Asaas customer.
+    // 3. Find or create a Supabase Auth account for this customer (by e-mail), so they can log in
+    // at /conta to track orders. Never touches the password of an existing account.
+    let customerUserId = await admin
+      .rpc("get_customer_user_id", { p_email: body.customer.email })
+      .then((r) => r.data as string | null);
+    let newAccount: { email: string; password: string } | null = null;
+    if (!customerUserId) {
+      const tempPassword = randomPassword(8);
+      const { data: created, error: createUserError } = await admin.auth.admin.createUser({
+        email: body.customer.email,
+        password: tempPassword,
+        email_confirm: true,
+        user_metadata: { name: body.customer.name },
+      });
+      if (createUserError || !created?.user) throw createUserError ?? new Error("Falha ao criar conta do cliente.");
+      customerUserId = created.user.id;
+      await admin.from("user_roles").insert({ user_id: customerUserId, role: "customer" });
+      newAccount = { email: body.customer.email, password: tempPassword };
+    }
+
+    // 4. Find or create the Asaas customer.
     const asaasKey = await admin
       .rpc("get_integration_secret", { p_integration_id: "payment_gateway" })
       .then((r) => r.data as string | null);
@@ -249,14 +272,16 @@ Deno.serve(async (req) => {
       asaasCustomerId = created.id;
     }
 
-    // 4. Create the order (pending) before calling Asaas, so we always have a record even if the
+    // 5. Create the order (pending) before calling Asaas, so we always have a record even if the
     // charge fails.
     const { data: order, error: orderError } = await admin
       .from("orders")
       .insert({
+        user_id: customerUserId,
         customer_name: body.customer.name,
         customer_email: body.customer.email,
         customer_phone: body.customer.phone,
+        customer_document: cpfCnpj,
         subtotal_cents: subtotalCents,
         shipping_cost_cents: shippingCostCents,
         total_cents: totalCents,
@@ -282,7 +307,7 @@ Deno.serve(async (req) => {
       req.headers.get("cf-connecting-ip") ||
       "0.0.0.0";
 
-    // 5. Create the charge on Asaas.
+    // 6. Create the charge on Asaas.
     const basePaymentPayload = {
       customer: asaasCustomerId,
       value: totalCents / 100,
@@ -353,7 +378,7 @@ Deno.serve(async (req) => {
       paymentResult = payJson;
     }
 
-    // 6. Record the payment result on the order.
+    // 7. Record the payment result on the order.
     await admin
       .from("orders")
       .update({
@@ -364,6 +389,23 @@ Deno.serve(async (req) => {
           : "pending",
       })
       .eq("id", orderId);
+
+    // 8. E-mail the customer their order (and their new login, if this is their first order).
+    // Never blocks or fails the checkout — sendEmail swallows its own errors.
+    const resendKey = await admin
+      .rpc("get_integration_secret", { p_integration_id: "resend" })
+      .then((r) => r.data as string | null);
+    await sendEmail(resendKey, {
+      to: body.customer.email,
+      subject: `Pedido recebido #${orderId.slice(0, 8)} — Alna Commerce`,
+      html: orderReceivedEmailHtml({
+        orderId,
+        customerName: body.customer.name,
+        totalCents,
+        isPix: body.paymentMethod === "pix",
+        newAccount,
+      }),
+    });
 
     return jsonResponse({
       orderId,
