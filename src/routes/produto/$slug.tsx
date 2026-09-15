@@ -260,10 +260,10 @@ function ProdutoPage() {
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : 0;
 
-  async function handleCheckShipping() {
+  async function handleCheckShipping(options?: { silent?: boolean }) {
     const digits = onlyDigits(cep);
     if (digits.length !== 8) {
-      toast.error("Informe um CEP válido.");
+      if (!options?.silent) toast.error("Informe um CEP válido.");
       return;
     }
     if (!selectedVariant) return;
@@ -508,11 +508,12 @@ function ProdutoPage() {
                 id="cep"
                 value={cep}
                 onChange={(e) => setCep(e.target.value)}
+                onBlur={() => handleCheckShipping({ silent: true })}
                 placeholder="Informe seu CEP"
                 maxLength={9}
                 className="max-w-[180px]"
               />
-              <Button type="button" variant="outline" onClick={handleCheckShipping} disabled={checkingShipping}>
+              <Button type="button" variant="outline" onClick={() => handleCheckShipping()} disabled={checkingShipping}>
                 {checkingShipping ? "Calculando..." : "Calcular"}
               </Button>
             </div>
