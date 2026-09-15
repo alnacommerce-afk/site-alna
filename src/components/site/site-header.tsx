@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
+import { useCart } from "@/lib/cart/cart-context";
 import logoAlna from "@/assets/brand/logo-alna.png";
 import {
   DropdownMenu,
@@ -31,6 +32,7 @@ function comingSoon() {
 
 export function SiteHeader() {
   const [categories, setCategories] = useState<CategoryLink[]>([]);
+  const { itemCount } = useCart();
   const [freeShippingThresholdCents, setFreeShippingThresholdCents] = useState<number | null>(
     null,
   );
@@ -96,14 +98,13 @@ export function SiteHeader() {
           >
             <User className="h-4 w-4" /> Minha Conta
           </button>
-          <button
-            type="button"
-            onClick={comingSoon}
+          <Link
+            to="/carrinho"
             className="flex items-center gap-1.5 hover:text-[#16a34a]"
           >
             <ShoppingCart className="h-4 w-4" />
-            <span className="hidden sm:inline">Carrinho</span> 0
-          </button>
+            <span className="hidden sm:inline">Carrinho</span> {itemCount}
+          </Link>
         </nav>
       </div>
 

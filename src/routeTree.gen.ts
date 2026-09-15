@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CarrinhoRouteImport } from './routes/carrinho'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as LojaRouteImport } from './routes/loja'
 import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
 import { Route as PoliticaDeTrocaEDevolucaoRouteImport } from './routes/politica-de-troca-e-devolucao'
@@ -19,15 +21,27 @@ import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
+import { Route as PedidoOrderIdRouteImport } from './routes/pedido/$orderId'
 import { Route as ProdutoSlugRouteImport } from './routes/produto/$slug'
 import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
 import { Route as AdminCatalogoNovoRouteImport } from './routes/admin/catalogo/novo'
 import { Route as AdminCategoriasIndexRouteImport } from './routes/admin/categorias/index'
+import { Route as AdminPedidosIndexRouteImport } from './routes/admin/pedidos/index'
 import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalogo/$id/editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarrinhoRoute = CarrinhoRouteImport.update({
+  id: '/carrinho',
+  path: '/carrinho',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LojaRoute = LojaRouteImport.update({
@@ -76,6 +90,11 @@ const AdminMetricasRoute = AdminMetricasRouteImport.update({
   path: '/admin/metricas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PedidoOrderIdRoute = PedidoOrderIdRouteImport.update({
+  id: '/pedido/$orderId',
+  path: '/pedido/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutoSlugRoute = ProdutoSlugRouteImport.update({
   id: '/produto/$slug',
   path: '/produto/$slug',
@@ -96,6 +115,11 @@ const AdminCategoriasIndexRoute = AdminCategoriasIndexRouteImport.update({
   path: '/admin/categorias/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPedidosIndexRoute = AdminPedidosIndexRouteImport.update({
+  id: '/admin/pedidos/',
+  path: '/admin/pedidos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCatalogoIdEditarRoute = AdminCatalogoIdEditarRouteImport.update({
   id: '/admin/catalogo/$id/editar',
   path: '/admin/catalogo/$id/editar',
@@ -104,6 +128,8 @@ const AdminCatalogoIdEditarRoute = AdminCatalogoIdEditarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/checkout': typeof CheckoutRoute
   '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
@@ -112,15 +138,19 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
+  '/admin/pedidos/': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/checkout': typeof CheckoutRoute
   '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
@@ -129,16 +159,20 @@ export interface FileRoutesByTo {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo': typeof AdminCatalogoIndexRoute
   '/admin/categorias': typeof AdminCategoriasIndexRoute
+  '/admin/pedidos': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/checkout': typeof CheckoutRoute
   '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
@@ -147,17 +181,21 @@ export interface FileRoutesById {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
+  '/admin/pedidos/': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/carrinho'
+    | '/checkout'
     | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
@@ -166,15 +204,19 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/pedido/$orderId'
     | '/produto/$slug'
     | '/admin/'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
     | '/admin/categorias/'
+    | '/admin/pedidos/'
     | '/admin/catalogo/$id/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/carrinho'
+    | '/checkout'
     | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
@@ -183,15 +225,19 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/pedido/$orderId'
     | '/produto/$slug'
     | '/admin'
     | '/admin/catalogo/novo'
     | '/admin/catalogo'
     | '/admin/categorias'
+    | '/admin/pedidos'
     | '/admin/catalogo/$id/editar'
   id:
     | '__root__'
     | '/'
+    | '/carrinho'
+    | '/checkout'
     | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
@@ -200,16 +246,20 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/login'
     | '/admin/metricas'
+    | '/pedido/$orderId'
     | '/produto/$slug'
     | '/admin/'
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
     | '/admin/categorias/'
+    | '/admin/pedidos/'
     | '/admin/catalogo/$id/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CarrinhoRoute: typeof CarrinhoRoute
+  CheckoutRoute: typeof CheckoutRoute
   LojaRoute: typeof LojaRoute
   PoliticaDePrivacidadeRoute: typeof PoliticaDePrivacidadeRoute
   PoliticaDeTrocaEDevolucaoRoute: typeof PoliticaDeTrocaEDevolucaoRoute
@@ -218,11 +268,13 @@ export interface RootRouteChildren {
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
+  PedidoOrderIdRoute: typeof PedidoOrderIdRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
   AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
   AdminCategoriasIndexRoute: typeof AdminCategoriasIndexRoute
+  AdminPedidosIndexRoute: typeof AdminPedidosIndexRoute
   AdminCatalogoIdEditarRoute: typeof AdminCatalogoIdEditarRoute
 }
 
@@ -233,6 +285,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carrinho': {
+      id: '/carrinho'
+      path: '/carrinho'
+      fullPath: '/carrinho'
+      preLoaderRoute: typeof CarrinhoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/loja': {
@@ -298,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMetricasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pedido/$orderId': {
+      id: '/pedido/$orderId'
+      path: '/pedido/$orderId'
+      fullPath: '/pedido/$orderId'
+      preLoaderRoute: typeof PedidoOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produto/$slug': {
       id: '/produto/$slug'
       path: '/produto/$slug'
@@ -326,6 +399,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pedidos/': {
+      id: '/admin/pedidos/'
+      path: '/admin/pedidos'
+      fullPath: '/admin/pedidos/'
+      preLoaderRoute: typeof AdminPedidosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/catalogo/$id/editar': {
       id: '/admin/catalogo/$id/editar'
       path: '/admin/catalogo/$id/editar'
@@ -338,6 +418,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CarrinhoRoute: CarrinhoRoute,
+  CheckoutRoute: CheckoutRoute,
   LojaRoute: LojaRoute,
   PoliticaDePrivacidadeRoute: PoliticaDePrivacidadeRoute,
   PoliticaDeTrocaEDevolucaoRoute: PoliticaDeTrocaEDevolucaoRoute,
@@ -346,11 +428,13 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
+  PedidoOrderIdRoute: PedidoOrderIdRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
   AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,
   AdminCategoriasIndexRoute: AdminCategoriasIndexRoute,
+  AdminPedidosIndexRoute: AdminPedidosIndexRoute,
   AdminCatalogoIdEditarRoute: AdminCatalogoIdEditarRoute,
 }
 export const routeTree = rootRouteImport

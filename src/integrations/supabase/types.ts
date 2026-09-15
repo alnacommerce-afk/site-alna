@@ -180,15 +180,18 @@ export type Database = {
       }
       orders: {
         Row: {
+          asaas_customer_id: string | null
           created_at: string
           customer_email: string | null
           customer_name: string | null
           customer_phone: string | null
           id: string
+          installment_count: number
           label_generated_count: number
           label_url: string | null
           melhor_envio_shipment_id: string | null
           payment_id: string | null
+          payment_method: string | null
           payment_provider: string | null
           payment_status: string | null
           shipping_address: Json | null
@@ -201,15 +204,18 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          asaas_customer_id?: string | null
           created_at?: string
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           id?: string
+          installment_count?: number
           label_generated_count?: number
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
           payment_id?: string | null
+          payment_method?: string | null
           payment_provider?: string | null
           payment_status?: string | null
           shipping_address?: Json | null
@@ -222,15 +228,18 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          asaas_customer_id?: string | null
           created_at?: string
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           id?: string
+          installment_count?: number
           label_generated_count?: number
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
           payment_id?: string | null
+          payment_method?: string | null
           payment_provider?: string | null
           payment_status?: string | null
           shipping_address?: Json | null

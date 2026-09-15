@@ -53,6 +53,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
             Categorias
           </Link>
           <Link
+            to="/admin/pedidos"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Pedidos
+          </Link>
+          <Link
             to="/admin/metricas"
             className="rounded-md px-3 py-2 hover:bg-accent"
             activeProps={{ className: "bg-accent font-medium" }}

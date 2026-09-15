@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
+import { useCart } from "@/lib/cart/cart-context";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
@@ -199,6 +200,7 @@ function RelatedProductCard({ product }: { product: RelatedRow }) {
 
 function ProdutoPage() {
   const { product, related, reviews } = Route.useLoaderData();
+  const cart = useCart();
 
   const images = useMemo(
     () => [...(product?.product_images ?? [])].sort((a, b) => a.position - b.position) as ImageRow[],
@@ -267,7 +269,25 @@ function ProdutoPage() {
   }
 
   function handleAddToCart() {
-    toast.info("O carrinho de compras ainda está em construção — em breve por aqui!");
+    if (!selectedVariant || !product) return;
+    const thumbnailUrl = currentImage
+      ? supabase.storage.from("product-media").getPublicUrl(currentImage.storage_path).data
+          .publicUrl
+      : null;
+
+    cart.add(
+      {
+        variantId: selectedVariant.id,
+        productSlug: product.slug,
+        productTitle: product.title,
+        variantName: selectedVariant.name,
+        thumbnailUrl,
+        priceCents: selectedVariant.price_cents,
+        maxQuantity: selectedVariant.stock_quantity,
+      },
+      quantity,
+    );
+    toast.success("Produto adicionado ao carrinho.");
   }
 
   return (

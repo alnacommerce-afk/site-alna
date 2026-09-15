@@ -44,7 +44,7 @@ const CONNECTION_HELP: Record<string, string> = {
   melhor_envio:
     "Calcula o frete automaticamente e permite gerar etiquetas de envio. Cole abaixo o token de API (Painel Melhor Envio → Gerenciar → Tokens).",
   payment_gateway:
-    "Cole a chave secreta do gateway escolhido (Mercado Pago, Stripe, etc.) assim que ele for definido.",
+    "Processa Pix e cartão de crédito (até 12x) no checkout. Gere a chave em Asaas → Configurações → Integração → Chave de API. Use a chave de PRODUÇÃO (começa com \"$aact_prod_\") — não a de sandbox — pois o checkout já está configurado para cobrar de verdade.",
   meta_instagram:
     "Exige um catálogo de produtos publicado, domínio verificado no Meta Business Manager e as páginas de política já publicadas no site (Privacidade, Termos, Trocas e Devoluções). Não usa uma chave simples — a conexão é feita por OAuth no painel do Meta.",
   resend:
