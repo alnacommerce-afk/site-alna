@@ -5,7 +5,7 @@ import { Minus, Plus, Trash2, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
-import { getStoredShippingZip, setStoredShippingZip } from "@/lib/cart/shipping-zip";
+import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { fetchShippingQuote, onlyDigits, type ShippingQuote } from "@/lib/shipping/quote";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -73,7 +73,7 @@ function CarrinhoPage() {
   const { freeShippingThresholdCents } = Route.useLoaderData();
   const { items, subtotalCents, setQuantity, remove } = useCart();
 
-  const [cep, setCep] = useState(() => getStoredShippingZip());
+  const [cep, setCep] = useState(() => getSavedCheckoutInfo().zip ?? "");
   const [quote, setQuote] = useState<ShippingQuote | null>(null);
   const [shippingError, setShippingError] = useState<string | null>(null);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
@@ -109,7 +109,7 @@ function CarrinhoPage() {
   function handleCepBlur() {
     const digits = onlyDigits(cep);
     if (digits.length !== 8) return;
-    setStoredShippingZip(digits);
+    saveCheckoutInfo({ zip: digits });
     setCalculatingShipping(true);
     setShippingError(null);
     fetchShippingQuote(

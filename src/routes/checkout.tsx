@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
 import { cardFeePercentFor, grossUpForCardFee, PIX_DISCOUNT } from "@/lib/payment-fees";
 import { useCart } from "@/lib/cart/cart-context";
-import { getStoredShippingZip, setStoredShippingZip } from "@/lib/cart/shipping-zip";
+import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -37,19 +37,20 @@ const INSTALLMENT_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
 function CheckoutPage() {
   const router = useRouter();
   const { items, subtotalCents, clear } = useCart();
+  const saved = useMemo(() => getSavedCheckoutInfo(), []);
 
-  const [name, setName] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [name, setName] = useState(saved.name ?? "");
+  const [cpf, setCpf] = useState(saved.cpf ?? "");
+  const [email, setEmail] = useState(saved.email ?? "");
+  const [phone, setPhone] = useState(saved.phone ?? "");
 
-  const [cep, setCep] = useState(() => getStoredShippingZip());
-  const [street, setStreet] = useState("");
-  const [number, setNumber] = useState("");
-  const [complement, setComplement] = useState("");
-  const [neighborhood, setNeighborhood] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [cep, setCep] = useState(saved.zip ?? "");
+  const [street, setStreet] = useState(saved.street ?? "");
+  const [number, setNumber] = useState(saved.number ?? "");
+  const [complement, setComplement] = useState(saved.complement ?? "");
+  const [neighborhood, setNeighborhood] = useState(saved.neighborhood ?? "");
+  const [city, setCity] = useState(saved.city ?? "");
+  const [state, setState] = useState(saved.state ?? "");
   const [lookingUpCep, setLookingUpCep] = useState(false);
 
   const [shippingCents, setShippingCents] = useState<number | null>(null);
@@ -69,7 +70,7 @@ function CheckoutPage() {
   async function handleCepBlur() {
     const digits = onlyDigits(cep);
     if (digits.length !== 8) return;
-    setStoredShippingZip(digits);
+    saveCheckoutInfo({ zip: digits });
 
     setLookingUpCep(true);
     setShippingError(null);
@@ -161,6 +162,19 @@ function CheckoutPage() {
         toast.error(json.error ?? "Não foi possível finalizar o pedido.");
         return;
       }
+      saveCheckoutInfo({
+        name,
+        cpf,
+        email,
+        phone,
+        zip: onlyDigits(cep),
+        street,
+        number,
+        complement,
+        neighborhood,
+        city,
+        state,
+      });
       clear();
       router.navigate({ to: "/pedido/$orderId", params: { orderId: json.orderId } });
     } catch {

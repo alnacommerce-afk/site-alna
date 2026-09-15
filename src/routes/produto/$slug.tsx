@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
+import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
+import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
@@ -214,8 +216,12 @@ function ProdutoPage() {
   const [selectedVariantId, setSelectedVariantId] = useState(variants[0]?.id ?? "");
   const [quantity, setQuantity] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("pix");
-  const [cep, setCep] = useState("");
+  const [cep, setCep] = useState(() => getSavedCheckoutInfo().zip ?? "");
   const [checkingShipping, setCheckingShipping] = useState(false);
+  const [shippingResult, setShippingResult] = useState<
+    { priceCents: number; deliveryTimeDays: number } | null
+  >(null);
+  const [shippingError, setShippingError] = useState<string | null>(null);
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId) ?? variants[0];
   const currentImage = images[selectedImageIndex] ?? images[0];
@@ -254,18 +260,27 @@ function ProdutoPage() {
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : 0;
 
-  function handleCheckShipping() {
-    if (!cep.trim()) {
-      toast.error("Informe seu CEP.");
+  async function handleCheckShipping() {
+    const digits = onlyDigits(cep);
+    if (digits.length !== 8) {
+      toast.error("Informe um CEP válido.");
       return;
     }
+    if (!selectedVariant) return;
+
+    saveCheckoutInfo({ zip: digits });
     setCheckingShipping(true);
-    setTimeout(() => {
-      setCheckingShipping(false);
-      toast.info(
-        "O cálculo automático de frete chega assim que a integração com o Melhor Envio for concluída. Por enquanto, fale com a gente pelo WhatsApp para confirmar o valor.",
-      );
-    }, 400);
+    setShippingError(null);
+    setShippingResult(null);
+    const result = await fetchShippingQuote(digits, [
+      { variantId: selectedVariant.id, quantity },
+    ]);
+    setCheckingShipping(false);
+    if ("error" in result) {
+      setShippingError(result.error);
+    } else {
+      setShippingResult(result);
+    }
   }
 
   function handleAddToCart() {
@@ -501,6 +516,16 @@ function ProdutoPage() {
                 {checkingShipping ? "Calculando..." : "Calcular"}
               </Button>
             </div>
+            {shippingResult ? (
+              <p className="text-sm font-semibold text-[#12294f]">
+                {shippingResult.priceCents === 0
+                  ? "Frete grátis"
+                  : `Frete J&T Express: ${formatCentsToBRL(shippingResult.priceCents)}`}{" "}
+                — chega em até {shippingResult.deliveryTimeDays} dias úteis
+              </p>
+            ) : shippingError ? (
+              <p className="text-sm text-destructive">{shippingError}</p>
+            ) : null}
           </div>
 
           <div className="mt-5 flex items-center gap-3">
