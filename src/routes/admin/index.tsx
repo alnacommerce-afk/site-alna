@@ -1,8 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Boxes, LayoutGrid, LineChart, Plug, Settings } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { formatCentsToBRL } from "@/lib/money";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -13,38 +13,8 @@ export const Route = createFileRoute("/admin/")({
   component: AdminOverviewPage,
 });
 
-const QUICK_LINKS = [
-  {
-    to: "/admin/catalogo" as const,
-    icon: Boxes,
-    title: "Catálogo",
-    description: "Cadastre e edite os produtos da loja.",
-  },
-  {
-    to: "/admin/categorias" as const,
-    icon: LayoutGrid,
-    title: "Categorias",
-    description: "Organize os produtos em categorias.",
-  },
-  {
-    to: "/admin/metricas" as const,
-    icon: LineChart,
-    title: "Métricas",
-    description: "Acompanhe produtos, categorias e leads.",
-  },
-  {
-    to: "/admin/conexoes" as const,
-    icon: Plug,
-    title: "Conexões de API",
-    description: "Status das integrações externas.",
-  },
-  {
-    to: "/admin/configuracoes" as const,
-    icon: Settings,
-    title: "Configurações",
-    description: "Dados da empresa exibidos no site.",
-  },
-];
+// Orders in these statuses never became a real sale — excluded from every total below.
+const NOT_A_SALE = new Set(["pending", "cancelled"]);
 
 type Stats = {
   productsPublished: number;
@@ -52,8 +22,21 @@ type Stats = {
   leads: number;
 };
 
+type SalesSummary = {
+  today: number;
+  last7Days: number;
+  last30Days: number;
+};
+
+function startOfToday() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 function AdminOverviewPage() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [sales, setSales] = useState<SalesSummary | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -75,6 +58,32 @@ function AdminOverviewPage() {
     load();
   }, []);
 
+  useEffect(() => {
+    async function loadSales() {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const { data } = await supabase
+        .from("orders")
+        .select("created_at, total_cents, status")
+        .gte("created_at", thirtyDaysAgo.toISOString());
+
+      const todayBoundary = startOfToday();
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+      let today = 0;
+      let last7Days = 0;
+      let last30Days = 0;
+      for (const order of data ?? []) {
+        if (NOT_A_SALE.has(order.status)) continue;
+        const createdAt = new Date(order.created_at);
+        last30Days += order.total_cents;
+        if (createdAt >= sevenDaysAgo) last7Days += order.total_cents;
+        if (createdAt >= todayBoundary) today += order.total_cents;
+      }
+      setSales({ today, last7Days, last30Days });
+    }
+    loadSales();
+  }, []);
+
   return (
     <AdminShell>
       <div className="mb-6">
@@ -82,7 +91,43 @@ function AdminOverviewPage() {
         <p className="text-sm text-muted-foreground">Bem-vindo ao painel da Alna Commerce.</p>
       </div>
 
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        Vendas
+      </h2>
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Vendido hoje
+            </p>
+            <p className="mt-2 text-3xl font-bold text-[#16a34a]">
+              {sales ? formatCentsToBRL(sales.today) : "—"}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Últimos 7 dias
+            </p>
+            <p className="mt-2 text-3xl font-bold text-[#16a34a]">
+              {sales ? formatCentsToBRL(sales.last7Days) : "—"}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Últimos 30 dias
+            </p>
+            <p className="mt-2 text-3xl font-bold text-[#16a34a]">
+              {sales ? formatCentsToBRL(sales.last30Days) : "—"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
           <CardContent className="p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -109,27 +154,6 @@ function AdminOverviewPage() {
             <p className="mt-2 text-3xl font-bold text-[#12294f]">{stats?.leads ?? "—"}</p>
           </CardContent>
         </Card>
-      </div>
-
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-        Acesso rápido
-      </h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {QUICK_LINKS.map((item) => (
-          <Link key={item.to} to={item.to}>
-            <Card className="h-full transition-shadow hover:shadow-md">
-              <CardContent className="flex items-start gap-3 p-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#16a34a]/10 text-[#16a34a]">
-                  <item.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-medium text-[#12294f]">{item.title}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
       </div>
     </AdminShell>
   );
