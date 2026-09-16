@@ -4,3 +4,11 @@ project_id = "ogxsdptftgxrujkfscvi"
 # without this section, redeploys default every function to verify_jwt = false.
 [functions.generate-shipping-label]
 verify_jwt = true
+
+# Admin-only — exposes the store's Melhor Envio wallet balance.
+[functions.melhor-envio-balance]
+verify_jwt = true
+
+# Admin-only — reads/repackages shipping label PDFs (customer name/address).
+[functions.get-shipping-labels]
+verify_jwt = true

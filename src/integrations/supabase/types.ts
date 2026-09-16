@@ -300,6 +300,7 @@ export type Database = {
           installment_count: number
           is_new_account: boolean
           label_generated_count: number
+          label_pdf_url: string | null
           label_url: string | null
           melhor_envio_shipment_id: string | null
           nps_score: number | null
@@ -335,6 +336,7 @@ export type Database = {
           installment_count?: number
           is_new_account?: boolean
           label_generated_count?: number
+          label_pdf_url?: string | null
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
           nps_score?: number | null
@@ -370,6 +372,7 @@ export type Database = {
           installment_count?: number
           is_new_account?: boolean
           label_generated_count?: number
+          label_pdf_url?: string | null
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
           nps_score?: number | null

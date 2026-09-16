@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Info } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -44,7 +47,15 @@ type OrderRow = {
   payment_status: string | null;
   tracking_code: string | null;
   label_url: string | null;
+  melhor_envio_shipment_id: string | null;
   itemCount: number;
+};
+
+type OrderItemRow = {
+  sku: string | null;
+  product_title: string;
+  variant_name: string | null;
+  quantity: number;
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -68,12 +79,19 @@ function PedidosPage() {
   const [loading, setLoading] = useState(true);
   const [orderToLabel, setOrderToLabel] = useState<OrderRow | null>(null);
   const [generatingFor, setGeneratingFor] = useState<string | null>(null);
+  const [downloadingFor, setDownloadingFor] = useState<string | null>(null);
+  const [bulkDownloading, setBulkDownloading] = useState(false);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [balanceError, setBalanceError] = useState(false);
+  const [infoOrder, setInfoOrder] = useState<OrderRow | null>(null);
+  const [infoItems, setInfoItems] = useState<OrderItemRow[]>([]);
+  const [infoLoading, setInfoLoading] = useState(false);
 
   async function load() {
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "id, created_at, customer_name, total_cents, payment_method, installment_count, status, payment_status, tracking_code, label_url, order_items(id)",
+        "id, created_at, customer_name, total_cents, payment_method, installment_count, status, payment_status, tracking_code, label_url, melhor_envio_shipment_id, order_items(id)",
       )
       .order("created_at", { ascending: false });
 
@@ -92,8 +110,18 @@ function PedidosPage() {
     setLoading(false);
   }
 
+  async function loadBalance() {
+    const { data, error } = await supabase.functions.invoke("melhor-envio-balance");
+    if (error || data?.error || data?.balance == null) {
+      setBalanceError(true);
+      return;
+    }
+    setBalance(data.balance);
+  }
+
   useEffect(() => {
     load();
+    loadBalance();
   }, []);
 
   async function confirmGenerateLabel() {
@@ -115,13 +143,70 @@ function PedidosPage() {
     load();
   }
 
+  async function downloadLabel(order: OrderRow) {
+    setDownloadingFor(order.id);
+    const { data, error } = await supabase.functions.invoke("get-shipping-labels", {
+      body: { orderIds: [order.id] },
+    });
+    setDownloadingFor(null);
+    if (error || data?.error) {
+      toast.error(data?.error ?? "Não foi possível preparar a etiqueta.");
+      return;
+    }
+    window.open(data.url, "_blank");
+  }
+
+  async function downloadAllLabels() {
+    const orderIds = orders.filter((o) => o.melhor_envio_shipment_id).map((o) => o.id);
+    if (!orderIds.length) {
+      toast.error("Nenhum pedido com etiqueta gerada ainda.");
+      return;
+    }
+    setBulkDownloading(true);
+    const { data, error } = await supabase.functions.invoke("get-shipping-labels", {
+      body: { orderIds },
+    });
+    setBulkDownloading(false);
+    if (error || data?.error) {
+      toast.error(data?.error ?? "Não foi possível preparar as etiquetas.");
+      return;
+    }
+    window.open(data.url, "_blank");
+  }
+
+  async function openInfo(order: OrderRow) {
+    setInfoOrder(order);
+    setInfoLoading(true);
+    const { data } = await supabase
+      .from("order_items")
+      .select("sku, product_title, variant_name, quantity")
+      .eq("order_id", order.id);
+    setInfoItems(data ?? []);
+    setInfoLoading(false);
+  }
+
   return (
     <AdminShell>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold">Pedidos</h1>
-        <p className="text-sm text-muted-foreground">
-          Pedidos recebidos pelo checkout. Status atualiza automaticamente pelo webhook da Asaas.
-        </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold">Pedidos</h1>
+          <p className="text-sm text-muted-foreground">
+            Pedidos recebidos pelo checkout. Status atualiza automaticamente pelo webhook da Asaas.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Card>
+            <CardContent className="px-4 py-2">
+              <p className="text-xs text-muted-foreground">Saldo Melhor Envio</p>
+              <p className="font-semibold text-[#12294f]">
+                {balanceError ? "Indisponível" : balance == null ? "Carregando..." : formatCentsToBRL(Math.round(balance * 100))}
+              </p>
+            </CardContent>
+          </Card>
+          <Button variant="outline" onClick={downloadAllLabels} disabled={bulkDownloading}>
+            {bulkDownloading ? "Preparando..." : "Baixar em massa"}
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -136,11 +221,13 @@ function PedidosPage() {
             <TableRow>
               <TableHead>Data</TableHead>
               <TableHead>Cliente</TableHead>
+              <TableHead></TableHead>
               <TableHead>Itens</TableHead>
               <TableHead>Pagamento</TableHead>
               <TableHead>Total</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Rastreio</TableHead>
+              <TableHead>Etiqueta</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -150,6 +237,16 @@ function PedidosPage() {
                   {new Date(order.created_at).toLocaleDateString("pt-BR")}
                 </TableCell>
                 <TableCell className="font-medium">{order.customer_name ?? "—"}</TableCell>
+                <TableCell>
+                  <button
+                    type="button"
+                    onClick={() => openInfo(order)}
+                    className="text-muted-foreground hover:text-[#12294f]"
+                    title="Ver itens do pedido"
+                  >
+                    <Info className="h-4 w-4" />
+                  </button>
+                </TableCell>
                 <TableCell>{order.itemCount}</TableCell>
                 <TableCell className="text-sm">
                   {order.payment_method === "pix"
@@ -166,20 +263,17 @@ function PedidosPage() {
                     {STATUS_LABELS[order.status] ?? order.status}
                   </Badge>
                 </TableCell>
+                <TableCell className="text-sm">{order.tracking_code ?? "—"}</TableCell>
                 <TableCell className="text-sm">
-                  {order.tracking_code ? (
-                    order.label_url ? (
-                      <a
-                        href={order.label_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[#16a34a] hover:underline"
-                      >
-                        {order.tracking_code}
-                      </a>
-                    ) : (
-                      order.tracking_code
-                    )
+                  {order.melhor_envio_shipment_id ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={downloadingFor === order.id}
+                      onClick={() => downloadLabel(order)}
+                    >
+                      {downloadingFor === order.id ? "Preparando..." : "Baixar etiqueta"}
+                    </Button>
                   ) : order.status === "paid" ? (
                     <Button
                       size="sm"
@@ -215,6 +309,39 @@ function PedidosPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={!!infoOrder} onOpenChange={(open) => !open && setInfoOrder(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pedido #{infoOrder?.id}</DialogTitle>
+          </DialogHeader>
+          {infoLoading ? (
+            <p className="text-sm text-muted-foreground">Carregando...</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Produto</TableHead>
+                  <TableHead className="text-right">Qtd.</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {infoItems.map((item, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="font-mono text-xs">{item.sku ?? "—"}</TableCell>
+                    <TableCell className="text-sm">
+                      {item.product_title}
+                      {item.variant_name ? ` — ${item.variant_name}` : ""}
+                    </TableCell>
+                    <TableCell className="text-right">{item.quantity}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminShell>
   );
 }
