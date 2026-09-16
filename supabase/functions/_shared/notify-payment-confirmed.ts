@@ -3,7 +3,7 @@
 // which of the two ever observes the order turning into "paid" first. Callers are responsible for
 // only invoking this once per order (both already guard on "was the previous status already paid?").
 import type { SupabaseClient } from "jsr:@supabase/supabase-js@2";
-import { randomPassword } from "./random-password.ts";
+import { randomPassword, randomDigits } from "./random-password.ts";
 import { sendEmail } from "./send-email.ts";
 import { renderEmailTemplate } from "./render-template.ts";
 
@@ -33,16 +33,15 @@ export async function notifyPaymentConfirmed(admin: SupabaseClient, order: Order
   // never leaks account access.
   let contaBloco = "";
   if (order.is_new_account && order.user_id && order.customer_email) {
-    const freshPassword = randomPassword(8);
+    const freshPassword = randomDigits(6);
     const { error: passwordError } = await admin.auth.admin.updateUserById(order.user_id, {
       password: freshPassword,
     });
     if (!passwordError) {
       contaBloco = `<div style="margin-top: 16px; padding: 12px 16px; background: #f0fdf4; border-radius: 8px;">
-        <p style="margin: 0 0 8px;"><strong>Criamos uma conta para você acompanhar seus pedidos:</strong></p>
-        <p style="margin: 0;">E-mail: <strong>${order.customer_email}</strong></p>
-        <p style="margin: 0;">Senha temporária: <strong>${freshPassword}</strong></p>
-        <p style="margin: 8px 0 0;">Acesse em <a href="${SITE_URL}/conta/login">${SITE_URL}/conta/login</a> e recomendamos trocar a senha assim que entrar.</p>
+        <p style="margin: 0;">Acompanhe seu pedido acessando o site <a href="${SITE_URL}/conta/login" style="color: #16a34a;">${SITE_URL}/conta/login</a></p>
+        <p style="margin: 8px 0 0;">Login: <strong>${order.customer_email}</strong></p>
+        <p style="margin: 0;">Senha: <strong>${freshPassword}</strong></p>
       </div>`;
     } else {
       console.error("[notify-payment-confirmed] falha ao definir senha da conta nova", passwordError);
