@@ -65,6 +65,31 @@ export async function notifyPaymentConfirmed(admin: SupabaseClient, order: Order
   if (order.referrer_user_id) {
     await creditReferralReward(admin, order.referrer_user_id, resendKey);
   }
+
+  await notifyAdminOfSale(admin, order, resendKey);
+}
+
+async function notifyAdminOfSale(
+  admin: SupabaseClient,
+  order: OrderForPaymentNotify,
+  resendKey: string | null,
+) {
+  const { data: settings } = await admin
+    .from("site_settings")
+    .select("admin_notification_email")
+    .eq("id", "default")
+    .maybeSingle();
+  if (!settings?.admin_notification_email) return;
+
+  const rendered = await renderEmailTemplate(admin, "admin_new_sale", {
+    nome: order.customer_name ?? "cliente",
+    pedido_curto: order.id.slice(0, 8),
+    total: formatBRL(order.total_cents),
+    link_pedido: `${SITE_URL}/admin/pedidos`,
+  });
+  if (rendered) {
+    await sendEmail(resendKey, { to: settings.admin_notification_email, subject: rendered.subject, html: rendered.html });
+  }
 }
 
 async function creditReferralReward(admin: SupabaseClient, referrerUserId: string, resendKey: string | null) {

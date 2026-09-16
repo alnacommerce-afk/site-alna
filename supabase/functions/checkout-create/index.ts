@@ -297,6 +297,8 @@ Deno.serve(async (req) => {
     let asaasCustomerId: string | undefined = findJson?.data?.[0]?.id;
 
     if (!asaasCustomerId) {
+      // notificationDisabled: Asaas's own billing e-mails/SMS/WhatsApp to the customer are turned
+      // off — we send our own branded transactional e-mails instead, so the customer never gets two.
       const createCustomerResp = await fetch(`${ASAAS_API}/customers`, {
         method: "POST",
         headers: asaasHeaders,
@@ -309,6 +311,7 @@ Deno.serve(async (req) => {
           address: body.shippingAddress.street,
           addressNumber: body.shippingAddress.number,
           province: body.shippingAddress.neighborhood,
+          notificationDisabled: true,
         }),
       });
       if (!createCustomerResp.ok) {
@@ -317,6 +320,14 @@ Deno.serve(async (req) => {
       }
       const created = await createCustomerResp.json();
       asaasCustomerId = created.id;
+    } else {
+      // Customer already existed in Asaas (possibly from before this flag existed) — make sure
+      // their notifications are off too. Fire-and-forget: never blocks checkout on Asaas's response.
+      fetch(`${ASAAS_API}/customers/${asaasCustomerId}`, {
+        method: "PUT",
+        headers: asaasHeaders,
+        body: JSON.stringify({ notificationDisabled: true }),
+      }).catch((error) => console.error("[checkout-create] falha ao desativar notificações Asaas", error));
     }
 
     // 5. Create the order (pending) before calling Asaas, so we always have a record even if the

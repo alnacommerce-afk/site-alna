@@ -621,6 +621,7 @@ export type Database = {
         Row: {
           address_city: string | null
           address_state: string | null
+          admin_notification_email: string | null
           business_hours: string | null
           cnpj: string | null
           email: string | null
@@ -644,6 +645,7 @@ export type Database = {
         Insert: {
           address_city?: string | null
           address_state?: string | null
+          admin_notification_email?: string | null
           business_hours?: string | null
           cnpj?: string | null
           email?: string | null
@@ -667,6 +669,7 @@ export type Database = {
         Update: {
           address_city?: string | null
           address_state?: string | null
+          admin_notification_email?: string | null
           business_hours?: string | null
           cnpj?: string | null
           email?: string | null

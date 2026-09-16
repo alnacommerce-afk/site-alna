@@ -25,6 +25,7 @@ type SettingsForm = {
   phone: string;
   whatsapp: string;
   email: string;
+  adminNotificationEmail: string;
   addressCity: string;
   addressState: string;
   businessHours: string;
@@ -47,6 +48,7 @@ const emptyForm: SettingsForm = {
   phone: "",
   whatsapp: "",
   email: "",
+  adminNotificationEmail: "",
   addressCity: "",
   addressState: "",
   businessHours: "",
@@ -88,6 +90,7 @@ function ConfiguracoesPage() {
         phone: data.phone ?? "",
         whatsapp: data.whatsapp ?? "",
         email: data.email ?? "",
+        adminNotificationEmail: data.admin_notification_email ?? "",
         addressCity: data.address_city ?? "",
         addressState: data.address_state ?? "",
         businessHours: data.business_hours ?? "",
@@ -122,6 +125,7 @@ function ConfiguracoesPage() {
         phone: form.phone || null,
         whatsapp: form.whatsapp || null,
         email: form.email || null,
+        admin_notification_email: form.adminNotificationEmail || null,
         address_city: form.addressCity || null,
         address_state: form.addressState || null,
         business_hours: form.businessHours || null,
@@ -194,6 +198,19 @@ function ConfiguracoesPage() {
                 value={form.email}
                 onChange={(e) => setField("email", e.target.value)}
               />
+              <p className="text-xs text-muted-foreground">Exibido publicamente no site (rodapé, contato).</p>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="admin-notification-email">E-mail de aviso de novas vendas</Label>
+              <Input
+                id="admin-notification-email"
+                type="email"
+                value={form.adminNotificationEmail}
+                onChange={(e) => setField("adminNotificationEmail", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Recebe um e-mail interno toda vez que um pagamento é confirmado. Deixe em branco para desativar.
+              </p>
             </div>
             <div className="space-y-1">
               <Label htmlFor="phone">Telefone (exibido no site)</Label>
