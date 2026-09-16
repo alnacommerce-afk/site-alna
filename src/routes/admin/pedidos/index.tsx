@@ -153,7 +153,9 @@ function PedidosPage() {
       toast.error(data?.error ?? "Não foi possível preparar a etiqueta.");
       return;
     }
-    window.open(data.url, "_blank");
+    // Cache-bust: the URL is the same every time for a given order, so without this the browser
+    // can silently reopen an old cached copy instead of fetching the freshly-generated file.
+    window.open(`${data.url}?t=${Date.now()}`, "_blank");
   }
 
   async function downloadAllLabels() {
@@ -171,7 +173,7 @@ function PedidosPage() {
       toast.error(data?.error ?? "Não foi possível preparar as etiquetas.");
       return;
     }
-    window.open(data.url, "_blank");
+    window.open(`${data.url}?t=${Date.now()}`, "_blank");
   }
 
   async function openInfo(order: OrderRow) {
