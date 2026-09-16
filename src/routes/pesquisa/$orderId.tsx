@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ type SubmitResult = { alreadyAnswered: true } | { alreadyAnswered: false; promot
 
 function PesquisaPage() {
   const { orderId } = Route.useParams();
+  const navigate = useNavigate();
   const [status, setStatus] = useState<PageStatus>("loading");
   const [customerName, setCustomerName] = useState<string | null>(null);
   const [wouldRecommend, setWouldRecommend] = useState<boolean | null>(null);
@@ -52,8 +53,7 @@ function PesquisaPage() {
   }, [orderId]);
 
   function finishSurvey() {
-    setResult(null);
-    setStatus("finished");
+    navigate({ to: "/" });
   }
 
   async function handleSubmit() {
