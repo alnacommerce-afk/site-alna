@@ -1,15 +1,25 @@
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ReactFlow, Background, Controls, Handle, Position, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { formatCentsToBRL } from "@/lib/money";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -67,6 +77,26 @@ const INSERT_BLOCKS = [
   { label: "Imagem", snippet: '<img src="https://alnacommerce.com/caminho-da-imagem.jpg" alt="" style="max-width:100%;border-radius:8px;margin:16px 0;" />' },
 ];
 
+const NO_COUPON_VALUE = "__none__";
+
+// Mirrors supabase/functions/_shared/render-template.ts's wrapBranded — so what you preview here
+// is exactly what gets sent, even though the real wrapping happens server-side at send time.
+function wrapBrandedPreview(innerHtml: string) {
+  return `
+  <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; background:#ffffff;">
+    <div style="background:#12294f; padding:20px 24px; text-align:center;">
+      <span style="color:#ffffff; font-size:20px; font-weight:800; letter-spacing:0.5px;">ALNA COMMERCE</span>
+    </div>
+    <div style="padding:28px 24px; color:#12294f; font-size:15px; line-height:1.55;">
+      ${innerHtml}
+    </div>
+    <div style="background:#f9fafb; padding:20px 24px; text-align:center; font-size:12px; color:#6b7280;">
+      <p style="margin:0;">Alna Commerce — CNPJ 57.135.009/0001-27</p>
+      <p style="margin:4px 0 0;">Brusque, SC — Dúvidas? Fale com a gente pelo WhatsApp.</p>
+    </div>
+  </div>`;
+}
+
 function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => void) {
   const emailNode = (id: string, x: number, y: number, label: string, templateId: string): Node => ({
     id,
@@ -88,7 +118,7 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f1-event", 0, 220, "Evento: pagamento confirmado (webhook Asaas)", "wait"),
     emailNode("f1-email2", 0, 330, "Pagamento confirmado + acesso à conta", "payment_confirmed"),
 
-    // Fluxo 2 — Recuperação de carrinho
+    // Fluxo 2 — Recuperação de carrinho (cliente com pedido pendente)
     plainNode("f2-trigger", 420, 0, "Pedido pendente criado", "trigger"),
     plainNode("f2-wait1", 420, 110, "Espera 10 minutos", "wait"),
     plainNode("f2-cond1", 420, 220, "Pagou?", "condition"),
@@ -97,8 +127,24 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f2-wait2", 420, 440, "Espera 24 horas", "wait"),
     plainNode("f2-cond2", 420, 550, "Pagou?", "condition"),
     plainNode("f2-ok2", 700, 550, "Fim (já pagou)", "exit"),
-    emailNode("f2-email2", 420, 660, "Última chance + cupom ALNA10OFF", "cart_reminder_24h"),
+    emailNode("f2-email2", 420, 660, "Última chance + cupom", "cart_reminder_24h"),
     plainNode("f2-exit", 420, 770, "Sair da lista", "exit"),
+
+    // Fluxo 3 — Pós-compra / NPS (cliente que pagou e recebeu)
+    plainNode("f3-trigger", 840, 0, "Entrega confirmada (rastreio)", "trigger"),
+    plainNode("f3-wait", 840, 110, "Espera 7 dias", "wait"),
+    emailNode("f3-email1", 840, 220, "Pesquisa: de 0 a 10, indicaria?", "post_purchase_nps"),
+    plainNode("f3-click", 840, 330, "Cliente clica numa nota (0–10)", "wait"),
+    emailNode("f3-email2", 840, 440, "Obrigado + cupom de agradecimento", "nps_thank_you"),
+    plainNode("f3-cond", 840, 550, "Nota ≥ 5?", "condition"),
+    plainNode("f3-list", 840, 660, "Entra na lista de marketing", "trigger"),
+    plainNode("f3-end", 1120, 550, "Fim (sem marketing)", "exit"),
+
+    // Fluxo 4 — Marketing semanal
+    plainNode("f4-trigger", 1260, 0, "Cliente na lista de marketing", "trigger"),
+    plainNode("f4-wait", 1260, 110, "Toda segunda-feira, 10h", "wait"),
+    emailNode("f4-email", 1260, 220, "Novidades da semana", "weekly_marketing"),
+    plainNode("f4-exit", 1260, 330, "Sair da lista", "exit"),
   ];
 
   const edges: Edge[] = [
@@ -115,25 +161,67 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f2-7", source: "f2-cond2", target: "f2-email2", label: "Não" },
     { id: "e-f2-8", source: "f2-cond2", sourceHandle: "right", target: "f2-ok2", label: "Sim" },
     { id: "e-f2-9", source: "f2-email2", target: "f2-exit" },
+
+    { id: "e-f3-1", source: "f3-trigger", target: "f3-wait" },
+    { id: "e-f3-2", source: "f3-wait", target: "f3-email1" },
+    { id: "e-f3-3", source: "f3-email1", target: "f3-click" },
+    { id: "e-f3-4", source: "f3-click", target: "f3-email2" },
+    { id: "e-f3-5", source: "f3-email2", target: "f3-cond" },
+    { id: "e-f3-6", source: "f3-cond", target: "f3-list", label: "Sim" },
+    { id: "e-f3-7", source: "f3-cond", sourceHandle: "right", target: "f3-end", label: "Não" },
+
+    { id: "e-f4-1", source: "f4-trigger", target: "f4-wait" },
+    { id: "e-f4-2", source: "f4-wait", target: "f4-email" },
+    { id: "e-f4-3", source: "f4-email", target: "f4-exit" },
   ];
 
   return { nodes, edges };
 }
 
+type Coupon = { id: string; code: string; discount_percent: number; active: boolean };
+type ProductOption = { id: string; title: string; price_cents: number | null };
+
 function FluxoEmailPage() {
   const [editing, setEditing] = useState<{ templateId: string; label: string } | null>(null);
   const [subject, setSubject] = useState("");
   const [htmlBody, setHtmlBody] = useState("");
+  const [couponId, setCouponId] = useState<string>(NO_COUPON_VALUE);
+  const [featuredProductIds, setFeaturedProductIds] = useState<string[]>([]);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [saving, setSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [products, setProducts] = useState<ProductOption[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("coupons")
+      .select("id, code, discount_percent, active")
+      .order("code")
+      .then(({ data }) => setCoupons(data ?? []));
+    supabase
+      .from("products")
+      .select("id, title, product_variants(price_cents)")
+      .eq("status", "published")
+      .order("title")
+      .then(({ data }) =>
+        setProducts(
+          (data ?? []).map((p) => ({
+            id: p.id,
+            title: p.title,
+            price_cents: (p.product_variants as { price_cents: number }[] | null)?.[0]?.price_cents ?? null,
+          })),
+        ),
+      );
+  }, []);
 
   async function openTemplate(templateId: string, label: string) {
     setEditing({ templateId, label });
     setLoadingTemplate(true);
     const { data, error } = await supabase
       .from("email_templates")
-      .select("subject, html_body")
+      .select("subject, html_body, coupon_id, featured_product_ids")
       .eq("id", templateId)
       .maybeSingle();
     setLoadingTemplate(false);
@@ -144,6 +232,8 @@ function FluxoEmailPage() {
     }
     setSubject(data.subject);
     setHtmlBody(data.html_body);
+    setCouponId(data.coupon_id ?? NO_COUPON_VALUE);
+    setFeaturedProductIds(data.featured_product_ids ?? []);
   }
 
   function insertSnippet(snippet: string) {
@@ -161,12 +251,24 @@ function FluxoEmailPage() {
     });
   }
 
+  function toggleProduct(productId: string, checked: boolean) {
+    setFeaturedProductIds((prev) =>
+      checked ? [...prev, productId] : prev.filter((id) => id !== productId),
+    );
+  }
+
   async function handleSaveTemplate() {
     if (!editing) return;
     setSaving(true);
     const { error } = await supabase
       .from("email_templates")
-      .update({ subject, html_body: htmlBody, updated_at: new Date().toISOString() })
+      .update({
+        subject,
+        html_body: htmlBody,
+        coupon_id: couponId === NO_COUPON_VALUE ? null : couponId,
+        featured_product_ids: featuredProductIds,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", editing.templateId);
     setSaving(false);
     if (error) {
@@ -178,19 +280,20 @@ function FluxoEmailPage() {
   }
 
   const { nodes, edges } = buildFlowGraph(openTemplate);
+  const showProductPicker = editing?.templateId === "weekly_marketing";
 
   return (
     <AdminShell>
       <div className="mb-4">
         <h1 className="text-xl font-semibold">Fluxo de E-mail</h1>
         <p className="text-sm text-muted-foreground">
-          Clique em uma caixa verde (📧) para editar o assunto e o conteúdo desse e-mail. As caixas
-          cinza/amarelas mostram a lógica de espera e condição — a automação de verdade roda
-          sozinha a cada 5 minutos.
+          Clique em uma caixa verde (📧) para editar o assunto, o conteúdo, o cupom e (no e-mail de
+          marketing) os produtos em destaque. As caixas cinza/amarelas mostram a lógica — a
+          automação de verdade roda sozinha nos horários configurados.
         </p>
       </div>
 
-      <div style={{ height: 620 }} className="rounded-lg border bg-[#fcfbf8]">
+      <div style={{ height: 620 }} className="overflow-x-auto rounded-lg border bg-[#fcfbf8]">
         <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView proOptions={{ hideAttribution: true }}>
           <Background />
           <Controls showInteractive={false} />
@@ -198,7 +301,7 @@ function FluxoEmailPage() {
       </div>
 
       <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
-        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing?.label}</DialogTitle>
           </DialogHeader>
@@ -212,6 +315,62 @@ function FluxoEmailPage() {
                   <Label htmlFor="template-subject">Assunto</Label>
                   <Input id="template-subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
                 </div>
+
+                <div className="space-y-1">
+                  <Label>Cupom (opcional)</Label>
+                  <Select value={couponId} onValueChange={setCouponId}>
+                    <SelectTrigger>
+                      <SelectValue>
+                        {couponId === NO_COUPON_VALUE
+                          ? "Nenhum"
+                          : (() => {
+                              const c = coupons.find((c) => c.id === couponId);
+                              return c ? `${c.code} (${c.discount_percent}%)` : "Nenhum";
+                            })()}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NO_COUPON_VALUE}>Nenhum</SelectItem>
+                      {coupons.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.code} ({c.discount_percent}%) {c.active ? "" : "— inativo"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Escolher aqui evita referenciar um código que não existe mais — use{" "}
+                    <code>{"{{cupom_codigo}}"}</code> e <code>{"{{cupom_desconto}}"}</code> no texto.
+                  </p>
+                </div>
+
+                {showProductPicker ? (
+                  <div className="space-y-1">
+                    <Label>Produtos em destaque</Label>
+                    <ScrollArea className="h-40 rounded-md border p-2">
+                      <div className="space-y-1.5">
+                        {products.map((p) => (
+                          <label key={p.id} className="flex items-center gap-2 text-sm">
+                            <Checkbox
+                              checked={featuredProductIds.includes(p.id)}
+                              onCheckedChange={(checked) => toggleProduct(p.id, !!checked)}
+                            />
+                            <span className="flex-1">{p.title}</span>
+                            {p.price_cents != null ? (
+                              <span className="text-xs text-muted-foreground">
+                                {formatCentsToBRL(p.price_cents)}
+                              </span>
+                            ) : null}
+                          </label>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                    <p className="text-xs text-muted-foreground">
+                      Aparecem automaticamente no bloco <code>{"{{produtos_html}}"}</code>.
+                    </p>
+                  </div>
+                ) : null}
+
                 <div className="space-y-1">
                   <Label>Inserir na mensagem</Label>
                   <div className="flex flex-wrap gap-1.5">
@@ -229,23 +388,23 @@ function FluxoEmailPage() {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="template-body">Conteúdo (HTML)</Label>
+                  <Label htmlFor="template-body">Conteúdo</Label>
                   <Textarea
                     id="template-body"
                     ref={textareaRef}
                     value={htmlBody}
                     onChange={(e) => setHtmlBody(e.target.value)}
-                    rows={16}
+                    rows={14}
                     className="font-mono text-xs"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <Label>Pré-visualização</Label>
+                <Label>Pré-visualização (com a moldura da marca)</Label>
                 <iframe
                   title="Pré-visualização do e-mail"
-                  srcDoc={htmlBody}
-                  className="h-[420px] w-full rounded-md border bg-white"
+                  srcDoc={wrapBrandedPreview(htmlBody)}
+                  className="h-[480px] w-full rounded-md border bg-white"
                 />
               </div>
             </div>

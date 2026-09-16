@@ -4,7 +4,7 @@
 // idempotent even if triggered more than once.
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
-import { renderEmailTemplate } from "../_shared/render-template.ts";
+import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
 
 const SITE_URL = "https://alnacommerce.com";
 const ASAAS_API = "https://api.asaas.com/v3";
@@ -101,14 +101,18 @@ Deno.serve(async (req) => {
         continue;
       }
       const { pixQrHtml, botaoCheckout } = await buildPaymentBlocks(admin, order);
-      const rendered = await renderEmailTemplate(admin, "cart_reminder_10min", {
-        nome: order.customer_name ?? "cliente",
-        pedido_curto: order.id.slice(0, 8),
-        total: formatBRL(order.total_cents),
-        pix_qr_html: pixQrHtml,
-        botao_checkout: botaoCheckout,
-        link_descadastro: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}`,
-      });
+      const rendered = await renderEmailTemplate(
+        admin,
+        "cart_reminder_10min",
+        {
+          nome: order.customer_name ?? "cliente",
+          pedido_curto: order.id.slice(0, 8),
+          total: formatBRL(order.total_cents),
+          pix_qr_html: pixQrHtml,
+          botao_checkout: botaoCheckout,
+        },
+        { unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}` },
+      );
       if (rendered) {
         await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
         sent10min++;
@@ -117,16 +121,7 @@ Deno.serve(async (req) => {
     }
 
     // Step 2: 24-hour follow-up (only for orders that already got the 10-minute nudge).
-    const { data: coupon } = await admin
-      .from("coupons")
-      .select("code, discount_percent, valid_from, valid_until, active")
-      .eq("code", "ALNA10OFF")
-      .maybeSingle();
-    const couponNow = new Date();
-    const couponValid =
-      coupon?.active &&
-      (!coupon.valid_from || new Date(coupon.valid_from) <= couponNow) &&
-      (!coupon.valid_until || new Date(coupon.valid_until) >= couponNow);
+    const coupon = await resolveTemplateCoupon(admin, "cart_reminder_24h");
 
     const { data: due24h } = await admin
       .from("orders")
@@ -142,14 +137,19 @@ Deno.serve(async (req) => {
         continue;
       }
       const { botaoCheckout } = await buildPaymentBlocks(admin, order);
-      const rendered = await renderEmailTemplate(admin, "cart_reminder_24h", {
-        nome: order.customer_name ?? "cliente",
-        pedido_curto: order.id.slice(0, 8),
-        total: formatBRL(order.total_cents),
-        cupom_codigo: couponValid ? coupon.code : "",
-        botao_checkout: botaoCheckout,
-        link_descadastro: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}`,
-      });
+      const rendered = await renderEmailTemplate(
+        admin,
+        "cart_reminder_24h",
+        {
+          nome: order.customer_name ?? "cliente",
+          pedido_curto: order.id.slice(0, 8),
+          total: formatBRL(order.total_cents),
+          cupom_codigo: coupon?.code ?? "",
+          cupom_desconto: coupon ? String(coupon.discountPercent) : "",
+          botao_checkout: botaoCheckout,
+        },
+        { unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}` },
+      );
       if (rendered) {
         await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
         sent24h++;

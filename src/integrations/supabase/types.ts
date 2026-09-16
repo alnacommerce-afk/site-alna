@@ -111,24 +111,38 @@ export type Database = {
       }
       email_templates: {
         Row: {
+          coupon_id: string | null
+          featured_product_ids: string[]
           html_body: string
           id: string
           subject: string
           updated_at: string
         }
         Insert: {
+          coupon_id?: string | null
+          featured_product_ids?: string[]
           html_body: string
           id: string
           subject: string
           updated_at?: string
         }
         Update: {
+          coupon_id?: string | null
+          featured_product_ids?: string[]
           html_body?: string
           id?: string
           subject?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "email_templates_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       integration_connections: {
         Row: {
@@ -157,6 +171,27 @@ export type Database = {
           secret_id?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      marketing_subscribers: {
+        Row: {
+          email: string
+          name: string | null
+          source: string | null
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          name?: string | null
+          source?: string | null
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          name?: string | null
+          source?: string | null
+          subscribed_at?: string
         }
         Relationships: []
       }
@@ -253,12 +288,15 @@ export type Database = {
           customer_email: string | null
           customer_name: string | null
           customer_phone: string | null
+          delivered_at: string | null
           discount_cents: number
           id: string
           installment_count: number
           label_generated_count: number
           label_url: string | null
           melhor_envio_shipment_id: string | null
+          nps_score: number | null
+          nps_survey_sent_at: string | null
           payment_id: string | null
           payment_method: string | null
           payment_provider: string | null
@@ -282,12 +320,15 @@ export type Database = {
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          delivered_at?: string | null
           discount_cents?: number
           id?: string
           installment_count?: number
           label_generated_count?: number
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
+          nps_score?: number | null
+          nps_survey_sent_at?: string | null
           payment_id?: string | null
           payment_method?: string | null
           payment_provider?: string | null
@@ -311,12 +352,15 @@ export type Database = {
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          delivered_at?: string | null
           discount_cents?: number
           id?: string
           installment_count?: number
           label_generated_count?: number
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
+          nps_score?: number | null
+          nps_survey_sent_at?: string | null
           payment_id?: string | null
           payment_method?: string | null
           payment_provider?: string | null
