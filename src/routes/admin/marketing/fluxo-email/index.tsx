@@ -130,15 +130,15 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     emailNode("f2-email2", 420, 660, "Última chance + cupom", "cart_reminder_24h"),
     plainNode("f2-exit", 420, 770, "Sair da lista", "exit"),
 
-    // Fluxo 3 — Pós-compra / NPS (cliente que pagou e recebeu)
-    plainNode("f3-trigger", 840, 0, "Entrega confirmada (rastreio)", "trigger"),
-    plainNode("f3-wait", 840, 110, "Espera 7 dias", "wait"),
-    emailNode("f3-email1", 840, 220, "Pesquisa: de 0 a 10, indicaria?", "post_purchase_nps"),
-    plainNode("f3-click", 840, 330, "Cliente clica numa nota (0–10)", "wait"),
-    emailNode("f3-email2", 840, 440, "Obrigado + cupom de agradecimento", "nps_thank_you"),
-    plainNode("f3-cond", 840, 550, "Nota ≥ 5?", "condition"),
-    plainNode("f3-list", 840, 660, "Entra na lista de marketing", "trigger"),
-    plainNode("f3-end", 1120, 550, "Fim (sem marketing)", "exit"),
+    // Fluxo 3 — Pós-compra / NPS (cliente que pagou e recebeu) — encadeado direto do Fluxo 1
+    plainNode("f3-trigger", 840, 330, "Entrega confirmada (rastreio)", "trigger"),
+    plainNode("f3-wait", 840, 440, "Espera 7 dias", "wait"),
+    emailNode("f3-email1", 840, 550, "Pesquisa: de 0 a 10, indicaria?", "post_purchase_nps"),
+    plainNode("f3-click", 840, 660, "Cliente clica numa nota (0–10)", "wait"),
+    emailNode("f3-email2", 840, 770, "Obrigado + cupom de agradecimento", "nps_thank_you"),
+    plainNode("f3-cond", 840, 880, "Nota ≥ 5?", "condition"),
+    plainNode("f3-list", 840, 990, "Entra na lista de marketing", "trigger"),
+    plainNode("f3-end", 1120, 880, "Fim (sem marketing)", "exit"),
 
     // Fluxo 4 — Marketing semanal
     plainNode("f4-trigger", 1260, 0, "Cliente na lista de marketing", "trigger"),
@@ -151,6 +151,15 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f1-1", source: "f1-trigger", target: "f1-email1" },
     { id: "e-f1-2", source: "f1-email1", target: "f1-event" },
     { id: "e-f1-3", source: "f1-event", target: "f1-email2" },
+    {
+      id: "e-f1-f3",
+      source: "f1-email2",
+      sourceHandle: "right",
+      target: "f3-trigger",
+      label: "produto entregue",
+      animated: true,
+      style: { stroke: "#16a34a" },
+    },
 
     { id: "e-f2-1", source: "f2-trigger", target: "f2-wait1" },
     { id: "e-f2-2", source: "f2-wait1", target: "f2-cond1" },
