@@ -64,6 +64,72 @@ export type Database = {
           },
         ]
       }
+      coupons: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          discount_percent: number
+          id: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          discount_percent: number
+          id?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
+      email_suppressions: {
+        Row: {
+          email: string
+          unsubscribed_at: string
+        }
+        Insert: {
+          email: string
+          unsubscribed_at?: string
+        }
+        Update: {
+          email?: string
+          unsubscribed_at?: string
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          html_body: string
+          id: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          html_body: string
+          id: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          html_body?: string
+          id?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integration_connections: {
         Row: {
           id: string
@@ -181,11 +247,13 @@ export type Database = {
       orders: {
         Row: {
           asaas_customer_id: string | null
+          coupon_code: string | null
           created_at: string
           customer_document: string | null
           customer_email: string | null
           customer_name: string | null
           customer_phone: string | null
+          discount_cents: number
           id: string
           installment_count: number
           label_generated_count: number
@@ -195,6 +263,8 @@ export type Database = {
           payment_method: string | null
           payment_provider: string | null
           payment_status: string | null
+          reminder_10min_sent_at: string | null
+          reminder_24h_sent_at: string | null
           shipping_address: Json | null
           shipping_cost_cents: number | null
           status: Database["public"]["Enums"]["order_status"]
@@ -206,11 +276,13 @@ export type Database = {
         }
         Insert: {
           asaas_customer_id?: string | null
+          coupon_code?: string | null
           created_at?: string
           customer_document?: string | null
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          discount_cents?: number
           id?: string
           installment_count?: number
           label_generated_count?: number
@@ -220,6 +292,8 @@ export type Database = {
           payment_method?: string | null
           payment_provider?: string | null
           payment_status?: string | null
+          reminder_10min_sent_at?: string | null
+          reminder_24h_sent_at?: string | null
           shipping_address?: Json | null
           shipping_cost_cents?: number | null
           status?: Database["public"]["Enums"]["order_status"]
@@ -231,11 +305,13 @@ export type Database = {
         }
         Update: {
           asaas_customer_id?: string | null
+          coupon_code?: string | null
           created_at?: string
           customer_document?: string | null
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          discount_cents?: number
           id?: string
           installment_count?: number
           label_generated_count?: number
@@ -245,6 +321,8 @@ export type Database = {
           payment_method?: string | null
           payment_provider?: string | null
           payment_status?: string | null
+          reminder_10min_sent_at?: string | null
+          reminder_24h_sent_at?: string | null
           shipping_address?: Json | null
           shipping_cost_cents?: number | null
           status?: Database["public"]["Enums"]["order_status"]

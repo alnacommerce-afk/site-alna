@@ -9,13 +9,14 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { randomPassword } from "../_shared/random-password.ts";
 import { sendEmail } from "../_shared/send-email.ts";
-import { orderReceivedEmailHtml } from "../_shared/email-templates.ts";
+import { renderEmailTemplate } from "../_shared/render-template.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const SITE_URL = "https://alnacommerce.com";
 const JT_EXPRESS_SERVICE_ID = "33";
 const PIX_DISCOUNT = 0.04;
 const ASAAS_API = "https://api.asaas.com/v3";
@@ -45,6 +46,7 @@ type CheckoutBody = {
   items: CheckoutItem[];
   paymentMethod: "pix" | "credit_card";
   installmentCount?: number;
+  couponCode?: string;
   creditCard?: {
     holderName: string;
     number: string;
@@ -67,6 +69,10 @@ function onlyDigits(value: string) {
 
 function todayISODate() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function formatBRL(cents: number) {
+  return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function cardFeePercentFor(installmentCount: number) {
@@ -135,6 +141,27 @@ Deno.serve(async (req) => {
       0,
     );
 
+    // 1b. Validate the coupon server-side — never trust a discount value from the client.
+    let discountCents = 0;
+    let appliedCouponCode: string | null = null;
+    if (body.couponCode) {
+      const code = body.couponCode.trim().toUpperCase();
+      const { data: coupon } = await admin
+        .from("coupons")
+        .select("code, discount_percent, valid_from, valid_until, active")
+        .eq("code", code)
+        .maybeSingle();
+      const now = new Date();
+      const withinWindow =
+        coupon?.active &&
+        (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
+        (!coupon.valid_until || new Date(coupon.valid_until) >= now);
+      if (withinWindow) {
+        discountCents = Math.round(subtotalCents * (Number(coupon.discount_percent) / 100));
+        appliedCouponCode = coupon.code;
+      }
+    }
+
     // 2. Real shipping quote (J&T Express only), same logic as calculate-shipping.
     const { data: settings } = await admin
       .from("site_settings")
@@ -198,7 +225,7 @@ Deno.serve(async (req) => {
     // charged amount (0 when eligible) goes into the order and the Asaas charge.
     const shippingCostCents = freeShipping ? 0 : carrierShippingCents;
 
-    const baseTotalCents = subtotalCents + shippingCostCents;
+    const baseTotalCents = subtotalCents - discountCents + shippingCostCents;
     const totalCents =
       body.paymentMethod === "pix"
         ? Math.round(baseTotalCents * (1 - PIX_DISCOUNT))
@@ -223,6 +250,9 @@ Deno.serve(async (req) => {
       await admin.from("user_roles").insert({ user_id: customerUserId, role: "customer" });
       newAccount = { email: body.customer.email, password: tempPassword };
     }
+    // A new purchase means renewed interest — re-subscribe them to cart-recovery/marketing e-mails
+    // if they'd previously opted out (transactional e-mails about their own order never check this).
+    await admin.from("email_suppressions").delete().eq("email", body.customer.email);
 
     // 4. Find or create the Asaas customer.
     const asaasKey = await admin
@@ -285,6 +315,8 @@ Deno.serve(async (req) => {
         subtotal_cents: subtotalCents,
         shipping_cost_cents: shippingCostCents,
         total_cents: totalCents,
+        coupon_code: appliedCouponCode,
+        discount_cents: discountCents,
         payment_provider: "asaas",
         payment_method: body.paymentMethod,
         installment_count: installmentCount,
@@ -391,21 +423,34 @@ Deno.serve(async (req) => {
       .eq("id", orderId);
 
     // 8. E-mail the customer their order (and their new login, if this is their first order).
-    // Never blocks or fails the checkout — sendEmail swallows its own errors.
+    // Never blocks or fails the checkout — sendEmail swallows its own errors, and a missing/broken
+    // template just skips the send.
     const resendKey = await admin
       .rpc("get_integration_secret", { p_integration_id: "resend" })
       .then((r) => r.data as string | null);
-    await sendEmail(resendKey, {
-      to: body.customer.email,
-      subject: `Pedido recebido #${orderId.slice(0, 8)} — Alna Commerce`,
-      html: orderReceivedEmailHtml({
-        orderId,
-        customerName: body.customer.name,
-        totalCents,
-        isPix: body.paymentMethod === "pix",
-        newAccount,
-      }),
+    const pixAviso =
+      body.paymentMethod === "pix"
+        ? "<p>Finalize o pagamento escaneando o QR Code ou usando o código copia-e-cola que apareceu na tela.</p>"
+        : "";
+    const contaNova = newAccount
+      ? `<div style="margin-top: 16px; padding: 12px 16px; background: #f0fdf4; border-radius: 8px;">
+           <p style="margin: 0 0 8px;"><strong>Criamos uma conta para você acompanhar seus pedidos:</strong></p>
+           <p style="margin: 0;">E-mail: <strong>${newAccount.email}</strong></p>
+           <p style="margin: 0;">Senha temporária: <strong>${newAccount.password}</strong></p>
+           <p style="margin: 8px 0 0;">Acesse em <a href="${SITE_URL}/conta/login">${SITE_URL}/conta/login</a> e recomendamos trocar a senha assim que entrar.</p>
+         </div>`
+      : "";
+    const rendered = await renderEmailTemplate(admin, "order_received", {
+      nome: body.customer.name,
+      pedido_curto: orderId.slice(0, 8),
+      total: formatBRL(totalCents),
+      link_pedido: `${SITE_URL}/pedido/${orderId}`,
+      pix_aviso: pixAviso,
+      conta_nova: contaNova,
     });
+    if (rendered) {
+      await sendEmail(resendKey, { to: body.customer.email, subject: rendered.subject, html: rendered.html });
+    }
 
     return jsonResponse({
       orderId,

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Minus, Plus, Trash2, Truck } from "lucide-react";
+import { Minus, Plus, Tag, Trash2, Truck } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { fetchShippingQuote, onlyDigits, type ShippingQuote } from "@/lib/shipping/quote";
+import { validateCoupon } from "@/lib/checkout/validate-coupon";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
@@ -71,12 +72,16 @@ function FreeShippingProgress({
 
 function CarrinhoPage() {
   const { freeShippingThresholdCents } = Route.useLoaderData();
-  const { items, subtotalCents, setQuantity, remove } = useCart();
+  const { items, subtotalCents, coupon, discountCents, setQuantity, remove, setCoupon } = useCart();
 
   const [cep, setCep] = useState(() => getSavedCheckoutInfo().zip ?? "");
   const [quote, setQuote] = useState<ShippingQuote | null>(null);
   const [shippingError, setShippingError] = useState<string | null>(null);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
+
+  const [couponInput, setCouponInput] = useState("");
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   const itemsKey = items.map((i) => `${i.variantId}:${i.quantity}`).join("|");
 
@@ -126,8 +131,22 @@ function CarrinhoPage() {
     });
   }
 
+  async function handleApplyCoupon() {
+    if (!couponInput.trim()) return;
+    setApplyingCoupon(true);
+    setCouponError(null);
+    const result = await validateCoupon(couponInput);
+    setApplyingCoupon(false);
+    if (!result.valid) {
+      setCouponError(result.error);
+      return;
+    }
+    setCoupon({ code: result.code, discountPercent: result.discountPercent });
+    setCouponInput("");
+  }
+
   const shippingCents = quote?.priceCents ?? null;
-  const totalCents = shippingCents != null ? subtotalCents + shippingCents : null;
+  const totalCents = shippingCents != null ? subtotalCents - discountCents + shippingCents : null;
 
   return (
     <div className="min-h-screen bg-white">
@@ -233,6 +252,53 @@ function CarrinhoPage() {
                 </div>
 
                 <div className="space-y-1">
+                  <Label htmlFor="cart-coupon" className="flex items-center gap-1.5">
+                    <Tag className="h-3.5 w-3.5" /> Cupom de desconto
+                  </Label>
+                  {coupon ? (
+                    <div className="flex items-center justify-between rounded-md border border-[#16a34a]/30 bg-[#16a34a]/5 px-3 py-2 text-sm">
+                      <span className="font-semibold text-[#16a34a]">
+                        {coupon.code} aplicado (-{coupon.discountPercent}%)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setCoupon(null)}
+                        className="text-xs text-muted-foreground hover:text-destructive"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        id="cart-coupon"
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value)}
+                        placeholder="Código do cupom"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleApplyCoupon}
+                        disabled={applyingCoupon}
+                      >
+                        {applyingCoupon ? "..." : "Aplicar"}
+                      </Button>
+                    </div>
+                  )}
+                  {couponError ? <p className="text-xs text-destructive">{couponError}</p> : null}
+                </div>
+
+                {discountCents > 0 ? (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Desconto ({coupon?.code})</span>
+                    <span className="font-semibold text-[#16a34a]">
+                      -{formatCentsToBRL(discountCents)}
+                    </span>
+                  </div>
+                ) : null}
+
+                <div className="space-y-1">
                   <Label htmlFor="cart-cep">CEP de entrega</Label>
                   <Input
                     id="cart-cep"
@@ -272,6 +338,9 @@ function CarrinhoPage() {
                 <Button asChild className="w-full bg-[#16a34a] font-bold hover:bg-[#16a34a]/90">
                   <Link to="/checkout">Finalizar compra</Link>
                 </Button>
+                <p className="text-center text-xs text-muted-foreground">
+                  Você vai receber e-mails sobre o status do seu pedido.
+                </p>
               </div>
             </div>
           </>

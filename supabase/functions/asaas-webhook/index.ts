@@ -3,7 +3,13 @@
 // register this same token in Asaas > Configurações > Integração > Webhooks when adding the URL.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
-import { paymentConfirmedEmailHtml } from "../_shared/email-templates.ts";
+import { renderEmailTemplate } from "../_shared/render-template.ts";
+
+const SITE_URL = "https://alnacommerce.com";
+
+function formatBRL(cents: number) {
+  return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -71,15 +77,15 @@ Deno.serve(async (req) => {
       const resendKey = await admin
         .rpc("get_integration_secret", { p_integration_id: "resend" })
         .then((r) => r.data as string | null);
-      await sendEmail(resendKey, {
-        to: existingOrder.customer_email,
-        subject: `Pagamento confirmado #${existingOrder.id.slice(0, 8)} — Alna Commerce`,
-        html: paymentConfirmedEmailHtml({
-          orderId: existingOrder.id,
-          customerName: existingOrder.customer_name ?? "cliente",
-          totalCents: existingOrder.total_cents,
-        }),
+      const rendered = await renderEmailTemplate(admin, "payment_confirmed", {
+        nome: existingOrder.customer_name ?? "cliente",
+        pedido_curto: existingOrder.id.slice(0, 8),
+        total: formatBRL(existingOrder.total_cents),
+        link_conta: `${SITE_URL}/conta`,
       });
+      if (rendered) {
+        await sendEmail(resendKey, { to: existingOrder.customer_email, subject: rendered.subject, html: rendered.html });
+      }
     }
 
     return jsonResponse({ ok: true });

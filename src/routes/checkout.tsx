@@ -37,7 +37,7 @@ const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
 const INSTALLMENT_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
 
 function CheckoutPage() {
-  const { items, subtotalCents, clear } = useCart();
+  const { items, subtotalCents, coupon, discountCents, clear } = useCart();
   const [resultOpen, setResultOpen] = useState(false);
   const [resultOrderId, setResultOrderId] = useState<string | null>(null);
   const saved = useMemo(() => getSavedCheckoutInfo(), []);
@@ -111,7 +111,7 @@ function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items.length]);
 
-  const baseTotalCents = shippingCents != null ? subtotalCents + shippingCents : null;
+  const baseTotalCents = shippingCents != null ? subtotalCents - discountCents + shippingCents : null;
   const displayTotalCents =
     baseTotalCents == null
       ? null
@@ -149,6 +149,7 @@ function CheckoutPage() {
           shippingAddress: { zip: cep, street, number, complement, neighborhood, city, state },
           items: items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
           paymentMethod,
+          couponCode: coupon?.code,
           installmentCount: paymentMethod === "credit_card" ? installmentCount : undefined,
           creditCard:
             paymentMethod === "credit_card"
@@ -389,6 +390,12 @@ function CheckoutPage() {
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>{formatCentsToBRL(subtotalCents)}</span>
               </div>
+              {discountCents > 0 ? (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Desconto ({coupon?.code})</span>
+                  <span className="text-[#16a34a]">-{formatCentsToBRL(discountCents)}</span>
+                </div>
+              ) : null}
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Frete (J&amp;T Express)</span>
                 <span>
