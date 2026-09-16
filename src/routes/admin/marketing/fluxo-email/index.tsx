@@ -112,45 +112,58 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
   });
 
   const nodes: Node[] = [
-    // Fluxo 1 — Pedido / Pagamento
-    plainNode("f1-trigger", 0, 0, "Pedido criado", "trigger"),
-    emailNode("f1-email1", 0, 110, "Pedido recebido", "order_received"),
-    plainNode("f1-event", 0, 220, "Evento: pagamento confirmado (webhook Asaas)", "wait"),
-    emailNode("f1-email2", 0, 330, "Pagamento confirmado + acesso à conta", "payment_confirmed"),
+    // Fluxo 1 — Pedido pendente → confirmação de pagamento (ponto único de entrada; tanto o
+    // caminho direto quanto os dois caminhos de recuperação do Fluxo 2 convergem em f1-email2).
+    plainNode("f1-trigger", 230, 0, "Pedido pendente criado", "trigger"),
+    emailNode("f1-email1", 0, 120, "Pedido recebido", "order_received"),
+    plainNode("f1-event", 230, 120, "Evento: pagamento confirmado (webhook Asaas ou cartão aprovado)", "wait"),
+    emailNode("f1-email2", 230, 240, "Pagamento confirmado (+ acesso à conta, se novo cliente)", "payment_confirmed"),
+    emailNode("f1-referral", 0, 350, "Recompensa de indicação (se o pedido veio de um link)", "referral_reward"),
 
-    // Fluxo 2 — Recuperação de carrinho (cliente com pedido pendente)
-    plainNode("f2-trigger", 420, 0, "Pedido pendente criado", "trigger"),
-    plainNode("f2-wait1", 420, 110, "Espera 10 minutos", "wait"),
-    plainNode("f2-cond1", 420, 220, "Pagou?", "condition"),
-    plainNode("f2-ok1", 700, 220, "Fim (já pagou)", "exit"),
-    emailNode("f2-email1", 420, 330, "Carrinho esperando", "cart_reminder_10min"),
-    plainNode("f2-wait2", 420, 440, "Espera 24 horas", "wait"),
-    plainNode("f2-cond2", 420, 550, "Pagou?", "condition"),
-    plainNode("f2-ok2", 700, 550, "Fim (já pagou)", "exit"),
-    emailNode("f2-email2", 420, 660, "Última chance + cupom", "cart_reminder_24h"),
-    plainNode("f2-exit", 420, 770, "Sair da lista", "exit"),
+    // Fluxo 2 — Recuperação de carrinho. As duas ramificações "Pagou? → Sim" e o pagamento após a
+    // "última chance" apontam de volta para f1-email2 em vez de terminar num "Fim" separado.
+    plainNode("f2-wait1", 480, 120, "Espera 10 minutos", "wait"),
+    plainNode("f2-cond1", 480, 240, "Pagou?", "condition"),
+    emailNode("f2-email1", 480, 350, "Carrinho esperando", "cart_reminder_10min"),
+    plainNode("f2-wait2", 480, 460, "Espera 24 horas", "wait"),
+    plainNode("f2-cond2", 480, 570, "Pagou?", "condition"),
+    emailNode("f2-email2", 480, 680, "Última chance + cupom", "cart_reminder_24h"),
+    plainNode("f2-exit", 480, 790, "Sair da lista", "exit"),
 
-    // Fluxo 3 — Pós-compra / NPS (cliente que pagou e recebeu) — encadeado direto do Fluxo 1
-    plainNode("f3-trigger", 840, 330, "Entrega confirmada (rastreio)", "trigger"),
-    plainNode("f3-wait", 840, 440, "Espera 7 dias", "wait"),
-    emailNode("f3-email1", 840, 550, "Pesquisa: de 0 a 10, indicaria?", "post_purchase_nps"),
-    plainNode("f3-click", 840, 660, "Cliente clica numa nota (0–10)", "wait"),
-    emailNode("f3-email2", 840, 770, "Obrigado + cupom de agradecimento", "nps_thank_you"),
-    plainNode("f3-cond", 840, 880, "Nota ≥ 5?", "condition"),
-    plainNode("f3-list", 840, 990, "Entra na lista de marketing", "trigger"),
-    plainNode("f3-end", 1120, 880, "Fim (sem marketing)", "exit"),
+    // Fluxo 3 — Pós-compra / NPS / indicação — encadeado direto do Fluxo 1.
+    plainNode("f3-trigger", 840, 240, "Entrega confirmada (rastreio)", "trigger"),
+    emailNode("f3-email0", 840, 350, "Pedido chegou!", "delivery_confirmed"),
+    plainNode("f3-wait", 840, 460, "Espera 7 dias", "wait"),
+    emailNode("f3-email1", 840, 570, "Pesquisa: de 0 a 10, indicaria?", "post_purchase_nps"),
+    plainNode("f3-click", 840, 680, "Cliente clica numa nota (0–10)", "wait"),
+    emailNode("f3-email2", 840, 790, "Obrigado + indique e ganhe 5%", "nps_thank_you"),
+    plainNode("f3-cond", 840, 900, "Nota ≥ 5?", "condition"),
+    plainNode("f3-list", 840, 1010, "Entra na lista de marketing", "trigger"),
+    plainNode("f3-end", 1120, 900, "Fim (sem marketing)", "exit"),
 
-    // Fluxo 4 — Marketing semanal
+    // Fluxo 4 — Marketing por assinante: 15 dias → 1º e-mail, 20 dias → 2º, 15 em 15 dias depois.
     plainNode("f4-trigger", 1260, 0, "Cliente na lista de marketing", "trigger"),
-    plainNode("f4-wait", 1260, 110, "Toda segunda-feira, 10h", "wait"),
-    emailNode("f4-email", 1260, 220, "Novidades da semana", "weekly_marketing"),
-    plainNode("f4-exit", 1260, 330, "Sair da lista", "exit"),
+    plainNode("f4-wait1", 1260, 110, "Espera 15 dias", "wait"),
+    emailNode("f4-email1", 1260, 220, "E-mail #1", "weekly_marketing"),
+    plainNode("f4-wait2", 1260, 330, "Espera 20 dias", "wait"),
+    emailNode("f4-email2", 1260, 440, "E-mail #2", "weekly_marketing"),
+    plainNode("f4-wait3", 1260, 550, "Espera 15 dias (e assim por diante)", "wait"),
+    emailNode("f4-email3", 1260, 660, "E-mail #3+", "weekly_marketing"),
+    plainNode("f4-exit", 1260, 770, "Sair da lista", "exit"),
   ];
 
   const edges: Edge[] = [
     { id: "e-f1-1", source: "f1-trigger", target: "f1-email1" },
-    { id: "e-f1-2", source: "f1-email1", target: "f1-event" },
-    { id: "e-f1-3", source: "f1-event", target: "f1-email2" },
+    { id: "e-f1-2", source: "f1-trigger", target: "f1-event" },
+    { id: "e-f1-3", source: "f1-trigger", target: "f2-wait1" },
+    { id: "e-f1-4", source: "f1-event", target: "f1-email2" },
+    {
+      id: "e-f1-5",
+      source: "f1-email2",
+      target: "f1-referral",
+      label: "se tem indicador",
+      style: { strokeDasharray: "4 4" },
+    },
     {
       id: "e-f1-f3",
       source: "f1-email2",
@@ -161,17 +174,25 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
       style: { stroke: "#16a34a" },
     },
 
-    { id: "e-f2-1", source: "f2-trigger", target: "f2-wait1" },
-    { id: "e-f2-2", source: "f2-wait1", target: "f2-cond1" },
-    { id: "e-f2-3", source: "f2-cond1", target: "f2-email1", label: "Não" },
-    { id: "e-f2-4", source: "f2-cond1", sourceHandle: "right", target: "f2-ok1", label: "Sim" },
-    { id: "e-f2-5", source: "f2-email1", target: "f2-wait2" },
-    { id: "e-f2-6", source: "f2-wait2", target: "f2-cond2" },
-    { id: "e-f2-7", source: "f2-cond2", target: "f2-email2", label: "Não" },
-    { id: "e-f2-8", source: "f2-cond2", sourceHandle: "right", target: "f2-ok2", label: "Sim" },
-    { id: "e-f2-9", source: "f2-email2", target: "f2-exit" },
+    { id: "e-f2-1", source: "f2-wait1", target: "f2-cond1" },
+    { id: "e-f2-2", source: "f2-cond1", target: "f2-email1", label: "Não" },
+    { id: "e-f2-3", source: "f2-cond1", sourceHandle: "right", target: "f1-email2", label: "Sim" },
+    { id: "e-f2-4", source: "f2-email1", target: "f2-wait2" },
+    { id: "e-f2-5", source: "f2-wait2", target: "f2-cond2" },
+    { id: "e-f2-6", source: "f2-cond2", target: "f2-email2", label: "Não" },
+    { id: "e-f2-7", source: "f2-cond2", sourceHandle: "right", target: "f1-email2", label: "Sim" },
+    { id: "e-f2-8", source: "f2-email2", target: "f2-exit" },
+    {
+      id: "e-f2-9",
+      source: "f2-email2",
+      sourceHandle: "right",
+      target: "f1-email2",
+      label: "cliente paga depois",
+      style: { strokeDasharray: "4 4" },
+    },
 
-    { id: "e-f3-1", source: "f3-trigger", target: "f3-wait" },
+    { id: "e-f3-0", source: "f3-trigger", target: "f3-email0" },
+    { id: "e-f3-1", source: "f3-email0", target: "f3-wait" },
     { id: "e-f3-2", source: "f3-wait", target: "f3-email1" },
     { id: "e-f3-3", source: "f3-email1", target: "f3-click" },
     { id: "e-f3-4", source: "f3-click", target: "f3-email2" },
@@ -179,9 +200,13 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f3-6", source: "f3-cond", target: "f3-list", label: "Sim" },
     { id: "e-f3-7", source: "f3-cond", sourceHandle: "right", target: "f3-end", label: "Não" },
 
-    { id: "e-f4-1", source: "f4-trigger", target: "f4-wait" },
-    { id: "e-f4-2", source: "f4-wait", target: "f4-email" },
-    { id: "e-f4-3", source: "f4-email", target: "f4-exit" },
+    { id: "e-f4-1", source: "f4-trigger", target: "f4-wait1" },
+    { id: "e-f4-2", source: "f4-wait1", target: "f4-email1" },
+    { id: "e-f4-3", source: "f4-email1", target: "f4-wait2" },
+    { id: "e-f4-4", source: "f4-wait2", target: "f4-email2" },
+    { id: "e-f4-5", source: "f4-email2", target: "f4-wait3" },
+    { id: "e-f4-6", source: "f4-wait3", target: "f4-email3" },
+    { id: "e-f4-7", source: "f4-email3", target: "f4-exit" },
   ];
 
   return { nodes, edges };

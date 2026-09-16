@@ -2,10 +2,33 @@
 // the same way get-order-status/unsubscribe-email do. First click wins — the score can't be
 // overwritten by clicking a different link or reopening the e-mail later.
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { randomPassword } from "../_shared/random-password.ts";
 import { sendEmail } from "../_shared/send-email.ts";
-import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
+import { renderEmailTemplate } from "../_shared/render-template.ts";
 
 const PROMOTER_THRESHOLD = 5;
+const SITE_URL = "https://alnacommerce.com";
+
+async function getOrCreateReferralCode(admin: ReturnType<typeof createClient>, userId: string) {
+  const { data: existing } = await admin
+    .from("referral_codes")
+    .select("code")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (existing) return existing.code;
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = randomPassword(6).toUpperCase();
+    const { data: created, error } = await admin
+      .from("referral_codes")
+      .insert({ user_id: userId, code })
+      .select("code")
+      .maybeSingle();
+    if (created) return created.code;
+    if (error?.code !== "23505") break; // anything but a unique-code collision is unexpected — stop retrying
+  }
+  return null;
+}
 
 function htmlResponse(message: string, status = 200) {
   return new Response(
@@ -33,7 +56,7 @@ Deno.serve(async (req) => {
 
     const { data: order } = await admin
       .from("orders")
-      .select("id, customer_name, customer_email, nps_score")
+      .select("id, user_id, customer_name, customer_email, nps_score")
       .eq("id", orderId)
       .maybeSingle();
     if (!order) return htmlResponse("Pedido não encontrado.", 404);
@@ -47,21 +70,31 @@ Deno.serve(async (req) => {
       const resendKey = await admin
         .rpc("get_integration_secret", { p_integration_id: "resend" })
         .then((r) => r.data as string | null);
-      const coupon = await resolveTemplateCoupon(admin, "nps_thank_you");
+      const referralCode = order.user_id ? await getOrCreateReferralCode(admin, order.user_id) : null;
       const rendered = await renderEmailTemplate(admin, "nps_thank_you", {
         nome: order.customer_name ?? "cliente",
-        cupom_codigo: coupon?.code ?? "",
+        link_indicacao: referralCode ? `${SITE_URL}/loja?ref=${referralCode}` : `${SITE_URL}/conta`,
       });
       if (rendered) {
         await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
       }
 
       if (score >= PROMOTER_THRESHOLD) {
-        await admin.from("marketing_subscribers").upsert({
-          email: order.customer_email,
-          name: order.customer_name,
-          source: "nps_promoter",
-        });
+        // next_email_at starts the 15-day wait for their first marketing e-mail (send-marketing-drip
+        // reschedules it after every send — 20 days after the 1st, 15 days after every one since).
+        const { data: existingSubscriber } = await admin
+          .from("marketing_subscribers")
+          .select("email")
+          .eq("email", order.customer_email)
+          .maybeSingle();
+        if (!existingSubscriber) {
+          await admin.from("marketing_subscribers").insert({
+            email: order.customer_email,
+            name: order.customer_name,
+            source: "nps_promoter",
+            next_email_at: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+          });
+        }
       }
     }
 

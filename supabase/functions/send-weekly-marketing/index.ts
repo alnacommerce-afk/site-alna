@@ -1,10 +1,13 @@
-// Public — only ever called by the pg_cron job, weekly. Sends to everyone in
-// `marketing_subscribers` (opted in by giving a promoter NPS score) who hasn't unsubscribed.
+// Public — only ever called by the pg_cron job, daily. Each subscriber has their own schedule
+// (marketing_subscribers.next_email_at): 15 days after subscribing for e-mail #1, 20 days after
+// that for #2, then every 15 days from there on — rather than one blast to everyone at once.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
 
 const SITE_URL = "https://alnacommerce.com";
+const SECOND_EMAIL_WAIT_DAYS = 20;
+const STANDARD_WAIT_DAYS = 15;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,6 +25,10 @@ function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function addDays(date: Date, days: number) {
+  return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -30,8 +37,13 @@ Deno.serve(async (req) => {
   const admin = createClient(supabaseUrl, serviceRoleKey);
 
   try {
-    const { data: subscribers } = await admin.from("marketing_subscribers").select("email, name");
-    if (!subscribers?.length) return jsonResponse({ ok: true, sent: 0, reason: "sem assinantes" });
+    const nowIso = new Date().toISOString();
+    const { data: subscribers } = await admin
+      .from("marketing_subscribers")
+      .select("email, name, emails_sent_count")
+      .not("next_email_at", "is", null)
+      .lte("next_email_at", nowIso);
+    if (!subscribers?.length) return jsonResponse({ ok: true, sent: 0, reason: "ninguém devido hoje" });
 
     const { data: suppressions } = await admin.from("email_suppressions").select("email");
     const suppressed = new Set((suppressions ?? []).map((s) => s.email.toLowerCase()));
@@ -76,6 +88,13 @@ Deno.serve(async (req) => {
 
     let sent = 0;
     for (const sub of subscribers) {
+      const nextCount = sub.emails_sent_count + 1;
+      const waitDays = sub.emails_sent_count === 0 ? SECOND_EMAIL_WAIT_DAYS : STANDARD_WAIT_DAYS;
+      await admin
+        .from("marketing_subscribers")
+        .update({ emails_sent_count: nextCount, next_email_at: addDays(new Date(), waitDays).toISOString() })
+        .eq("email", sub.email);
+
       if (suppressed.has(sub.email.toLowerCase())) continue;
       const rendered = await renderEmailTemplate(
         admin,
@@ -96,7 +115,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ ok: true, sent });
   } catch (error) {
     console.error("[send-weekly-marketing]", error);
-    const message = error instanceof Error ? error.message : "Erro ao enviar marketing semanal.";
+    const message = error instanceof Error ? error.message : "Erro ao enviar marketing.";
     return jsonResponse({ error: message }, 500);
   }
 });

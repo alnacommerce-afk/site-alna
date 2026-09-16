@@ -2,8 +2,11 @@
 // Melhor Envio's tracking endpoint for shipped orders, so process-post-purchase-nps only surveys
 // customers whose order actually arrived (never a guess based on elapsed time).
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/send-email.ts";
+import { renderEmailTemplate } from "../_shared/render-template.ts";
 
 const ME_API = "https://melhorenvio.com.br/api/v2";
+const SITE_URL = "https://alnacommerce.com";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,12 +35,13 @@ Deno.serve(async (req) => {
 
     const { data: orders } = await admin
       .from("orders")
-      .select("id, melhor_envio_shipment_id")
+      .select("id, melhor_envio_shipment_id, customer_name, customer_email")
       .eq("status", "shipped")
       .is("delivered_at", null)
       .not("melhor_envio_shipment_id", "is", null);
 
     let updated = 0;
+    let resendKey: string | null = null;
     for (const order of orders ?? []) {
       if (!order.melhor_envio_shipment_id) continue;
       try {
@@ -60,6 +64,22 @@ Deno.serve(async (req) => {
             .update({ delivered_at: entry.delivered_at, status: "completed" })
             .eq("id", order.id);
           updated++;
+
+          // Immediate "chegou!" e-mail — additive to (not a replacement for) the 7-day NPS survey
+          // that process-post-purchase-nps sends separately once delivered_at is set.
+          if (order.customer_email) {
+            resendKey ??= await admin
+              .rpc("get_integration_secret", { p_integration_id: "resend" })
+              .then((r) => r.data as string | null);
+            const rendered = await renderEmailTemplate(admin, "delivery_confirmed", {
+              nome: order.customer_name ?? "cliente",
+              pedido_curto: order.id.slice(0, 8),
+              link_conta: `${SITE_URL}/conta`,
+            });
+            if (rendered) {
+              await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
+            }
+          }
         }
       } catch (error) {
         console.error("[sync-delivery-status] falha ao consultar rastreio", order.id, error);

@@ -174,27 +174,6 @@ export type Database = {
         }
         Relationships: []
       }
-      marketing_subscribers: {
-        Row: {
-          email: string
-          name: string | null
-          source: string | null
-          subscribed_at: string
-        }
-        Insert: {
-          email: string
-          name?: string | null
-          source?: string | null
-          subscribed_at?: string
-        }
-        Update: {
-          email?: string
-          name?: string | null
-          source?: string | null
-          subscribed_at?: string
-        }
-        Relationships: []
-      }
       leads: {
         Row: {
           created_at: string
@@ -225,6 +204,33 @@ export type Database = {
           phone?: string | null
           source?: Database["public"]["Enums"]["lead_source"]
           subject?: string | null
+        }
+        Relationships: []
+      }
+      marketing_subscribers: {
+        Row: {
+          email: string
+          emails_sent_count: number
+          name: string | null
+          next_email_at: string | null
+          source: string | null
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          emails_sent_count?: number
+          name?: string | null
+          next_email_at?: string | null
+          source?: string | null
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          emails_sent_count?: number
+          name?: string | null
+          next_email_at?: string | null
+          source?: string | null
+          subscribed_at?: string
         }
         Relationships: []
       }
@@ -292,6 +298,7 @@ export type Database = {
           discount_cents: number
           id: string
           installment_count: number
+          is_new_account: boolean
           label_generated_count: number
           label_url: string | null
           melhor_envio_shipment_id: string | null
@@ -301,6 +308,7 @@ export type Database = {
           payment_method: string | null
           payment_provider: string | null
           payment_status: string | null
+          referrer_user_id: string | null
           reminder_10min_sent_at: string | null
           reminder_24h_sent_at: string | null
           shipping_address: Json | null
@@ -324,6 +332,7 @@ export type Database = {
           discount_cents?: number
           id?: string
           installment_count?: number
+          is_new_account?: boolean
           label_generated_count?: number
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
@@ -333,6 +342,7 @@ export type Database = {
           payment_method?: string | null
           payment_provider?: string | null
           payment_status?: string | null
+          referrer_user_id?: string | null
           reminder_10min_sent_at?: string | null
           reminder_24h_sent_at?: string | null
           shipping_address?: Json | null
@@ -356,6 +366,7 @@ export type Database = {
           discount_cents?: number
           id?: string
           installment_count?: number
+          is_new_account?: boolean
           label_generated_count?: number
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
@@ -365,6 +376,7 @@ export type Database = {
           payment_method?: string | null
           payment_provider?: string | null
           payment_status?: string | null
+          referrer_user_id?: string | null
           reminder_10min_sent_at?: string | null
           reminder_24h_sent_at?: string | null
           shipping_address?: Json | null
@@ -583,6 +595,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       site_settings: {
         Row: {

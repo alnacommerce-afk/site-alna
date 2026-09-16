@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "../components/ui/sonner";
 import { CartProvider } from "../lib/cart/cart-context";
+import { captureReferralCodeFromUrl } from "../lib/referral/referral-code";
 
 function NotFoundComponent() {
   return (
@@ -120,6 +121,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    captureReferralCodeFromUrl();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

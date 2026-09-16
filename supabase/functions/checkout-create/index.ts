@@ -10,6 +10,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { randomPassword } from "../_shared/random-password.ts";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
+import { notifyPaymentConfirmed } from "../_shared/notify-payment-confirmed.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -47,6 +48,7 @@ type CheckoutBody = {
   paymentMethod: "pix" | "credit_card";
   installmentCount?: number;
   couponCode?: string;
+  referredByCode?: string;
   creditCard?: {
     holderName: string;
     number: string;
@@ -254,6 +256,21 @@ Deno.serve(async (req) => {
     // if they'd previously opted out (transactional e-mails about their own order never check this).
     await admin.from("email_suppressions").delete().eq("email", body.customer.email);
 
+    // 3b. Resolve a referral code to its owner, if one was carried through from the cart. Ignored
+    // for self-referrals — the reward is only ever generated when confirming the OTHER customer's
+    // payment, in notify-payment-confirmed.
+    let referrerUserId: string | null = null;
+    if (body.referredByCode) {
+      const { data: referral } = await admin
+        .from("referral_codes")
+        .select("user_id")
+        .eq("code", body.referredByCode.trim().toUpperCase())
+        .maybeSingle();
+      if (referral && referral.user_id !== customerUserId) {
+        referrerUserId = referral.user_id;
+      }
+    }
+
     // 4. Find or create the Asaas customer.
     const asaasKey = await admin
       .rpc("get_integration_secret", { p_integration_id: "payment_gateway" })
@@ -317,6 +334,8 @@ Deno.serve(async (req) => {
         total_cents: totalCents,
         coupon_code: appliedCouponCode,
         discount_cents: discountCents,
+        is_new_account: !!newAccount,
+        referrer_user_id: referrerUserId,
         payment_provider: "asaas",
         payment_method: body.paymentMethod,
         installment_count: installmentCount,
@@ -411,18 +430,19 @@ Deno.serve(async (req) => {
     }
 
     // 7. Record the payment result on the order.
+    const isPaidNow = paymentResult.status === "CONFIRMED" || paymentResult.status === "RECEIVED";
     await admin
       .from("orders")
       .update({
         payment_id: paymentResult.id as string,
         payment_status: paymentResult.status as string,
-        status: paymentResult.status === "CONFIRMED" || paymentResult.status === "RECEIVED"
-          ? "paid"
-          : "pending",
+        status: isPaidNow ? "paid" : "pending",
       })
       .eq("id", orderId);
 
-    // 8. E-mail the customer their order (and their new login, if this is their first order).
+    // 8. E-mail the customer their order. This is informational only — login credentials (for new
+    // accounts) and the payment-confirmed message are sent by notifyPaymentConfirmed instead, only
+    // once the payment has actually gone through, so an abandoned Pix never leaks account access.
     // Never blocks or fails the checkout — sendEmail swallows its own errors, and a missing/broken
     // template just skips the send.
     const resendKey = await admin
@@ -432,24 +452,32 @@ Deno.serve(async (req) => {
       body.paymentMethod === "pix"
         ? "<p>Finalize o pagamento escaneando o QR Code ou usando o código copia-e-cola que apareceu na tela.</p>"
         : "";
-    const contaNova = newAccount
-      ? `<div style="margin-top: 16px; padding: 12px 16px; background: #f0fdf4; border-radius: 8px;">
-           <p style="margin: 0 0 8px;"><strong>Criamos uma conta para você acompanhar seus pedidos:</strong></p>
-           <p style="margin: 0;">E-mail: <strong>${newAccount.email}</strong></p>
-           <p style="margin: 0;">Senha temporária: <strong>${newAccount.password}</strong></p>
-           <p style="margin: 8px 0 0;">Acesse em <a href="${SITE_URL}/conta/login">${SITE_URL}/conta/login</a> e recomendamos trocar a senha assim que entrar.</p>
-         </div>`
-      : "";
     const rendered = await renderEmailTemplate(admin, "order_received", {
       nome: body.customer.name,
       pedido_curto: orderId.slice(0, 8),
       total: formatBRL(totalCents),
       link_pedido: `${SITE_URL}/pedido/${orderId}`,
       pix_aviso: pixAviso,
-      conta_nova: contaNova,
     });
     if (rendered) {
       await sendEmail(resendKey, { to: body.customer.email, subject: rendered.subject, html: rendered.html });
+    }
+
+    // Cards are approved synchronously, right here — by the time Asaas's own webhook arrives the
+    // order is already "paid", so its own guard (only e-mail when the PREVIOUS status wasn't paid)
+    // would otherwise skip the confirmation e-mail entirely for every card order. Sending it from
+    // here instead covers that case; Pix confirmations (immediate or recovered later) are still
+    // handled by asaas-webhook, which is the only place that ever observes those.
+    if (isPaidNow) {
+      await notifyPaymentConfirmed(admin, {
+        id: orderId,
+        user_id: customerUserId,
+        customer_name: body.customer.name,
+        customer_email: body.customer.email,
+        total_cents: totalCents,
+        is_new_account: !!newAccount,
+        referrer_user_id: referrerUserId,
+      });
     }
 
     return jsonResponse({
