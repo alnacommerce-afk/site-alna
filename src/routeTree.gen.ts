@@ -25,6 +25,7 @@ import { Route as ContaIndexRouteImport } from './routes/conta/index'
 import { Route as ContaLoginRouteImport } from './routes/conta/login'
 import { Route as ContaSenhaRouteImport } from './routes/conta/senha'
 import { Route as PedidoOrderIdRouteImport } from './routes/pedido/$orderId'
+import { Route as PesquisaOrderIdRouteImport } from './routes/pesquisa/$orderId'
 import { Route as ProdutoSlugRouteImport } from './routes/produto/$slug'
 import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
 import { Route as AdminCatalogoNovoRouteImport } from './routes/admin/catalogo/novo'
@@ -33,6 +34,7 @@ import { Route as AdminPedidosIndexRouteImport } from './routes/admin/pedidos/in
 import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalogo/$id/editar'
 import { Route as AdminMarketingCuponsIndexRouteImport } from './routes/admin/marketing/cupons/index'
 import { Route as AdminMarketingFluxoEmailIndexRouteImport } from './routes/admin/marketing/fluxo-email/index'
+import { Route as AdminMarketingNpsIndexRouteImport } from './routes/admin/marketing/nps/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -115,6 +117,11 @@ const PedidoOrderIdRoute = PedidoOrderIdRouteImport.update({
   path: '/pedido/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PesquisaOrderIdRoute = PesquisaOrderIdRouteImport.update({
+  id: '/pesquisa/$orderId',
+  path: '/pesquisa/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutoSlugRoute = ProdutoSlugRouteImport.update({
   id: '/produto/$slug',
   path: '/produto/$slug',
@@ -157,6 +164,11 @@ const AdminMarketingFluxoEmailIndexRoute =
     path: '/admin/marketing/fluxo-email/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminMarketingNpsIndexRoute = AdminMarketingNpsIndexRouteImport.update({
+  id: '/admin/marketing/nps/',
+  path: '/admin/marketing/nps/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -173,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/conta/login': typeof ContaLoginRoute
   '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
+  '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/conta/': typeof ContaIndexRoute
@@ -183,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email/': typeof AdminMarketingFluxoEmailIndexRoute
+  '/admin/marketing/nps/': typeof AdminMarketingNpsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -199,6 +213,7 @@ export interface FileRoutesByTo {
   '/conta/login': typeof ContaLoginRoute
   '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
+  '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin': typeof AdminIndexRoute
   '/conta': typeof ContaIndexRoute
@@ -209,6 +224,7 @@ export interface FileRoutesByTo {
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/cupons': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email': typeof AdminMarketingFluxoEmailIndexRoute
+  '/admin/marketing/nps': typeof AdminMarketingNpsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -226,6 +242,7 @@ export interface FileRoutesById {
   '/conta/login': typeof ContaLoginRoute
   '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
+  '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/conta/': typeof ContaIndexRoute
@@ -236,6 +253,7 @@ export interface FileRoutesById {
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email/': typeof AdminMarketingFluxoEmailIndexRoute
+  '/admin/marketing/nps/': typeof AdminMarketingNpsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -254,6 +272,7 @@ export interface FileRouteTypes {
     | '/conta/login'
     | '/conta/senha'
     | '/pedido/$orderId'
+    | '/pesquisa/$orderId'
     | '/produto/$slug'
     | '/admin/'
     | '/conta/'
@@ -264,6 +283,7 @@ export interface FileRouteTypes {
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/cupons/'
     | '/admin/marketing/fluxo-email/'
+    | '/admin/marketing/nps/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -280,6 +300,7 @@ export interface FileRouteTypes {
     | '/conta/login'
     | '/conta/senha'
     | '/pedido/$orderId'
+    | '/pesquisa/$orderId'
     | '/produto/$slug'
     | '/admin'
     | '/conta'
@@ -290,6 +311,7 @@ export interface FileRouteTypes {
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/cupons'
     | '/admin/marketing/fluxo-email'
+    | '/admin/marketing/nps'
   id:
     | '__root__'
     | '/'
@@ -306,6 +328,7 @@ export interface FileRouteTypes {
     | '/conta/login'
     | '/conta/senha'
     | '/pedido/$orderId'
+    | '/pesquisa/$orderId'
     | '/produto/$slug'
     | '/admin/'
     | '/conta/'
@@ -316,6 +339,7 @@ export interface FileRouteTypes {
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/cupons/'
     | '/admin/marketing/fluxo-email/'
+    | '/admin/marketing/nps/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -333,6 +357,7 @@ export interface RootRouteChildren {
   ContaLoginRoute: typeof ContaLoginRoute
   ContaSenhaRoute: typeof ContaSenhaRoute
   PedidoOrderIdRoute: typeof PedidoOrderIdRoute
+  PesquisaOrderIdRoute: typeof PesquisaOrderIdRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ContaIndexRoute: typeof ContaIndexRoute
@@ -343,6 +368,7 @@ export interface RootRouteChildren {
   AdminCatalogoIdEditarRoute: typeof AdminCatalogoIdEditarRoute
   AdminMarketingCuponsIndexRoute: typeof AdminMarketingCuponsIndexRoute
   AdminMarketingFluxoEmailIndexRoute: typeof AdminMarketingFluxoEmailIndexRoute
+  AdminMarketingNpsIndexRoute: typeof AdminMarketingNpsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -459,6 +485,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PedidoOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pesquisa/$orderId': {
+      id: '/pesquisa/$orderId'
+      path: '/pesquisa/$orderId'
+      fullPath: '/pesquisa/$orderId'
+      preLoaderRoute: typeof PesquisaOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produto/$slug': {
       id: '/produto/$slug'
       path: '/produto/$slug'
@@ -515,6 +548,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingFluxoEmailIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/marketing/nps/': {
+      id: '/admin/marketing/nps/'
+      path: '/admin/marketing/nps'
+      fullPath: '/admin/marketing/nps/'
+      preLoaderRoute: typeof AdminMarketingNpsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -533,6 +573,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContaLoginRoute: ContaLoginRoute,
   ContaSenhaRoute: ContaSenhaRoute,
   PedidoOrderIdRoute: PedidoOrderIdRoute,
+  PesquisaOrderIdRoute: PesquisaOrderIdRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   ContaIndexRoute: ContaIndexRoute,
@@ -543,6 +584,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCatalogoIdEditarRoute: AdminCatalogoIdEditarRoute,
   AdminMarketingCuponsIndexRoute: AdminMarketingCuponsIndexRoute,
   AdminMarketingFluxoEmailIndexRoute: AdminMarketingFluxoEmailIndexRoute,
+  AdminMarketingNpsIndexRoute: AdminMarketingNpsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

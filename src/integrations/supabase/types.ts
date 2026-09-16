@@ -304,6 +304,7 @@ export type Database = {
           melhor_envio_shipment_id: string | null
           nps_score: number | null
           nps_survey_sent_at: string | null
+          nps_would_recommend: boolean | null
           payment_id: string | null
           payment_method: string | null
           payment_provider: string | null
@@ -338,6 +339,7 @@ export type Database = {
           melhor_envio_shipment_id?: string | null
           nps_score?: number | null
           nps_survey_sent_at?: string | null
+          nps_would_recommend?: boolean | null
           payment_id?: string | null
           payment_method?: string | null
           payment_provider?: string | null
@@ -372,6 +374,7 @@ export type Database = {
           melhor_envio_shipment_id?: string | null
           nps_score?: number | null
           nps_survey_sent_at?: string | null
+          nps_would_recommend?: boolean | null
           payment_id?: string | null
           payment_method?: string | null
           payment_provider?: string | null
