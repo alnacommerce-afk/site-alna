@@ -1,1 +1,6 @@
 project_id = "ogxsdptftgxrujkfscvi"
+
+# Admin-only — spends real money (Melhor Envio label purchase). Must require a valid session JWT;
+# without this section, redeploys default every function to verify_jwt = false.
+[functions.generate-shipping-label]
+verify_jwt = true
