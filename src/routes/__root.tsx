@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "../components/ui/sonner";
 import { CartProvider } from "../lib/cart/cart-context";
 import { captureReferralCodeFromUrl } from "../lib/referral/referral-code";
+import { injectGa4IfConfigured } from "../lib/analytics/ga4";
 
 function NotFoundComponent() {
   return (
@@ -124,6 +125,7 @@ function RootComponent() {
 
   useEffect(() => {
     captureReferralCodeFromUrl();
+    injectGa4IfConfigured();
   }, []);
 
   return (

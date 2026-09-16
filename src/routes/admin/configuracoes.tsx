@@ -39,6 +39,8 @@ type SettingsForm = {
   shippingOriginState: string;
   shippingCarrierPreference: string;
   freeShippingThreshold: string;
+  ga4MeasurementId: string;
+  ga4PropertyId: string;
 };
 
 const emptyForm: SettingsForm = {
@@ -62,6 +64,8 @@ const emptyForm: SettingsForm = {
   shippingOriginState: "",
   shippingCarrierPreference: "",
   freeShippingThreshold: "100,00",
+  ga4MeasurementId: "",
+  ga4PropertyId: "",
 };
 
 function ConfiguracoesPage() {
@@ -104,6 +108,8 @@ function ConfiguracoesPage() {
         shippingOriginState: data.shipping_origin_state ?? "",
         shippingCarrierPreference: data.shipping_carrier_preference ?? "",
         freeShippingThreshold: formatCentsToInput(data.free_shipping_threshold_cents) || "0,00",
+        ga4MeasurementId: data.ga4_measurement_id ?? "",
+        ga4PropertyId: data.ga4_property_id ?? "",
       });
       setLoading(false);
     }
@@ -139,6 +145,8 @@ function ConfiguracoesPage() {
         shipping_origin_state: form.shippingOriginState || null,
         shipping_carrier_preference: form.shippingCarrierPreference || null,
         free_shipping_threshold_cents: parseCentsFromInput(form.freeShippingThreshold),
+        ga4_measurement_id: form.ga4MeasurementId || null,
+        ga4_property_id: form.ga4PropertyId || null,
       })
       .eq("id", "default");
 
@@ -362,6 +370,45 @@ function ConfiguracoesPage() {
                 />
                 <p className="text-xs text-muted-foreground">
                   Exibido na barra verde no topo do site.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 border-t pt-4">
+            <div>
+              <h2 className="text-sm font-semibold text-[#12294f]">Google Analytics</h2>
+              <p className="text-xs text-muted-foreground">
+                A chave da conta de serviço (não é aqui — fica em Admin &gt; Conexões de API)
+                habilita o card de visitantes em tempo real na Visão Geral.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label htmlFor="ga4-measurement-id">Measurement ID</Label>
+                <Input
+                  id="ga4-measurement-id"
+                  value={form.ga4MeasurementId}
+                  onChange={(e) => setField("ga4MeasurementId", e.target.value)}
+                  placeholder="G-XXXXXXXXXX"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Ativa o rastreamento de visitas no site (analytics.google.com &gt; Admin &gt;
+                  Fluxos de dados).
+                </p>
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="ga4-property-id">Property ID</Label>
+                <Input
+                  id="ga4-property-id"
+                  value={form.ga4PropertyId}
+                  onChange={(e) => setField("ga4PropertyId", e.target.value)}
+                  placeholder="123456789"
+                  inputMode="numeric"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Número da propriedade (analytics.google.com &gt; Admin &gt; Detalhes da
+                  propriedade) — usado para consultar visitantes em tempo real.
                 </p>
               </div>
             </div>

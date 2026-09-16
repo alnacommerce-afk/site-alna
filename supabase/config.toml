@@ -12,3 +12,7 @@ verify_jwt = true
 # Admin-only — reads/repackages shipping label PDFs (customer name/address).
 [functions.get-shipping-labels]
 verify_jwt = true
+
+# Admin-only — calls the Google Analytics Data API with the store's service-account credentials.
+[functions.ga4-realtime-visitors]
+verify_jwt = true

@@ -36,7 +36,7 @@ type Connection = {
   secret_id: string | null;
 };
 
-const SECRET_INTEGRATIONS = new Set(["melhor_envio", "payment_gateway", "resend", "ai_seo"]);
+const SECRET_INTEGRATIONS = new Set(["melhor_envio", "payment_gateway", "resend", "ai_seo", "google_analytics"]);
 
 const CONNECTION_HELP: Record<string, string> = {
   ai_seo:
@@ -51,6 +51,8 @@ const CONNECTION_HELP: Record<string, string> = {
     "Envia e-mails transacionais (confirmação de pedido, contato). Cole abaixo a API key gerada em resend.com/api-keys.",
   google_search_console:
     "A verificação por meta tag já está publicada no site. Basta adicionar a propriedade em search.google.com/search-console usando o domínio.",
+  google_analytics:
+    "Mostra o número de visitantes em tempo real na Visão Geral. Cole abaixo o conteúdo INTEIRO do arquivo JSON da conta de serviço do Google Cloud (com acesso de leitor na propriedade GA4). Também é preciso preencher o Measurement ID e o Property ID em Admin > Configurações.",
 };
 
 function ConexoesPage() {

@@ -630,6 +630,8 @@ export type Database = {
           email: string | null
           facebook_url: string | null
           free_shipping_threshold_cents: number
+          ga4_measurement_id: string | null
+          ga4_property_id: string | null
           id: string
           instagram_handle: string | null
           phone: string | null
@@ -654,6 +656,8 @@ export type Database = {
           email?: string | null
           facebook_url?: string | null
           free_shipping_threshold_cents?: number
+          ga4_measurement_id?: string | null
+          ga4_property_id?: string | null
           id?: string
           instagram_handle?: string | null
           phone?: string | null
@@ -678,6 +682,8 @@ export type Database = {
           email?: string | null
           facebook_url?: string | null
           free_shipping_threshold_cents?: number
+          ga4_measurement_id?: string | null
+          ga4_property_id?: string | null
           id?: string
           instagram_handle?: string | null
           phone?: string | null

@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Card, CardContent } from "@/components/ui/card";
+
+const VISITORS_POLL_MS = 60000;
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
@@ -28,6 +30,10 @@ type SalesSummary = {
   last30Days: number;
 };
 
+type VisitorsState =
+  | { status: "loading" | "not_configured" | "error" }
+  | { status: "ok"; count: number };
+
 function startOfToday() {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
@@ -37,6 +43,7 @@ function startOfToday() {
 function AdminOverviewPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [sales, setSales] = useState<SalesSummary | null>(null);
+  const [visitors, setVisitors] = useState<VisitorsState>({ status: "loading" });
 
   useEffect(() => {
     async function load() {
@@ -84,12 +91,65 @@ function AdminOverviewPage() {
     loadSales();
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    async function loadVisitors() {
+      const { data, error } = await supabase.functions.invoke("ga4-realtime-visitors");
+      if (cancelled) return;
+      if (error || data?.error) {
+        setVisitors({ status: "error" });
+        return;
+      }
+      if (data?.configured === false) {
+        setVisitors({ status: "not_configured" });
+        return;
+      }
+      setVisitors({ status: "ok", count: data.activeUsers ?? 0 });
+    }
+    loadVisitors();
+    const interval = setInterval(loadVisitors, VISITORS_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <AdminShell>
       <div className="mb-6">
         <h1 className="text-xl font-semibold">Visão geral</h1>
         <p className="text-sm text-muted-foreground">Bem-vindo ao painel da Alna Commerce.</p>
       </div>
+
+      <Card className="mb-8">
+        <CardContent className="flex items-center justify-between p-5">
+          <div>
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+              </span>
+              Visitantes agora no site
+            </p>
+            <p className="mt-2 text-3xl font-bold text-[#12294f]">
+              {visitors.status === "ok" ? visitors.count : "—"}
+            </p>
+            {visitors.status === "not_configured" ? (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Conecte o Google Analytics em{" "}
+                <Link to="/admin/conexoes" className="underline">
+                  Conexões de API
+                </Link>{" "}
+                para ativar.
+              </p>
+            ) : visitors.status === "error" ? (
+              <p className="mt-1 text-xs text-destructive">
+                Não foi possível consultar o Google Analytics agora.
+              </p>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
 
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
         Vendas
