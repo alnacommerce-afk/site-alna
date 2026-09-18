@@ -84,6 +84,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
             NPS
           </Link>
           <Link
+            to="/admin/marketing/precificacao"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Precificação
+          </Link>
+          <Link
             to="/admin/metricas"
             className="rounded-md px-3 py-2 hover:bg-accent"
             activeProps={{ className: "bg-accent font-medium" }}

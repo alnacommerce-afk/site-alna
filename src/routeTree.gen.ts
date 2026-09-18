@@ -35,6 +35,7 @@ import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalo
 import { Route as AdminMarketingCuponsIndexRouteImport } from './routes/admin/marketing/cupons/index'
 import { Route as AdminMarketingFluxoEmailIndexRouteImport } from './routes/admin/marketing/fluxo-email/index'
 import { Route as AdminMarketingNpsIndexRouteImport } from './routes/admin/marketing/nps/index'
+import { Route as AdminMarketingPrecificacaoIndexRouteImport } from './routes/admin/marketing/precificacao/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -169,6 +170,12 @@ const AdminMarketingNpsIndexRoute = AdminMarketingNpsIndexRouteImport.update({
   path: '/admin/marketing/nps/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMarketingPrecificacaoIndexRoute =
+  AdminMarketingPrecificacaoIndexRouteImport.update({
+    id: '/admin/marketing/precificacao/',
+    path: '/admin/marketing/precificacao/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email/': typeof AdminMarketingFluxoEmailIndexRoute
   '/admin/marketing/nps/': typeof AdminMarketingNpsIndexRoute
+  '/admin/marketing/precificacao/': typeof AdminMarketingPrecificacaoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -225,6 +233,7 @@ export interface FileRoutesByTo {
   '/admin/marketing/cupons': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email': typeof AdminMarketingFluxoEmailIndexRoute
   '/admin/marketing/nps': typeof AdminMarketingNpsIndexRoute
+  '/admin/marketing/precificacao': typeof AdminMarketingPrecificacaoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -254,6 +263,7 @@ export interface FileRoutesById {
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email/': typeof AdminMarketingFluxoEmailIndexRoute
   '/admin/marketing/nps/': typeof AdminMarketingNpsIndexRoute
+  '/admin/marketing/precificacao/': typeof AdminMarketingPrecificacaoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/cupons/'
     | '/admin/marketing/fluxo-email/'
     | '/admin/marketing/nps/'
+    | '/admin/marketing/precificacao/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/cupons'
     | '/admin/marketing/fluxo-email'
     | '/admin/marketing/nps'
+    | '/admin/marketing/precificacao'
   id:
     | '__root__'
     | '/'
@@ -340,6 +352,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/cupons/'
     | '/admin/marketing/fluxo-email/'
     | '/admin/marketing/nps/'
+    | '/admin/marketing/precificacao/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -369,6 +382,7 @@ export interface RootRouteChildren {
   AdminMarketingCuponsIndexRoute: typeof AdminMarketingCuponsIndexRoute
   AdminMarketingFluxoEmailIndexRoute: typeof AdminMarketingFluxoEmailIndexRoute
   AdminMarketingNpsIndexRoute: typeof AdminMarketingNpsIndexRoute
+  AdminMarketingPrecificacaoIndexRoute: typeof AdminMarketingPrecificacaoIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -555,6 +569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingNpsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/marketing/precificacao/': {
+      id: '/admin/marketing/precificacao/'
+      path: '/admin/marketing/precificacao'
+      fullPath: '/admin/marketing/precificacao/'
+      preLoaderRoute: typeof AdminMarketingPrecificacaoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -585,6 +606,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMarketingCuponsIndexRoute: AdminMarketingCuponsIndexRoute,
   AdminMarketingFluxoEmailIndexRoute: AdminMarketingFluxoEmailIndexRoute,
   AdminMarketingNpsIndexRoute: AdminMarketingNpsIndexRoute,
+  AdminMarketingPrecificacaoIndexRoute: AdminMarketingPrecificacaoIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
