@@ -16,3 +16,11 @@ verify_jwt = true
 # Admin-only — calls the Google Analytics Data API with the store's service-account credentials.
 [functions.ga4-realtime-visitors]
 verify_jwt = true
+
+# Called by FinMarket HUB with an x-api-key header (Vault secret "finmarket_hub_api"), not a session JWT.
+[functions.sales-report]
+verify_jwt = false
+
+# Called by a schedule/admin to pull SKU costs from FinMarket HUB. Checks the admin role itself.
+[functions.sync-skus]
+verify_jwt = true

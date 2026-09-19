@@ -36,7 +36,15 @@ type Connection = {
   secret_id: string | null;
 };
 
-const SECRET_INTEGRATIONS = new Set(["melhor_envio", "payment_gateway", "resend", "ai_seo", "google_analytics"]);
+const SECRET_INTEGRATIONS = new Set([
+  "melhor_envio",
+  "payment_gateway",
+  "resend",
+  "ai_seo",
+  "google_analytics",
+  "finmarket_hub_api",
+  "finmarket_hub_skus",
+]);
 
 const CONNECTION_HELP: Record<string, string> = {
   ai_seo:
@@ -51,6 +59,10 @@ const CONNECTION_HELP: Record<string, string> = {
     "Envia e-mails transacionais (confirmação de pedido, contato). Cole abaixo a API key gerada em resend.com/api-keys.",
   google_search_console:
     "A verificação por meta tag já está publicada no site. Basta adicionar a propriedade em search.google.com/search-console usando o domínio.",
+  finmarket_hub_api:
+    "Permite que o FinMarket HUB leia as vendas do site (bruto, cupom, frete, taxa do Asaas e líquido). Invente uma chave longa e aleatória, cole aqui e cole a MESMA chave no FinMarket HUB. Endereço lido por ele: /functions/v1/sales-report.",
+  finmarket_hub_skus:
+    "Usada pelo site para buscar SKUs e custos no FinMarket HUB. Cole aqui a chave gerada por ele. O endereço do FinMarket vai no campo public_config (chave \"base_url\") desta conexão.",
   google_analytics:
     "Mostra o número de visitantes em tempo real na Visão Geral. Cole abaixo o conteúdo INTEIRO do arquivo JSON da conta de serviço do Google Cloud (com acesso de leitor na propriedade GA4). Também é preciso preencher o Measurement ID e o Property ID em Admin > Configurações.",
 };
