@@ -46,6 +46,15 @@ const SECRET_INTEGRATIONS = new Set([
   "finmarket_hub_skus",
 ]);
 
+// Keys WE issue to another platform (as opposed to keys we paste in from a provider).
+const GENERATABLE_KEY_INTEGRATIONS = new Set(["finmarket_hub_api"]);
+
+function generateApiKey(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return `alna_${Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")}`;
+}
+
 const CONNECTION_HELP: Record<string, string> = {
   ai_seo:
     "Usada pelo botão \"IA complementa\" no cadastro de produtos, para sugerir título, meta descrição, palavra-chave de foco, termos de busca alternativos e o texto alternativo das fotos. Cole abaixo uma chave gratuita do Google AI Studio (aistudio.google.com/apikey).",
@@ -60,7 +69,7 @@ const CONNECTION_HELP: Record<string, string> = {
   google_search_console:
     "A verificação por meta tag já está publicada no site. Basta adicionar a propriedade em search.google.com/search-console usando o domínio.",
   finmarket_hub_api:
-    "Permite que o FinMarket HUB leia as vendas do site (bruto, cupom, frete, taxa do Asaas e líquido). Invente uma chave longa e aleatória, cole aqui e cole a MESMA chave no FinMarket HUB. Endereço lido por ele: /functions/v1/sales-report.",
+    "Permite que o FinMarket HUB leia as vendas do site (bruto, cupom, frete, taxa do Asaas e líquido). Clique em \"Gerar chave\", copie o valor (ele só aparece uma vez) e cole no FinMarket HUB. Endereço lido por ele: /functions/v1/sales-report.",
   finmarket_hub_skus:
     "Usada pelo site para buscar SKUs e custos no FinMarket HUB. Cole aqui a chave gerada por ele. O endereço do FinMarket vai no campo public_config (chave \"base_url\") desta conexão.",
   google_analytics:
@@ -74,6 +83,8 @@ function ConexoesPage() {
   const [secretDraft, setSecretDraft] = useState<Record<string, string>>({});
   const [savingSecretFor, setSavingSecretFor] = useState<string | null>(null);
   const [connectionToClear, setConnectionToClear] = useState<Connection | null>(null);
+  const [connectionToRegenerate, setConnectionToRegenerate] = useState<Connection | null>(null);
+  const [generatedKey, setGeneratedKey] = useState<{ id: string; value: string } | null>(null);
 
   async function load() {
     setLoading(true);
@@ -147,6 +158,36 @@ function ConexoesPage() {
     load();
   }
 
+  async function generateKey(connection: Connection) {
+    setConnectionToRegenerate(null);
+    const value = generateApiKey();
+
+    setSavingSecretFor(connection.id);
+    const { error } = await supabase.rpc("set_integration_secret", {
+      p_integration_id: connection.id,
+      p_secret_value: value,
+    });
+    setSavingSecretFor(null);
+
+    if (error) {
+      toast.error("Não foi possível gerar a chave.");
+      return;
+    }
+    setGeneratedKey({ id: connection.id, value });
+    toast.success("Chave gerada. Copie agora — ela não será mostrada de novo.");
+    load();
+  }
+
+  async function copyGeneratedKey() {
+    if (!generatedKey) return;
+    try {
+      await navigator.clipboard.writeText(generatedKey.value);
+      toast.success("Chave copiada.");
+    } catch {
+      toast.error("Não foi possível copiar. Selecione o texto e copie manualmente.");
+    }
+  }
+
   async function confirmClearSecret() {
     if (!connectionToClear) return;
     const id = connectionToClear.id;
@@ -215,7 +256,47 @@ function ConexoesPage() {
                     {CONNECTION_HELP[connection.id]}
                   </p>
 
-                  {needsSecret ? (
+                  {GENERATABLE_KEY_INTEGRATIONS.has(connection.id) ? (
+                    <div className="space-y-2 rounded-md border border-dashed p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs text-muted-foreground">
+                          {hasSecret
+                            ? "Uma chave já foi gerada. Gerar outra invalida a anterior."
+                            : "Nenhuma chave gerada ainda."}
+                        </p>
+                        <Button
+                          size="sm"
+                          disabled={savingSecretFor === connection.id}
+                          onClick={() =>
+                            hasSecret ? setConnectionToRegenerate(connection) : generateKey(connection)
+                          }
+                        >
+                          {savingSecretFor === connection.id
+                            ? "Gerando..."
+                            : hasSecret
+                              ? "Gerar nova chave"
+                              : "Gerar chave"}
+                        </Button>
+                      </div>
+                      {generatedKey?.id === connection.id ? (
+                        <div className="space-y-2 rounded-md bg-muted p-3">
+                          <p className="text-xs font-medium">
+                            Copie e guarde esta chave agora. Depois de sair desta tela ela nunca mais
+                            será exibida.
+                          </p>
+                          <div className="flex gap-2">
+                            <Input readOnly value={generatedKey.value} className="font-mono text-xs" />
+                            <Button size="sm" variant="outline" onClick={copyGeneratedKey}>
+                              Copiar
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => setGeneratedKey(null)}>
+                              Ocultar
+                            </Button>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : needsSecret ? (
                     <div className="space-y-2 rounded-md border border-dashed p-3">
                       <Label htmlFor={`secret-${connection.id}`} className="text-xs">
                         {hasSecret ? "Substituir chave" : "Chave / Token de API"}
@@ -274,6 +355,29 @@ function ConexoesPage() {
           })}
         </div>
       )}
+
+      <AlertDialog
+        open={!!connectionToRegenerate}
+        onOpenChange={(open) => !open && setConnectionToRegenerate(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Gerar nova chave</AlertDialogTitle>
+            <AlertDialogDescription>
+              A chave atual de "{connectionToRegenerate?.label}" deixa de funcionar na hora. Quem
+              usa essa chave (por exemplo o FinMarket HUB) precisará receber a nova.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => connectionToRegenerate && generateKey(connectionToRegenerate)}
+            >
+              Gerar nova chave
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog
         open={!!connectionToClear}
