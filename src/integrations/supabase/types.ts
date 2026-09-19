@@ -469,7 +469,10 @@ export type Database = {
       product_variants: {
         Row: {
           compare_at_price_cents: number | null
+          cost_cents: number | null
+          cost_synced_at: string | null
           created_at: string
+          extra_cost_cents: number | null
           gtin_ean: string | null
           id: string
           name: string
@@ -485,7 +488,10 @@ export type Database = {
         }
         Insert: {
           compare_at_price_cents?: number | null
+          cost_cents?: number | null
+          cost_synced_at?: string | null
           created_at?: string
+          extra_cost_cents?: number | null
           gtin_ean?: string | null
           id?: string
           name: string
@@ -501,7 +507,10 @@ export type Database = {
         }
         Update: {
           compare_at_price_cents?: number | null
+          cost_cents?: number | null
+          cost_synced_at?: string | null
           created_at?: string
+          extra_cost_cents?: number | null
           gtin_ean?: string | null
           id?: string
           name?: string
