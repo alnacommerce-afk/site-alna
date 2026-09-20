@@ -6,6 +6,7 @@ import { Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { prepareProductImage } from "@/lib/admin/optimize-image";
 import {
   formatCentsToInput,
   formatDecimalToInput,
@@ -388,11 +389,15 @@ export function ProductForm({ productId }: { productId?: string }) {
             .eq("id", img.existingId);
           if (error) throw error;
         } else if (img.file) {
-          const extension = img.file.name.split(".").pop() || "jpg";
-          const path = `${currentProductId}/${crypto.randomUUID()}.${extension}`;
+          // Shrink and convert to WebP first; the file name is a fresh UUID, so it can be cached for a year.
+          const prepared = await prepareProductImage(img.file);
+          const path = `${currentProductId}/${crypto.randomUUID()}.${prepared.extension}`;
           const { error: uploadError } = await supabase.storage
             .from("product-media")
-            .upload(path, img.file);
+            .upload(path, prepared.body, {
+              contentType: prepared.contentType,
+              cacheControl: "31536000",
+            });
           if (uploadError) throw uploadError;
 
           const { error: insertError } = await supabase.from("product_images").insert({
