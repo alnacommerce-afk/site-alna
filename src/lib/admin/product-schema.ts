@@ -15,7 +15,7 @@ export const variantFormSchema = z.object({
 });
 
 export const productFormSchema = z.object({
-  title: z.string().min(1, "Informe o título").max(60, "O título deve ter no máximo 60 caracteres"),
+  title: z.string().trim().min(1, "Informe o título").max(60, "O título deve ter no máximo 60 caracteres"),
   categoryId: z.string().min(1, "Selecione uma categoria"),
   description: z.string().optional(),
   videoUrl: z.string().trim().url("Informe uma URL válida").optional().or(z.literal("")),

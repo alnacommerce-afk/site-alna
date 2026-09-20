@@ -15,6 +15,7 @@ import { Reveal } from "@/components/site/reveal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SITE_URL as HOME_URL } from "@/lib/site-urls";
 import { RETURN_POLICY } from "@/lib/return-policy";
+import { plainText } from "@/lib/plain-text";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -108,7 +109,7 @@ export const Route = createFileRoute("/produto/$slug")({
          category_id,
          categories(name, slug),
          product_images(id, storage_path, alt_text, position),
-         product_variants(id, name, price_cents, compare_at_price_cents, sku, stock_quantity)`,
+         product_variants(id, name, price_cents, compare_at_price_cents, sku, stock_quantity, gtin_ean)`,
       )
       .eq("slug", params.slug)
       .eq("status", "published")
@@ -132,11 +133,17 @@ export const Route = createFileRoute("/produto/$slug")({
       ? supabase.storage.from("product-media").getPublicUrl(images[0].storage_path).data.publicUrl
       : undefined;
     const variants = product.product_variants ?? [];
-    const minPrice = variants.length ? Math.min(...variants.map((v) => v.price_cents)) / 100 : 0;
-    const title = product.seo_title || product.title;
+    const name = product.title.trim();
+    const title = (product.seo_title || product.title).trim();
     const description =
-      product.seo_description || product.description?.slice(0, 160) || `${product.title} - Alna Commerce`;
+      product.seo_description?.trim() || plainText(product.description, 160) || `${name} - Alna Commerce`;
     const url = `${SITE_URL}/produto/${product.slug}`;
+    const imageUrls = images.map(
+      (image) => supabase.storage.from("product-media").getPublicUrl(image.storage_path).data.publicUrl,
+    );
+    // Only a well-formed GTIN/EAN (8, 12, 13 or 14 digits) is published; otherwise Google is told the
+    // product has none instead of receiving a bad code.
+    const gtin = variants.map((v) => v.gtin_ean?.trim()).find((g) => g && /^(\d{8}|\d{12,14})$/.test(g));
 
     return {
       meta: [
@@ -155,20 +162,26 @@ export const Route = createFileRoute("/produto/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Product",
-            name: product.title,
-            description: product.description ?? undefined,
-            image: thumbnail,
+            name,
+            description: plainText(product.description) || undefined,
+            image: imageUrls.length ? imageUrls : undefined,
             sku: variants[0]?.sku,
-            offers: {
+            mpn: variants[0]?.sku,
+            ...(gtin ? { gtin } : {}),
+            brand: { "@type": "Brand", name: "ALNA" },
+            ...(product.categories?.name ? { category: product.categories.name } : {}),
+            // One offer per variant, each with its own SKU, price and stock.
+            offers: variants.map((v) => ({
               "@type": "Offer",
+              sku: v.sku,
               url,
               priceCurrency: "BRL",
-              price: minPrice.toFixed(2),
-              availability: variants.some((v) => v.stock_quantity > 0)
-                ? "https://schema.org/InStock"
-                : "https://schema.org/OutOfStock",
+              price: (v.price_cents / 100).toFixed(2),
+              availability:
+                v.stock_quantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+              itemCondition: "https://schema.org/NewCondition",
               hasMerchantReturnPolicy: RETURN_POLICY,
-            },
+            })),
           }),
         },
       ],

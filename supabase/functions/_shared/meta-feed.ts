@@ -7,6 +7,7 @@
 
 export type FeedVariant = {
   sku: string | null;
+  gtin_ean?: string | null;
   name: string | null;
   price_cents: number;
   compare_at_price_cents: number | null;
@@ -18,6 +19,7 @@ export type FeedProduct = {
   title: string;
   slug: string;
   description: string | null;
+  categories?: { name: string } | null;
   product_images: FeedImage[] | null;
   product_variants: FeedVariant[] | null;
 };
@@ -36,7 +38,21 @@ export const FEED_COLUMNS = [
   "image_link",
   "additional_image_link",
   "brand",
+  "mpn",
+  "gtin",
+  "product_type",
+  "google_product_category",
+  "identifier_exists",
 ] as const;
+
+// Google's product taxonomy (text path) per store category. Anything not listed here is left empty and
+// Google classifies the product on its own.
+const GOOGLE_CATEGORY: Record<string, string> = {
+  colheres: "Home & Garden > Kitchen & Dining > Kitchen Tools & Utensils",
+};
+
+const validGtin = (value: string | null | undefined): string =>
+  value && /^(\d{8}|\d{12,14})$/.test(value.trim()) ? value.trim() : "";
 
 type Options = {
   /** Store origin, e.g. https://store.alna.sale (no trailing slash). */
@@ -44,6 +60,8 @@ type Options = {
   /** Public URL prefix of the product-media bucket, ending in "/". */
   imageBaseUrl: string;
   brand: string;
+  /** "google" also fills identifier_exists, a column only Google's feed spec has. */
+  target?: "meta" | "google";
 };
 
 const csvCell = (value: string | number | null | undefined): string => {
@@ -67,7 +85,9 @@ const plainText = (source: string | null, fallback: string): string => {
 };
 
 export function buildFeedCsv(products: FeedProduct[], options: Options): string {
-  const rows: string[] = [FEED_COLUMNS.join(",")];
+  const google = options.target === "google";
+  const columns = FEED_COLUMNS.filter((column) => google || column !== "identifier_exists");
+  const rows: string[] = [columns.join(",")];
 
   for (const product of products) {
     const images = [...(product.product_images ?? [])].sort((a, b) => a.position - b.position);
@@ -100,8 +120,14 @@ export function buildFeedCsv(products: FeedProduct[], options: Options): string 
           .map((image) => imageUrl(image.storage_path))
           .join(","),
         brand: options.brand,
+        mpn: variant.sku?.trim() || "",
+        gtin: validGtin(variant.gtin_ean),
+        product_type: product.categories?.name?.trim() || "",
+        google_product_category: GOOGLE_CATEGORY[product.categories?.name?.trim().toLowerCase() ?? ""] ?? "",
+        // Products without a barcode must say so, or Google flags them as missing identifiers.
+        identifier_exists: validGtin(variant.gtin_ean) ? "yes" : "no",
       };
-      rows.push(FEED_COLUMNS.map((column) => csvCell(cells[column])).join(","));
+      rows.push(columns.map((column) => csvCell(cells[column])).join(","));
     });
   }
 

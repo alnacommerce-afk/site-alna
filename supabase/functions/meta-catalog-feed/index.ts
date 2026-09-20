@@ -20,7 +20,8 @@ Deno.serve(async (req) => {
     .select(
       `id, title, slug, description,
        product_images(storage_path, position),
-       product_variants(sku, name, price_cents, compare_at_price_cents, stock_quantity)`,
+       categories(name),
+       product_variants(sku, name, price_cents, compare_at_price_cents, stock_quantity, gtin_ean)`,
     )
     .eq("status", "published")
     .order("created_at", { ascending: true });
@@ -34,6 +35,8 @@ Deno.serve(async (req) => {
     siteUrl: STORE_URL,
     imageBaseUrl: `${supabaseUrl}/storage/v1/object/public/product-media/`,
     brand: "ALNA",
+    // Merchant Center feed: ...meta-catalog-feed?for=google
+    target: new URL(req.url).searchParams.get("for") === "google" ? "google" : "meta",
   });
 
   return new Response(req.method === "HEAD" ? null : csv, {
