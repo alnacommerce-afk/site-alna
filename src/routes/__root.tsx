@@ -95,8 +95,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon-alna.png", type: "image/png" },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      // Brand icon set. "?v=2" makes browsers drop the previous (Lovable) icon from their cache.
+      { rel: "icon", href: "/favicon.ico?v=2", sizes: "48x48" },
+      { rel: "icon", href: "/favicon-32.png?v=2", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/favicon-192.png?v=2", type: "image/png", sizes: "192x192" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png?v=2" },
     ],
   }),
   shellComponent: RootShell,
