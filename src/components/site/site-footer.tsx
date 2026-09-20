@@ -153,7 +153,7 @@ export function SiteFooter() {
             </li>
             <li className="flex items-center gap-2">
               <Instagram className="h-4 w-4 shrink-0" /> @
-              {settings?.instagram_handle ?? "alnaoficial_"}
+              {settings?.instagram_handle ?? "store.alna.sale"}
             </li>
             <li className="flex items-center gap-2">
               <MapPin className="h-4 w-4 shrink-0" />{" "}

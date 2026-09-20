@@ -49,8 +49,8 @@ function ContatoPage() {
           </li>
           <li>
             Instagram:{" "}
-            <a href="https://www.instagram.com/alnaoficial_" target="_blank" rel="noopener noreferrer">
-              @alnaoficial_
+            <a href="https://www.instagram.com/store.alna.sale" target="_blank" rel="noopener noreferrer">
+              @store.alna.sale
             </a>
           </li>
           <li>Brusque, Santa Catarina</li>
