@@ -28,3 +28,7 @@ verify_jwt = true
 # Admin-only — sends one test e-mail to the store's admin address.
 [functions.send-test-email]
 verify_jwt = true
+
+# Public read-only product feed for Meta Commerce Manager (only what the storefront already shows).
+[functions.meta-catalog-feed]
+verify_jwt = false

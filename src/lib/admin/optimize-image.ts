@@ -1,9 +1,11 @@
 // Product photos come straight from a camera or design tool (a single PNG can weigh 1.5 MB), and the
 // store shows them on every catalog card. Before uploading we shrink them to at most MAX_SIDE pixels
-// and re-encode as WebP, which keeps them sharp at a fraction of the weight. If anything about that
-// fails, or the result would not be smaller, the original file is uploaded untouched.
+// and re-encode as JPEG. JPEG (not WebP) on purpose: Meta's product catalog, WhatsApp link previews
+// and e-mail clients all accept it, while WebP is not universally supported there. Transparent
+// areas become white. If anything fails, or the result would not be smaller, the original file is
+// uploaded untouched.
 const MAX_SIDE = 1400;
-const WEBP_QUALITY = 0.82;
+const JPEG_QUALITY = 0.85;
 
 export type PreparedImage = {
   body: Blob;
@@ -39,17 +41,19 @@ export async function prepareProductImage(file: File): Promise<PreparedImage> {
       bitmap.close();
       return original(file);
     }
+    // JPEG has no transparency: paint white first so transparent PNGs do not turn black.
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
     context.imageSmoothingQuality = "high";
     context.drawImage(bitmap, 0, 0, width, height);
     bitmap.close();
 
     const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, "image/webp", WEBP_QUALITY),
+      canvas.toBlob(resolve, "image/jpeg", JPEG_QUALITY),
     );
-    // Browsers that cannot encode WebP silently return PNG; keep the original in that case.
-    if (!blob || blob.type !== "image/webp" || blob.size >= file.size) return original(file);
+    if (!blob || blob.type !== "image/jpeg" || blob.size >= file.size) return original(file);
 
-    return { body: blob, extension: "webp", contentType: "image/webp" };
+    return { body: blob, extension: "jpg", contentType: "image/jpeg" };
   } catch {
     return original(file);
   }
