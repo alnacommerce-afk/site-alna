@@ -122,8 +122,9 @@ export function buildFeedCsv(products: FeedProduct[], options: Options): string 
         brand: options.brand,
         mpn: variant.sku?.trim() || "",
         gtin: validGtin(variant.gtin_ean),
-        product_type: product.categories?.name?.trim() || "",
-        google_product_category: GOOGLE_CATEGORY[product.categories?.name?.trim().toLowerCase() ?? ""] ?? "",
+        product_type: product.categories?.[0]?.name?.trim() || "",
+        google_product_category:
+          GOOGLE_CATEGORY[product.categories?.[0]?.name?.trim().toLowerCase() ?? ""] ?? "",
         // Products without a barcode must say so, or Google flags them as missing identifiers.
         identifier_exists: validGtin(variant.gtin_ean) ? "yes" : "no",
       };
