@@ -19,7 +19,7 @@ export type FeedProduct = {
   title: string;
   slug: string;
   description: string | null;
-  categories?: { name: string } | null;
+  categories?: { name: string }[] | null;
   product_images: FeedImage[] | null;
   product_variants: FeedVariant[] | null;
 };
