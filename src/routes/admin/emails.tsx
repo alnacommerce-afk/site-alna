@@ -63,6 +63,7 @@ const TEMPLATE_LABEL: Record<string, string> = {
   post_purchase_nps: "NPS — pesquisa",
   referral_reward: "Indicação",
   weekly_marketing: "Novidades da semana",
+  teste: "Teste de envio",
 };
 
 function statusVariant(status: string): "default" | "secondary" | "destructive" {
@@ -86,6 +87,8 @@ function EmailsPage() {
   const [selected, setSelected] = useState<EmailRow | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -120,7 +123,7 @@ function EmailsPage() {
     return () => {
       cancelled = true;
     };
-  }, [page, status, search]);
+  }, [page, status, search, reloadKey]);
 
   // The HTML body is only fetched when a row is opened, so the list stays light.
   async function openEmail(row: EmailRow) {
@@ -140,16 +143,43 @@ function EmailsPage() {
     setPreview(data?.html ?? null);
   }
 
+  async function sendTestEmail() {
+    setSendingTest(true);
+    const { data, error } = await supabase.functions.invoke("send-test-email");
+    // A non-2xx answer (e.g. Resend refused the send) arrives as `error`; its body has the reason.
+    let result: { status?: string; to?: string; error?: string } | null = data;
+    if (error && !result) {
+      try {
+        result = await (error as { context?: Response }).context?.json();
+      } catch {
+        result = null;
+      }
+    }
+    setSendingTest(false);
+    if (result?.status === "sent") {
+      toast.success(`E-mail de teste enviado para ${result.to}.`);
+    } else {
+      toast.error(result?.error ?? "Não foi possível enviar o e-mail de teste.");
+    }
+    setPage(0);
+    setReloadKey((k) => k + 1);
+  }
+
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <AdminShell>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold">E-mails enviados</h1>
-        <p className="text-sm text-muted-foreground">
-          Todo e-mail que a loja tenta enviar fica registrado aqui — enviado, com falha ou não
-          enviado — com o conteúdo exatamente como o cliente recebeu.
-        </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold">E-mails enviados</h1>
+          <p className="text-sm text-muted-foreground">
+            Todo e-mail que a loja tenta enviar fica registrado aqui — enviado, com falha ou não
+            enviado — com o conteúdo exatamente como o cliente recebeu.
+          </p>
+        </div>
+        <Button variant="outline" onClick={sendTestEmail} disabled={sendingTest}>
+          {sendingTest ? "Enviando..." : "Enviar e-mail de teste"}
+        </Button>
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-3">

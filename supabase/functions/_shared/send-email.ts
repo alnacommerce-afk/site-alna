@@ -42,11 +42,13 @@ async function logEmail(params: SendParams, entry: LogEntry): Promise<void> {
   }
 }
 
-export async function sendEmail(resendKey: string | null, params: SendParams): Promise<void> {
+export type SendResult = { status: "sent" | "failed" | "skipped"; error?: string };
+
+export async function sendEmail(resendKey: string | null, params: SendParams): Promise<SendResult> {
   if (!resendKey) {
     console.log("[send-email] Resend não configurado (Admin > Conexões) — pulando envio para", params.to);
     await logEmail(params, { status: "skipped", error: "Resend não configurado." });
-    return;
+    return { status: "skipped", error: "Resend não configurado." };
   }
   try {
     const resp = await fetch(RESEND_API, {
@@ -63,15 +65,15 @@ export async function sendEmail(resendKey: string | null, params: SendParams): P
       const errText = await resp.text();
       console.error("[send-email] Resend respondeu", resp.status, errText);
       await logEmail(params, { status: "failed", error: `Resend ${resp.status}: ${errText}` });
-      return;
+      return { status: "failed", error: `Resend ${resp.status}: ${errText.slice(0, 300)}` };
     }
     const body = await resp.json().catch(() => null);
     await logEmail(params, { status: "sent", providerId: body?.id ?? null });
+    return { status: "sent" };
   } catch (error) {
     console.error("[send-email] falha ao enviar", error);
-    await logEmail(params, {
-      status: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
+    const message = error instanceof Error ? error.message : String(error);
+    await logEmail(params, { status: "failed", error: message });
+    return { status: "failed", error: message };
   }
 }
