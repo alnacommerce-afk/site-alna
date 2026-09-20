@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://alnacommerce.com/sitemap.xml
+Sitemap: https://alna.sale/sitemap.xml

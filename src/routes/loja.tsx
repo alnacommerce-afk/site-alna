@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const SITE_URL = "https://store.alnacommerce.com/loja";
+const SITE_URL = "https://store.alna.sale/loja";
 
 type CategoryRow = { id: string; name: string; slug: string };
 type ProductCard = {
