@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
     // One volume per physical unit — a simple, safe (if not perfectly optimized) approximation;
     // never under-declares weight/dimensions.
     const volumes = items.flatMap((item) => {
-      const variant = item.product_variants as {
+      const variant = item.product_variants as unknown as {
         package_width_cm: number | null;
         package_height_cm: number | null;
         package_length_cm: number | null;
