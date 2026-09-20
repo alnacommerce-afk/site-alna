@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 
-const SITE_URL = "https://alnacommerce.com/politica-de-privacidade";
+const SITE_URL = "https://store.alnacommerce.com/politica-de-privacidade";
 
 export const Route = createFileRoute("/politica-de-privacidade")({
   head: () => ({

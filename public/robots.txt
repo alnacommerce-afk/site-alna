@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://alnacommerce.com/sitemap.xml
+Sitemap: https://store.alnacommerce.com/sitemap.xml

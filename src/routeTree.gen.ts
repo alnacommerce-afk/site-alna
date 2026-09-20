@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CarrinhoRouteImport } from './routes/carrinho'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as LojaRouteImport } from './routes/loja'
 import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
 import { Route as PoliticaDeTrocaEDevolucaoRouteImport } from './routes/politica-de-troca-e-devolucao'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
@@ -52,6 +54,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LojaRoute = LojaRouteImport.update({
   id: '/loja',
   path: '/loja',
@@ -68,6 +75,11 @@ const PoliticaDeTrocaEDevolucaoRoute =
     path: '/politica-de-troca-e-devolucao',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
   id: '/termos-de-uso',
   path: '/termos-de-uso',
@@ -181,9 +193,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/carrinho': typeof CarrinhoRoute
   '/checkout': typeof CheckoutRoute
+  '/contato': typeof ContatoRoute
   '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
+  '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
@@ -210,9 +224,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/carrinho': typeof CarrinhoRoute
   '/checkout': typeof CheckoutRoute
+  '/contato': typeof ContatoRoute
   '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
+  '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
@@ -240,9 +256,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/carrinho': typeof CarrinhoRoute
   '/checkout': typeof CheckoutRoute
+  '/contato': typeof ContatoRoute
   '/loja': typeof LojaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
+  '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
@@ -271,9 +289,11 @@ export interface FileRouteTypes {
     | '/'
     | '/carrinho'
     | '/checkout'
+    | '/contato'
     | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
+    | '/sobre'
     | '/termos-de-uso'
     | '/admin/conexoes'
     | '/admin/configuracoes'
@@ -300,9 +320,11 @@ export interface FileRouteTypes {
     | '/'
     | '/carrinho'
     | '/checkout'
+    | '/contato'
     | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
+    | '/sobre'
     | '/termos-de-uso'
     | '/admin/conexoes'
     | '/admin/configuracoes'
@@ -329,9 +351,11 @@ export interface FileRouteTypes {
     | '/'
     | '/carrinho'
     | '/checkout'
+    | '/contato'
     | '/loja'
     | '/politica-de-privacidade'
     | '/politica-de-troca-e-devolucao'
+    | '/sobre'
     | '/termos-de-uso'
     | '/admin/conexoes'
     | '/admin/configuracoes'
@@ -359,9 +383,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CarrinhoRoute: typeof CarrinhoRoute
   CheckoutRoute: typeof CheckoutRoute
+  ContatoRoute: typeof ContatoRoute
   LojaRoute: typeof LojaRoute
   PoliticaDePrivacidadeRoute: typeof PoliticaDePrivacidadeRoute
   PoliticaDeTrocaEDevolucaoRoute: typeof PoliticaDeTrocaEDevolucaoRoute
+  SobreRoute: typeof SobreRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   AdminConexoesRoute: typeof AdminConexoesRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
@@ -408,6 +434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/loja': {
       id: '/loja'
       path: '/loja'
@@ -427,6 +460,13 @@ declare module '@tanstack/react-router' {
       path: '/politica-de-troca-e-devolucao'
       fullPath: '/politica-de-troca-e-devolucao'
       preLoaderRoute: typeof PoliticaDeTrocaEDevolucaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/termos-de-uso': {
@@ -583,9 +623,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CarrinhoRoute: CarrinhoRoute,
   CheckoutRoute: CheckoutRoute,
+  ContatoRoute: ContatoRoute,
   LojaRoute: LojaRoute,
   PoliticaDePrivacidadeRoute: PoliticaDePrivacidadeRoute,
   PoliticaDeTrocaEDevolucaoRoute: PoliticaDeTrocaEDevolucaoRoute,
+  SobreRoute: SobreRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
   AdminConexoesRoute: AdminConexoesRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,

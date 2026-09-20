@@ -14,7 +14,6 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "../components/ui/sonner";
 import { CartProvider } from "../lib/cart/cart-context";
 import { captureReferralCodeFromUrl } from "../lib/referral/referral-code";
-import { injectGa4IfConfigured } from "../lib/analytics/ga4";
 
 function NotFoundComponent() {
   return (
@@ -125,7 +124,16 @@ function RootComponent() {
 
   useEffect(() => {
     captureReferralCodeFromUrl();
-    injectGa4IfConfigured();
+    // Analytics is not needed for the first paint — run it once the browser is idle.
+    // Loaded with a dynamic import so the Supabase client stays out of the entry bundle.
+    const runAnalytics = () =>
+      void import("../lib/analytics/ga4").then((m) => m.injectGa4IfConfigured());
+    if (typeof window.requestIdleCallback === "function") {
+      const handle = window.requestIdleCallback(runAnalytics, { timeout: 4000 });
+      return () => window.cancelIdleCallback(handle);
+    }
+    const timeout = window.setTimeout(runAnalytics, 2000);
+    return () => window.clearTimeout(timeout);
   }, []);
 
   return (

@@ -9,7 +9,7 @@ import { CustomerShell } from "@/components/customer/customer-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const SITE_URL = "https://alnacommerce.com";
+const SITE_URL = "https://store.alnacommerce.com";
 const REFERRAL_CODE_CHARS = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 
 function randomReferralCode(length = 6) {

@@ -10,7 +10,7 @@ export function LegalPageLayout({
   children,
 }: {
   title: string;
-  updatedAt: string;
+  updatedAt?: string;
   children: ReactNode;
 }) {
   return (
@@ -19,7 +19,9 @@ export function LegalPageLayout({
       <section className="bg-[#12294f] py-12">
         <div className="mx-auto max-w-3xl px-4">
           <h1 className="text-3xl font-bold text-white sm:text-4xl">{title}</h1>
-          <p className="mt-2 text-sm text-white/70">Última atualização: {updatedAt}</p>
+          {updatedAt ? (
+            <p className="mt-2 text-sm text-white/70">Última atualização: {updatedAt}</p>
+          ) : null}
         </div>
       </section>
       <article className="mx-auto max-w-3xl px-4 py-12">{children}</article>
