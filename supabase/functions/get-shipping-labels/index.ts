@@ -29,7 +29,7 @@ type OrderItem = { sku: string | null; product_title: string; variant_name: stri
 
 // Breaks text into lines that fit within maxWidth at the given font/size — pdf-lib's drawText
 // never wraps on its own.
-function wrapText(text: string, font: import("npm:pdf-lib@1.17.1").PDFFont, size: number, maxWidth: number): string[] {
+function wrapText(text: string, font: { widthOfTextAtSize(text: string, size: number): number }, size: number, maxWidth: number): string[] {
   const words = text.split(" ");
   const lines: string[] = [];
   let current = "";
