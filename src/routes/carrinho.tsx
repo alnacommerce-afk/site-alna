@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, Tag, Trash2, Truck } from "lucide-react";
 
-import { supabase } from "@/integrations/supabase/client";
+import { useSiteSettings } from "@/lib/site-data";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
@@ -16,14 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/carrinho")({
-  loader: async () => {
-    const { data } = await supabase
-      .from("site_settings")
-      .select("free_shipping_threshold_cents")
-      .eq("id", "default")
-      .maybeSingle();
-    return { freeShippingThresholdCents: data?.free_shipping_threshold_cents ?? 10000 };
-  },
   head: () => ({
     meta: [
       { title: "Carrinho - Alna Commerce" },
@@ -71,7 +64,8 @@ function FreeShippingProgress({
 }
 
 function CarrinhoPage() {
-  const { freeShippingThresholdCents } = Route.useLoaderData();
+  const { data: siteSettings } = useSiteSettings();
+  const freeShippingThresholdCents = siteSettings?.free_shipping_threshold_cents ?? null;
   const { items, subtotalCents, coupon, discountCents, setQuantity, remove, setCoupon } = useCart();
 
   const [cep, setCep] = useState(() => getSavedCheckoutInfo().zip ?? "");
@@ -169,10 +163,16 @@ function CarrinhoPage() {
         ) : (
           <>
             <div className="mt-6">
-              <FreeShippingProgress
-                subtotalCents={subtotalCents}
-                thresholdCents={freeShippingThresholdCents}
-              />
+              {freeShippingThresholdCents === null ? (
+                <Skeleton className="h-[88px] w-full rounded-lg" />
+              ) : (
+                <div className="reveal">
+                  <FreeShippingProgress
+                    subtotalCents={subtotalCents}
+                    thresholdCents={freeShippingThresholdCents}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_320px]">

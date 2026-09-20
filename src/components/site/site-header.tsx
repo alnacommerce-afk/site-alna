@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ChevronDown,
@@ -10,7 +9,9 @@ import {
   Truck,
   User,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useCategories, useSiteSettings } from "@/lib/site-data";
+import { SITE_URL } from "@/lib/site-urls";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
 import logoAlna from "@/assets/brand/logo-alna.png";
@@ -22,36 +23,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type CategoryLink = { id: string; name: string; slug: string };
-
 export function SiteHeader() {
-  const [categories, setCategories] = useState<CategoryLink[]>([]);
   const { itemCount } = useCart();
-  const [freeShippingThresholdCents, setFreeShippingThresholdCents] = useState<number | null>(
-    null,
-  );
-
-  useEffect(() => {
-    supabase
-      .from("categories")
-      .select("id, name, slug")
-      .order("position")
-      .then(({ data }) => setCategories(data ?? []));
-
-    supabase
-      .from("site_settings")
-      .select("free_shipping_threshold_cents")
-      .eq("id", "default")
-      .maybeSingle()
-      .then(({ data }) => setFreeShippingThresholdCents(data?.free_shipping_threshold_cents ?? null));
-  }, []);
+  const { data: categories = [], isLoading: loadingCategories } = useCategories();
+  const { data: settings, isLoading: loadingSettings } = useSiteSettings();
+  const freeShippingThresholdCents = settings?.free_shipping_threshold_cents ?? null;
 
   return (
     <header className="relative z-30 bg-white shadow-sm">
       <div className="bg-[#16a34a] text-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 py-1.5 text-xs font-medium">
-          {freeShippingThresholdCents ? (
-            <span className="flex items-center gap-1.5 font-bold">
+          {loadingSettings ? (
+            <Skeleton className="h-3.5 w-52 bg-white/25" />
+          ) : freeShippingThresholdCents ? (
+            <span className="reveal flex items-center gap-1.5 font-bold">
               <Gift className="h-3.5 w-3.5" /> Frete grátis em compras acima de{" "}
               {formatCentsToBRL(freeShippingThresholdCents)}
             </span>
@@ -69,9 +54,9 @@ export function SiteHeader() {
       </div>
 
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-        <Link to="/" className="shrink-0">
-          <img src={logoAlna} alt="Alna Commerce" className="h-10 w-auto" />
-        </Link>
+        <a href={SITE_URL} className="shrink-0">
+          <img src={logoAlna} alt="Alna Commerce" width={97} height={40} className="h-10 w-auto" />
+        </a>
 
         <div className="hidden flex-1 items-center md:flex">
           <div className="relative w-full max-w-md">
@@ -103,9 +88,9 @@ export function SiteHeader() {
 
       <nav className="border-t border-[#12294f]/10">
         <div className="mx-auto flex max-w-6xl items-center gap-6 overflow-x-auto px-4 py-2.5 text-sm font-semibold tracking-wide text-[#12294f]">
-          <Link to="/" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+          <a href={SITE_URL} className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
             HOME
-          </Link>
+          </a>
           <Link
             to="/loja"
             search={{ categoria: undefined }}
@@ -120,7 +105,9 @@ export function SiteHeader() {
               <ChevronDown className="h-3.5 w-3.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              {categories.length === 0 ? (
+              {loadingCategories ? (
+                <DropdownMenuItem disabled>Carregando...</DropdownMenuItem>
+              ) : categories.length === 0 ? (
                 <DropdownMenuItem disabled>Nenhuma categoria ainda</DropdownMenuItem>
               ) : (
                 categories.map((category) => (
@@ -140,12 +127,12 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <a href="/#sobre" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+          <Link to="/sobre" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
             SOBRE
-          </a>
-          <a href="/#fale-conosco" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+          </Link>
+          <Link to="/contato" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
             CONTATO
-          </a>
+          </Link>
         </div>
       </nav>
     </header>

@@ -1,44 +1,15 @@
-import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Clock, Instagram, MapPin, Phone } from "lucide-react";
 
-import { supabase } from "@/integrations/supabase/client";
+import { useCategories, useSiteSettings } from "@/lib/site-data";
+import { SITE_URL } from "@/lib/site-urls";
 import logoAlnaTransparent from "@/assets/brand/logo-alna.png";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 
-type CategoryLink = { id: string; name: string; slug: string };
-type Settings = {
-  cnpj: string | null;
-  razao_social: string | null;
-  phone: string | null;
-  email: string | null;
-  instagram_handle: string | null;
-  address_city: string | null;
-  address_state: string | null;
-  business_hours: string | null;
-};
-
 export function SiteFooter() {
   const year = new Date().getFullYear();
-  const [categories, setCategories] = useState<CategoryLink[]>([]);
-  const [settings, setSettings] = useState<Settings | null>(null);
-
-  useEffect(() => {
-    supabase
-      .from("categories")
-      .select("id, name, slug")
-      .order("position")
-      .then(({ data }) => setCategories(data ?? []));
-
-    supabase
-      .from("site_settings")
-      .select(
-        "cnpj, razao_social, phone, email, instagram_handle, address_city, address_state, business_hours",
-      )
-      .eq("id", "default")
-      .single()
-      .then(({ data }) => setSettings(data));
-  }, []);
+  const { data: categories = [] } = useCategories();
+  const { data: settings } = useSiteSettings();
 
   return (
     <footer className="bg-[#12294f] text-white">
@@ -77,9 +48,9 @@ export function SiteFooter() {
           </h3>
           <ul className="space-y-2 text-sm text-white/70">
             <li>
-              <Link to="/" className="hover:text-white">
+              <a href={SITE_URL} className="hover:text-white">
                 Home
-              </Link>
+              </a>
             </li>
             <li>
               <Link to="/loja" search={{ categoria: undefined }} className="hover:text-white">
@@ -87,14 +58,14 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <a href="/#sobre" className="hover:text-white">
+              <Link to="/sobre" className="hover:text-white">
                 Sobre
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/#fale-conosco" className="hover:text-white">
+              <Link to="/contato" className="hover:text-white">
                 Contato
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

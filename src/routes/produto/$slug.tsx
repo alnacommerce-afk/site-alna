@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Await, createFileRoute, Link } from "@tanstack/react-router";
 import { Maximize2, Minus, Plus, ShieldCheck, Star, Truck, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -11,6 +11,9 @@ import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
+import { Reveal } from "@/components/site/reveal";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SITE_URL as HOME_URL } from "@/lib/site-urls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,6 +47,37 @@ type RelatedRow = {
   product_images: { storage_path: string; alt_text: string; position: number }[];
   product_variants: { price_cents: number; compare_at_price_cents: number | null }[];
 };
+
+type ProductExtras = { related: RelatedRow[]; reviews: ReviewRow[] };
+
+// Reviews and related products are secondary: the product itself (needed for the title, photo and
+// price in the HTML) is awaited by the loader, while these stream in afterwards in their own blocks.
+async function fetchExtras(productId: string, categoryId: string | null): Promise<ProductExtras> {
+  try {
+    const [{ data: related }, { data: reviews }] = await Promise.all([
+      supabase
+        .from("products")
+        .select(
+          `id, title, slug,
+           product_images(storage_path, alt_text, position),
+           product_variants(price_cents, compare_at_price_cents)`,
+        )
+        .eq("category_id", categoryId ?? "")
+        .eq("status", "published")
+        .neq("id", productId)
+        .limit(4),
+      supabase
+        .from("product_reviews")
+        .select("id, author_name, rating, comment, created_at")
+        .eq("product_id", productId)
+        .order("created_at", { ascending: false }),
+    ]);
+    return { related: (related ?? []) as RelatedRow[], reviews: (reviews ?? []) as ReviewRow[] };
+  } catch (error) {
+    console.error("[produto] extras indisponíveis", error);
+    return { related: [], reviews: [] };
+  }
+}
 
 function toEmbedUrl(url: string): string | null {
   try {
@@ -80,33 +114,11 @@ export const Route = createFileRoute("/produto/$slug")({
       .maybeSingle();
 
     if (!product) {
-      return { product: null, related: [] as RelatedRow[], reviews: [] as ReviewRow[] };
+      return { product: null, extras: Promise.resolve<ProductExtras>({ related: [], reviews: [] }) };
     }
 
-    const [{ data: related }, { data: reviews }] = await Promise.all([
-      supabase
-        .from("products")
-        .select(
-          `id, title, slug,
-           product_images(storage_path, alt_text, position),
-           product_variants(price_cents, compare_at_price_cents)`,
-        )
-        .eq("category_id", product.category_id ?? "")
-        .eq("status", "published")
-        .neq("id", product.id)
-        .limit(4),
-      supabase
-        .from("product_reviews")
-        .select("id, author_name, rating, comment, created_at")
-        .eq("product_id", product.id)
-        .order("created_at", { ascending: false }),
-    ]);
-
-    return {
-      product,
-      related: (related ?? []) as RelatedRow[],
-      reviews: (reviews ?? []) as ReviewRow[],
-    };
+    // Started now, but not awaited: the response does not wait for reviews or related products.
+    return { product, extras: fetchExtras(product.id, product.category_id) };
   },
   head: ({ loaderData }) => {
     const product = loaderData?.product;
@@ -183,7 +195,13 @@ function RelatedProductCard({ product }: { product: RelatedRow }) {
     >
       <div className="aspect-square bg-[#fcfbf8]">
         {thumbnailUrl ? (
-          <img src={thumbnailUrl} alt={thumbnail?.alt_text ?? product.title} className="h-full w-full object-cover" />
+          <img
+            src={thumbnailUrl}
+            alt={thumbnail?.alt_text ?? product.title}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
             Sem foto
@@ -200,8 +218,121 @@ function RelatedProductCard({ product }: { product: RelatedRow }) {
   );
 }
 
+function RatingSummary({ extras }: { extras: Promise<ProductExtras> }) {
+  return (
+    <Await promise={extras} fallback={<Skeleton className="mt-2 h-5 w-40" />}>
+      {({ reviews }) => {
+        if (reviews.length === 0) return null;
+        const average = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+        return (
+          <div className="reveal mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+            <div className="flex text-[#f5a623]">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Star key={n} className="h-4 w-4" fill={n <= Math.round(average) ? "currentColor" : "none"} />
+              ))}
+            </div>
+            <span>
+              {average.toFixed(1)} ({reviews.length} {reviews.length === 1 ? "avaliação" : "avaliações"})
+            </span>
+          </div>
+        );
+      }}
+    </Await>
+  );
+}
+
+function ReviewsSection({ extras }: { extras: Promise<ProductExtras> }) {
+  return (
+    <section className="border-t py-12">
+      <div className="mx-auto max-w-4xl px-4">
+        <h2 className="text-lg font-bold text-[#12294f]">Avaliações de quem comprou</h2>
+        <Await
+          promise={extras}
+          fallback={
+            <div className="mt-5 space-y-4" aria-busy="true">
+              <Skeleton className="h-20 w-full rounded-lg" />
+              <Skeleton className="h-20 w-full rounded-lg" />
+            </div>
+          }
+        >
+          {({ reviews }) =>
+            reviews.length === 0 ? (
+              <p className="reveal mt-4 text-sm text-muted-foreground">
+                Ainda não há avaliações para este produto. Seja o primeiro a comprar!
+              </p>
+            ) : (
+              <div className="mt-5 space-y-4">
+                {reviews.map((review, index) => (
+                  <Reveal key={review.id} index={index}>
+                    <div className="rounded-lg border border-[#12294f]/10 p-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold text-[#12294f]">{review.author_name}</p>
+                        <div className="flex text-[#f5a623]">
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <Star key={n} className="h-3.5 w-3.5" fill={n <= review.rating ? "currentColor" : "none"} />
+                          ))}
+                        </div>
+                      </div>
+                      {review.comment ? (
+                        <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
+                      ) : null}
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            )
+          }
+        </Await>
+      </div>
+    </section>
+  );
+}
+
+function RelatedSection({ extras }: { extras: Promise<ProductExtras> }) {
+  return (
+    <Await
+      promise={extras}
+      fallback={
+        <section className="border-t bg-[#fcfbf8] py-12" aria-busy="true">
+          <div className="mx-auto max-w-6xl px-4">
+            <Skeleton className="h-5 w-48" />
+            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="overflow-hidden rounded-xl border border-[#12294f]/10 bg-white">
+                  <Skeleton className="aspect-square w-full rounded-none" />
+                  <div className="space-y-2 p-3">
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-4 w-1/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      }
+    >
+      {({ related }) =>
+        related.length > 0 ? (
+          <section className="border-t bg-[#fcfbf8] py-12">
+            <div className="mx-auto max-w-6xl px-4">
+              <h2 className="reveal text-lg font-bold text-[#12294f]">Produtos relacionados</h2>
+              <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                {related.map((item, index) => (
+                  <Reveal key={item.id} index={index}>
+                    <RelatedProductCard product={item} />
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null
+      }
+    </Await>
+  );
+}
+
 function ProdutoPage() {
-  const { product, related, reviews } = Route.useLoaderData();
+  const { product, extras } = Route.useLoaderData();
   const cart = useCart();
 
   const images = useMemo(
@@ -256,9 +387,6 @@ function ProdutoPage() {
   const pixTotal = Math.round(subtotal * (1 - PIX_DISCOUNT));
   const inStock = (selectedVariant?.stock_quantity ?? 0) > 0;
   const embedUrl = product.video_url ? toEmbedUrl(product.video_url) : null;
-  const averageRating = reviews.length
-    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-    : 0;
 
   async function handleCheckShipping(options?: { silent?: boolean }) {
     const digits = onlyDigits(cep);
@@ -310,9 +438,9 @@ function ProdutoPage() {
       <SiteHeader />
 
       <div className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted-foreground">
-        <Link to="/" className="hover:text-[#12294f]">
+        <a href={HOME_URL} className="hover:text-[#12294f]">
           Início
-        </Link>
+        </a>
         {product.categories ? (
           <>
             {" / "}
@@ -425,19 +553,7 @@ function ProdutoPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#12294f] sm:text-3xl">{product.title}</h1>
 
-          {reviews.length > 0 ? (
-            <div className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
-              <div className="flex text-[#f5a623]">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <Star key={n} className="h-4 w-4" fill={n <= Math.round(averageRating) ? "currentColor" : "none"} />
-                ))}
-              </div>
-              <span>
-                {averageRating.toFixed(1)} ({reviews.length}{" "}
-                {reviews.length === 1 ? "avaliação" : "avaliações"})
-              </span>
-            </div>
-          ) : null}
+          <RatingSummary extras={extras} />
 
           <div className="mt-4 flex items-baseline gap-3">
             {off ? (
@@ -591,47 +707,9 @@ function ProdutoPage() {
         </section>
       ) : null}
 
-      <section className="border-t py-12">
-        <div className="mx-auto max-w-4xl px-4">
-          <h2 className="text-lg font-bold text-[#12294f]">Avaliações de quem comprou</h2>
-          {reviews.length === 0 ? (
-            <p className="mt-4 text-sm text-muted-foreground">
-              Ainda não há avaliações para este produto. Seja o primeiro a comprar!
-            </p>
-          ) : (
-            <div className="mt-5 space-y-4">
-              {reviews.map((review) => (
-                <div key={review.id} className="rounded-lg border border-[#12294f]/10 p-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-[#12294f]">{review.author_name}</p>
-                    <div className="flex text-[#f5a623]">
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <Star key={n} className="h-3.5 w-3.5" fill={n <= review.rating ? "currentColor" : "none"} />
-                      ))}
-                    </div>
-                  </div>
-                  {review.comment ? (
-                    <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      <ReviewsSection extras={extras} />
 
-      {related.length > 0 ? (
-        <section className="border-t bg-[#fcfbf8] py-12">
-          <div className="mx-auto max-w-6xl px-4">
-            <h2 className="text-lg font-bold text-[#12294f]">Produtos relacionados</h2>
-            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {related.map((item) => (
-                <RelatedProductCard key={item.id} product={item} />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+      <RelatedSection extras={extras} />
 
       <SiteFooter />
       <WhatsappFloatButton />
