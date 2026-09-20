@@ -21,6 +21,7 @@ import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
+import { Route as AdminEmailsRouteImport } from './routes/admin/emails'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
 import { Route as ContaIndexRouteImport } from './routes/conta/index'
@@ -98,6 +99,11 @@ const AdminConexoesRoute = AdminConexoesRouteImport.update({
 const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
   id: '/admin/configuracoes',
   path: '/admin/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminEmailsRoute = AdminEmailsRouteImport.update({
+  id: '/admin/emails',
+  path: '/admin/emails',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
@@ -232,6 +239,7 @@ export interface FileRoutesByTo {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
@@ -264,6 +272,7 @@ export interface FileRoutesById {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
@@ -297,6 +306,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/admin/conexoes'
     | '/admin/configuracoes'
+    | '/admin/emails'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
@@ -328,6 +338,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/admin/conexoes'
     | '/admin/configuracoes'
+    | '/admin/emails'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/admin/conexoes'
     | '/admin/configuracoes'
+    | '/admin/emails'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
@@ -391,6 +403,7 @@ export interface RootRouteChildren {
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   AdminConexoesRoute: typeof AdminConexoesRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
+  AdminEmailsRoute: typeof AdminEmailsRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
   ContaLoginRoute: typeof ContaLoginRoute
@@ -495,6 +508,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/configuracoes'
       fullPath: '/admin/configuracoes'
       preLoaderRoute: typeof AdminConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/emails': {
+      id: '/admin/emails'
+      path: '/admin/emails'
+      fullPath: '/admin/emails'
+      preLoaderRoute: typeof AdminEmailsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -631,6 +651,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermosDeUsoRoute: TermosDeUsoRoute,
   AdminConexoesRoute: AdminConexoesRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
+  AdminEmailsRoute: AdminEmailsRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
   ContaLoginRoute: ContaLoginRoute,

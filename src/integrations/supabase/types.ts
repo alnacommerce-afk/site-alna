@@ -94,6 +94,45 @@ export type Database = {
         }
         Relationships: []
       }
+      email_send_log: {
+        Row: {
+          created_at: string
+          error: string | null
+          from_email: string
+          html: string | null
+          id: string
+          provider_id: string | null
+          status: string
+          subject: string
+          template: string | null
+          to_email: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          from_email: string
+          html?: string | null
+          id?: string
+          provider_id?: string | null
+          status: string
+          subject: string
+          template?: string | null
+          to_email: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          from_email?: string
+          html?: string | null
+          id?: string
+          provider_id?: string | null
+          status?: string
+          subject?: string
+          template?: string | null
+          to_email?: string
+        }
+        Relationships: []
+      }
       email_suppressions: {
         Row: {
           email: string

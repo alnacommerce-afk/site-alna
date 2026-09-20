@@ -7,7 +7,7 @@ import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
 
 const PROMOTER_THRESHOLD = 5;
-const SITE_URL = "https://alnacommerce.com";
+const SITE_URL = "https://store.alna.sale";
 
 async function getOrCreateReferralCode(admin: ReturnType<typeof createClient>, userId: string) {
   const { data: existing } = await admin
@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
         link_indicacao: referralCode ? `${SITE_URL}/loja?ref=${referralCode}` : `${SITE_URL}/conta`,
       });
       if (rendered) {
-        await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
+        await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
       }
 
       if (score >= PROMOTER_THRESHOLD) {

@@ -17,7 +17,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SITE_URL = "https://alnacommerce.com";
+const SITE_URL = "https://store.alna.sale";
 const JT_EXPRESS_SERVICE_ID = "33";
 const PIX_DISCOUNT = 0.04;
 const ASAAS_API = "https://api.asaas.com/v3";
@@ -199,7 +199,7 @@ Deno.serve(async (req) => {
           Authorization: `Bearer ${meToken}`,
           "Content-Type": "application/json",
           Accept: "application/json",
-          "User-Agent": "Alna Commerce (contato@alna.cc)",
+          "User-Agent": "Alna Commerce (noreply@alna.sale)",
         },
         body: JSON.stringify({
           from: { postal_code: originZip },
@@ -286,7 +286,7 @@ Deno.serve(async (req) => {
     const asaasHeaders = {
       access_token: asaasKey,
       "Content-Type": "application/json",
-      "User-Agent": "Alna Commerce (contato@alna.cc)",
+      "User-Agent": "Alna Commerce (noreply@alna.sale)",
     };
 
     const findResp = await fetch(`${ASAAS_API}/customers?cpfCnpj=${cpfCnpj}`, {
@@ -471,7 +471,7 @@ Deno.serve(async (req) => {
       pix_aviso: pixAviso,
     });
     if (rendered) {
-      await sendEmail(resendKey, { to: body.customer.email, subject: rendered.subject, html: rendered.html });
+      await sendEmail(resendKey, { to: body.customer.email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
     }
 
     // Cards are approved synchronously, right here — by the time Asaas's own webhook arrives the

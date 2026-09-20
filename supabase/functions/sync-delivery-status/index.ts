@@ -6,7 +6,7 @@ import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
 
 const ME_API = "https://melhorenvio.com.br/api/v2";
-const SITE_URL = "https://alnacommerce.com";
+const SITE_URL = "https://store.alna.sale";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
             Authorization: `Bearer ${meToken}`,
             "Content-Type": "application/json",
             Accept: "application/json",
-            "User-Agent": "Alna Commerce (contato@alna.cc)",
+            "User-Agent": "Alna Commerce (noreply@alna.sale)",
           },
           body: JSON.stringify({ orders: [order.melhor_envio_shipment_id] }),
         });
@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
               link_conta: `${SITE_URL}/conta`,
             });
             if (rendered) {
-              await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
+              await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
             }
           }
         }

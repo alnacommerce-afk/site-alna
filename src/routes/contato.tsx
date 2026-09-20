@@ -7,7 +7,7 @@ import { STORE_URL } from "@/lib/site-urls";
 const PAGE_URL = `${STORE_URL}/contato`;
 const TITLE = "Fale com a Alna Commerce";
 const DESCRIPTION =
-  "Dúvidas ou precisa de ajuda? Fale com a equipe da Alna Commerce pelo WhatsApp, e-mail ou Instagram.";
+  "Dúvidas ou precisa de ajuda? Fale com a equipe da Alna Commerce pelo WhatsApp ou Instagram.";
 
 export const Route = createFileRoute("/contato")({
   head: () => ({
@@ -29,7 +29,7 @@ function ContatoPage() {
     <LegalPageLayout title="Contato">
       <LegalSection heading="Dúvidas ou precisa de ajuda? Fale com a nossa equipe!">
         <p>
-          Atendemos pelo WhatsApp, e-mail e Instagram. Conte com a gente antes, durante e depois da
+          Atendemos pelo WhatsApp e pelo Instagram. Conte com a gente antes, durante e depois da
           sua compra.
         </p>
         <a
@@ -48,12 +48,9 @@ function ContatoPage() {
             WhatsApp: <a href={WHATSAPP_URL}>(51) 99491-1125</a>
           </li>
           <li>
-            E-mail: <a href="mailto:contato@alna.cc">contato@alna.cc</a>
-          </li>
-          <li>
             Instagram:{" "}
-            <a href="https://www.instagram.com/alnaoficial_" target="_blank" rel="noopener noreferrer">
-              @alnaoficial_
+            <a href="https://www.instagram.com/store.alna.sale" target="_blank" rel="noopener noreferrer">
+              @store.alna.sale
             </a>
           </li>
           <li>Brusque, Santa Catarina</li>

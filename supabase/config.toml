@@ -24,3 +24,7 @@ verify_jwt = false
 # Called by a schedule/admin to pull SKU costs from FinMarket HUB. Checks the admin role itself.
 [functions.sync-skus]
 verify_jwt = true
+
+# Admin-only — sends one test e-mail to the store's admin address.
+[functions.send-test-email]
+verify_jwt = true

@@ -6,7 +6,7 @@ import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
 
-const SITE_URL = "https://alnacommerce.com";
+const SITE_URL = "https://store.alna.sale";
 const ASAAS_API = "https://api.asaas.com/v3";
 
 const corsHeaders = {
@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
         { unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}` },
       );
       if (rendered) {
-        await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
+        await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
         sent10min++;
       }
       await admin.from("orders").update({ reminder_10min_sent_at: new Date().toISOString() }).eq("id", order.id);
@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
         { unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}` },
       );
       if (rendered) {
-        await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
+        await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
         sent24h++;
       }
       await admin.from("orders").update({ reminder_24h_sent_at: new Date().toISOString() }).eq("id", order.id);
