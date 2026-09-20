@@ -14,6 +14,7 @@ import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
 import { Reveal } from "@/components/site/reveal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SITE_URL as HOME_URL } from "@/lib/site-urls";
+import { RETURN_POLICY } from "@/lib/return-policy";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -166,6 +167,7 @@ export const Route = createFileRoute("/produto/$slug")({
               availability: variants.some((v) => v.stock_quantity > 0)
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
+              hasMerchantReturnPolicy: RETURN_POLICY,
             },
           }),
         },
