@@ -188,8 +188,10 @@ p,h1,h2{margin:0}
    <span class="pill">Alna</span>
    <h1 id="mes">Ofertas do mês</h1>
    <script>
-   /* Shows the current month (São Paulo time) before first paint. Without JS the generic text stays. */
-   (function(){try{var m=new Date().toLocaleString('pt-BR',{month:'long',timeZone:'America/Sao_Paulo'});document.getElementById('mes').textContent='Mês de '+m.charAt(0).toUpperCase()+m.slice(1);}catch(e){}})();
+   /* Current month in São Paulo time, before first paint. No Intl on purpose (its first call costs
+      ~17 ms); Brazil has no DST since 2019, so São Paulo is a fixed UTC-3. Without JS the generic
+      text stays. */
+   (function(){var M=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];document.getElementById('mes').textContent='Mês de '+M[new Date(Date.now()-10800000).getUTCMonth()];})();
    </script>
    <a class="btn btn-white" href="https://store.alna.sale/loja">GARANTIR MEU DESCONTO →</a>
   </div>
