@@ -4,7 +4,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const RESEND_API = "https://api.resend.com/emails";
-export const FROM_ADDRESS = "Alna Commerce <noreply@alna.sale>";
+export const FROM_ADDRESS = "ALNA <noreply@alna.sale>";
 
 type SendParams = {
   to: string;
