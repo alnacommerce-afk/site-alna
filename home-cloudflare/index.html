@@ -290,5 +290,20 @@ p,h1,h2{margin:0}
  blocks.forEach(function(b){io.observe(b);});
 })();
 </script>
+<script>
+/* GA4 (same property as the store). Loaded only after the page finished loading and the browser is
+   idle, so it never competes with first paint. The ID is public; keep it in sync with Admin > Configurações. */
+window.addEventListener('load',function(){
+ var go=function(){
+  var id='G-DP9VE6XSRF';
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config',id,{linker:{domains:['alna.sale','store.alna.sale']}});
+  var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(s);
+ };
+ if('requestIdleCallback' in window)requestIdleCallback(go,{timeout:4000});else setTimeout(go,2000);
+});
+</script>
 </body>
 </html>

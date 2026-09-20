@@ -25,7 +25,7 @@ export async function injectGa4IfConfigured() {
     inline.text = `window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', '${measurementId}');`;
+      gtag('config', '${measurementId}', { linker: { domains: ['alna.sale', 'store.alna.sale'] } });`;
     document.head.appendChild(inline);
   } catch {
     // Analytics is best-effort — never let a failed fetch break the page.

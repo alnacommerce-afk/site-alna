@@ -74,7 +74,7 @@ const INSERT_BLOCKS = [
   { label: "Nome do cliente", snippet: "{{nome}}" },
   { label: "Botão", snippet: '<p style="text-align:center;margin:20px 0;"><a href="{{link_pedido}}" style="display:inline-block;background:#16a34a;color:#fff;padding:12px 24px;border-radius:6px;font-weight:bold;text-decoration:none;">Ver meu pedido</a></p>' },
   { label: "Divisor", snippet: '<hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;" />' },
-  { label: "Imagem", snippet: '<img src="https://alnacommerce.com/caminho-da-imagem.jpg" alt="" style="max-width:100%;border-radius:8px;margin:16px 0;" />' },
+  { label: "Imagem", snippet: '<img src="https://alna.sale/assets/logo-alna.png" alt="" style="max-width:100%;border-radius:8px;margin:16px 0;" />' },
 ];
 
 const NO_COUPON_VALUE = "__none__";
