@@ -3,7 +3,7 @@
 // which of the two ever observes the order turning into "paid" first. Callers are responsible for
 // only invoking this once per order (both already guard on "was the previous status already paid?").
 import type { SupabaseClient } from "jsr:@supabase/supabase-js@2";
-import { randomPassword, randomDigits } from "./random-password.ts";
+import { randomPassword } from "./random-password.ts";
 import { sendEmail } from "./send-email.ts";
 import { renderEmailTemplate } from "./render-template.ts";
 
@@ -33,7 +33,7 @@ export async function notifyPaymentConfirmed(admin: SupabaseClient, order: Order
   // never leaks account access.
   let contaBloco = "";
   if (order.is_new_account && order.user_id && order.customer_email) {
-    const freshPassword = randomDigits(10);
+    const freshPassword = randomPassword(12);
     const { error: passwordError } = await admin.auth.admin.updateUserById(order.user_id, {
       password: freshPassword,
     });
@@ -42,6 +42,7 @@ export async function notifyPaymentConfirmed(admin: SupabaseClient, order: Order
         <p style="margin: 0;">Acompanhe seu pedido acessando o site <a href="${SITE_URL}/conta/login" style="color: #16a34a;">${SITE_URL}/conta/login</a></p>
         <p style="margin: 8px 0 0;">Login: <strong>${order.customer_email}</strong></p>
         <p style="margin: 0;">Senha: <strong>${freshPassword}</strong></p>
+        <p style="margin: 8px 0 0; font-size: 12px; color: #6b7280;">Copie e cole a senha (ela diferencia letras maiúsculas e minúsculas). Você pode trocá-la em Minha Conta.</p>
       </div>`;
     } else {
       console.error("[notify-payment-confirmed] falha ao definir senha da conta nova", passwordError);

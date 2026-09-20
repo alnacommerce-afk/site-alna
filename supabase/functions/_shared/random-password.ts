@@ -13,12 +13,8 @@ function randomIndex(max: number): number {
   }
 }
 
-export function randomPassword(length = 10): string {
+// Account passwords are 12 characters (54^12, about 2^69 combinations). Every call draws a brand new
+// random value, so each user gets their own password. Coupon and referral codes pass a shorter length.
+export function randomPassword(length = 12): string {
   return Array.from({ length }, () => CHARSET[randomIndex(CHARSET.length)]).join("");
-}
-
-// Numeric-only variant for the account password sent in payment_confirmed — easier to read and
-// type on a phone than a mixed-case string. 10 digits by default.
-export function randomDigits(length = 10): string {
-  return Array.from({ length }, () => String(randomIndex(10))).join("");
 }

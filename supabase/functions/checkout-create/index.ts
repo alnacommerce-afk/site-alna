@@ -240,7 +240,7 @@ Deno.serve(async (req) => {
       .then((r) => r.data as string | null);
     let newAccount: { email: string; password: string } | null = null;
     if (!customerUserId) {
-      const tempPassword = randomPassword(10);
+      const tempPassword = randomPassword(12);
       const { data: created, error: createUserError } = await admin.auth.admin.createUser({
         email: body.customer.email,
         password: tempPassword,

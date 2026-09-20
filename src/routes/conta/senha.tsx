@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
+import { MIN_PASSWORD_LENGTH, PASSWORD_MIN_MESSAGE } from "@/lib/auth/password";
 import { supabase } from "@/integrations/supabase/client";
 import { CustomerShell } from "@/components/customer/customer-shell";
 import { Button } from "@/components/ui/button";
@@ -24,8 +25,8 @@ function TrocarSenhaPage() {
     const password = String(form.get("password"));
     const confirmPassword = String(form.get("confirmPassword"));
 
-    if (password.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres.");
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast.error(PASSWORD_MIN_MESSAGE);
       return;
     }
     if (password !== confirmPassword) {
@@ -50,11 +51,26 @@ function TrocarSenhaPage() {
       <form className="max-w-sm space-y-3" onSubmit={handleSubmit}>
         <div className="space-y-1">
           <Label htmlFor="password">Nova senha</Label>
-          <Input id="password" name="password" type="password" required minLength={6} />
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            required
+            minLength={MIN_PASSWORD_LENGTH}
+            autoComplete="new-password"
+          />
+          <p className="text-xs text-muted-foreground">Mínimo de {MIN_PASSWORD_LENGTH} caracteres.</p>
         </div>
         <div className="space-y-1">
           <Label htmlFor="confirmPassword">Confirmar nova senha</Label>
-          <Input id="confirmPassword" name="confirmPassword" type="password" required minLength={6} />
+          <Input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            required
+            minLength={MIN_PASSWORD_LENGTH}
+            autoComplete="new-password"
+          />
         </div>
         <Button type="submit" disabled={loading} className="bg-[#16a34a] font-bold hover:bg-[#16a34a]/90">
           {loading ? "Salvando..." : "Salvar nova senha"}

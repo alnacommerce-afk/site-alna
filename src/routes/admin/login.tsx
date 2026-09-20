@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
+import { MIN_PASSWORD_LENGTH, PASSWORD_MIN_MESSAGE } from "@/lib/auth/password";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,11 @@ function AdminLoginPage() {
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email"));
     const password = String(form.get("password"));
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast.error(PASSWORD_MIN_MESSAGE);
+      return;
+    }
 
     setLoading(true);
     const { error } = await supabase.auth.signUp({ email, password });
@@ -94,8 +100,12 @@ function AdminLoginPage() {
                   name="password"
                   type="password"
                   required
-                  minLength={6}
+                  minLength={MIN_PASSWORD_LENGTH}
+                  autoComplete="new-password"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Mínimo de {MIN_PASSWORD_LENGTH} caracteres.
+                </p>
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 Criar conta
