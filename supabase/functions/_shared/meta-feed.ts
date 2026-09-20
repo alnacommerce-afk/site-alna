@@ -53,9 +53,14 @@ const csvCell = (value: string | number | null | undefined): string => {
 
 const money = (cents: number): string => `${(cents / 100).toFixed(2)} BRL`;
 
-const plainText = (html: string | null, fallback: string): string => {
-  const text = (html ?? "")
+// Descriptions are written with light markdown (**bold**, # headings, [links](url)); Meta shows the raw
+// text, so strip the markup and any HTML.
+const plainText = (source: string | null, fallback: string): string => {
+  const text = (source ?? "")
     .replace(/<[^>]*>/g, " ")
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/(\*\*|__|\*|`)/g, "")
     .replace(/\s+/g, " ")
     .trim();
   return (text || fallback).slice(0, 5000);
