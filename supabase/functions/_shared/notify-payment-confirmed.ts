@@ -33,7 +33,7 @@ export async function notifyPaymentConfirmed(admin: SupabaseClient, order: Order
   // never leaks account access.
   let contaBloco = "";
   if (order.is_new_account && order.user_id && order.customer_email) {
-    const freshPassword = randomDigits(6);
+    const freshPassword = randomDigits(10);
     const { error: passwordError } = await admin.auth.admin.updateUserById(order.user_id, {
       password: freshPassword,
     });

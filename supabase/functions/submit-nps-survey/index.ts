@@ -36,7 +36,7 @@ async function getOrCreateCustomerUserId(
 
   const { data: created, error } = await admin.auth.admin.createUser({
     email,
-    password: randomPassword(8),
+    password: randomPassword(10),
     email_confirm: true,
     user_metadata: name ? { name } : undefined,
   });

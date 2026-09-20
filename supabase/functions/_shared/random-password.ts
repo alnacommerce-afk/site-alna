@@ -2,16 +2,23 @@
 // back in by hand.
 const CHARSET = "23456789ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
 
-export function randomPassword(length = 8): string {
-  const bytes = new Uint8Array(length);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => CHARSET[b % CHARSET.length]).join("");
+// Uniform random index in [0, max). A plain `byte % max` favours the first few values whenever 256 is
+// not a multiple of `max`; discarding the bytes above the largest multiple removes that bias.
+function randomIndex(max: number): number {
+  const limit = 256 - (256 % max);
+  const buf = new Uint8Array(1);
+  for (;;) {
+    crypto.getRandomValues(buf);
+    if (buf[0] < limit) return buf[0] % max;
+  }
+}
+
+export function randomPassword(length = 10): string {
+  return Array.from({ length }, () => CHARSET[randomIndex(CHARSET.length)]).join("");
 }
 
 // Numeric-only variant for the account password sent in payment_confirmed — easier to read and
-// type on a phone than a mixed-case string.
-export function randomDigits(length = 6): string {
-  const bytes = new Uint8Array(length);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => String(b % 10)).join("");
+// type on a phone than a mixed-case string. 10 digits by default.
+export function randomDigits(length = 10): string {
+  return Array.from({ length }, () => String(randomIndex(10))).join("");
 }
