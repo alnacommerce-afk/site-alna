@@ -176,9 +176,9 @@ p,h1,h2{margin:0}
 </header>
 
 <main>
- <section class="hero blk" aria-label="Campanha de setembro">
+ <section class="hero blk" aria-label="Campanha do mês">
   <div class="hero-img">
-   <img src="/assets/hero-setembro-face.webp" width="1344" height="752" fetchpriority="high" decoding="async" alt="Modelo da Alna Commerce sorrindo com os braços abertos, indicando as ofertas de setembro e o frete grátis">
+   <img src="/assets/hero-setembro-face.webp" width="1344" height="752" fetchpriority="high" decoding="async" alt="Modelo da Alna Commerce sorrindo com os braços abertos, indicando as ofertas do mês e o frete grátis">
    <div class="badges">
     <div class="badge b-pink"><svg class="ic"><use href="#i-flame"/></svg><div><small>Até</small><strong>20% OFF</strong><small>em toda a loja</small></div></div>
     <div class="badge b-white"><svg class="ic"><use href="#i-truck"/></svg><div><small>Aqui tem</small><strong>Frete grátis</strong><small>para todo o Brasil</small></div></div>
@@ -186,7 +186,11 @@ p,h1,h2{margin:0}
   </div>
   <div class="hero-txt">
    <span class="pill">Alna</span>
-   <h1>Mês de Setembro</h1>
+   <h1 id="mes">Ofertas do mês</h1>
+   <script>
+   /* Shows the current month (São Paulo time) before first paint. Without JS the generic text stays. */
+   (function(){try{var m=new Date().toLocaleString('pt-BR',{month:'long',timeZone:'America/Sao_Paulo'});document.getElementById('mes').textContent='Mês de '+m.charAt(0).toUpperCase()+m.slice(1);}catch(e){}})();
+   </script>
    <a class="btn btn-white" href="https://store.alna.sale/loja">GARANTIR MEU DESCONTO →</a>
   </div>
  </section>
