@@ -1,0 +1,18 @@
+# Store pages used to live on this domain (alna.sale served the whole app). Anything that was
+# shared or indexed keeps working by moving to the store subdomain.
+/loja https://store.alna.sale/loja 301
+/loja/* https://store.alna.sale/loja/:splat 301
+/produto/* https://store.alna.sale/produto/:splat 301
+/carrinho https://store.alna.sale/carrinho 301
+/checkout https://store.alna.sale/checkout 301
+/conta https://store.alna.sale/conta 301
+/conta/* https://store.alna.sale/conta/:splat 301
+/pedido/* https://store.alna.sale/pedido/:splat 301
+/pesquisa/* https://store.alna.sale/pesquisa/:splat 301
+/sobre https://store.alna.sale/sobre 301
+/contato https://store.alna.sale/contato 301
+/politica-de-privacidade https://store.alna.sale/politica-de-privacidade 301
+/politica-de-troca-e-devolucao https://store.alna.sale/politica-de-troca-e-devolucao 301
+/termos-de-uso https://store.alna.sale/termos-de-uso 301
+/admin https://store.alna.sale/admin 301
+/admin/* https://store.alna.sale/admin/:splat 301
