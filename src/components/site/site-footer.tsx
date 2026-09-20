@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Clock, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Instagram, MapPin, Phone } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import logoAlnaTransparent from "@/assets/brand/logo-alna.png";
@@ -150,9 +150,6 @@ export function SiteFooter() {
           <ul className="space-y-2 text-sm text-white/70">
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4 shrink-0" /> {settings?.phone ?? "(51) 99491-1125"}
-            </li>
-            <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 shrink-0" /> {settings?.email ?? "contato@alna.cc"}
             </li>
             <li className="flex items-center gap-2">
               <Instagram className="h-4 w-4 shrink-0" /> @

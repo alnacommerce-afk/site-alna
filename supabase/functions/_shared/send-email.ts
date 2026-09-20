@@ -1,26 +1,77 @@
-// Thin Resend wrapper shared by checkout-create and asaas-webhook. Never throws — a failed or
-// unconfigured email must never break an order; it only logs.
-const RESEND_API = "https://api.resend.com/emails";
-const FROM_ADDRESS = "Alna Commerce <pedidos@alnacommerce.com>";
+// Thin Resend wrapper shared by every function that e-mails someone. Never throws — a failed or
+// unconfigured e-mail must never break an order. Every attempt (sent, failed or skipped) is also
+// recorded in `email_send_log`, which Admin > E-mails reads.
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
-export async function sendEmail(
-  resendKey: string | null,
-  params: { to: string; subject: string; html: string },
-): Promise<void> {
+const RESEND_API = "https://api.resend.com/emails";
+export const FROM_ADDRESS = "Alna Commerce <noreply@alna.sale>";
+
+type SendParams = {
+  to: string;
+  subject: string;
+  html: string;
+  /** `email_templates.id` this message was rendered from, when there is one. */
+  template?: string;
+};
+
+type LogEntry = {
+  status: "sent" | "failed" | "skipped";
+  providerId?: string | null;
+  error?: string | null;
+};
+
+async function logEmail(params: SendParams, entry: LogEntry): Promise<void> {
+  try {
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
+    const { error } = await admin.from("email_send_log").insert({
+      from_email: FROM_ADDRESS,
+      to_email: params.to,
+      subject: params.subject,
+      template: params.template ?? null,
+      html: params.html,
+      status: entry.status,
+      provider_id: entry.providerId ?? null,
+      error: entry.error ? entry.error.slice(0, 500) : null,
+    });
+    if (error) console.error("[send-email] falha ao registrar o envio", error);
+  } catch (error) {
+    console.error("[send-email] falha ao registrar o envio", error);
+  }
+}
+
+export async function sendEmail(resendKey: string | null, params: SendParams): Promise<void> {
   if (!resendKey) {
     console.log("[send-email] Resend não configurado (Admin > Conexões) — pulando envio para", params.to);
+    await logEmail(params, { status: "skipped", error: "Resend não configurado." });
     return;
   }
   try {
     const resp = await fetch(RESEND_API, {
       method: "POST",
       headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: FROM_ADDRESS, to: params.to, subject: params.subject, html: params.html }),
+      body: JSON.stringify({
+        from: FROM_ADDRESS,
+        to: params.to,
+        subject: params.subject,
+        html: params.html,
+      }),
     });
     if (!resp.ok) {
-      console.error("[send-email] Resend respondeu", resp.status, await resp.text());
+      const errText = await resp.text();
+      console.error("[send-email] Resend respondeu", resp.status, errText);
+      await logEmail(params, { status: "failed", error: `Resend ${resp.status}: ${errText}` });
+      return;
     }
+    const body = await resp.json().catch(() => null);
+    await logEmail(params, { status: "sent", providerId: body?.id ?? null });
   } catch (error) {
     console.error("[send-email] falha ao enviar", error);
+    await logEmail(params, {
+      status: "failed",
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }

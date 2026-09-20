@@ -28,7 +28,7 @@ function PoliticaDePrivacidadePage() {
       <p className="text-sm leading-relaxed text-muted-foreground">
         A ALNA COMMERCE (CNPJ 57.135.009/0001-27), com sede em Brusque, Santa Catarina, respeita a
         sua privacidade e está comprometida em proteger os dados pessoais dos usuários e clientes
-        do site alna.cc ("Site"), em conformidade com a Lei Geral de Proteção de Dados (Lei nº
+        do site alna.sale ("Site"), em conformidade com a Lei Geral de Proteção de Dados (Lei nº
         13.709/2018 — LGPD). Esta política explica quais dados coletamos, por que os coletamos e
         como você pode exercer seus direitos.
       </p>
@@ -110,11 +110,7 @@ function PoliticaDePrivacidadePage() {
           <li>Obter informações sobre com quem compartilhamos seus dados.</li>
         </ul>
         <p>
-          Para exercer qualquer um desses direitos, entre em contato pelo e-mail{" "}
-          <a href="mailto:contato@alna.cc" className="font-medium text-[#12294f] underline">
-            contato@alna.cc
-          </a>
-          .
+          Para exercer qualquer um desses direitos, entre em contato pelo WhatsApp (51) 99491-1125.
         </p>
       </LegalSection>
 
@@ -139,11 +135,7 @@ function PoliticaDePrivacidadePage() {
       <LegalSection heading="8. Contato">
         <p>
           Dúvidas sobre esta Política de Privacidade ou sobre o tratamento dos seus dados podem
-          ser enviadas para{" "}
-          <a href="mailto:contato@alna.cc" className="font-medium text-[#12294f] underline">
-            contato@alna.cc
-          </a>{" "}
-          ou pelo WhatsApp (51) 99491-1125.
+          ser enviadas pelo WhatsApp (51) 99491-1125.
         </p>
       </LegalSection>
     </LegalPageLayout>

@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
       .rpc("get_integration_secret", { p_integration_id: "payment_gateway" })
       .then((r) => r.data as string | null);
     const asaasHeaders = asaasKey
-      ? { access_token: asaasKey, "User-Agent": "Alna Commerce (contato@alna.cc)" }
+      ? { access_token: asaasKey, "User-Agent": "Alna Commerce (noreply@alna.sale)" }
       : null;
 
     const rows = orders ?? [];

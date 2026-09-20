@@ -26,7 +26,7 @@ function TermosDeUsoPage() {
   return (
     <LegalPageLayout title="Termos de Uso" updatedAt="setembro de 2026">
       <p className="text-sm leading-relaxed text-muted-foreground">
-        Estes Termos de Uso regulam o acesso e a utilização do site alna.cc ("Site"), operado por
+        Estes Termos de Uso regulam o acesso e a utilização do site alna.sale ("Site"), operado por
         ALNA COMMERCE, inscrita no CNPJ sob o nº 57.135.009/0001-27, com sede em Brusque, Santa
         Catarina. Ao acessar o Site ou realizar uma compra, você concorda com estes termos. Leia-os
         com atenção.
@@ -134,11 +134,7 @@ function TermosDeUsoPage() {
 
       <LegalSection heading="11. Contato">
         <p>
-          Dúvidas sobre estes Termos de Uso podem ser enviadas para{" "}
-          <a href="mailto:contato@alna.cc" className="font-medium text-[#12294f] underline">
-            contato@alna.cc
-          </a>{" "}
-          ou pelo WhatsApp (51) 99491-1125.
+          Dúvidas sobre estes Termos de Uso podem ser enviadas pelo WhatsApp (51) 99491-1125.
         </p>
       </LegalSection>
     </LegalPageLayout>

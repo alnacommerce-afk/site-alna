@@ -5,7 +5,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
 
-const SITE_URL = "https://alnacommerce.com";
+const SITE_URL = "https://store.alna.sale";
 const SECOND_EMAIL_WAIT_DAYS = 20;
 const STANDARD_WAIT_DAYS = 15;
 
@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
         { unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?email=${encodeURIComponent(sub.email)}` },
       );
       if (rendered) {
-        await sendEmail(resendKey, { to: sub.email, subject: rendered.subject, html: rendered.html });
+        await sendEmail(resendKey, { to: sub.email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
         sent++;
       }
     }

@@ -4,7 +4,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
 
-const SITE_URL = "https://alnacommerce.com";
+const SITE_URL = "https://store.alna.sale";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
           link_pesquisa: `${SITE_URL}/pesquisa/${order.id}`,
         });
         if (rendered) {
-          await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
+          await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
           sent++;
         }
       }

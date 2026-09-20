@@ -56,11 +56,7 @@ function PoliticaDeTrocaEDevolucaoPage() {
       <LegalSection heading="3. Como solicitar a troca ou devolução">
         <ol className="list-decimal space-y-1 pl-5">
           <li>
-            Entre em contato pelo WhatsApp (51) 99491-1125 ou pelo e-mail{" "}
-            <a href="mailto:contato@alna.cc" className="font-medium text-[#12294f] underline">
-              contato@alna.cc
-            </a>{" "}
-            informando o número do pedido e o motivo da solicitação;
+            Entre em contato pelo WhatsApp (51) 99491-1125 informando o número do pedido e o motivo da solicitação;
           </li>
           <li>Nossa equipe vai orientar sobre o envio do produto de volta;</li>
           <li>
@@ -89,12 +85,7 @@ function PoliticaDeTrocaEDevolucaoPage() {
       <LegalSection heading="6. Contato">
         <p>
           Nossa equipe está pronta para ajudar em qualquer etapa do processo. Fale conosco pelo
-          WhatsApp (51) 99491-1125, segunda a sexta das 8h às 18h e sábado das 8h às 12h, ou pelo
-          e-mail{" "}
-          <a href="mailto:contato@alna.cc" className="font-medium text-[#12294f] underline">
-            contato@alna.cc
-          </a>
-          .
+          WhatsApp (51) 99491-1125, segunda a sexta das 8h às 18h e sábado das 8h às 12h.
         </p>
       </LegalSection>
     </LegalPageLayout>

@@ -77,6 +77,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
             Fluxo de E-mail
           </Link>
           <Link
+            to="/admin/emails"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            E-mails enviados
+          </Link>
+          <Link
             to="/admin/marketing/nps"
             className="rounded-md px-3 py-2 hover:bg-accent"
             activeProps={{ className: "bg-accent font-medium" }}

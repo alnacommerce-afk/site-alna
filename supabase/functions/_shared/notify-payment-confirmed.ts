@@ -7,7 +7,7 @@ import { randomPassword, randomDigits } from "./random-password.ts";
 import { sendEmail } from "./send-email.ts";
 import { renderEmailTemplate } from "./render-template.ts";
 
-const SITE_URL = "https://alnacommerce.com";
+const SITE_URL = "https://store.alna.sale";
 
 function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -57,7 +57,7 @@ export async function notifyPaymentConfirmed(admin: SupabaseClient, order: Order
       conta_bloco: contaBloco,
     });
     if (rendered) {
-      await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html });
+      await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
     }
   }
 
@@ -87,7 +87,7 @@ async function notifyAdminOfSale(
     link_pedido: `${SITE_URL}/admin/pedidos`,
   });
   if (rendered) {
-    await sendEmail(resendKey, { to: settings.admin_notification_email, subject: rendered.subject, html: rendered.html });
+    await sendEmail(resendKey, { to: settings.admin_notification_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
   }
 }
 
@@ -115,6 +115,6 @@ async function creditReferralReward(admin: SupabaseClient, referrerUserId: strin
     cupom_codigo: code,
   });
   if (rendered) {
-    await sendEmail(resendKey, { to: referrer.email, subject: rendered.subject, html: rendered.html });
+    await sendEmail(resendKey, { to: referrer.email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
   }
 }

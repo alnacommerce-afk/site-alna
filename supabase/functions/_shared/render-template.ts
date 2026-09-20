@@ -4,6 +4,9 @@
 // a consistent, recognizable look without anyone writing HTML boilerplate.
 import type { SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
+// The only image in any e-mail. Served by the static Home (see /home-cloudflare/assets).
+const LOGO_URL = "https://alna.sale/assets/logo-alna.png";
+
 export function wrapBranded(innerHtml: string, options?: { unsubscribeLink?: string }): string {
   const unsubscribeBlock = options?.unsubscribeLink
     ? `<p style="margin-top:16px;font-size:12px;">
@@ -14,7 +17,7 @@ export function wrapBranded(innerHtml: string, options?: { unsubscribeLink?: str
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; background:#ffffff;">
     <div style="background:#12294f; padding:20px 24px; text-align:center;">
-      <span style="color:#ffffff; font-size:20px; font-weight:800; letter-spacing:0.5px;">ALNA COMMERCE</span>
+      <img src="${LOGO_URL}" alt="Alna Commerce" width="140" style="display:inline-block; height:auto; border:0;">
     </div>
     <div style="padding:28px 24px; color:#12294f; font-size:15px; line-height:1.55;">
       ${innerHtml}
@@ -63,7 +66,7 @@ export async function renderEmailTemplate(
   templateId: string,
   tokens: Record<string, string>,
   options?: { unsubscribeLink?: string },
-): Promise<{ subject: string; html: string } | null> {
+): Promise<{ subject: string; html: string; templateId: string } | null> {
   const { data, error } = await admin
     .from("email_templates")
     .select("subject, html_body")
@@ -80,5 +83,6 @@ export async function renderEmailTemplate(
   return {
     subject: fill(data.subject),
     html: wrapBranded(fill(data.html_body), options),
+    templateId,
   };
 }

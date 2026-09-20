@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       headers: {
         Authorization: `Bearer ${meToken}`,
         Accept: "application/json",
-        "User-Agent": "Alna Commerce (contato@alna.cc)",
+        "User-Agent": "Alna Commerce (noreply@alna.sale)",
       },
     });
     if (!balanceResp.ok) {
