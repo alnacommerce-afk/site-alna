@@ -189,14 +189,21 @@ Deno.serve(async (req) => {
     }
 
     if (withPdf.length === 1) {
-      return jsonResponse({ url: withPdf[0].label_pdf_url });
+      const { data: signed, error: signError } = await admin.storage
+        .from("shipping-labels")
+        .createSignedUrl(toObjectPath(withPdf[0].label_pdf_url!), SIGNED_URL_TTL_SECONDS);
+      if (signError || !signed?.signedUrl) throw signError ?? new Error("Falha ao assinar a etiqueta.");
+      return jsonResponse({ url: signed.signedUrl });
     }
 
     // Multiple orders — merge every page of every order into a single PDF for batch printing.
     const merged = await PDFDocument.create();
     for (const order of withPdf) {
-      const resp = await fetch(order.label_pdf_url!);
-      const bytes = new Uint8Array(await resp.arrayBuffer());
+      const { data: blob, error: downloadError } = await admin.storage
+        .from("shipping-labels")
+        .download(toObjectPath(order.label_pdf_url!));
+      if (downloadError || !blob) continue;
+      const bytes = new Uint8Array(await blob.arrayBuffer());
       const doc = await PDFDocument.load(bytes);
       const pages = await merged.copyPages(doc, doc.getPageIndices());
       for (const page of pages) merged.addPage(page);
