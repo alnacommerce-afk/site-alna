@@ -17,6 +17,15 @@ const MM_TO_PT = 2.8346456693;
 const PAGE_WIDTH_PT = 100 * MM_TO_PT;
 const PAGE_HEIGHT_PT = 150 * MM_TO_PT;
 const MARGIN_PT = 16;
+// The bucket is private: every download goes through a short-lived signed URL.
+const SIGNED_URL_TTL_SECONDS = 60 * 30;
+
+// orders.label_pdf_url now holds the object path; older rows may still hold a full public URL.
+function toObjectPath(stored: string) {
+  const marker = "/shipping-labels/";
+  const index = stored.indexOf(marker);
+  return index === -1 ? stored : stored.slice(index + marker.length);
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -178,9 +187,9 @@ Deno.serve(async (req) => {
         console.error("[get-shipping-labels] falha ao salvar etiqueta", order.id, uploadError);
         continue;
       }
-      const { data: pub } = admin.storage.from("shipping-labels").getPublicUrl(path);
-      await admin.from("orders").update({ label_pdf_url: pub.publicUrl }).eq("id", order.id);
-      order.label_pdf_url = pub.publicUrl;
+      // Bucket is private — store only the object path; URLs are signed on demand below.
+      await admin.from("orders").update({ label_pdf_url: path }).eq("id", order.id);
+      order.label_pdf_url = path;
     }
 
     const withPdf = readyOrders.filter((o) => o.label_pdf_url);
@@ -189,14 +198,21 @@ Deno.serve(async (req) => {
     }
 
     if (withPdf.length === 1) {
-      return jsonResponse({ url: withPdf[0].label_pdf_url });
+      const { data: signed, error: signError } = await admin.storage
+        .from("shipping-labels")
+        .createSignedUrl(toObjectPath(withPdf[0].label_pdf_url!), SIGNED_URL_TTL_SECONDS);
+      if (signError || !signed?.signedUrl) throw signError ?? new Error("Falha ao assinar a etiqueta.");
+      return jsonResponse({ url: signed.signedUrl });
     }
 
     // Multiple orders — merge every page of every order into a single PDF for batch printing.
     const merged = await PDFDocument.create();
     for (const order of withPdf) {
-      const resp = await fetch(order.label_pdf_url!);
-      const bytes = new Uint8Array(await resp.arrayBuffer());
+      const { data: blob, error: downloadError } = await admin.storage
+        .from("shipping-labels")
+        .download(toObjectPath(order.label_pdf_url!));
+      if (downloadError || !blob) continue;
+      const bytes = new Uint8Array(await blob.arrayBuffer());
       const doc = await PDFDocument.load(bytes);
       const pages = await merged.copyPages(doc, doc.getPageIndices());
       for (const page of pages) merged.addPage(page);
@@ -207,9 +223,14 @@ Deno.serve(async (req) => {
       .from("shipping-labels")
       .upload(batchPath, mergedBytes, { contentType: "application/pdf", upsert: true });
     if (batchUploadError) throw batchUploadError;
-    const { data: batchPub } = admin.storage.from("shipping-labels").getPublicUrl(batchPath);
+    const { data: batchSigned, error: batchSignError } = await admin.storage
+      .from("shipping-labels")
+      .createSignedUrl(batchPath, SIGNED_URL_TTL_SECONDS);
+    if (batchSignError || !batchSigned?.signedUrl) {
+      throw batchSignError ?? new Error("Falha ao assinar o PDF em lote.");
+    }
 
-    return jsonResponse({ url: batchPub.publicUrl, count: withPdf.length });
+    return jsonResponse({ url: batchSigned.signedUrl, count: withPdf.length });
   } catch (error) {
     console.error("[get-shipping-labels]", error);
     const message = error instanceof Error ? error.message : "Erro ao preparar etiquetas.";
