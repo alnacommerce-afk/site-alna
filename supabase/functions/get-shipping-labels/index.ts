@@ -214,9 +214,14 @@ Deno.serve(async (req) => {
       .from("shipping-labels")
       .upload(batchPath, mergedBytes, { contentType: "application/pdf", upsert: true });
     if (batchUploadError) throw batchUploadError;
-    const { data: batchPub } = admin.storage.from("shipping-labels").getPublicUrl(batchPath);
+    const { data: batchSigned, error: batchSignError } = await admin.storage
+      .from("shipping-labels")
+      .createSignedUrl(batchPath, SIGNED_URL_TTL_SECONDS);
+    if (batchSignError || !batchSigned?.signedUrl) {
+      throw batchSignError ?? new Error("Falha ao assinar o PDF em lote.");
+    }
 
-    return jsonResponse({ url: batchPub.publicUrl, count: withPdf.length });
+    return jsonResponse({ url: batchSigned.signedUrl, count: withPdf.length });
   } catch (error) {
     console.error("[get-shipping-labels]", error);
     const message = error instanceof Error ? error.message : "Erro ao preparar etiquetas.";
