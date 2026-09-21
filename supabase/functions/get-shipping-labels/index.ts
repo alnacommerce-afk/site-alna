@@ -178,9 +178,9 @@ Deno.serve(async (req) => {
         console.error("[get-shipping-labels] falha ao salvar etiqueta", order.id, uploadError);
         continue;
       }
-      const { data: pub } = admin.storage.from("shipping-labels").getPublicUrl(path);
-      await admin.from("orders").update({ label_pdf_url: pub.publicUrl }).eq("id", order.id);
-      order.label_pdf_url = pub.publicUrl;
+      // Bucket is private — store only the object path; URLs are signed on demand below.
+      await admin.from("orders").update({ label_pdf_url: path }).eq("id", order.id);
+      order.label_pdf_url = path;
     }
 
     const withPdf = readyOrders.filter((o) => o.label_pdf_url);
