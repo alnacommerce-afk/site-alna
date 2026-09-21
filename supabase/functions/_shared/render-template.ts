@@ -16,7 +16,7 @@ export function wrapBranded(innerHtml: string, options?: { unsubscribeLink?: str
 
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; background:#ffffff;">
-    <div style="background:#12294f; padding:20px 24px; text-align:center;">
+    <div style="background:#ffffff; padding:20px 24px; text-align:center; border-bottom:4px solid #12294f;">
       <img src="${LOGO_URL}" alt="Alna Commerce" width="140" style="display:inline-block; height:auto; border:0;">
     </div>
     <div style="padding:28px 24px; color:#12294f; font-size:15px; line-height:1.55;">

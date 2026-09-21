@@ -49,6 +49,16 @@ export async function notifyPaymentConfirmed(admin: SupabaseClient, order: Order
     }
   }
 
+  // Returning customer: never touch their password, just point them to the account they already have.
+  if (!order.is_new_account && order.customer_email) {
+    contaBloco = `<div style="margin-top: 16px; padding: 12px 16px; background: #f0fdf4; border-radius: 8px;">
+        <p style="margin: 0;">Acompanhe seu pedido em <a href="${SITE_URL}/conta/login" style="color: #16a34a;">${SITE_URL}/conta/login</a></p>
+        <p style="margin: 8px 0 0;">Login: <strong>${order.customer_email}</strong></p>
+        <p style="margin: 0;">Use a mesma senha do seu primeiro pedido.</p>
+        <p style="margin: 8px 0 0; font-size: 12px; color: #6b7280;">Não lembra a senha? Responda este e-mail ou chame a gente no WhatsApp que ajudamos você a acessar.</p>
+      </div>`;
+  }
+
   if (order.customer_email) {
     const rendered = await renderEmailTemplate(admin, "payment_confirmed", {
       nome: order.customer_name ?? "cliente",
