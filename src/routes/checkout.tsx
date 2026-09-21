@@ -46,6 +46,9 @@ function CheckoutPage() {
   const [name, setName] = useState(saved.name ?? "");
   const [cpf, setCpf] = useState(saved.cpf ?? "");
   const [email, setEmail] = useState(saved.email ?? "");
+  // Never pre-filled: the customer has to type the address a second time so a typo can't send the
+  // order e-mails (and the provisional password) to somebody else.
+  const [emailConfirm, setEmailConfirm] = useState("");
   const [phone, setPhone] = useState(saved.phone ?? "");
 
   const [cep, setCep] = useState(saved.zip ?? "");
@@ -127,6 +130,10 @@ function CheckoutPage() {
     }
     if (!name || !cpf || !email || !phone) {
       toast.error("Preencha seus dados pessoais.");
+      return;
+    }
+    if (email.trim().toLowerCase() !== emailConfirm.trim().toLowerCase()) {
+      toast.error("Os dois e-mails precisam ser iguais. Confira a digitação.");
       return;
     }
     if (shippingCents == null) {
@@ -225,6 +232,25 @@ function CheckoutPage() {
                 <div className="space-y-1 sm:col-span-2">
                   <Label htmlFor="email">E-mail</Label>
                   <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor="email-confirm">Confirme o e-mail</Label>
+                  <Input
+                    id="email-confirm"
+                    type="email"
+                    autoComplete="off"
+                    value={emailConfirm}
+                    onChange={(e) => setEmailConfirm(e.target.value)}
+                    onPaste={(e) => e.preventDefault()}
+                    aria-invalid={emailConfirm !== "" && email.trim().toLowerCase() !== emailConfirm.trim().toLowerCase()}
+                  />
+                  {emailConfirm !== "" && email.trim().toLowerCase() !== emailConfirm.trim().toLowerCase() ? (
+                    <p className="text-xs text-destructive">Os e-mails não são iguais.</p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      Digite de novo: enviamos a confirmação do pedido e o acesso à sua conta para este e-mail.
+                    </p>
+                  )}
                 </div>
               </div>
             </section>
