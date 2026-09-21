@@ -58,6 +58,27 @@ Deno.serve(async (req) => {
         if (!resp.ok) continue;
         const json = await resp.json();
         const entry = json[order.melhor_envio_shipment_id];
+
+        // Order history: the carrier has the parcel ("deixou na agência / foi postado").
+        if (entry?.posted_at) {
+          await admin.from("order_events").upsert(
+            {
+              order_id: order.id,
+              kind: "posted",
+              title: "Pedido postado",
+              detail: "Seu pedido foi entregue à transportadora e está a caminho.",
+              occurred_at: entry.posted_at,
+            },
+            { onConflict: "order_id,kind", ignoreDuplicates: true },
+          );
+        }
+        if (entry?.tracking) {
+          await admin
+            .from("orders")
+            .update({ tracking_code: entry.tracking })
+            .eq("id", order.id)
+            .is("tracking_code", null);
+        }
         if (entry?.delivered_at) {
           await admin
             .from("orders")

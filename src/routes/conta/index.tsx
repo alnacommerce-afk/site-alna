@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import { CustomerShell } from "@/components/customer/customer-shell";
+import { OrderTimelineDialog } from "@/components/customer/order-timeline-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -56,6 +57,7 @@ function MinhaContaPage() {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderRow | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -137,11 +139,11 @@ function MinhaContaPage() {
       ) : (
         <div className="space-y-3">
           {orders.map((order) => (
-            <Link
+            <button
               key={order.id}
-              to="/pedido/$orderId"
-              params={{ orderId: order.id }}
-              className="flex items-center justify-between rounded-lg border border-[#12294f]/10 p-4 text-sm hover:bg-muted/40"
+              type="button"
+              onClick={() => setSelectedOrder(order)}
+              className="flex w-full items-center justify-between rounded-lg border border-[#12294f]/10 p-4 text-left text-sm hover:bg-muted/40"
             >
               <div>
                 <p className="font-semibold text-[#12294f]">Pedido #{order.id.slice(0, 8)}</p>
@@ -156,10 +158,11 @@ function MinhaContaPage() {
                   {STATUS_LABELS[order.status] ?? order.status}
                 </Badge>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
       )}
+      <OrderTimelineDialog order={selectedOrder} onClose={() => setSelectedOrder(null)} />
     </CustomerShell>
   );
 }
