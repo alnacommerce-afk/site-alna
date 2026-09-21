@@ -19,6 +19,7 @@ import { Route as PoliticaDeTrocaEDevolucaoRouteImport } from './routes/politica
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminClientesRouteImport } from './routes/admin/clientes'
 import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminEmailsRouteImport } from './routes/admin/emails'
@@ -89,6 +90,11 @@ const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminClientesRoute = AdminClientesRouteImport.update({
+  id: '/admin/clientes',
+  path: '/admin/clientes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminConexoesRoute = AdminConexoesRouteImport.update({
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -237,6 +244,7 @@ export interface FileRoutesByTo {
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -270,6 +278,7 @@ export interface FileRoutesById {
   '/politica-de-troca-e-devolucao': typeof PoliticaDeTrocaEDevolucaoRoute
   '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/politica-de-troca-e-devolucao'
     | '/sobre'
     | '/termos-de-uso'
+    | '/admin/clientes'
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/politica-de-troca-e-devolucao'
     | '/sobre'
     | '/termos-de-uso'
+    | '/admin/clientes'
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/politica-de-troca-e-devolucao'
     | '/sobre'
     | '/termos-de-uso'
+    | '/admin/clientes'
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
@@ -401,6 +413,7 @@ export interface RootRouteChildren {
   PoliticaDeTrocaEDevolucaoRoute: typeof PoliticaDeTrocaEDevolucaoRoute
   SobreRoute: typeof SobreRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
+  AdminClientesRoute: typeof AdminClientesRoute
   AdminConexoesRoute: typeof AdminConexoesRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
@@ -494,6 +507,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/clientes': {
+      id: '/admin/clientes'
+      path: '/admin/clientes'
+      fullPath: '/admin/clientes'
+      preLoaderRoute: typeof AdminClientesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/conexoes': {
@@ -649,6 +669,7 @@ const rootRouteChildren: RootRouteChildren = {
   PoliticaDeTrocaEDevolucaoRoute: PoliticaDeTrocaEDevolucaoRoute,
   SobreRoute: SobreRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
+  AdminClientesRoute: AdminClientesRoute,
   AdminConexoesRoute: AdminConexoesRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminEmailsRoute: AdminEmailsRoute,
