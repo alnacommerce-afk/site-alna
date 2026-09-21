@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CONTACT_EMAIL } from "@/lib/site-urls";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 
@@ -110,7 +111,7 @@ function PoliticaDePrivacidadePage() {
           <li>Obter informações sobre com quem compartilhamos seus dados.</li>
         </ul>
         <p>
-          Para exercer qualquer um desses direitos, entre em contato pelo WhatsApp (51) 99491-1125.
+          Para exercer qualquer um desses direitos, entre em contato pelo WhatsApp (51) 99491-1125 ou pelo e-mail {CONTACT_EMAIL}.
         </p>
       </LegalSection>
 
@@ -135,7 +136,7 @@ function PoliticaDePrivacidadePage() {
       <LegalSection heading="8. Contato">
         <p>
           Dúvidas sobre esta Política de Privacidade ou sobre o tratamento dos seus dados podem
-          ser enviadas pelo WhatsApp (51) 99491-1125.
+          ser enviadas pelo WhatsApp (51) 99491-1125 ou pelo e-mail {CONTACT_EMAIL}.
         </p>
       </LegalSection>
     </LegalPageLayout>

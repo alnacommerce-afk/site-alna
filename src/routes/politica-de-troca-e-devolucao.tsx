@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CONTACT_EMAIL } from "@/lib/site-urls";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 import { RETURN_POLICY, RETURN_POLICY_URL } from "@/lib/return-policy";
@@ -24,7 +25,7 @@ const SUMMARY: { label: string; value: string }[] = [
   { label: "Taxas", value: "Não cobramos taxa de devolução nem de reposição." },
   { label: "Reembolso", value: "Integral, incluindo o frete, na mesma forma de pagamento (Pix ou cartão)." },
   { label: "Prazo do reembolso", value: "Até 10 dias úteis depois que recebermos e conferirmos o produto." },
-  { label: "Como pedir", value: "WhatsApp (51) 99491-1125, informando o número do pedido." },
+  { label: "Como pedir", value: `WhatsApp (51) 99491-1125 ou ${CONTACT_EMAIL}, informando o número do pedido.` },
   { label: "Onde vale", value: "Compras com entrega em qualquer endereço do Brasil (BR)." },
 ];
 
@@ -113,7 +114,7 @@ function PoliticaDeTrocaEDevolucaoPage() {
         <LegalSection heading="4. Como solicitar a troca ou devolução">
           <ol className="list-decimal space-y-1 pl-5">
             <li>
-              Entre em contato pelo WhatsApp (51) 99491-1125 informando o número do pedido e o
+              Entre em contato pelo WhatsApp (51) 99491-1125 ou pelo e-mail {CONTACT_EMAIL} informando o número do pedido e o
               motivo da solicitação. Se for defeito ou avaria, envie fotos do produto;
             </li>
             <li>
@@ -176,7 +177,7 @@ function PoliticaDeTrocaEDevolucaoPage() {
         <LegalSection heading="9. Contato">
           <p>
             Nossa equipe está pronta para ajudar em qualquer etapa do processo. Fale conosco pelo
-            WhatsApp (51) 99491-1125, segunda a sexta das 8h às 18h e sábado das 8h às 12h.
+            WhatsApp (51) 99491-1125 ou e-mail {CONTACT_EMAIL}, segunda a sexta das 8h às 18h e sábado das 8h às 12h.
           </p>
         </LegalSection>
       </div>

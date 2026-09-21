@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CONTACT_EMAIL } from "@/lib/site-urls";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 
@@ -134,7 +135,7 @@ function TermosDeUsoPage() {
 
       <LegalSection heading="11. Contato">
         <p>
-          Dúvidas sobre estes Termos de Uso podem ser enviadas pelo WhatsApp (51) 99491-1125.
+          Dúvidas sobre estes Termos de Uso podem ser enviadas pelo WhatsApp (51) 99491-1125 ou pelo e-mail {CONTACT_EMAIL}.
         </p>
       </LegalSection>
     </LegalPageLayout>

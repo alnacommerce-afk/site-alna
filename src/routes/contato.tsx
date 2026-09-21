@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
-import { STORE_URL } from "@/lib/site-urls";
+import { CONTACT_EMAIL, STORE_URL } from "@/lib/site-urls";
 
 const PAGE_URL = `${STORE_URL}/contato`;
 const TITLE = "Fale com a Alna Commerce";
@@ -29,8 +29,8 @@ function ContatoPage() {
     <LegalPageLayout title="Contato">
       <LegalSection heading="Dúvidas ou precisa de ajuda? Fale com a nossa equipe!">
         <p>
-          Atendemos pelo WhatsApp e pelo Instagram. Conte com a gente antes, durante e depois da
-          sua compra.
+          Atendemos pelo WhatsApp, por e-mail e pelo Instagram. Conte com a gente antes, durante e
+          depois da sua compra.
         </p>
         <a
           href={WHATSAPP_URL}
@@ -46,6 +46,9 @@ function ContatoPage() {
         <ul className="space-y-1">
           <li>
             WhatsApp: <a href={WHATSAPP_URL}>(51) 99491-1125</a>
+          </li>
+          <li>
+            E-mail: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
           </li>
           <li>
             Instagram:{" "}
