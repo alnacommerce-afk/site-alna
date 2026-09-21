@@ -44,10 +44,11 @@ const SECRET_INTEGRATIONS = new Set([
   "google_analytics",
   "finmarket_hub_api",
   "finmarket_hub_skus",
+  "asaas_webhook",
 ]);
 
 // Keys WE issue to another platform (as opposed to keys we paste in from a provider).
-const GENERATABLE_KEY_INTEGRATIONS = new Set(["finmarket_hub_api"]);
+const GENERATABLE_KEY_INTEGRATIONS = new Set(["finmarket_hub_api", "asaas_webhook"]);
 
 function generateApiKey(): string {
   const bytes = new Uint8Array(32);
@@ -70,6 +71,8 @@ const CONNECTION_HELP: Record<string, string> = {
     "A verificação por meta tag já está publicada no site. Basta adicionar a propriedade em search.google.com/search-console usando o domínio.",
   finmarket_hub_api:
     "Permite que o FinMarket HUB leia as vendas do site (bruto, cupom, frete, taxa do Asaas e líquido). Clique em \"Gerar chave\", copie o valor (ele só aparece uma vez) e cole no FinMarket HUB. Endereço lido por ele: /functions/v1/sales-report.",
+  asaas_webhook:
+    "Token que o Asaas envia no cabeçalho de cada aviso de pagamento (webhook). Clique em \"Gerar chave\", copie o valor (ele só aparece uma vez) e cole em Asaas → Integrações → Webhooks → editar → Token de autenticação. URL do webhook: https://ogxsdptftgxrujkfscvi.supabase.co/functions/v1/asaas-webhook",
   finmarket_hub_skus:
     "Usada pelo site para buscar SKUs e custos no FinMarket HUB. Cole aqui a chave gerada por ele. O endereço do FinMarket vai no campo public_config (chave \"base_url\") desta conexão.",
   google_analytics:
@@ -365,7 +368,8 @@ function ConexoesPage() {
             <AlertDialogTitle>Gerar nova chave</AlertDialogTitle>
             <AlertDialogDescription>
               A chave atual de "{connectionToRegenerate?.label}" deixa de funcionar na hora. Quem
-              usa essa chave (por exemplo o FinMarket HUB) precisará receber a nova.
+              usa essa chave (o FinMarket HUB ou o webhook do Asaas, por exemplo) precisará
+              receber a nova.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
