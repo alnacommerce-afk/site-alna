@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
         Accept: "application/json",
-        "User-Agent": "Alna Commerce (noreply@alna.sale)",
+        "User-Agent": "ALNA (noreply@alna.sale)",
       },
       body: JSON.stringify({
         from: { postal_code: originZip },

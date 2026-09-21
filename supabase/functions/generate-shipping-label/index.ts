@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
       Authorization: `Bearer ${meToken}`,
       "Content-Type": "application/json",
       Accept: "application/json",
-      "User-Agent": "Alna Commerce (noreply@alna.sale)",
+      "User-Agent": "ALNA (noreply@alna.sale)",
     };
 
     // One volume per physical unit — a simple, safe (if not perfectly optimized) approximation;
@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
         own_hand: false,
         reverse: false,
         non_commercial: true,
-        platform: "Alna Commerce",
+        platform: "ALNA",
         tags: [{ tag: `Pedido #${orderId.slice(0, 8)}` }],
       },
     };

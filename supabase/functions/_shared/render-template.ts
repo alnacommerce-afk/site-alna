@@ -17,13 +17,13 @@ export function wrapBranded(innerHtml: string, options?: { unsubscribeLink?: str
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; background:#ffffff;">
     <div style="background:#ffffff; padding:20px 24px; text-align:center; border-bottom:4px solid #12294f;">
-      <img src="${LOGO_URL}" alt="Alna Commerce" width="140" style="display:inline-block; height:auto; border:0;">
+      <img src="${LOGO_URL}" alt="ALNA" width="140" style="display:inline-block; height:auto; border:0;">
     </div>
     <div style="padding:28px 24px; color:#12294f; font-size:15px; line-height:1.55;">
       ${innerHtml}
     </div>
     <div style="background:#f9fafb; padding:20px 24px; text-align:center; font-size:12px; color:#6b7280;">
-      <p style="margin:0;">Alna Commerce — CNPJ 57.135.009/0001-27</p>
+      <p style="margin:0;">ALNA — CNPJ 57.135.009/0001-27</p>
       <p style="margin:4px 0 0;">Brusque, SC — Dúvidas? Fale com a gente pelo WhatsApp.</p>
       ${unsubscribeBlock}
     </div>

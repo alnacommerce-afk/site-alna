@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/conta/login")({
   head: () => ({
     meta: [
-      { title: "Entrar - Alna Commerce" },
+      { title: "Entrar - ALNA" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

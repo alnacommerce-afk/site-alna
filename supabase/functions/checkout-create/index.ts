@@ -199,7 +199,7 @@ Deno.serve(async (req) => {
           Authorization: `Bearer ${meToken}`,
           "Content-Type": "application/json",
           Accept: "application/json",
-          "User-Agent": "Alna Commerce (noreply@alna.sale)",
+          "User-Agent": "ALNA (noreply@alna.sale)",
         },
         body: JSON.stringify({
           from: { postal_code: originZip },
@@ -286,7 +286,7 @@ Deno.serve(async (req) => {
     const asaasHeaders = {
       access_token: asaasKey,
       "Content-Type": "application/json",
-      "User-Agent": "Alna Commerce (noreply@alna.sale)",
+      "User-Agent": "ALNA (noreply@alna.sale)",
     };
 
     const findResp = await fetch(`${ASAAS_API}/customers?cpfCnpj=${cpfCnpj}`, {
@@ -374,7 +374,7 @@ Deno.serve(async (req) => {
       customer: asaasCustomerId,
       value: totalCents / 100,
       dueDate: todayISODate(),
-      description: `Pedido Alna Commerce #${orderId.slice(0, 8)}`,
+      description: `Pedido ALNA #${orderId.slice(0, 8)}`,
       externalReference: orderId,
     };
 

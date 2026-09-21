@@ -8,13 +8,13 @@ const SITE_URL = "https://store.alna.sale/termos-de-uso";
 export const Route = createFileRoute("/termos-de-uso")({
   head: () => ({
     meta: [
-      { title: "Termos de Uso - Alna Commerce" },
+      { title: "Termos de Uso - ALNA" },
       {
         name: "description",
         content:
-          "Condições gerais de uso do site e da loja online da Alna Commerce: cadastro, pedidos, pagamentos e responsabilidades.",
+          "Condições gerais de uso do site e da loja online da ALNA: cadastro, pedidos, pagamentos e responsabilidades.",
       },
-      { property: "og:title", content: "Termos de Uso - Alna Commerce" },
+      { property: "og:title", content: "Termos de Uso - ALNA" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: SITE_URL },
     ],
@@ -64,7 +64,7 @@ function TermosDeUsoPage() {
         <p>
           O pedido é considerado confirmado após a aprovação do pagamento pela instituição
           financeira ou processadora responsável. As formas de pagamento aceitas são exibidas no
-          momento da finalização da compra. A Alna Commerce reserva-se o direito de cancelar
+          momento da finalização da compra. A ALNA reserva-se o direito de cancelar
           pedidos com indícios de fraude, mediante comunicação ao cliente.
         </p>
       </LegalSection>
@@ -104,7 +104,7 @@ function TermosDeUsoPage() {
       <LegalSection heading="7. Propriedade intelectual">
         <p>
           A marca ALNA, o logotipo, os textos, imagens e demais conteúdos do Site são de
-          propriedade da Alna Commerce ou de seus licenciadores, sendo protegidos pela legislação
+          propriedade da ALNA ou de seus licenciadores, sendo protegidos pela legislação
           de propriedade intelectual. É vedada a reprodução, distribuição ou uso comercial sem
           autorização prévia por escrito.
         </p>
@@ -113,7 +113,7 @@ function TermosDeUsoPage() {
       <LegalSection heading="8. Limitação de responsabilidade">
         <p>
           Envidamos esforços para manter o Site disponível e livre de erros, mas não garantimos
-          operação ininterrupta. A Alna Commerce não se responsabiliza por danos indiretos
+          operação ininterrupta. A ALNA não se responsabiliza por danos indiretos
           decorrentes do uso do Site, exceto nos casos previstos em lei.
         </p>
       </LegalSection>

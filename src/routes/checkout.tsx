@@ -27,7 +27,7 @@ import {
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Finalizar compra - Alna Commerce" },
+      { title: "Finalizar compra - ALNA" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

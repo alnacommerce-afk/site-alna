@@ -91,7 +91,7 @@ function wrapBrandedPreview(innerHtml: string) {
       ${innerHtml}
     </div>
     <div style="background:#f9fafb; padding:20px 24px; text-align:center; font-size:12px; color:#6b7280;">
-      <p style="margin:0;">Alna Commerce — CNPJ 57.135.009/0001-27</p>
+      <p style="margin:0;">ALNA — CNPJ 57.135.009/0001-27</p>
       <p style="margin:4px 0 0;">Brusque, SC — Dúvidas? Fale com a gente pelo WhatsApp.</p>
     </div>
   </div>`;

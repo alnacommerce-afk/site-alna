@@ -4,9 +4,9 @@ import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layo
 import { STORE_URL } from "@/lib/site-urls";
 
 const PAGE_URL = `${STORE_URL}/sobre`;
-const TITLE = "Sobre a Alna Commerce";
+const TITLE = "Sobre a ALNA";
 const DESCRIPTION =
-  "Conheça a Alna Commerce: utilidades domésticas que unem qualidade, funcionalidade e beleza para transformar a sua casa.";
+  "Conheça a ALNA: utilidades domésticas que unem qualidade, funcionalidade e beleza para transformar a sua casa.";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -34,7 +34,7 @@ function SobrePage() {
         <p>Mais do que vender, queremos fazer parte do seu dia a dia.</p>
       </LegalSection>
 
-      <LegalSection heading="Por que comprar na Alna Commerce?">
+      <LegalSection heading="Por que comprar na ALNA?">
         <ul className="list-disc space-y-1 pl-5">
           <li>Frete para todo o Brasil, com entrega ágil e segura.</li>
           <li>Parcelamento em até 12x no cartão de crédito.</li>

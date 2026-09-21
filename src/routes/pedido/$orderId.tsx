@@ -7,7 +7,7 @@ import { OrderStatusPanel } from "@/components/checkout/order-status-panel";
 export const Route = createFileRoute("/pedido/$orderId")({
   head: () => ({
     meta: [
-      { title: "Seu pedido - Alna Commerce" },
+      { title: "Seu pedido - ALNA" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

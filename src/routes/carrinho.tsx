@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/carrinho")({
   head: () => ({
     meta: [
-      { title: "Carrinho - Alna Commerce" },
+      { title: "Carrinho - ALNA" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

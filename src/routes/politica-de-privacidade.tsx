@@ -8,13 +8,13 @@ const SITE_URL = "https://store.alna.sale/politica-de-privacidade";
 export const Route = createFileRoute("/politica-de-privacidade")({
   head: () => ({
     meta: [
-      { title: "Política de Privacidade - Alna Commerce" },
+      { title: "Política de Privacidade - ALNA" },
       {
         name: "description",
         content:
-          "Saiba como a Alna Commerce coleta, usa e protege seus dados pessoais, em conformidade com a LGPD.",
+          "Saiba como a ALNA coleta, usa e protege seus dados pessoais, em conformidade com a LGPD.",
       },
-      { property: "og:title", content: "Política de Privacidade - Alna Commerce" },
+      { property: "og:title", content: "Política de Privacidade - ALNA" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: SITE_URL },
     ],
@@ -45,7 +45,7 @@ function PoliticaDePrivacidadePage() {
             <strong>Dados de pedidos e pagamento:</strong> itens comprados, valores e forma de
             pagamento. Os dados do seu cartão ou meio de pagamento são processados diretamente
             pela instituição financeira ou processadora de pagamentos escolhida no checkout — a
-            Alna Commerce não armazena números completos de cartão de crédito.
+            ALNA não armazena números completos de cartão de crédito.
           </li>
           <li>
             <strong>Dados de navegação:</strong> endereço IP, tipo de navegador, páginas

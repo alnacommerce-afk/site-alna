@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
             Authorization: `Bearer ${meToken}`,
             "Content-Type": "application/json",
             Accept: "application/json",
-            "User-Agent": "Alna Commerce (noreply@alna.sale)",
+            "User-Agent": "ALNA (noreply@alna.sale)",
           },
           body: JSON.stringify({ orders: [order.melhor_envio_shipment_id] }),
         });

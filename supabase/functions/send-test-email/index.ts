@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
     const sentAt = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
     const result = await sendEmail(resendKey, {
       to,
-      subject: "Teste de envio — Alna Commerce",
+      subject: "Teste de envio — ALNA",
       html: wrapBranded(
         `<p>Este é um e-mail de teste enviado em ${sentAt}.</p>
          <p>Se você recebeu esta mensagem, o envio pelo endereço noreply@alna.sale está funcionando.</p>`,

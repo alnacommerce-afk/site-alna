@@ -118,7 +118,7 @@ function AdminOverviewPage() {
     <AdminShell>
       <div className="mb-6">
         <h1 className="text-xl font-semibold">Visão geral</h1>
-        <p className="text-sm text-muted-foreground">Bem-vindo ao painel da Alna Commerce.</p>
+        <p className="text-sm text-muted-foreground">Bem-vindo ao painel da ALNA.</p>
       </div>
 
       <Card className="mb-8">

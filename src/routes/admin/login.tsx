@@ -62,7 +62,7 @@ function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-sm rounded-xl border bg-background p-6 shadow-sm">
-        <h1 className="mb-1 text-lg font-semibold">Painel Alna Commerce</h1>
+        <h1 className="mb-1 text-lg font-semibold">Painel ALNA</h1>
         <p className="mb-6 text-sm text-muted-foreground">Acesso restrito à equipe.</p>
 
         <Tabs defaultValue="login">

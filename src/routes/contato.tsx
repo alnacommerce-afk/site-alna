@@ -5,9 +5,9 @@ import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 import { CONTACT_EMAIL, STORE_URL } from "@/lib/site-urls";
 
 const PAGE_URL = `${STORE_URL}/contato`;
-const TITLE = "Fale com a Alna Commerce";
+const TITLE = "Fale com a ALNA";
 const DESCRIPTION =
-  "Dúvidas ou precisa de ajuda? Fale com a equipe da Alna Commerce pelo WhatsApp ou Instagram.";
+  "Dúvidas ou precisa de ajuda? Fale com a equipe da ALNA pelo WhatsApp ou Instagram.";
 
 export const Route = createFileRoute("/contato")({
   head: () => ({

@@ -8,9 +8,9 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 function htmlResponse(message: string, status = 200) {
   return new Response(
     `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" />
-      <title>Alna Commerce</title>
+      <title>ALNA</title>
       <style>body{font-family:Arial,sans-serif;max-width:480px;margin:80px auto;text-align:center;color:#12294f;}</style>
-     </head><body><h1>Alna Commerce</h1><p>${message}</p></body></html>`,
+     </head><body><h1>ALNA</h1><p>${message}</p></body></html>`,
     { status, headers: { "Content-Type": "text/html; charset=utf-8" } },
   );
 }

@@ -125,7 +125,7 @@ export const Route = createFileRoute("/produto/$slug")({
   head: ({ loaderData }) => {
     const product = loaderData?.product;
     if (!product) {
-      return { meta: [{ title: "Produto não encontrado - Alna Commerce" }] };
+      return { meta: [{ title: "Produto não encontrado - ALNA" }] };
     }
 
     const images = [...(product.product_images ?? [])].sort((a, b) => a.position - b.position);
@@ -136,7 +136,7 @@ export const Route = createFileRoute("/produto/$slug")({
     const name = product.title.trim();
     const title = (product.seo_title || product.title).trim();
     const description =
-      product.seo_description?.trim() || plainText(product.description, 160) || `${name} - Alna Commerce`;
+      product.seo_description?.trim() || plainText(product.description, 160) || `${name} - ALNA`;
     const url = `${SITE_URL}/produto/${product.slug}`;
     const imageUrls = images.map(
       (image) => supabase.storage.from("product-media").getPublicUrl(image.storage_path).data.publicUrl,
@@ -147,7 +147,7 @@ export const Route = createFileRoute("/produto/$slug")({
 
     return {
       meta: [
-        { title: `${title} | Alna Commerce` },
+        { title: `${title} | ALNA` },
         { name: "description", content: description },
         { property: "og:title", content: title },
         { property: "og:description", content: description },

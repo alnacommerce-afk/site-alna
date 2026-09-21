@@ -5,16 +5,16 @@ import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layo
 import { RETURN_POLICY, RETURN_POLICY_URL } from "@/lib/return-policy";
 
 const SITE_URL = RETURN_POLICY_URL;
-const TITLE = "Política de Trocas e Devoluções - Alna Commerce";
+const TITLE = "Política de Trocas e Devoluções - ALNA";
 const DESCRIPTION =
-  "Prazos e condições para arrependimento, devolução e troca na Alna Commerce: 7 dias após o recebimento, frete de devolução por nossa conta e reembolso integral. Vale para compras com entrega no Brasil.";
+  "Prazos e condições para arrependimento, devolução e troca na ALNA: 7 dias após o recebimento, frete de devolução por nossa conta e reembolso integral. Vale para compras com entrega no Brasil.";
 
 // Machine-readable copy of the policy summary (schema.org), for Meta / Google Merchant reviewers.
 const RETURN_POLICY_JSON_LD = {
   "@context": "https://schema.org",
   ...RETURN_POLICY,
   "@id": SITE_URL,
-  name: "Política de Trocas e Devoluções - Alna Commerce",
+  name: "Política de Trocas e Devoluções - ALNA",
 };
 
 const SUMMARY: { label: string; value: string }[] = [
@@ -52,7 +52,7 @@ function PoliticaDeTrocaEDevolucaoPage() {
     <LegalPageLayout title="Política de Trocas e Devoluções" updatedAt="setembro de 2026">
       <p className="text-sm leading-relaxed text-muted-foreground">
         Queremos que você compre com confiança. Esta página explica seus direitos e como proceder
-        em caso de arrependimento, defeito ou troca de um produto adquirido na Alna Commerce.
+        em caso de arrependimento, defeito ou troca de um produto adquirido na ALNA.
       </p>
 
       <section aria-labelledby="resumo" className="mt-6 rounded-lg border border-[#12294f]/15 bg-[#fcfbf8] p-5">
@@ -72,18 +72,18 @@ function PoliticaDeTrocaEDevolucaoPage() {
       <div className="mt-8">
         <LegalSection heading="1. Onde esta política vale">
           <p>
-            Esta política vale para todas as compras feitas na loja Alna Commerce — no site{" "}
+            Esta política vale para todas as compras feitas na loja ALNA — no site{" "}
             <strong>store.alna.sale</strong> ou pelas lojas e anúncios da marca no Instagram e no
             Facebook — com <strong>entrega no Brasil</strong>.
           </p>
           <p>
-            No momento, a Alna Commerce vende e envia produtos apenas para endereços no Brasil e
+            No momento, a ALNA vende e envia produtos apenas para endereços no Brasil e
             está sujeita à legislação brasileira, em especial ao Código de Defesa do Consumidor
             (Lei nº 8.078/1990). As regras abaixo se aplicam a todo pedido entregue no país,
             independentemente do idioma em que a compra foi feita.
           </p>
           <p>
-            A Alna Commerce é uma loja 100% online e não possui loja física para devoluções: todas
+            A ALNA é uma loja 100% online e não possui loja física para devoluções: todas
             as devoluções são feitas por envio, conforme explicado abaixo.
           </p>
         </LegalSection>

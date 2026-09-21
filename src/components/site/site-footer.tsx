@@ -31,7 +31,7 @@ export function SiteFooter() {
 
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <img src={logoAlnaTransparent} alt="Alna Commerce" className="h-12 w-auto" />
+          <img src={logoAlnaTransparent} alt="ALNA" className="h-12 w-auto" />
           <p className="mt-3 text-sm text-white/70">
             Utensílios de madeira para cozinha e itens de cama, mesa e banho que trazem
             praticidade e bem-estar para sua casa.
@@ -150,7 +150,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-white/10 py-4 text-center text-xs text-white/50">
-        Copyright © {year} Alna Commerce
+        Copyright © {year} ALNA
       </div>
     </footer>
   );

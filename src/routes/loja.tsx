@@ -107,13 +107,13 @@ export const Route = createFileRoute("/loja")({
   loader: () => ({ catalog: fetchCatalog() }),
   head: () => ({
     meta: [
-      { title: "Loja - Utensílios de Madeira, Cama, Mesa e Banho | Alna Commerce" },
+      { title: "Loja - Utensílios de Madeira, Cama, Mesa e Banho | ALNA" },
       {
         name: "description",
         content:
-          "Confira todos os produtos da Alna Commerce: utensílios de madeira para cozinha, louças e itens de cama, mesa e banho.",
+          "Confira todos os produtos da ALNA: utensílios de madeira para cozinha, louças e itens de cama, mesa e banho.",
       },
-      { property: "og:title", content: "Loja - Alna Commerce" },
+      { property: "og:title", content: "Loja - ALNA" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: SITE_URL },
     ],
@@ -402,7 +402,7 @@ function LojaPage() {
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-2 px-4 py-8 sm:grid-cols-[1fr_260px] sm:gap-6 sm:py-10">
           <div className="reveal text-center sm:text-left">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
-              Loja Alna Commerce
+              Loja ALNA
             </span>
             <h1 className="mt-4 text-4xl font-black leading-[0.95] text-[#12294f] sm:text-5xl">
               Encontre tudo que sua casa merece.
@@ -415,7 +415,7 @@ function LojaPage() {
           <div className="reveal [--reveal-delay:140ms] mx-auto flex h-[200px] w-full max-w-[220px] items-end justify-center sm:h-[260px]">
             <img
               src={heroModelo}
-              alt="Cliente sorridente da Alna Commerce apresentando os produtos da loja"
+              alt="Cliente sorridente da ALNA apresentando os produtos da loja"
               className="h-full w-auto object-contain object-bottom"
             />
           </div>

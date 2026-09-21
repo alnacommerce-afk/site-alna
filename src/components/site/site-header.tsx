@@ -55,7 +55,7 @@ export function SiteHeader() {
 
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
         <a href={SITE_URL} className="shrink-0">
-          <img src={logoAlna} alt="Alna Commerce" width={97} height={40} className="h-10 w-auto" />
+          <img src={logoAlna} alt="ALNA" width={97} height={40} className="h-10 w-auto" />
         </a>
 
         <div className="hidden flex-1 items-center md:flex">
