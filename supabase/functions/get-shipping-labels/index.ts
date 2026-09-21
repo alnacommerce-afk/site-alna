@@ -17,6 +17,15 @@ const MM_TO_PT = 2.8346456693;
 const PAGE_WIDTH_PT = 100 * MM_TO_PT;
 const PAGE_HEIGHT_PT = 150 * MM_TO_PT;
 const MARGIN_PT = 16;
+// The bucket is private: every download goes through a short-lived signed URL.
+const SIGNED_URL_TTL_SECONDS = 60 * 30;
+
+// orders.label_pdf_url now holds the object path; older rows may still hold a full public URL.
+function toObjectPath(stored: string) {
+  const marker = "/shipping-labels/";
+  const index = stored.indexOf(marker);
+  return index === -1 ? stored : stored.slice(index + marker.length);
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
