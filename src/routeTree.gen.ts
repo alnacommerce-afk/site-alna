@@ -27,6 +27,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
 import { Route as ContaIndexRouteImport } from './routes/conta/index'
 import { Route as ContaLoginRouteImport } from './routes/conta/login'
+import { Route as ContaRedefinirSenhaRouteImport } from './routes/conta/redefinir-senha'
 import { Route as ContaSenhaRouteImport } from './routes/conta/senha'
 import { Route as PedidoOrderIdRouteImport } from './routes/pedido/$orderId'
 import { Route as PesquisaOrderIdRouteImport } from './routes/pesquisa/$orderId'
@@ -132,6 +133,11 @@ const ContaLoginRoute = ContaLoginRouteImport.update({
   path: '/conta/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContaRedefinirSenhaRoute = ContaRedefinirSenhaRouteImport.update({
+  id: '/conta/redefinir-senha',
+  path: '/conta/redefinir-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContaSenhaRoute = ContaSenhaRouteImport.update({
   id: '/conta/senha',
   path: '/conta/senha',
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
+  '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
@@ -251,6 +258,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
+  '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
+  '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
@@ -320,6 +329,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
+    | '/conta/redefinir-senha'
     | '/conta/senha'
     | '/pedido/$orderId'
     | '/pesquisa/$orderId'
@@ -353,6 +363,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
+    | '/conta/redefinir-senha'
     | '/conta/senha'
     | '/pedido/$orderId'
     | '/pesquisa/$orderId'
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
+    | '/conta/redefinir-senha'
     | '/conta/senha'
     | '/pedido/$orderId'
     | '/pesquisa/$orderId'
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
   ContaLoginRoute: typeof ContaLoginRoute
+  ContaRedefinirSenhaRoute: typeof ContaRedefinirSenhaRoute
   ContaSenhaRoute: typeof ContaSenhaRoute
   PedidoOrderIdRoute: typeof PedidoOrderIdRoute
   PesquisaOrderIdRoute: typeof PesquisaOrderIdRoute
@@ -565,6 +578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContaLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conta/redefinir-senha': {
+      id: '/conta/redefinir-senha'
+      path: '/conta/redefinir-senha'
+      fullPath: '/conta/redefinir-senha'
+      preLoaderRoute: typeof ContaRedefinirSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/conta/senha': {
       id: '/conta/senha'
       path: '/conta/senha'
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
   ContaLoginRoute: ContaLoginRoute,
+  ContaRedefinirSenhaRoute: ContaRedefinirSenhaRoute,
   ContaSenhaRoute: ContaSenhaRoute,
   PedidoOrderIdRoute: PedidoOrderIdRoute,
   PesquisaOrderIdRoute: PesquisaOrderIdRoute,

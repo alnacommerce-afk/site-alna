@@ -63,6 +63,7 @@ const TEMPLATE_LABEL: Record<string, string> = {
   post_purchase_nps: "NPS — pesquisa",
   referral_reward: "Indicação",
   weekly_marketing: "Novidades da semana",
+  password_reset: "Nova senha (esqueci minha senha)",
   teste: "Teste de envio",
 };
 

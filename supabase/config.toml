@@ -32,3 +32,7 @@ verify_jwt = true
 # Public read-only product feed for Meta Commerce Manager (only what the storefront already shows).
 [functions.meta-catalog-feed]
 verify_jwt = false
+
+# Public: "esqueci minha senha" (always answers the same, whether or not the e-mail has an account).
+[functions.request-password-reset]
+verify_jwt = false
