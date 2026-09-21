@@ -5,6 +5,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const RESEND_API = "https://api.resend.com/emails";
 export const FROM_ADDRESS = "ALNA <noreply@alna.sale>";
+export const REPLY_TO_ADDRESS = "contato@alna.sale";
 
 type SendParams = {
   to: string;
@@ -56,6 +57,8 @@ export async function sendEmail(resendKey: string | null, params: SendParams): P
       headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         from: FROM_ADDRESS,
+        // noreply@ has no inbox; replies go to the support address (forwarded by Cloudflare Email Routing).
+        reply_to: REPLY_TO_ADDRESS,
         to: params.to,
         subject: params.subject,
         html: params.html,
