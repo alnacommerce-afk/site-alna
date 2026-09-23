@@ -80,10 +80,16 @@ Deno.serve(async (req) => {
             .is("tracking_code", null);
         }
         if (entry?.delivered_at) {
-          await admin
+          const { error: deliveredError } = await admin
             .from("orders")
             .update({ delivered_at: entry.delivered_at, status: "completed" })
             .eq("id", order.id);
+          if (deliveredError) {
+            // Don't send the "chegou" e-mail if this didn't actually persist — otherwise the
+            // order keeps matching the query above and we'd resend it every 30 minutes forever.
+            console.error("[sync-delivery-status] falha ao gravar entrega", order.id, deliveredError);
+            continue;
+          }
           updated++;
 
           // Immediate "chegou!" e-mail — additive to (not a replacement for) the 7-day NPS survey
