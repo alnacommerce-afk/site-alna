@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@tanstack/react-router";
@@ -7,19 +7,19 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { prepareProductImage } from "@/lib/admin/optimize-image";
-import {
-  formatCentsToInput,
-  formatDecimalToInput,
-  parseCentsFromInput,
-  parseDecimalInput,
-  slugify,
-} from "@/lib/money";
+import { formatDecimalToInput, parseDecimalInput, slugify } from "@/lib/money";
 import {
   defaultProductFormValues,
   emptyVariant,
   productFormSchema,
   type ProductFormValues,
 } from "@/lib/admin/product-schema";
+import {
+  clearNewProductDraft,
+  getNewProductDraft,
+  setNewProductDraft,
+  type ProductDraftImage,
+} from "@/lib/admin/product-draft-store";
 import { CategorySelect } from "@/components/admin/category-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,14 +60,7 @@ type AiSuggestion = {
   imageAltTexts: string[];
 };
 
-type ImageItem = {
-  key: string;
-  file?: File;
-  previewUrl: string;
-  altText: string;
-  storagePath?: string;
-  existingId?: string;
-};
+type ImageItem = ProductDraftImage;
 
 type ExistingImage = { id: string; storage_path: string; alt_text: string; position: number };
 
@@ -94,9 +87,12 @@ async function generateUniqueSlug(title: string) {
 export function ProductForm({ productId }: { productId?: string }) {
   const router = useRouter();
   const mode = productId ? "edit" : "create";
+  // Reused across remounts of this same tab (e.g. navigating away and back) so a half-filled
+  // "novo produto" form isn't lost — only File blobs can't survive an actual page reload.
+  const initialDraft = mode === "create" ? getNewProductDraft() : null;
   const [loadingInitial, setLoadingInitial] = useState(mode === "edit");
   const [saving, setSaving] = useState(false);
-  const [images, setImages] = useState<ImageItem[]>([]);
+  const [images, setImages] = useState<ImageItem[]>(initialDraft?.images ?? []);
   const [originalImages, setOriginalImages] = useState<ExistingImage[]>([]);
   const [originalVariantIds, setOriginalVariantIds] = useState<string[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
@@ -104,10 +100,27 @@ export function ProductForm({ productId }: { productId?: string }) {
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: defaultProductFormValues,
+    defaultValues: initialDraft?.values ?? defaultProductFormValues,
   });
 
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "variants" });
+
+  const imagesRef = useRef(images);
+  useEffect(() => {
+    imagesRef.current = images;
+    if (mode === "create") setNewProductDraft({ values: form.getValues(), images });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, images]);
+
+  useEffect(() => {
+    if (mode !== "create") return;
+    const subscription = form.watch((values) => {
+      setNewProductDraft({ values: values as ProductFormValues, images: imagesRef.current });
+    });
+    return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
+
   const title = form.watch("title");
   const description = form.watch("description");
   const categoryId = form.watch("categoryId");
@@ -215,8 +228,6 @@ export function ProductForm({ productId }: { productId?: string }) {
         variants: (variants ?? []).map((v) => ({
           id: v.id,
           name: v.name,
-          price: formatCentsToInput(v.price_cents),
-          compareAtPrice: formatCentsToInput(v.compare_at_price_cents),
           sku: v.sku,
           gtinEan: v.gtin_ean ?? "",
           stockQuantity: String(v.stock_quantity),
@@ -344,15 +355,11 @@ export function ProductForm({ productId }: { productId?: string }) {
       }
 
       for (const variant of values.variants) {
-        const payload = {
+        const commonFields = {
           product_id: currentProductId,
           name: variant.name,
           sku: variant.sku,
           gtin_ean: variant.gtinEan || null,
-          price_cents: parseCentsFromInput(variant.price),
-          compare_at_price_cents: variant.compareAtPrice
-            ? parseCentsFromInput(variant.compareAtPrice)
-            : null,
           stock_quantity: Number.parseInt(variant.stockQuantity ?? "0", 10) || 0,
           package_height_cm: parseDecimalInput(variant.packageHeightCm),
           package_width_cm: parseDecimalInput(variant.packageWidthCm),
@@ -361,13 +368,17 @@ export function ProductForm({ productId }: { productId?: string }) {
         };
 
         if (variant.id) {
+          // Price lives exclusively in Admin > Precificação now — never touch it here, or an
+          // edit to name/estoque/frete would silently wipe out a price set on that other screen.
           const { error } = await supabase
             .from("product_variants")
-            .update(payload)
+            .update(commonFields)
             .eq("id", variant.id);
           if (error) throw error;
         } else {
-          const { error } = await supabase.from("product_variants").insert(payload);
+          const { error } = await supabase
+            .from("product_variants")
+            .insert({ ...commonFields, price_cents: 0, compare_at_price_cents: null });
           if (error) throw error;
         }
       }
@@ -410,6 +421,7 @@ export function ProductForm({ productId }: { productId?: string }) {
         }
       }
 
+      if (mode === "create") clearNewProductDraft();
       toast.success(mode === "create" ? "Produto criado." : "Produto atualizado.");
       router.navigate({ to: "/admin/catalogo" });
     } catch (err) {
@@ -764,6 +776,12 @@ export function ProductForm({ productId }: { productId?: string }) {
           </TabsContent>
 
           <TabsContent value="variacoes" className="space-y-4">
+            <p className="text-xs text-muted-foreground">
+              Preço não é definido aqui — ajuste em{" "}
+              <span className="font-medium text-[#12294f]">Admin &gt; Precificação</span> depois de
+              publicar o produto. Nome, SKU, dimensões e peso do pacote abaixo são o que o Melhor
+              Envio usa para calcular o frete.
+            </p>
             {fields.map((field, index) => (
               <Card key={field.id}>
                 <CardContent className="space-y-4 p-4">
@@ -777,32 +795,6 @@ export function ProductForm({ productId }: { productId?: string }) {
                             <FormLabel>Nome da variação</FormLabel>
                             <FormControl>
                               <Input {...field} placeholder="Ex: Azul / P" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`variants.${index}.price`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Preço (R$)</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="18,90" inputMode="decimal" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`variants.${index}.compareAtPrice`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Preço "de" (opcional)</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="23,58" inputMode="decimal" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -940,7 +932,10 @@ export function ProductForm({ productId }: { productId?: string }) {
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.navigate({ to: "/admin/catalogo" })}
+            onClick={() => {
+              if (mode === "create") clearNewProductDraft();
+              router.navigate({ to: "/admin/catalogo" });
+            }}
           >
             Cancelar
           </Button>

@@ -3,8 +3,6 @@ import { z } from "zod";
 export const variantFormSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Informe o nome da variação"),
-  price: z.string().min(1, "Informe o preço"),
-  compareAtPrice: z.string().optional(),
   sku: z.string().min(1, "Informe o SKU"),
   gtinEan: z.string().optional(),
   stockQuantity: z.string().optional(),
@@ -41,8 +39,6 @@ export type ProductFormValues = z.infer<typeof productFormSchema>;
 
 export const emptyVariant: VariantFormValues = {
   name: "",
-  price: "",
-  compareAtPrice: "",
   sku: "",
   gtinEan: "",
   stockQuantity: "0",
@@ -59,13 +55,15 @@ export const defaultProductFormValues: ProductFormValues = {
   videoUrl: "",
   status: "draft",
   variants: [emptyVariant],
+  // Defaults usuais da ALNA — a maioria dos produtos usa exatamente estes códigos;
+  // o admin ajusta manualmente só quando um produto específico for diferente.
   ncm: "",
-  origem: "",
-  cfopVendaMesmoEstado: "",
-  cfopVendaOutrosEstados: "",
-  cfopExportacao: "",
-  csosn: "",
-  cest: "",
+  origem: "0",
+  cfopVendaMesmoEstado: "5102",
+  cfopVendaOutrosEstados: "6102",
+  cfopExportacao: "7102",
+  csosn: "102",
+  cest: "0000000",
   focusKeyword: "",
   seoTitle: "",
   seoDescription: "",
