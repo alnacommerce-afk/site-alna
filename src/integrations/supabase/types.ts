@@ -467,24 +467,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      pricing_settings: {
-        Row: {
-          desired_margin_pct: number;
-          id: string;
-          updated_at: string;
-        };
-        Insert: {
-          desired_margin_pct?: number;
-          id?: string;
-          updated_at?: string;
-        };
-        Update: {
-          desired_margin_pct?: number;
-          id?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
       product_images: {
         Row: {
           alt_text: string;
@@ -565,6 +547,7 @@ export type Database = {
           extra_cost_cents: number | null;
           gtin_ean: string | null;
           id: string;
+          margin_pct: number;
           name: string;
           package_height_cm: number | null;
           package_length_cm: number | null;
@@ -586,6 +569,7 @@ export type Database = {
           extra_cost_cents?: number | null;
           gtin_ean?: string | null;
           id?: string;
+          margin_pct?: number;
           name: string;
           package_height_cm?: number | null;
           package_length_cm?: number | null;
@@ -607,6 +591,7 @@ export type Database = {
           extra_cost_cents?: number | null;
           gtin_ean?: string | null;
           id?: string;
+          margin_pct?: number;
           name?: string;
           package_height_cm?: number | null;
           package_length_cm?: number | null;

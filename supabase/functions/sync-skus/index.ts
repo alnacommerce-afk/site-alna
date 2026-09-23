@@ -91,16 +91,9 @@ Deno.serve(async (req) => {
       if (rows.length < PAGE_SIZE) break;
     }
 
-    const { data: marginRow } = await admin
-      .from("pricing_settings")
-      .select("desired_margin_pct")
-      .eq("id", "default")
-      .maybeSingle();
-    const desiredMarginPct = marginRow?.desired_margin_pct ?? 0;
-
     const { data: variants, error: variantsError } = await admin
       .from("product_variants")
-      .select("id, sku, tax_rate_pct, card_fee_pct");
+      .select("id, sku, tax_rate_pct, card_fee_pct, margin_pct");
     if (variantsError) throw variantsError;
     const variantsBySku = new Map<string, typeof variants>();
     for (const v of variants ?? []) {
@@ -130,7 +123,7 @@ Deno.serve(async (req) => {
           extraCostCents,
           variant.tax_rate_pct,
           variant.card_fee_pct,
-          desiredMarginPct,
+          variant.margin_pct,
         );
         const { error } = await admin
           .from("product_variants")
