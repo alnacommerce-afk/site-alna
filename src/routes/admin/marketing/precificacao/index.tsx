@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL, formatDecimalToInput, parseDecimalInput } from "@/lib/money";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -70,13 +72,9 @@ type VariantRow = {
   price_cents: number;
   cost_cents: number | null;
   extra_cost_cents: number | null;
-  productTitle: string;
-};
-
-type PricingSettings = {
   tax_rate_pct: number;
   card_fee_pct: number;
-  desired_margin_pct: number;
+  productTitle: string;
 };
 
 type FreightState = { status: "loading" | "ok" | "error"; cents: number | null };
@@ -86,12 +84,13 @@ function formatPct(value: number): string {
 }
 
 // Margem sobre o preço final (não sobre o custo): Preço = (Custo + Imposto) ÷ (1 − cartão% − margem%).
-// Assim o % de cartão e a margem desejada realmente saem do preço de venda, não do custo.
-function computeVariantPricing(row: VariantRow, settings: PricingSettings) {
+// Imposto e cartão são por variação (cada SKU tem sua própria alíquota); a margem é única para a
+// loja toda.
+function computeVariantPricing(row: VariantRow, desiredMarginPct: number) {
   const hasCost = row.cost_cents != null;
   const custoTotalCents = (row.cost_cents ?? 0) + (row.extra_cost_cents ?? 0);
-  const impostoCents = hasCost ? Math.round(custoTotalCents * (settings.tax_rate_pct / 100)) : null;
-  const denom = 1 - settings.card_fee_pct / 100 - settings.desired_margin_pct / 100;
+  const impostoCents = hasCost ? Math.round(custoTotalCents * (row.tax_rate_pct / 100)) : null;
+  const denom = 1 - row.card_fee_pct / 100 - desiredMarginPct / 100;
   const precoCalculadoCents =
     hasCost && impostoCents != null && denom > 0
       ? Math.round((custoTotalCents + impostoCents) / denom)
@@ -102,74 +101,84 @@ function computeVariantPricing(row: VariantRow, settings: PricingSettings) {
 function PrecificacaoPage() {
   const [rows, setRows] = useState<VariantRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [settings, setSettings] = useState<PricingSettings>({
-    tax_rate_pct: 0,
-    card_fee_pct: 0,
-    desired_margin_pct: 0,
-  });
-  const [settingsDrafts, setSettingsDrafts] = useState({ tax: "0", card: "0", margin: "0" });
+  const [syncing, setSyncing] = useState(false);
+  const [desiredMarginPct, setDesiredMarginPct] = useState(0);
+  const [marginDraft, setMarginDraft] = useState("0");
+  const [rowDrafts, setRowDrafts] = useState<Record<string, { tax: string; card: string }>>({});
   const [selectedUf, setSelectedUf] = useState<Record<string, string>>({});
   const [freight, setFreight] = useState<Record<string, FreightState>>({});
   const applyingRef = useRef(false);
 
-  useEffect(() => {
-    async function load() {
-      const [{ data: settingsRow }, { data, error }] = await Promise.all([
-        supabase
-          .from("pricing_settings")
-          .select("tax_rate_pct, card_fee_pct, desired_margin_pct")
-          .eq("id", "default")
-          .maybeSingle(),
-        supabase
-          .from("product_variants")
-          .select(
-            "id, sku, name, price_cents, cost_cents, extra_cost_cents, products!inner(title, status)",
-          )
-          .eq("products.status", "published")
-          .order("sku"),
-      ]);
+  async function load() {
+    const [{ data: settingsRow }, { data, error }] = await Promise.all([
+      supabase
+        .from("pricing_settings")
+        .select("desired_margin_pct")
+        .eq("id", "default")
+        .maybeSingle(),
+      supabase
+        .from("product_variants")
+        .select(
+          "id, sku, name, price_cents, cost_cents, extra_cost_cents, tax_rate_pct, card_fee_pct, products!inner(title, status)",
+        )
+        .eq("products.status", "published")
+        .order("sku"),
+    ]);
 
-      if (settingsRow) {
-        setSettings(settingsRow);
-        setSettingsDrafts({
-          tax: formatDecimalToInput(settingsRow.tax_rate_pct),
-          card: formatDecimalToInput(settingsRow.card_fee_pct),
-          margin: formatDecimalToInput(settingsRow.desired_margin_pct),
-        });
-      }
-
-      if (error) {
-        toast.error("Não foi possível carregar os anúncios.");
-        setLoading(false);
-        return;
-      }
-
-      const variantRows = (data ?? []).map((v) => ({
-        id: v.id,
-        sku: v.sku,
-        name: v.name,
-        price_cents: v.price_cents,
-        cost_cents: v.cost_cents,
-        extra_cost_cents: v.extra_cost_cents,
-        productTitle: (v.products as { title: string } | null)?.title ?? "",
-      }));
-      setRows(variantRows);
-      setSelectedUf(Object.fromEntries(variantRows.map((v) => [v.id, DEFAULT_UF])));
-      setLoading(false);
-
-      for (const v of variantRows) {
-        calculateFreight(v.id, DEFAULT_UF);
-      }
+    if (settingsRow) {
+      setDesiredMarginPct(settingsRow.desired_margin_pct);
+      setMarginDraft(formatDecimalToInput(settingsRow.desired_margin_pct));
     }
+
+    if (error) {
+      toast.error("Não foi possível carregar os anúncios.");
+      setLoading(false);
+      return;
+    }
+
+    const variantRows = (data ?? []).map((v) => ({
+      id: v.id,
+      sku: v.sku,
+      name: v.name,
+      price_cents: v.price_cents,
+      cost_cents: v.cost_cents,
+      extra_cost_cents: v.extra_cost_cents,
+      tax_rate_pct: v.tax_rate_pct,
+      card_fee_pct: v.card_fee_pct,
+      productTitle: (v.products as { title: string } | null)?.title ?? "",
+    }));
+    setRows(variantRows);
+    setRowDrafts(
+      Object.fromEntries(
+        variantRows.map((v) => [
+          v.id,
+          { tax: formatDecimalToInput(v.tax_rate_pct), card: formatDecimalToInput(v.card_fee_pct) },
+        ]),
+      ),
+    );
+    setSelectedUf((prev) => ({
+      ...Object.fromEntries(variantRows.map((v) => [v.id, DEFAULT_UF])),
+      ...prev,
+    }));
+    setLoading(false);
+
+    for (const v of variantRows) {
+      calculateFreight(v.id, DEFAULT_UF);
+    }
+  }
+
+  useEffect(() => {
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Preço = (Custo + Imposto) ÷ (1 − cartão% − margem%) — aplicado automaticamente no
-  // product_variants.price_cents de cada anúncio sempre que o custo (API) ou os % mudam.
+  // product_variants.price_cents de cada anúncio sempre que o custo (API), o imposto/cartão da
+  // variação ou a margem da loja mudam.
   useEffect(() => {
     if (loading || applyingRef.current) return;
     const updates = rows
-      .map((row) => ({ row, calc: computeVariantPricing(row, settings) }))
+      .map((row) => ({ row, calc: computeVariantPricing(row, desiredMarginPct) }))
       .filter(
         ({ row, calc }) =>
           calc.precoCalculadoCents != null && calc.precoCalculadoCents !== row.price_cents,
@@ -202,23 +211,63 @@ function PrecificacaoPage() {
       }
       applyingRef.current = false;
     })();
-  }, [rows, settings, loading]);
+  }, [rows, desiredMarginPct, loading]);
 
-  async function saveSetting(field: keyof PricingSettings, rawValue: string) {
+  async function saveMargin(rawValue: string) {
     const parsed = parseDecimalInput(rawValue) ?? 0;
-    if (parsed === settings[field]) return;
-    const payload =
-      field === "tax_rate_pct"
-        ? { tax_rate_pct: parsed }
-        : field === "card_fee_pct"
-          ? { card_fee_pct: parsed }
-          : { desired_margin_pct: parsed };
-    const { error } = await supabase.from("pricing_settings").update(payload).eq("id", "default");
+    if (parsed === desiredMarginPct) return;
+    const { error } = await supabase
+      .from("pricing_settings")
+      .update({ desired_margin_pct: parsed })
+      .eq("id", "default");
     if (error) {
-      toast.error("Não foi possível salvar a configuração.");
+      toast.error("Não foi possível salvar a margem.");
       return;
     }
-    setSettings((prev) => ({ ...prev, [field]: parsed }));
+    setDesiredMarginPct(parsed);
+  }
+
+  async function saveRowPct(
+    rowId: string,
+    field: "tax_rate_pct" | "card_fee_pct",
+    rawValue: string,
+  ) {
+    const parsed = parseDecimalInput(rawValue) ?? 0;
+    const current = rows.find((r) => r.id === rowId);
+    if (!current || parsed === current[field]) return;
+    const payload = field === "tax_rate_pct" ? { tax_rate_pct: parsed } : { card_fee_pct: parsed };
+    const { error } = await supabase.from("product_variants").update(payload).eq("id", rowId);
+    if (error) {
+      toast.error("Não foi possível salvar o %.");
+      return;
+    }
+    setRows((prev) => prev.map((r) => (r.id === rowId ? { ...r, [field]: parsed } : r)));
+  }
+
+  async function syncCosts() {
+    setSyncing(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) throw new Error("Sessão expirada. Faça login novamente.");
+      const resp = await fetch(`${FUNCTIONS_URL}/sync-skus`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const json = await resp.json();
+      if (!resp.ok || json.error) throw new Error(json.error ?? "Erro ao sincronizar custos.");
+      toast.success(
+        `Custos sincronizados: ${json.updated_variants} variação(ões) atualizada(s).` +
+          (json.skus_not_found_here > 0
+            ? ` ${json.skus_not_found_here} SKU(s) do FinMarket não encontrados aqui.`
+            : ""),
+      );
+      await load();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao sincronizar custos.");
+    } finally {
+      setSyncing(false);
+    }
   }
 
   async function calculateFreight(variantId: string, uf: string) {
@@ -257,13 +306,19 @@ function PrecificacaoPage() {
 
   return (
     <AdminShell>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold">Precificação</h1>
-        <p className="text-sm text-muted-foreground">
-          Custo puxado do FinMarket HUB, imposto, cartão e margem calculam o preço de venda
-          automaticamente — e você vê, na hora, o frete (Melhor Envio) até a capital de qualquer
-          estado.
-        </p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold">Precificação</h1>
+          <p className="text-sm text-muted-foreground">
+            Custo puxado do FinMarket HUB, imposto e cartão por SKU, margem única pra loja toda — o
+            preço de venda é calculado e aplicado sozinho. O frete (Melhor Envio) até a capital de
+            qualquer estado aparece na hora.
+          </p>
+        </div>
+        <Button type="button" variant="outline" size="sm" disabled={syncing} onClick={syncCosts}>
+          <RefreshCw className={`mr-2 h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+          {syncing ? "Sincronizando..." : "Sincronizar custos"}
+        </Button>
       </div>
 
       {loading ? (
@@ -277,49 +332,19 @@ function PrecificacaoPage() {
           <Table className="table-fixed text-xs">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[19%]">SKU</TableHead>
+                <TableHead className="w-[18%]">SKU</TableHead>
                 <TableHead className="w-[12%]">Custo (API)</TableHead>
-                <TableHead className="w-[15%]">
-                  <div className="space-y-1">
-                    <span>Imposto</span>
-                    <Input
-                      className="h-6 w-16 text-xs"
-                      inputMode="decimal"
-                      value={settingsDrafts.tax}
-                      onChange={(e) =>
-                        setSettingsDrafts((prev) => ({ ...prev, tax: e.target.value }))
-                      }
-                      onBlur={() => saveSetting("tax_rate_pct", settingsDrafts.tax)}
-                    />
-                    <span className="font-normal text-muted-foreground">% aliq.</span>
-                  </div>
-                </TableHead>
+                <TableHead className="w-[14%]">Imposto (% + R$)</TableHead>
+                <TableHead className="w-[10%]">Cartão %</TableHead>
                 <TableHead className="w-[13%]">
                   <div className="space-y-1">
-                    <span>Cartão</span>
+                    <span>Margem (loja)</span>
                     <Input
                       className="h-6 w-14 text-xs"
                       inputMode="decimal"
-                      value={settingsDrafts.card}
-                      onChange={(e) =>
-                        setSettingsDrafts((prev) => ({ ...prev, card: e.target.value }))
-                      }
-                      onBlur={() => saveSetting("card_fee_pct", settingsDrafts.card)}
-                    />
-                    <span className="font-normal text-muted-foreground">%</span>
-                  </div>
-                </TableHead>
-                <TableHead className="w-[13%]">
-                  <div className="space-y-1">
-                    <span>Margem</span>
-                    <Input
-                      className="h-6 w-14 text-xs"
-                      inputMode="decimal"
-                      value={settingsDrafts.margin}
-                      onChange={(e) =>
-                        setSettingsDrafts((prev) => ({ ...prev, margin: e.target.value }))
-                      }
-                      onBlur={() => saveSetting("desired_margin_pct", settingsDrafts.margin)}
+                      value={marginDraft}
+                      onChange={(e) => setMarginDraft(e.target.value)}
+                      onBlur={() => saveMargin(marginDraft)}
                     />
                     <span className="font-normal text-muted-foreground">%</span>
                   </div>
@@ -330,8 +355,9 @@ function PrecificacaoPage() {
             </TableHeader>
             <TableBody>
               {rows.map((row) => {
-                const calc = computeVariantPricing(row, settings);
+                const calc = computeVariantPricing(row, desiredMarginPct);
                 const freightInfo = freight[row.id];
+                const draft = rowDrafts[row.id] ?? { tax: "0", card: "0" };
 
                 return (
                   <TableRow key={row.id}>
@@ -350,12 +376,45 @@ function PrecificacaoPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {calc.hasCost && calc.impostoCents != null
-                        ? formatCentsToBRL(calc.impostoCents)
-                        : "—"}
+                      <div className="flex items-center gap-1">
+                        <Input
+                          className="h-6 w-12 text-xs"
+                          inputMode="decimal"
+                          value={draft.tax}
+                          onChange={(e) =>
+                            setRowDrafts((prev) => ({
+                              ...prev,
+                              [row.id]: { tax: e.target.value, card: prev[row.id]?.card ?? "0" },
+                            }))
+                          }
+                          onBlur={() => saveRowPct(row.id, "tax_rate_pct", draft.tax)}
+                        />
+                        <span>%</span>
+                      </div>
+                      <p className="mt-0.5 text-muted-foreground">
+                        {calc.hasCost && calc.impostoCents != null
+                          ? formatCentsToBRL(calc.impostoCents)
+                          : "—"}
+                      </p>
                     </TableCell>
-                    <TableCell>{formatPct(settings.card_fee_pct)}</TableCell>
-                    <TableCell>{formatPct(settings.desired_margin_pct)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Input
+                          className="h-6 w-12 text-xs"
+                          inputMode="decimal"
+                          value={draft.card}
+                          onChange={(e) =>
+                            setRowDrafts((prev) => ({
+                              ...prev,
+                              [row.id]: { tax: prev[row.id]?.tax ?? "0", card: e.target.value },
+                            }))
+                          }
+                          onBlur={() => saveRowPct(row.id, "card_fee_pct", draft.card)}
+                        />
+                        <span>%</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{formatPct(desiredMarginPct)}</TableCell>
                     <TableCell className="font-semibold text-[#12294f]">
                       {calc.precoCalculadoCents != null ? (
                         formatCentsToBRL(calc.precoCalculadoCents)
