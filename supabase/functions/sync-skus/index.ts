@@ -27,7 +27,7 @@ type RemoteSku = { sku?: string; cost_cents?: number | null; extra_cost_cents?: 
 
 const isCents = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 0;
 
-// Mesma fórmula da tela Precificação: Preço = (Custo + Imposto) ÷ (1 − cartão% − margem%).
+// Mesma fórmula da tela Precificação: Preço = Custo ÷ [1 − (imposto% + cartão% + margem%)].
 // Mantida aqui também para que o preço fique correto mesmo quando ninguém está com a tela aberta
 // no momento da sincronização diária.
 function calculatePriceCents(
@@ -38,9 +38,8 @@ function calculatePriceCents(
   desiredMarginPct: number,
 ): number | null {
   const custoTotal = costCents + extraCostCents;
-  const imposto = Math.round(custoTotal * (taxRatePct / 100));
-  const denom = 1 - cardFeePct / 100 - desiredMarginPct / 100;
-  return denom > 0 ? Math.round((custoTotal + imposto) / denom) : null;
+  const denom = 1 - (taxRatePct + cardFeePct + desiredMarginPct) / 100;
+  return denom > 0 ? Math.round(custoTotal / denom) : null;
 }
 
 Deno.serve(async (req) => {

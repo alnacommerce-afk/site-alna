@@ -83,19 +83,18 @@ function formatPct(value: number): string {
   return `${value.toFixed(2).replace(".", ",")}%`;
 }
 
-// Margem sobre o preço final (não sobre o custo): Preço = (Custo + Imposto) ÷ (1 − cartão% − margem%).
-// Imposto e cartão são por variação (cada SKU tem sua própria alíquota); a margem é única para a
-// loja toda.
+// Preço de venda = Custos fixos ÷ [1 − (Imposto% + Cartão% + Margem%)]. Imposto, cartão e margem
+// são todos descontados do preço final (não do custo) — por isso somam no divisor, junto, em vez
+// de o imposto virar um valor somado ao custo. Ex.: custo R$7, imposto 6% + cartão 2% + margem
+// 20% → R$7 ÷ (1 − 0,28) = R$9,72, com 20% de margem líquida de verdade.
 function computeVariantPricing(row: VariantRow, desiredMarginPct: number) {
   const hasCost = row.cost_cents != null;
   const custoTotalCents = (row.cost_cents ?? 0) + (row.extra_cost_cents ?? 0);
-  const impostoCents = hasCost ? Math.round(custoTotalCents * (row.tax_rate_pct / 100)) : null;
-  const denom = 1 - row.card_fee_pct / 100 - desiredMarginPct / 100;
-  const precoCalculadoCents =
-    hasCost && impostoCents != null && denom > 0
-      ? Math.round((custoTotalCents + impostoCents) / denom)
-      : null;
-  // Quanto do preço final vira taxa de cartão e quanto vira margem, em reais.
+  const denom = 1 - (row.tax_rate_pct + row.card_fee_pct + desiredMarginPct) / 100;
+  const precoCalculadoCents = hasCost && denom > 0 ? Math.round(custoTotalCents / denom) : null;
+  // Quanto do preço final vira imposto, cartão e margem, em reais.
+  const impostoCents =
+    precoCalculadoCents != null ? Math.round(precoCalculadoCents * (row.tax_rate_pct / 100)) : null;
   const cartaoCents =
     precoCalculadoCents != null ? Math.round(precoCalculadoCents * (row.card_fee_pct / 100)) : null;
   const margemCents =
@@ -434,7 +433,7 @@ function PrecificacaoPage() {
                       {calc.precoCalculadoCents != null ? (
                         formatCentsToBRL(calc.precoCalculadoCents)
                       ) : !calc.denomValid ? (
-                        <span className="text-destructive">cartão+margem ≥ 100%</span>
+                        <span className="text-destructive">imposto+cartão+margem ≥ 100%</span>
                       ) : (
                         "—"
                       )}
