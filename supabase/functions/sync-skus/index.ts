@@ -4,8 +4,10 @@
 // product_variants via the service role. It never creates products or variants, and never
 // touches name, SKU or stock.
 //
-// Contract with FinMarket HUB: GET {base_url}/api/public/skus with header `x-api-key`, returning
-// { data: [{ sku, title, cost_cents, extra_cost_cents }] }. `base_url` lives in
+// Contract with FinMarket HUB (see alnacommerce-afk/finmarket-hub-supabase,
+// src/routes/api/public/v1/skus.ts): GET {base_url}/api/public/v1/skus with header `x-api-key`
+// (or `Authorization: Bearer`), paginated via `limit`/`offset` (up to 500 per page), returning
+// { data: [{ sku, cost_cents, extra_cost_cents, ... }], total }. `base_url` lives in
 // integration_connections.public_config for id "finmarket_hub_skus"; the key is its Vault secret.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
@@ -61,20 +63,34 @@ Deno.serve(async (req) => {
       .rpc("get_integration_secret", { p_integration_id: "finmarket_hub_skus" })
       .then((r) => r.data as string | null);
     if (!baseUrl || !apiKey) {
-      return jsonResponse({ error: "FinMarket HUB não configurado (endereço ou chave ausente)." }, 503);
+      return jsonResponse(
+        { error: "FinMarket HUB não configurado (endereço ou chave ausente)." },
+        503,
+      );
     }
     if (!baseUrl.startsWith("https://")) {
-      return jsonResponse({ error: "O endereço do FinMarket HUB precisa começar com https://." }, 503);
+      return jsonResponse(
+        { error: "O endereço do FinMarket HUB precisa começar com https://." },
+        503,
+      );
     }
 
-    const resp = await fetch(`${baseUrl}/api/public/skus`, {
-      headers: { "x-api-key": apiKey, Accept: "application/json" },
-    });
-    if (!resp.ok) {
-      const errText = await resp.text();
-      throw new Error(`FinMarket HUB skus ${resp.status}: ${errText.slice(0, 300)}`);
+    const PAGE_SIZE = 500;
+    const remote: RemoteSku[] = [];
+    for (let offset = 0; ; offset += PAGE_SIZE) {
+      const resp = await fetch(
+        `${baseUrl}/api/public/v1/skus?limit=${PAGE_SIZE}&offset=${offset}`,
+        { headers: { "x-api-key": apiKey, Accept: "application/json" } },
+      );
+      if (!resp.ok) {
+        const errText = await resp.text();
+        throw new Error(`FinMarket HUB skus ${resp.status}: ${errText.slice(0, 300)}`);
+      }
+      const page = (await resp.json()) as { data?: RemoteSku[] };
+      const rows = page.data ?? [];
+      remote.push(...rows);
+      if (rows.length < PAGE_SIZE) break;
     }
-    const remote: RemoteSku[] = (await resp.json())?.data ?? [];
 
     const { data: marginRow } = await admin
       .from("pricing_settings")
