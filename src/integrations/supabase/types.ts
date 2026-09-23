@@ -473,6 +473,30 @@ export type Database = {
         }
         Relationships: []
       }
+      pricing_settings: {
+        Row: {
+          card_fee_pct: number
+          desired_margin_pct: number
+          id: string
+          tax_rate_pct: number
+          updated_at: string
+        }
+        Insert: {
+          card_fee_pct?: number
+          desired_margin_pct?: number
+          id?: string
+          tax_rate_pct?: number
+          updated_at?: string
+        }
+        Update: {
+          card_fee_pct?: number
+          desired_margin_pct?: number
+          id?: string
+          tax_rate_pct?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_images: {
         Row: {
           alt_text: string

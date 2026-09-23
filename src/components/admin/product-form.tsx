@@ -576,7 +576,9 @@ export function ProductForm({ productId }: { productId?: string }) {
             />
 
             <div className="space-y-3 rounded-lg border p-4">
-              <p className="text-sm font-medium text-[#12294f]">SEO (preenchido pela IA complementa)</p>
+              <p className="text-sm font-medium text-[#12294f]">
+                SEO (preenchido pela IA complementa)
+              </p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -644,8 +646,8 @@ export function ProductForm({ productId }: { productId?: string }) {
                 className="mt-1"
               />
               <p className="mt-1 text-xs text-muted-foreground">
-                O texto alternativo (alt) de cada foto é gerado automaticamente pela IA
-                complementa — não precisa preencher manualmente.
+                O texto alternativo (alt) de cada foto é gerado automaticamente pela IA complementa
+                — não precisa preencher manualmente.
               </p>
             </div>
 
@@ -684,8 +686,8 @@ export function ProductForm({ productId }: { productId?: string }) {
 
           <TabsContent value="fiscal" className="space-y-4">
             <p className="text-xs text-muted-foreground">
-              Dados fiscais do produto — armazenados para uso futuro na emissão de nota fiscal.
-              Um único conjunto de valores vale para todas as variações deste produto.
+              Dados fiscais do produto — armazenados para uso futuro na emissão de nota fiscal. Um
+              único conjunto de valores vale para todas as variações deste produto.
             </p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               <FormField
