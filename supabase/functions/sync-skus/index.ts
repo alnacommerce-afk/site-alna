@@ -1,6 +1,8 @@
-// Admin-only (verify_jwt: true). Pulls SKU costs from FinMarket HUB and stores them on the matching
-// product variants. It only UPDATES variants whose SKU already exists here — it never creates
-// products or variants, and never touches price or stock.
+// Called by the daily pg_cron job (and by the "Sincronizar custos" button in Admin >
+// Precificação). Public like the other scheduled functions — it doesn't trust any caller input,
+// it only pulls from the FinMarket HUB using the server-stored secret and writes cost/price on
+// product_variants via the service role. It never creates products or variants, and never
+// touches name, SKU or stock.
 //
 // Contract with FinMarket HUB: GET {base_url}/api/public/skus with header `x-api-key`, returning
 // { data: [{ sku, title, cost_cents, extra_cost_cents }] }. `base_url` lives in
@@ -23,27 +25,30 @@ type RemoteSku = { sku?: string; cost_cents?: number | null; extra_cost_cents?: 
 
 const isCents = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 0;
 
+// Mesma fórmula da tela Precificação: Preço = (Custo + Imposto) ÷ (1 − cartão% − margem%).
+// Mantida aqui também para que o preço fique correto mesmo quando ninguém está com a tela aberta
+// no momento da sincronização diária.
+function calculatePriceCents(
+  costCents: number,
+  extraCostCents: number,
+  taxRatePct: number,
+  cardFeePct: number,
+  desiredMarginPct: number,
+): number | null {
+  const custoTotal = costCents + extraCostCents;
+  const imposto = Math.round(custoTotal * (taxRatePct / 100));
+  const denom = 1 - cardFeePct / 100 - desiredMarginPct / 100;
+  return denom > 0 ? Math.round((custoTotal + imposto) / denom) : null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const admin = createClient(supabaseUrl, serviceRoleKey);
 
   try {
-    const callerClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
-    });
-    const { data: userData, error: userError } = await callerClient.auth.getUser();
-    if (userError || !userData?.user) return jsonResponse({ error: "Não autenticado." }, 401);
-
-    const { data: isAdmin } = await admin.rpc("has_role", {
-      _user_id: userData.user.id,
-      _role: "admin",
-    });
-    if (!isAdmin) return jsonResponse({ error: "Acesso restrito a administradores." }, 403);
-
     const { data: connection } = await admin
       .from("integration_connections")
       .select("public_config")
@@ -71,13 +76,20 @@ Deno.serve(async (req) => {
     }
     const remote: RemoteSku[] = (await resp.json())?.data ?? [];
 
+    const { data: marginRow } = await admin
+      .from("pricing_settings")
+      .select("desired_margin_pct")
+      .eq("id", "default")
+      .maybeSingle();
+    const desiredMarginPct = marginRow?.desired_margin_pct ?? 0;
+
     const { data: variants, error: variantsError } = await admin
       .from("product_variants")
-      .select("id, sku");
+      .select("id, sku, tax_rate_pct, card_fee_pct");
     if (variantsError) throw variantsError;
-    const idsBySku = new Map<string, string[]>();
+    const variantsBySku = new Map<string, typeof variants>();
     for (const v of variants ?? []) {
-      idsBySku.set(v.sku, [...(idsBySku.get(v.sku) ?? []), v.id]);
+      variantsBySku.set(v.sku, [...(variantsBySku.get(v.sku) ?? []), v]);
     }
 
     let updated = 0;
@@ -89,21 +101,34 @@ Deno.serve(async (req) => {
         skipped++;
         continue;
       }
-      const ids = idsBySku.get(item.sku);
-      if (!ids) {
+      const matches = variantsBySku.get(item.sku);
+      if (!matches || matches.length === 0) {
         unmatched.push(item.sku);
         continue;
       }
-      const { error } = await admin
-        .from("product_variants")
-        .update({
-          cost_cents: item.cost_cents,
-          extra_cost_cents: isCents(item.extra_cost_cents) ? item.extra_cost_cents : 0,
-          cost_synced_at: now,
-        })
-        .in("id", ids);
-      if (error) throw error;
-      updated += ids.length;
+      const costCents = item.cost_cents;
+      const extraCostCents = isCents(item.extra_cost_cents) ? item.extra_cost_cents : 0;
+
+      for (const variant of matches) {
+        const priceCents = calculatePriceCents(
+          costCents,
+          extraCostCents,
+          variant.tax_rate_pct,
+          variant.card_fee_pct,
+          desiredMarginPct,
+        );
+        const { error } = await admin
+          .from("product_variants")
+          .update({
+            cost_cents: costCents,
+            extra_cost_cents: extraCostCents,
+            cost_synced_at: now,
+            ...(priceCents != null ? { price_cents: priceCents } : {}),
+          })
+          .eq("id", variant.id);
+        if (error) throw error;
+        updated++;
+      }
     }
 
     return jsonResponse({

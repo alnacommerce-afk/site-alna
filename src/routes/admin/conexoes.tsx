@@ -34,7 +34,11 @@ type Connection = {
   status: "pending" | "connected";
   notes: string | null;
   secret_id: string | null;
+  public_config: { base_url?: string } | null;
 };
+
+// Integrations that need an endpoint URL (not just a key) before they can be called.
+const BASE_URL_INTEGRATIONS = new Set(["finmarket_hub_skus"]);
 
 const SECRET_INTEGRATIONS = new Set([
   "melhor_envio",
@@ -58,11 +62,11 @@ function generateApiKey(): string {
 
 const CONNECTION_HELP: Record<string, string> = {
   ai_seo:
-    "Usada pelo botão \"IA complementa\" no cadastro de produtos, para sugerir título, meta descrição, palavra-chave de foco, termos de busca alternativos e o texto alternativo das fotos. Cole abaixo uma chave gratuita do Google AI Studio (aistudio.google.com/apikey).",
+    'Usada pelo botão "IA complementa" no cadastro de produtos, para sugerir título, meta descrição, palavra-chave de foco, termos de busca alternativos e o texto alternativo das fotos. Cole abaixo uma chave gratuita do Google AI Studio (aistudio.google.com/apikey).',
   melhor_envio:
     "Calcula o frete automaticamente e permite gerar etiquetas de envio. Cole abaixo o token de API (Painel Melhor Envio → Gerenciar → Tokens).",
   payment_gateway:
-    "Processa Pix e cartão de crédito (até 12x) no checkout. Gere a chave em Asaas → Configurações → Integração → Chave de API. Use a chave de PRODUÇÃO (começa com \"$aact_prod_\") — não a de sandbox — pois o checkout já está configurado para cobrar de verdade.",
+    'Processa Pix e cartão de crédito (até 12x) no checkout. Gere a chave em Asaas → Configurações → Integração → Chave de API. Use a chave de PRODUÇÃO (começa com "$aact_prod_") — não a de sandbox — pois o checkout já está configurado para cobrar de verdade.',
   meta_instagram:
     "Exige um catálogo de produtos publicado, domínio verificado no Meta Business Manager e as páginas de política já publicadas no site (Privacidade, Termos, Trocas e Devoluções). Não usa uma chave simples — a conexão é feita por OAuth no painel do Meta.",
   resend:
@@ -70,11 +74,11 @@ const CONNECTION_HELP: Record<string, string> = {
   google_search_console:
     "A verificação por meta tag já está publicada no site. Basta adicionar a propriedade em search.google.com/search-console usando o domínio.",
   finmarket_hub_api:
-    "Permite que o FinMarket HUB leia as vendas do site (bruto, cupom, frete, taxa do Asaas e líquido). Clique em \"Gerar chave\", copie o valor (ele só aparece uma vez) e cole no FinMarket HUB. Endereço lido por ele: /functions/v1/sales-report.",
+    'Permite que o FinMarket HUB leia as vendas do site (bruto, cupom, frete, taxa do Asaas e líquido). Clique em "Gerar chave", copie o valor (ele só aparece uma vez) e cole no FinMarket HUB. Endereço lido por ele: /functions/v1/sales-report.',
   asaas_webhook:
-    "Token que o Asaas envia no cabeçalho de cada aviso de pagamento (webhook). Clique em \"Gerar chave\", copie o valor (ele só aparece uma vez) e cole em Asaas → Integrações → Webhooks → editar → Token de autenticação. URL do webhook: https://ogxsdptftgxrujkfscvi.supabase.co/functions/v1/asaas-webhook",
+    'Token que o Asaas envia no cabeçalho de cada aviso de pagamento (webhook). Clique em "Gerar chave", copie o valor (ele só aparece uma vez) e cole em Asaas → Integrações → Webhooks → editar → Token de autenticação. URL do webhook: https://ogxsdptftgxrujkfscvi.supabase.co/functions/v1/asaas-webhook',
   finmarket_hub_skus:
-    "Usada pelo site para buscar SKUs e custos no FinMarket HUB. Cole aqui a chave gerada por ele. O endereço do FinMarket vai no campo public_config (chave \"base_url\") desta conexão.",
+    'Usada pelo site para buscar SKUs e custos no FinMarket HUB, todo dia de madrugada. Cole a chave gerada por ele e o endereço (ex: https://app.finmarkethub.com — sem "/skus" no final).',
   google_analytics:
     "Mostra o número de visitantes em tempo real na Visão Geral. Cole abaixo o conteúdo INTEIRO do arquivo JSON da conta de serviço do Google Cloud (com acesso de leitor na propriedade GA4). Também é preciso preencher o Measurement ID e o Property ID em Admin > Configurações.",
 };
@@ -84,7 +88,9 @@ function ConexoesPage() {
   const [loading, setLoading] = useState(true);
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({});
   const [secretDraft, setSecretDraft] = useState<Record<string, string>>({});
+  const [baseUrlDraft, setBaseUrlDraft] = useState<Record<string, string>>({});
   const [savingSecretFor, setSavingSecretFor] = useState<string | null>(null);
+  const [savingBaseUrlFor, setSavingBaseUrlFor] = useState<string | null>(null);
   const [connectionToClear, setConnectionToClear] = useState<Connection | null>(null);
   const [connectionToRegenerate, setConnectionToRegenerate] = useState<Connection | null>(null);
   const [generatedKey, setGeneratedKey] = useState<{ id: string; value: string } | null>(null);
@@ -93,7 +99,7 @@ function ConexoesPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from("integration_connections")
-      .select("id, label, status, notes, secret_id")
+      .select("id, label, status, notes, secret_id, public_config")
       .order("label");
 
     if (error) {
@@ -103,7 +109,41 @@ function ConexoesPage() {
     }
     setConnections((data ?? []) as Connection[]);
     setNotesDraft(Object.fromEntries((data ?? []).map((c) => [c.id, c.notes ?? ""])));
+    setBaseUrlDraft(
+      Object.fromEntries(
+        (data ?? []).map((c) => [
+          c.id,
+          (c.public_config as { base_url?: string } | null)?.base_url ?? "",
+        ]),
+      ),
+    );
     setLoading(false);
+  }
+
+  async function saveBaseUrl(id: string) {
+    const value = (baseUrlDraft[id] ?? "").trim();
+    if (!value) {
+      toast.error("Informe o endereço antes de salvar.");
+      return;
+    }
+    if (!value.startsWith("https://")) {
+      toast.error("O endereço precisa começar com https://.");
+      return;
+    }
+
+    setSavingBaseUrlFor(id);
+    const { error } = await supabase
+      .from("integration_connections")
+      .update({ public_config: { base_url: value.replace(/\/+$/, "") } })
+      .eq("id", id);
+    setSavingBaseUrlFor(null);
+
+    if (error) {
+      toast.error("Não foi possível salvar o endereço.");
+      return;
+    }
+    toast.success("Endereço salvo.");
+    load();
   }
 
   useEffect(() => {
@@ -121,7 +161,9 @@ function ConexoesPage() {
       toast.error("Não foi possível atualizar o status.");
       return;
     }
-    toast.success(nextStatus === "connected" ? "Marcado como conectado." : "Marcado como pendente.");
+    toast.success(
+      nextStatus === "connected" ? "Marcado como conectado." : "Marcado como pendente.",
+    );
     load();
   }
 
@@ -214,8 +256,8 @@ function ConexoesPage() {
         <h1 className="text-xl font-semibold">Conexões de API</h1>
         <p className="text-sm text-muted-foreground">
           Cole aqui as chaves de cada integração. Elas são guardadas criptografadas no Supabase
-          Vault — depois de salvas, nem esta tela nem o banco de dados mostram o valor de volta;
-          só o servidor consegue usá-las para chamar as APIs externas.
+          Vault — depois de salvas, nem esta tela nem o banco de dados mostram o valor de volta; só
+          o servidor consegue usá-las para chamar as APIs externas.
         </p>
       </div>
 
@@ -240,9 +282,7 @@ function ConexoesPage() {
                           {connection.status === "connected" ? "Conectado" : "Pendente"}
                         </Badge>
                         {hasSecret ? (
-                          <span className="text-xs text-muted-foreground">
-                            Chave configurada ✓
-                          </span>
+                          <span className="text-xs text-muted-foreground">Chave configurada ✓</span>
                         ) : null}
                       </div>
                     </div>
@@ -255,9 +295,35 @@ function ConexoesPage() {
                     ) : null}
                   </div>
 
-                  <p className="text-xs text-muted-foreground">
-                    {CONNECTION_HELP[connection.id]}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{CONNECTION_HELP[connection.id]}</p>
+
+                  {BASE_URL_INTEGRATIONS.has(connection.id) ? (
+                    <div className="space-y-2 rounded-md border border-dashed p-3">
+                      <Label htmlFor={`baseurl-${connection.id}`} className="text-xs">
+                        Endereço (URL)
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id={`baseurl-${connection.id}`}
+                          placeholder="https://app.finmarkethub.com"
+                          value={baseUrlDraft[connection.id] ?? ""}
+                          onChange={(e) =>
+                            setBaseUrlDraft((prev) => ({
+                              ...prev,
+                              [connection.id]: e.target.value,
+                            }))
+                          }
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => saveBaseUrl(connection.id)}
+                          disabled={savingBaseUrlFor === connection.id}
+                        >
+                          {savingBaseUrlFor === connection.id ? "Salvando..." : "Salvar"}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
 
                   {GENERATABLE_KEY_INTEGRATIONS.has(connection.id) ? (
                     <div className="space-y-2 rounded-md border border-dashed p-3">
@@ -271,7 +337,9 @@ function ConexoesPage() {
                           size="sm"
                           disabled={savingSecretFor === connection.id}
                           onClick={() =>
-                            hasSecret ? setConnectionToRegenerate(connection) : generateKey(connection)
+                            hasSecret
+                              ? setConnectionToRegenerate(connection)
+                              : generateKey(connection)
                           }
                         >
                           {savingSecretFor === connection.id
@@ -284,11 +352,15 @@ function ConexoesPage() {
                       {generatedKey?.id === connection.id ? (
                         <div className="space-y-2 rounded-md bg-muted p-3">
                           <p className="text-xs font-medium">
-                            Copie e guarde esta chave agora. Depois de sair desta tela ela nunca mais
-                            será exibida.
+                            Copie e guarde esta chave agora. Depois de sair desta tela ela nunca
+                            mais será exibida.
                           </p>
                           <div className="flex gap-2">
-                            <Input readOnly value={generatedKey.value} className="font-mono text-xs" />
+                            <Input
+                              readOnly
+                              value={generatedKey.value}
+                              className="font-mono text-xs"
+                            />
                             <Button size="sm" variant="outline" onClick={copyGeneratedKey}>
                               Copiar
                             </Button>
@@ -368,8 +440,8 @@ function ConexoesPage() {
             <AlertDialogTitle>Gerar nova chave</AlertDialogTitle>
             <AlertDialogDescription>
               A chave atual de "{connectionToRegenerate?.label}" deixa de funcionar na hora. Quem
-              usa essa chave (o FinMarket HUB ou o webhook do Asaas, por exemplo) precisará
-              receber a nova.
+              usa essa chave (o FinMarket HUB ou o webhook do Asaas, por exemplo) precisará receber
+              a nova.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -391,8 +463,8 @@ function ConexoesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Remover chave</AlertDialogTitle>
             <AlertDialogDescription>
-              Remover a chave salva de "{connectionToClear?.label}"? A integração voltará a
-              ficar pendente até uma nova chave ser salva.
+              Remover a chave salva de "{connectionToClear?.label}"? A integração voltará a ficar
+              pendente até uma nova chave ser salva.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

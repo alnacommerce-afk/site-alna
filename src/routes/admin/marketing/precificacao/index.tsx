@@ -247,13 +247,7 @@ function PrecificacaoPage() {
   async function syncCosts() {
     setSyncing(true);
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData.session?.access_token;
-      if (!accessToken) throw new Error("Sessão expirada. Faça login novamente.");
-      const resp = await fetch(`${FUNCTIONS_URL}/sync-skus`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const resp = await fetch(`${FUNCTIONS_URL}/sync-skus`, { method: "POST" });
       const json = await resp.json();
       if (!resp.ok || json.error) throw new Error(json.error ?? "Erro ao sincronizar custos.");
       toast.success(
