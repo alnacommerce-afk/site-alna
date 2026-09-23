@@ -116,6 +116,8 @@ function PrecificacaoPage() {
   const [syncing, setSyncing] = useState(false);
   const [desiredMarginPct, setDesiredMarginPct] = useState(0);
   const [marginDraft, setMarginDraft] = useState("0");
+  const [bulkTaxDraft, setBulkTaxDraft] = useState("");
+  const [bulkCardDraft, setBulkCardDraft] = useState("");
   const [rowDrafts, setRowDrafts] = useState<Record<string, { tax: string; card: string }>>({});
   const [selectedUf, setSelectedUf] = useState<Record<string, string>>({});
   const [freight, setFreight] = useState<Record<string, FreightState>>({});
@@ -256,6 +258,46 @@ function PrecificacaoPage() {
     setRows((prev) => prev.map((r) => (r.id === rowId ? { ...r, [field]: parsed } : r)));
   }
 
+  // Preenche o % de todos os anúncios de uma vez (campo do cabeçalho) — cada linha continua
+  // editável individualmente depois, para o caso de um produto específico precisar de uma
+  // margem/imposto diferente do resto.
+  async function applyBulkPct(
+    field: "tax_rate_pct" | "card_fee_pct",
+    rawValue: string,
+    resetDraft: (value: string) => void,
+  ) {
+    const trimmed = rawValue.trim();
+    if (!trimmed || rows.length === 0) {
+      resetDraft("");
+      return;
+    }
+    const parsed = parseDecimalInput(trimmed) ?? 0;
+    const ids = rows.map((r) => r.id);
+    const payload = field === "tax_rate_pct" ? { tax_rate_pct: parsed } : { card_fee_pct: parsed };
+    const { error } = await supabase.from("product_variants").update(payload).in("id", ids);
+    if (error) {
+      toast.error("Não foi possível aplicar a todos.");
+      return;
+    }
+    setRows((prev) => prev.map((r) => ({ ...r, [field]: parsed })));
+    setRowDrafts((prev) => {
+      const next = { ...prev };
+      const formatted = formatDecimalToInput(parsed);
+      for (const id of ids) {
+        const current = next[id] ?? { tax: "0", card: "0" };
+        next[id] =
+          field === "tax_rate_pct"
+            ? { tax: formatted, card: current.card }
+            : { tax: current.tax, card: formatted };
+      }
+      return next;
+    });
+    resetDraft("");
+    toast.success(
+      `${field === "tax_rate_pct" ? "Imposto" : "Cartão"} aplicado a ${ids.length} anúncio(s) — ajuste linha a linha se algum precisar ser diferente.`,
+    );
+  }
+
   async function syncCosts() {
     setSyncing(true);
     try {
@@ -340,8 +382,34 @@ function PrecificacaoPage() {
               <TableRow>
                 <TableHead className="w-[18%]">SKU</TableHead>
                 <TableHead className="w-[12%]">Custo (API)</TableHead>
-                <TableHead className="w-[14%]">Imposto (% + R$)</TableHead>
-                <TableHead className="w-[13%]">Cartão (% + R$)</TableHead>
+                <TableHead className="w-[14%]">
+                  <div className="space-y-1">
+                    <span>Imposto (% + R$)</span>
+                    <Input
+                      className="h-6 w-14 text-xs"
+                      inputMode="decimal"
+                      placeholder="Aplicar a todos"
+                      value={bulkTaxDraft}
+                      onChange={(e) => setBulkTaxDraft(e.target.value)}
+                      onBlur={() => applyBulkPct("tax_rate_pct", bulkTaxDraft, setBulkTaxDraft)}
+                    />
+                    <span className="font-normal text-muted-foreground">% (todos)</span>
+                  </div>
+                </TableHead>
+                <TableHead className="w-[13%]">
+                  <div className="space-y-1">
+                    <span>Cartão (% + R$)</span>
+                    <Input
+                      className="h-6 w-14 text-xs"
+                      inputMode="decimal"
+                      placeholder="Aplicar a todos"
+                      value={bulkCardDraft}
+                      onChange={(e) => setBulkCardDraft(e.target.value)}
+                      onBlur={() => applyBulkPct("card_fee_pct", bulkCardDraft, setBulkCardDraft)}
+                    />
+                    <span className="font-normal text-muted-foreground">% (todos)</span>
+                  </div>
+                </TableHead>
                 <TableHead className="w-[13%]">
                   <div className="space-y-1">
                     <span>Margem (loja, % + R$)</span>
