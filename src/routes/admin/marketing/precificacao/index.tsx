@@ -95,7 +95,20 @@ function computeVariantPricing(row: VariantRow, desiredMarginPct: number) {
     hasCost && impostoCents != null && denom > 0
       ? Math.round((custoTotalCents + impostoCents) / denom)
       : null;
-  return { hasCost, custoTotalCents, impostoCents, precoCalculadoCents, denomValid: denom > 0 };
+  // Quanto do preço final vira taxa de cartão e quanto vira margem, em reais.
+  const cartaoCents =
+    precoCalculadoCents != null ? Math.round(precoCalculadoCents * (row.card_fee_pct / 100)) : null;
+  const margemCents =
+    precoCalculadoCents != null ? Math.round(precoCalculadoCents * (desiredMarginPct / 100)) : null;
+  return {
+    hasCost,
+    custoTotalCents,
+    impostoCents,
+    cartaoCents,
+    margemCents,
+    precoCalculadoCents,
+    denomValid: denom > 0,
+  };
 }
 
 function PrecificacaoPage() {
@@ -329,10 +342,10 @@ function PrecificacaoPage() {
                 <TableHead className="w-[18%]">SKU</TableHead>
                 <TableHead className="w-[12%]">Custo (API)</TableHead>
                 <TableHead className="w-[14%]">Imposto (% + R$)</TableHead>
-                <TableHead className="w-[10%]">Cartão %</TableHead>
+                <TableHead className="w-[13%]">Cartão (% + R$)</TableHead>
                 <TableHead className="w-[13%]">
                   <div className="space-y-1">
-                    <span>Margem (loja)</span>
+                    <span>Margem (loja, % + R$)</span>
                     <Input
                       className="h-6 w-14 text-xs"
                       inputMode="decimal"
@@ -407,8 +420,16 @@ function PrecificacaoPage() {
                         />
                         <span>%</span>
                       </div>
+                      <p className="mt-0.5 text-muted-foreground">
+                        {calc.cartaoCents != null ? formatCentsToBRL(calc.cartaoCents) : "—"}
+                      </p>
                     </TableCell>
-                    <TableCell>{formatPct(desiredMarginPct)}</TableCell>
+                    <TableCell>
+                      <p>{formatPct(desiredMarginPct)}</p>
+                      <p className="mt-0.5 text-muted-foreground">
+                        {calc.margemCents != null ? formatCentsToBRL(calc.margemCents) : "—"}
+                      </p>
+                    </TableCell>
                     <TableCell className="font-semibold text-[#12294f]">
                       {calc.precoCalculadoCents != null ? (
                         formatCentsToBRL(calc.precoCalculadoCents)
