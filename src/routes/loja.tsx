@@ -50,44 +50,43 @@ async function fetchCatalog(): Promise<{
   failed: boolean;
 }> {
   try {
-      const [{ data: categories }, { data: products }] = await Promise.all([
-        supabase.from("categories").select("id, name, slug").order("position"),
-        supabase
-          .from("products")
-          .select(
-            `id, title, slug, category_id, created_at,
+    const [{ data: categories }, { data: products }] = await Promise.all([
+      supabase.from("categories").select("id, name, slug").order("position"),
+      supabase
+        .from("products")
+        .select(
+          `id, title, slug, category_id, created_at,
              product_images(storage_path, alt_text, position),
              product_variants(price_cents, compare_at_price_cents)`,
-          )
-          .eq("status", "published")
-          .order("created_at", { ascending: false }),
-      ]);
+        )
+        .eq("status", "published")
+        .order("created_at", { ascending: false }),
+    ]);
 
-      const productCards: ProductCard[] = (products ?? []).map((p) => {
-        const images = [...(p.product_images ?? [])].sort((a, b) => a.position - b.position);
-        const thumbnail = images[0];
-        const variants = p.product_variants ?? [];
-        const cheapest = variants.reduce<(typeof variants)[number] | null>((min, v) => {
-          if (!min || v.price_cents < min.price_cents) return v;
-          return min;
-        }, null);
+    const productCards: ProductCard[] = (products ?? []).map((p) => {
+      const images = [...(p.product_images ?? [])].sort((a, b) => a.position - b.position);
+      const thumbnail = images[0];
+      const variants = p.product_variants ?? [];
+      const cheapest = variants.reduce<(typeof variants)[number] | null>((min, v) => {
+        if (!min || v.price_cents < min.price_cents) return v;
+        return min;
+      }, null);
 
-        return {
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          categoryId: p.category_id,
-          thumbnailUrl: thumbnail
-            ? supabase.storage.from("product-media").getPublicUrl(thumbnail.storage_path).data
-                .publicUrl
-            : null,
-          thumbnailAlt: thumbnail?.alt_text ?? p.title,
-          priceCents: cheapest?.price_cents ?? 0,
-          compareAtPriceCents: cheapest?.compare_at_price_cents ?? null,
-          createdAt: p.created_at,
-        };
-      });
-
+      return {
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        categoryId: p.category_id,
+        thumbnailUrl: thumbnail
+          ? supabase.storage.from("product-media").getPublicUrl(thumbnail.storage_path).data
+              .publicUrl
+          : null,
+        thumbnailAlt: thumbnail?.alt_text ?? p.title,
+        priceCents: cheapest?.price_cents ?? 0,
+        compareAtPriceCents: cheapest?.compare_at_price_cents ?? null,
+        createdAt: p.created_at,
+      };
+    });
 
     return {
       categories: (categories ?? []) as CategoryRow[],
@@ -102,7 +101,8 @@ async function fetchCatalog(): Promise<{
 
 export const Route = createFileRoute("/loja")({
   validateSearch: (search: Record<string, unknown>) => ({
-    categoria: typeof search["categoria"] === "string" ? (search["categoria"] as string) : undefined,
+    categoria:
+      typeof search["categoria"] === "string" ? (search["categoria"] as string) : undefined,
   }),
   loader: () => ({ catalog: fetchCatalog() }),
   head: () => ({
@@ -281,9 +281,7 @@ function Catalog({
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 py-10 sm:grid-cols-[220px_1fr]">
       <aside className="space-y-8">
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wide text-[#12294f]">
-            Categorias
-          </h2>
+          <h2 className="text-sm font-bold uppercase tracking-wide text-[#12294f]">Categorias</h2>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <button
@@ -399,7 +397,7 @@ function LojaPage() {
       <SiteHeader />
 
       <section className="relative overflow-hidden bg-gradient-to-br from-[#fcfbf8] via-[#fcfbf8] to-[#f5e6bd]">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-2 px-4 py-8 sm:grid-cols-[1fr_260px] sm:gap-6 sm:py-10">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-5 px-4 py-8 sm:grid-cols-[1fr_340px] sm:gap-6 sm:py-0">
           <div className="reveal text-center sm:text-left">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Loja ALNA
@@ -408,20 +406,20 @@ function LojaPage() {
               Encontre tudo que sua casa merece.
             </h1>
             <p className="mx-auto mt-3 max-w-md text-sm text-[#12294f]/70 sm:mx-0 sm:text-base">
-              Utensílios de madeira, louças e itens de cama, mesa e banho selecionados com
-              qualidade e carinho para o seu dia a dia.
+              Utensílios de madeira, louças e itens de cama, mesa e banho selecionados com qualidade
+              e carinho para o seu dia a dia.
             </p>
           </div>
-          <div className="reveal [--reveal-delay:140ms] mx-auto flex h-[200px] w-full max-w-[220px] items-end justify-center sm:h-[260px]">
+          <div className="reveal [--reveal-delay:140ms] relative -mx-4 aspect-[16/9] w-[calc(100%+2rem)] overflow-hidden sm:mx-0 sm:aspect-auto sm:h-[340px] sm:w-full sm:self-stretch">
             <img
               src={heroModelo}
               alt="Cliente sorridente da ALNA apresentando os produtos da loja"
-              className="h-full w-auto object-contain object-bottom"
+              className="h-full w-full object-cover object-[center_8%] sm:object-[85%_10%]"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#fcfbf8] via-transparent to-transparent sm:bg-gradient-to-r sm:from-[#fcfbf8] sm:via-transparent sm:to-transparent" />
           </div>
         </div>
       </section>
-
 
       <Await promise={catalog} fallback={<CatalogSkeleton />}>
         {(data) => (
