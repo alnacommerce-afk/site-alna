@@ -23,23 +23,27 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-type RemoteSku = { sku?: string; cost_cents?: number | null; extra_cost_cents?: number | null };
+type RemoteSku = {
+  sku?: string;
+  cost_cents?: number | null;
+  extra_cost_cents?: number | null;
+  freight_cost_cents?: number | null;
+};
 
 const isCents = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 0;
 
 // Mesma fórmula da tela Precificação: Preço = Custo ÷ [1 − (imposto% + cartão% + margem%)], e
 // preço "de" (vitrine) = Preço ÷ (1 − desconto%). Mantida aqui também para que o preço fique
 // correto mesmo quando ninguém está com a tela aberta no momento da sincronização diária.
+// Custo = compra + extra + frete — os 3 valores que o FinMarket HUB reporta por SKU.
 function calculatePriceCents(
-  costCents: number,
-  extraCostCents: number,
+  custoTotalCents: number,
   taxRatePct: number,
   cardFeePct: number,
   marginPct: number,
 ): number | null {
-  const custoTotal = costCents + extraCostCents;
   const denom = 1 - (taxRatePct + cardFeePct + marginPct) / 100;
-  return denom > 0 ? Math.round(custoTotal / denom) : null;
+  return denom > 0 ? Math.round(custoTotalCents / denom) : null;
 }
 
 function calculateCompareAtPriceCents(priceCents: number, discountPct: number): number | null {
@@ -122,11 +126,12 @@ Deno.serve(async (req) => {
       }
       const costCents = item.cost_cents;
       const extraCostCents = isCents(item.extra_cost_cents) ? item.extra_cost_cents : 0;
+      const freightCostCents = isCents(item.freight_cost_cents) ? item.freight_cost_cents : 0;
+      const custoTotalCents = costCents + extraCostCents + freightCostCents;
 
       for (const variant of matches) {
         const priceCents = calculatePriceCents(
-          costCents,
-          extraCostCents,
+          custoTotalCents,
           variant.tax_rate_pct,
           variant.card_fee_pct,
           variant.margin_pct,
@@ -136,6 +141,7 @@ Deno.serve(async (req) => {
           .update({
             cost_cents: costCents,
             extra_cost_cents: extraCostCents,
+            freight_cost_cents: freightCostCents,
             cost_synced_at: now,
             ...(priceCents != null
               ? {

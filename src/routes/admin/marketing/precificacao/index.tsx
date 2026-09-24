@@ -73,6 +73,7 @@ type VariantRow = {
   compare_at_price_cents: number | null;
   cost_cents: number | null;
   extra_cost_cents: number | null;
+  freight_cost_cents: number | null;
   tax_rate_pct: number;
   card_fee_pct: number;
   margin_pct: number;
@@ -93,14 +94,15 @@ const EMPTY_ROW_DRAFT: RowDraft = { tax: "0", card: "0", margin: "0", discount: 
 
 type FreightState = { status: "loading" | "ok" | "error"; cents: number | null };
 
-// Preço de venda = Custo ÷ [1 − (Imposto% + Cartão% + Margem%)]. Todos os três são descontados do
-// preço final (não do custo), por isso somam juntos no divisor. Ex.: custo R$7, imposto 6% +
-// cartão 2% + margem 20% → R$7 ÷ (1 − 0,28) = R$9,72, com 20% de margem líquida de verdade.
-// Imposto, cartão e margem são todos por variação — um produto específico pode precisar de um %
-// diferente do resto.
+// Preço de venda = Custo ÷ [1 − (Imposto% + Cartão% + Margem%)]. Custo é a soma dos 3 valores que
+// o FinMarket HUB reporta por SKU (compra + extra + frete) — os três são descontados do preço
+// final (não do custo), por isso somam juntos no divisor. Ex.: custo R$7, imposto 6% + cartão 2% +
+// margem 20% → R$7 ÷ (1 − 0,28) = R$9,72, com 20% de margem líquida de verdade. Imposto, cartão e
+// margem são todos por variação — um produto específico pode precisar de um % diferente do resto.
 function computeVariantPricing(row: VariantRow) {
   const hasCost = row.cost_cents != null;
-  const custoTotalCents = (row.cost_cents ?? 0) + (row.extra_cost_cents ?? 0);
+  const custoTotalCents =
+    (row.cost_cents ?? 0) + (row.extra_cost_cents ?? 0) + (row.freight_cost_cents ?? 0);
   const denom = 1 - (row.tax_rate_pct + row.card_fee_pct + row.margin_pct) / 100;
   const precoCalculadoCents = hasCost && denom > 0 ? Math.round(custoTotalCents / denom) : null;
   // Quanto do preço final vira imposto, cartão e margem, em reais.
@@ -142,7 +144,7 @@ function PrecificacaoPage() {
     const { data, error } = await supabase
       .from("product_variants")
       .select(
-        "id, sku, name, price_cents, compare_at_price_cents, cost_cents, extra_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, discount_pct, products!inner(title, status)",
+        "id, sku, name, price_cents, compare_at_price_cents, cost_cents, extra_cost_cents, freight_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, discount_pct, products!inner(title, status)",
       )
       .eq("products.status", "published")
       .order("sku");
@@ -161,6 +163,7 @@ function PrecificacaoPage() {
       compare_at_price_cents: v.compare_at_price_cents,
       cost_cents: v.cost_cents,
       extra_cost_cents: v.extra_cost_cents,
+      freight_cost_cents: v.freight_cost_cents,
       tax_rate_pct: v.tax_rate_pct,
       card_fee_pct: v.card_fee_pct,
       margin_pct: v.margin_pct,
