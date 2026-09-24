@@ -289,10 +289,6 @@ export function ProductForm({ productId }: { productId?: string }) {
       toast.error("Adicione pelo menos uma foto do produto.");
       return;
     }
-    if (images.some((img) => !img.altText.trim())) {
-      toast.error('Use o botão "IA complementa" para gerar o texto alternativo das fotos.');
-      return;
-    }
 
     setSaving(true);
     try {
@@ -393,10 +389,13 @@ export function ProductForm({ productId }: { productId?: string }) {
       }
 
       for (const [i, img] of images.entries()) {
+        // Sem IA complementa, o alt cai pro título — nunca fica vazio, e a IA complementa
+        // continua podendo melhorar isso depois (ver aviso de "faltando IA" no catálogo).
+        const altText = img.altText.trim() || values.title;
         if (img.existingId) {
           const { error } = await supabase
             .from("product_images")
-            .update({ alt_text: img.altText, position: i })
+            .update({ alt_text: altText, position: i })
             .eq("id", img.existingId);
           if (error) throw error;
         } else if (img.file) {
@@ -414,7 +413,7 @@ export function ProductForm({ productId }: { productId?: string }) {
           const { error: insertError } = await supabase.from("product_images").insert({
             product_id: currentProductId,
             storage_path: path,
-            alt_text: img.altText,
+            alt_text: altText,
             position: i,
           });
           if (insertError) throw insertError;
@@ -646,8 +645,9 @@ export function ProductForm({ productId }: { productId?: string }) {
                 className="mt-1"
               />
               <p className="mt-1 text-xs text-muted-foreground">
-                O texto alternativo (alt) de cada foto é gerado automaticamente pela IA complementa
-                — não precisa preencher manualmente.
+                O texto alternativo (alt) de cada foto é gerado pela IA complementa. Sem isso, o
+                produto salva usando o título como alt e fica marcado com um ⚠ no catálogo até você
+                complementar.
               </p>
             </div>
 
@@ -666,7 +666,7 @@ export function ProductForm({ productId }: { productId?: string }) {
                       <div className="flex-1 space-y-1">
                         <Label className="text-xs">Texto alternativo (alt)</Label>
                         <p className="text-sm text-muted-foreground">
-                          {img.altText || "Ainda não gerado — use a IA complementa."}
+                          {img.altText || "Ainda não complementado — vai salvar usando o título."}
                         </p>
                       </div>
                       <Button

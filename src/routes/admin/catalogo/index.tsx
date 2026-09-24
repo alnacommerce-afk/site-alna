@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +8,7 @@ import { formatCentsToBRL } from "@/lib/money";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Table,
   TableBody,
@@ -42,6 +44,7 @@ type ProductRow = {
   minPriceCents: number | null;
   maxPriceCents: number | null;
   variantCount: number;
+  needsAiComplement: boolean;
 };
 
 function CatalogoPage() {
@@ -54,7 +57,7 @@ function CatalogoPage() {
     const { data, error } = await supabase
       .from("products")
       .select(
-        `id, title, status,
+        `id, title, status, focus_keyword,
          category:categories(name),
          product_images(storage_path, position),
          product_variants(price_cents)`,
@@ -83,6 +86,7 @@ function CatalogoPage() {
         minPriceCents: prices.length ? Math.min(...prices) : null,
         maxPriceCents: prices.length ? Math.max(...prices) : null,
         variantCount: prices.length,
+        needsAiComplement: !p.focus_keyword?.trim(),
       };
     });
 
@@ -162,7 +166,30 @@ function CatalogoPage() {
                     <div className="h-10 w-10 rounded bg-muted" />
                   )}
                 </TableCell>
-                <TableCell className="font-medium">{product.title}</TableCell>
+                <TableCell className="font-medium">
+                  <span className="inline-flex items-center gap-1.5">
+                    {product.title}
+                    {product.needsAiComplement ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Link
+                              to="/admin/catalogo/$id/editar"
+                              params={{ id: product.id }}
+                              className="text-amber-500 hover:text-amber-600"
+                              aria-label="Falta complementar com IA"
+                            >
+                              <HelpCircle className="h-4 w-4" />
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Falta complementar com IA (SEO e alt das fotos) — clique para editar.
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : null}
+                  </span>
+                </TableCell>
                 <TableCell>{product.categoryName ?? "—"}</TableCell>
                 <TableCell>
                   {product.minPriceCents == null

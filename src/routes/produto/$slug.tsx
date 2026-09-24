@@ -17,17 +17,11 @@ import { SITE_URL as HOME_URL } from "@/lib/site-urls";
 import { RETURN_POLICY } from "@/lib/return-policy";
 import { plainText } from "@/lib/plain-text";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const SITE_URL = "https://store.alna.sale";
 const PIX_DISCOUNT = 0.04;
@@ -41,7 +35,13 @@ type VariantRow = {
   sku: string;
   stock_quantity: number;
 };
-type ReviewRow = { id: string; author_name: string; rating: number; comment: string | null; created_at: string };
+type ReviewRow = {
+  id: string;
+  author_name: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+};
 type RelatedRow = {
   id: string;
   title: string;
@@ -116,7 +116,10 @@ export const Route = createFileRoute("/produto/$slug")({
       .maybeSingle();
 
     if (!product) {
-      return { product: null, extras: Promise.resolve<ProductExtras>({ related: [], reviews: [] }) };
+      return {
+        product: null,
+        extras: Promise.resolve<ProductExtras>({ related: [], reviews: [] }),
+      };
     }
 
     // Started now, but not awaited: the response does not wait for reviews or related products.
@@ -139,11 +142,14 @@ export const Route = createFileRoute("/produto/$slug")({
       product.seo_description?.trim() || plainText(product.description, 160) || `${name} - ALNA`;
     const url = `${SITE_URL}/produto/${product.slug}`;
     const imageUrls = images.map(
-      (image) => supabase.storage.from("product-media").getPublicUrl(image.storage_path).data.publicUrl,
+      (image) =>
+        supabase.storage.from("product-media").getPublicUrl(image.storage_path).data.publicUrl,
     );
     // Only a well-formed GTIN/EAN (8, 12, 13 or 14 digits) is published; otherwise Google is told the
     // product has none instead of receiving a bad code.
-    const gtin = variants.map((v) => v.gtin_ean?.trim()).find((g) => g && /^(\d{8}|\d{12,14})$/.test(g));
+    const gtin = variants
+      .map((v) => v.gtin_ean?.trim())
+      .find((g) => g && /^(\d{8}|\d{12,14})$/.test(g));
 
     return {
       meta: [
@@ -178,7 +184,9 @@ export const Route = createFileRoute("/produto/$slug")({
               priceCurrency: "BRL",
               price: (v.price_cents / 100).toFixed(2),
               availability:
-                v.stock_quantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                v.stock_quantity > 0
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
               itemCondition: "https://schema.org/NewCondition",
               hasMerchantReturnPolicy: RETURN_POLICY,
             })),
@@ -224,7 +232,9 @@ function RelatedProductCard({ product }: { product: RelatedRow }) {
         )}
       </div>
       <div className="p-3">
-        <p className="line-clamp-2 min-h-[2.5rem] text-xs font-medium text-[#12294f]">{product.title}</p>
+        <p className="line-clamp-2 min-h-[2.5rem] text-xs font-medium text-[#12294f]">
+          {product.title}
+        </p>
         <p className="mt-2 text-sm font-bold text-[#12294f]">
           {formatCentsToBRL(cheapest?.price_cents ?? 0)}
         </p>
@@ -243,11 +253,16 @@ function RatingSummary({ extras }: { extras: Promise<ProductExtras> }) {
           <div className="reveal mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
             <div className="flex text-[#f5a623]">
               {[1, 2, 3, 4, 5].map((n) => (
-                <Star key={n} className="h-4 w-4" fill={n <= Math.round(average) ? "currentColor" : "none"} />
+                <Star
+                  key={n}
+                  className="h-4 w-4"
+                  fill={n <= Math.round(average) ? "currentColor" : "none"}
+                />
               ))}
             </div>
             <span>
-              {average.toFixed(1)} ({reviews.length} {reviews.length === 1 ? "avaliação" : "avaliações"})
+              {average.toFixed(1)} ({reviews.length}{" "}
+              {reviews.length === 1 ? "avaliação" : "avaliações"})
             </span>
           </div>
         );
@@ -284,7 +299,11 @@ function ReviewsSection({ extras }: { extras: Promise<ProductExtras> }) {
                         <p className="text-sm font-semibold text-[#12294f]">{review.author_name}</p>
                         <div className="flex text-[#f5a623]">
                           {[1, 2, 3, 4, 5].map((n) => (
-                            <Star key={n} className="h-3.5 w-3.5" fill={n <= review.rating ? "currentColor" : "none"} />
+                            <Star
+                              key={n}
+                              className="h-3.5 w-3.5"
+                              fill={n <= review.rating ? "currentColor" : "none"}
+                            />
                           ))}
                         </div>
                       </div>
@@ -313,7 +332,10 @@ function RelatedSection({ extras }: { extras: Promise<ProductExtras> }) {
             <Skeleton className="h-5 w-48" />
             <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="overflow-hidden rounded-xl border border-[#12294f]/10 bg-white">
+                <div
+                  key={i}
+                  className="overflow-hidden rounded-xl border border-[#12294f]/10 bg-white"
+                >
                   <Skeleton className="aspect-square w-full rounded-none" />
                   <div className="space-y-2 p-3">
                     <Skeleton className="h-3 w-full" />
@@ -351,7 +373,8 @@ function ProdutoPage() {
   const cart = useCart();
 
   const images = useMemo(
-    () => [...(product?.product_images ?? [])].sort((a, b) => a.position - b.position) as ImageRow[],
+    () =>
+      [...(product?.product_images ?? [])].sort((a, b) => a.position - b.position) as ImageRow[],
     [product],
   );
   const variants = (product?.product_variants ?? []) as VariantRow[];
@@ -359,18 +382,30 @@ function ProdutoPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
-  const [selectedVariantId, setSelectedVariantId] = useState(variants[0]?.id ?? "");
+  // Com 1 só variação não há escolha real — vem pré-selecionada. Com mais de uma, começa vazio: o
+  // cliente precisa escolher pelo menos uma pra continuar, e pode marcar mais de uma ao mesmo tempo.
+  const [selectedVariantIds, setSelectedVariantIds] = useState<string[]>(
+    variants.length === 1 && variants[0] ? [variants[0].id] : [],
+  );
   const [quantity, setQuantity] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("pix");
   const [cep, setCep] = useState(() => getSavedCheckoutInfo().zip ?? "");
   const [checkingShipping, setCheckingShipping] = useState(false);
-  const [shippingResult, setShippingResult] = useState<
-    { priceCents: number; deliveryTimeDays: number } | null
-  >(null);
+  const [shippingResult, setShippingResult] = useState<{
+    priceCents: number;
+    deliveryTimeDays: number;
+  } | null>(null);
   const [shippingError, setShippingError] = useState<string | null>(null);
 
-  const selectedVariant = variants.find((v) => v.id === selectedVariantId) ?? variants[0];
+  const selectedVariants = variants.filter((v) => selectedVariantIds.includes(v.id));
+  const hasSelection = selectedVariants.length > 0;
   const currentImage = images[selectedImageIndex] ?? images[0];
+
+  function toggleVariant(id: string) {
+    setSelectedVariantIds((prev) =>
+      prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id],
+    );
+  }
 
   if (!product) {
     return (
@@ -395,12 +430,28 @@ function ProdutoPage() {
     );
   }
 
-  const unitPrice = selectedVariant?.price_cents ?? 0;
-  const compareAt = selectedVariant?.compare_at_price_cents ?? null;
-  const off = compareAt && compareAt > unitPrice ? Math.round(((compareAt - unitPrice) / compareAt) * 100) : null;
-  const subtotal = unitPrice * quantity;
+  // Com 1 variação selecionada, mostra preço/desconto dela normalmente. Com 0 ou várias, não há um
+  // "preço unitário" único pra destacar — usa a mais barata como referência e deixa o Total (que
+  // soma todas as selecionadas) ser o número que realmente importa.
+  const singleSelected = selectedVariants.length === 1 ? selectedVariants[0] : null;
+  const referenceVariant =
+    singleSelected ??
+    selectedVariants.reduce<VariantRow | null>(
+      (min, v) => (!min || v.price_cents < min.price_cents ? v : min),
+      null,
+    );
+  const unitPrice = referenceVariant?.price_cents ?? 0;
+  const compareAt = referenceVariant?.compare_at_price_cents ?? null;
+  const off =
+    compareAt && compareAt > unitPrice
+      ? Math.round(((compareAt - unitPrice) / compareAt) * 100)
+      : null;
+  const subtotal = selectedVariants.reduce((sum, v) => sum + v.price_cents, 0) * quantity;
   const pixTotal = Math.round(subtotal * (1 - PIX_DISCOUNT));
-  const inStock = (selectedVariant?.stock_quantity ?? 0) > 0;
+  const anyInStock = selectedVariants.some((v) => v.stock_quantity > 0);
+  const maxQuantity = selectedVariants.length
+    ? Math.min(...selectedVariants.map((v) => v.stock_quantity))
+    : 1;
   const embedUrl = product.video_url ? toEmbedUrl(product.video_url) : null;
 
   async function handleCheckShipping(options?: { silent?: boolean }) {
@@ -409,15 +460,19 @@ function ProdutoPage() {
       if (!options?.silent) toast.error("Informe um CEP válido.");
       return;
     }
-    if (!selectedVariant) return;
+    if (selectedVariants.length === 0) {
+      if (!options?.silent) toast.error("Selecione uma variação antes de calcular o frete.");
+      return;
+    }
 
     saveCheckoutInfo({ zip: digits });
     setCheckingShipping(true);
     setShippingError(null);
     setShippingResult(null);
-    const result = await fetchShippingQuote(digits, [
-      { variantId: selectedVariant.id, quantity },
-    ]);
+    const result = await fetchShippingQuote(
+      digits,
+      selectedVariants.map((v) => ({ variantId: v.id, quantity })),
+    );
     setCheckingShipping(false);
     if ("error" in result) {
       setShippingError(result.error);
@@ -427,25 +482,50 @@ function ProdutoPage() {
   }
 
   function handleAddToCart() {
-    if (!selectedVariant || !product) return;
+    if (!product || selectedVariants.length === 0) return;
     const thumbnailUrl = currentImage
       ? supabase.storage.from("product-media").getPublicUrl(currentImage.storage_path).data
           .publicUrl
       : null;
 
-    cart.add(
-      {
-        variantId: selectedVariant.id,
-        productSlug: product.slug,
-        productTitle: product.title,
-        variantName: selectedVariant.name,
-        thumbnailUrl,
-        priceCents: selectedVariant.price_cents,
-        maxQuantity: selectedVariant.stock_quantity,
-      },
-      quantity,
+    let added = 0;
+    let skipped = 0;
+    for (const variant of selectedVariants) {
+      if (variant.stock_quantity <= 0) {
+        skipped++;
+        continue;
+      }
+      cart.add(
+        {
+          variantId: variant.id,
+          productSlug: product.slug,
+          productTitle: product.title,
+          variantName: variant.name,
+          thumbnailUrl,
+          priceCents: variant.price_cents,
+          maxQuantity: variant.stock_quantity,
+        },
+        quantity,
+      );
+      added++;
+    }
+
+    if (added === 0) {
+      toast.error("Nenhuma das variações selecionadas tem estoque.");
+      return;
+    }
+    toast.success(
+      added === 1
+        ? "Produto adicionado ao carrinho."
+        : `${added} variações adicionadas ao carrinho.`,
     );
-    toast.success("Produto adicionado ao carrinho.");
+    if (skipped > 0) {
+      toast.error(
+        skipped === 1
+          ? "1 variação selecionada estava sem estoque e não foi adicionada."
+          : `${skipped} variações selecionadas estavam sem estoque e não foram adicionadas.`,
+      );
+    }
   }
 
   return (
@@ -483,7 +563,10 @@ function ProdutoPage() {
             {images.length > 0 ? (
               <>
                 <img
-                  src={supabase.storage.from("product-media").getPublicUrl(currentImage!.storage_path).data.publicUrl}
+                  src={
+                    supabase.storage.from("product-media").getPublicUrl(currentImage!.storage_path)
+                      .data.publicUrl
+                  }
                   alt={currentImage!.alt_text}
                   className="h-full w-full object-cover"
                 />
@@ -515,7 +598,10 @@ function ProdutoPage() {
                   }`}
                 >
                   <img
-                    src={supabase.storage.from("product-media").getPublicUrl(img.storage_path).data.publicUrl}
+                    src={
+                      supabase.storage.from("product-media").getPublicUrl(img.storage_path).data
+                        .publicUrl
+                    }
                     alt={img.alt_text}
                     className="h-full w-full object-cover"
                   />
@@ -539,7 +625,10 @@ function ProdutoPage() {
               <DialogTitle className="sr-only">{currentImage?.alt_text}</DialogTitle>
               {currentImage ? (
                 <img
-                  src={supabase.storage.from("product-media").getPublicUrl(currentImage.storage_path).data.publicUrl}
+                  src={
+                    supabase.storage.from("product-media").getPublicUrl(currentImage.storage_path)
+                      .data.publicUrl
+                  }
                   alt={currentImage.alt_text}
                   className="h-full w-full rounded-md object-contain"
                 />
@@ -576,7 +665,9 @@ function ProdutoPage() {
                 {formatCentsToBRL(compareAt!)}
               </span>
             ) : null}
-            <span className="text-3xl font-black text-[#12294f]">{formatCentsToBRL(unitPrice)}</span>
+            <span className="text-3xl font-black text-[#12294f]">
+              {formatCentsToBRL(unitPrice)}
+            </span>
             {off ? (
               <span className="rounded-full bg-[#16a34a] px-2 py-0.5 text-xs font-bold text-white">
                 {off}% off
@@ -586,26 +677,12 @@ function ProdutoPage() {
           <p className="mt-1 text-sm font-semibold text-[#16a34a]">
             {formatCentsToBRL(pixTotal)} no PIX (4% de desconto)
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {inStock ? `${selectedVariant?.stock_quantity} em estoque` : "Sem estoque no momento"}
-          </p>
-
-          {variants.length > 1 ? (
-            <div className="mt-5 space-y-1.5">
-              <Label>Variação</Label>
-              <Select value={selectedVariantId} onValueChange={setSelectedVariantId}>
-                <SelectTrigger>
-                  <SelectValue>{selectedVariant?.name}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {variants.map((v) => (
-                    <SelectItem key={v.id} value={v.id}>
-                      {v.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {singleSelected ? (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {singleSelected.stock_quantity > 0
+                ? `${singleSelected.stock_quantity} em estoque`
+                : "Sem estoque no momento"}
+            </p>
           ) : null}
 
           <div className="mt-5 space-y-1.5">
@@ -617,20 +694,56 @@ function ProdutoPage() {
             >
               <label
                 className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
-                  paymentMethod === "pix" ? "border-[#16a34a] bg-[#16a34a]/5" : "border-[#12294f]/15"
+                  paymentMethod === "pix"
+                    ? "border-[#16a34a] bg-[#16a34a]/5"
+                    : "border-[#12294f]/15"
                 }`}
               >
-                <RadioGroupItem value="pix" /> PIX <span className="text-xs text-[#16a34a]">(-4%)</span>
+                <RadioGroupItem value="pix" /> PIX{" "}
+                <span className="text-xs text-[#16a34a]">(-4%)</span>
               </label>
               <label
                 className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
-                  paymentMethod === "cartao" ? "border-[#16a34a] bg-[#16a34a]/5" : "border-[#12294f]/15"
+                  paymentMethod === "cartao"
+                    ? "border-[#16a34a] bg-[#16a34a]/5"
+                    : "border-[#12294f]/15"
                 }`}
               >
                 <RadioGroupItem value="cartao" /> Cartão de crédito
               </label>
             </RadioGroup>
           </div>
+
+          {variants.length > 1 ? (
+            <div className="mt-5 space-y-1.5">
+              <Label>
+                Variação{" "}
+                {!hasSelection ? (
+                  <span className="text-destructive">(escolha ao menos uma)</span>
+                ) : null}
+              </Label>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {variants.map((v) => {
+                  const checked = selectedVariantIds.includes(v.id);
+                  const outOfStock = v.stock_quantity <= 0;
+                  return (
+                    <label
+                      key={v.id}
+                      className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
+                        checked ? "border-[#16a34a] bg-[#16a34a]/5" : "border-[#12294f]/15"
+                      } ${outOfStock ? "opacity-50" : ""}`}
+                    >
+                      <Checkbox checked={checked} onCheckedChange={() => toggleVariant(v.id)} />
+                      <span className="flex-1">{v.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {outOfStock ? "sem estoque" : formatCentsToBRL(v.price_cents)}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
 
           <div className="mt-5 space-y-1.5">
             <Label htmlFor="cep">Simular frete</Label>
@@ -644,7 +757,12 @@ function ProdutoPage() {
                 maxLength={9}
                 className="max-w-[180px]"
               />
-              <Button type="button" variant="outline" onClick={() => handleCheckShipping()} disabled={checkingShipping}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleCheckShipping()}
+                disabled={checkingShipping}
+              >
                 {checkingShipping ? "Calculando..." : "Calcular"}
               </Button>
             </div>
@@ -673,7 +791,7 @@ function ProdutoPage() {
               <span className="w-10 text-center text-sm font-semibold">{quantity}</span>
               <button
                 type="button"
-                onClick={() => setQuantity((q) => Math.min(selectedVariant?.stock_quantity ?? 1, q + 1))}
+                onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
                 className="flex h-10 w-10 items-center justify-center text-[#12294f] hover:bg-muted"
                 aria-label="Aumentar quantidade"
               >
@@ -689,10 +807,14 @@ function ProdutoPage() {
             type="button"
             size="lg"
             className="mt-5 w-full bg-[#16a34a] text-base font-bold hover:bg-[#16a34a]/90"
-            disabled={!inStock}
+            disabled={!hasSelection || !anyInStock}
             onClick={handleAddToCart}
           >
-            {inStock ? "Adicionar ao carrinho" : "Produto indisponível"}
+            {!hasSelection
+              ? "Selecione uma variação"
+              : anyInStock
+                ? "Adicionar ao carrinho"
+                : "Produto indisponível"}
           </Button>
 
           <div className="mt-6 grid grid-cols-2 gap-4 border-t pt-6 sm:grid-cols-4">
