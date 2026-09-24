@@ -27,19 +27,25 @@ type RemoteSku = { sku?: string; cost_cents?: number | null; extra_cost_cents?: 
 
 const isCents = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 0;
 
-// Mesma fórmula da tela Precificação: Preço = Custo ÷ [1 − (imposto% + cartão% + margem%)].
-// Mantida aqui também para que o preço fique correto mesmo quando ninguém está com a tela aberta
-// no momento da sincronização diária.
+// Mesma fórmula da tela Precificação: Preço = Custo ÷ [1 − (imposto% + cartão% + margem%)], e
+// preço "de" (vitrine) = Preço ÷ (1 − desconto%). Mantida aqui também para que o preço fique
+// correto mesmo quando ninguém está com a tela aberta no momento da sincronização diária.
 function calculatePriceCents(
   costCents: number,
   extraCostCents: number,
   taxRatePct: number,
   cardFeePct: number,
-  desiredMarginPct: number,
+  marginPct: number,
 ): number | null {
   const custoTotal = costCents + extraCostCents;
-  const denom = 1 - (taxRatePct + cardFeePct + desiredMarginPct) / 100;
+  const denom = 1 - (taxRatePct + cardFeePct + marginPct) / 100;
   return denom > 0 ? Math.round(custoTotal / denom) : null;
+}
+
+function calculateCompareAtPriceCents(priceCents: number, discountPct: number): number | null {
+  return discountPct > 0 && discountPct < 100
+    ? Math.round(priceCents / (1 - discountPct / 100))
+    : null;
 }
 
 Deno.serve(async (req) => {
@@ -93,7 +99,7 @@ Deno.serve(async (req) => {
 
     const { data: variants, error: variantsError } = await admin
       .from("product_variants")
-      .select("id, sku, tax_rate_pct, card_fee_pct, margin_pct");
+      .select("id, sku, tax_rate_pct, card_fee_pct, margin_pct, discount_pct");
     if (variantsError) throw variantsError;
     const variantsBySku = new Map<string, typeof variants>();
     for (const v of variants ?? []) {
@@ -131,7 +137,15 @@ Deno.serve(async (req) => {
             cost_cents: costCents,
             extra_cost_cents: extraCostCents,
             cost_synced_at: now,
-            ...(priceCents != null ? { price_cents: priceCents } : {}),
+            ...(priceCents != null
+              ? {
+                  price_cents: priceCents,
+                  compare_at_price_cents: calculateCompareAtPriceCents(
+                    priceCents,
+                    variant.discount_pct,
+                  ),
+                }
+              : {}),
           })
           .eq("id", variant.id);
         if (error) throw error;

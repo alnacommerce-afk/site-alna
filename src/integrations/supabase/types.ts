@@ -544,6 +544,7 @@ export type Database = {
           cost_cents: number | null;
           cost_synced_at: string | null;
           created_at: string;
+          discount_pct: number;
           extra_cost_cents: number | null;
           gtin_ean: string | null;
           id: string;
@@ -566,6 +567,7 @@ export type Database = {
           cost_cents?: number | null;
           cost_synced_at?: string | null;
           created_at?: string;
+          discount_pct?: number;
           extra_cost_cents?: number | null;
           gtin_ean?: string | null;
           id?: string;
@@ -588,6 +590,7 @@ export type Database = {
           cost_cents?: number | null;
           cost_synced_at?: string | null;
           created_at?: string;
+          discount_pct?: number;
           extra_cost_cents?: number | null;
           gtin_ean?: string | null;
           id?: string;
