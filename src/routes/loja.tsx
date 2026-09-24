@@ -414,15 +414,17 @@ function LojaPage() {
             {/* Glow quente atrás dela — funde a temperatura de cor do estúdio (neutra) com o
                 gradiente creme/dourado da seção, em vez de ela "flutuar" sobre um fundo cru. */}
             <div className="absolute left-1/2 top-[6%] h-[80%] w-[85%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(245,230,189,0.6),transparent_75%)]" />
-            {/* Sombra de contato — dá profundidade e ancora a figura no chão da seção. */}
-            <div className="absolute bottom-[6%] left-1/2 h-6 w-36 -translate-x-1/2 rounded-[50%] bg-[#12294f]/15 blur-lg" />
+            {/* Sombra de contato — fica acima da faixa de esmaecimento, pra não sumir junto com ela. */}
+            <div className="absolute bottom-[24%] left-1/2 h-6 w-32 -translate-x-1/2 rounded-[50%] bg-[#12294f]/15 blur-lg" />
             {/* A foto original tem margem transparente enorme nas laterais e um degradê escuro
                 (do fundo navy da Home) na base — h-[132%] + overflow-hidden corta as duas coisas
-                sem precisar editar o arquivo: mostra só a cabeça até a cintura, centralizada. */}
+                sem precisar editar o arquivo: mostra só a cabeça até a cintura, centralizada.
+                mask-image esmaece a própria imagem antes da linha de corte, pra ela "dissolver" no
+                fundo da seção em vez de terminar numa borda reta. */}
             <img
               src={heroAmbassador}
               alt="Cliente sorridente da ALNA apresentando os produtos da loja"
-              className="absolute left-1/2 top-0 h-[132%] w-auto max-w-none -translate-x-1/2 [filter:drop-shadow(0_10px_8px_rgba(18,41,79,0.16))_saturate(1.04)_sepia(0.05)]"
+              className="absolute left-1/2 top-0 h-[132%] w-auto max-w-none -translate-x-1/2 [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_55%,transparent_75%)] [filter:drop-shadow(0_10px_8px_rgba(18,41,79,0.16))_saturate(1.04)_sepia(0.05)] [mask-image:linear-gradient(to_bottom,black_0%,black_55%,transparent_75%)]"
             />
           </div>
         </div>
