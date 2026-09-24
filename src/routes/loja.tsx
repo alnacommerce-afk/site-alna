@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
-import heroModelo from "@/assets/brand/hero-modelo.webp";
+import heroAmbassador from "@/assets/brand/hero-ambassador-cutout.png";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
@@ -397,7 +397,7 @@ function LojaPage() {
       <SiteHeader />
 
       <section className="relative overflow-hidden bg-gradient-to-br from-[#fcfbf8] via-[#fcfbf8] to-[#f5e6bd]">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-5 px-4 py-8 sm:grid-cols-[1fr_340px] sm:gap-6 sm:py-0">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-2 px-4 py-8 sm:grid-cols-[1fr_320px] sm:gap-6 sm:py-10">
           <div className="reveal text-center sm:text-left">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Loja ALNA
@@ -410,13 +410,20 @@ function LojaPage() {
               e carinho para o seu dia a dia.
             </p>
           </div>
-          <div className="reveal [--reveal-delay:140ms] relative -mx-4 aspect-[16/9] w-[calc(100%+2rem)] overflow-hidden sm:mx-0 sm:aspect-auto sm:h-[340px] sm:w-full sm:self-stretch">
+          <div className="reveal [--reveal-delay:140ms] relative mx-auto h-[280px] w-full max-w-[300px] overflow-hidden sm:h-[360px] sm:max-w-none">
+            {/* Glow quente atrás dela — funde a temperatura de cor do estúdio (neutra) com o
+                gradiente creme/dourado da seção, em vez de ela "flutuar" sobre um fundo cru. */}
+            <div className="absolute left-1/2 top-[6%] h-[80%] w-[85%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(245,230,189,0.6),transparent_75%)]" />
+            {/* Sombra de contato — dá profundidade e ancora a figura no chão da seção. */}
+            <div className="absolute bottom-[6%] left-1/2 h-6 w-36 -translate-x-1/2 rounded-[50%] bg-[#12294f]/15 blur-lg" />
+            {/* A foto original tem margem transparente enorme nas laterais e um degradê escuro
+                (do fundo navy da Home) na base — h-[132%] + overflow-hidden corta as duas coisas
+                sem precisar editar o arquivo: mostra só a cabeça até a cintura, centralizada. */}
             <img
-              src={heroModelo}
+              src={heroAmbassador}
               alt="Cliente sorridente da ALNA apresentando os produtos da loja"
-              className="h-full w-full object-cover object-[center_8%] sm:object-[85%_10%]"
+              className="absolute left-1/2 top-0 h-[132%] w-auto max-w-none -translate-x-1/2 [filter:drop-shadow(0_10px_8px_rgba(18,41,79,0.16))_saturate(1.04)_sepia(0.05)]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#fcfbf8] via-transparent to-transparent sm:bg-gradient-to-r sm:from-[#fcfbf8] sm:via-transparent sm:to-transparent" />
           </div>
         </div>
       </section>
