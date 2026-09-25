@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
-import { CircleHelp } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 
 import { useAdminSession } from "@/lib/admin/use-admin-session";
 import { LOW_STOCK_THRESHOLD, useLowStockCount } from "@/lib/admin/use-low-stock";
@@ -87,7 +87,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           >
             Estoque
             {lowStockCount > 0 && (
-              <CircleHelp
+              <CircleAlert
                 className="h-4 w-4 text-red-600"
                 aria-label={`${lowStockCount} SKU(s) com estoque abaixo de ${LOW_STOCK_THRESHOLD}`}
               />

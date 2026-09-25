@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HelpCircle } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -179,7 +179,7 @@ function CatalogoPage() {
                               className="text-amber-500 hover:text-amber-600"
                               aria-label="Falta complementar com IA"
                             >
-                              <HelpCircle className="h-4 w-4" />
+                              <CircleAlert className="h-4 w-4" />
                             </Link>
                           </TooltipTrigger>
                           <TooltipContent>
