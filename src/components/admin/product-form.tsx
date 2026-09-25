@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@tanstack/react-router";
-import { Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -287,6 +287,27 @@ export function ProductForm({ productId }: { productId?: string }) {
       altText: "",
     }));
     setImages((prev) => [...prev, ...newItems]);
+  }
+
+  function moveImage(key: string, direction: -1 | 1) {
+    setImages((prev) => {
+      const from = prev.findIndex((img) => img.key === key);
+      const to = from + direction;
+      if (from < 0 || to < 0 || to >= prev.length) return prev;
+      const next = [...prev];
+      const moved = next[from]!;
+      next[from] = next[to]!;
+      next[to] = moved;
+      return next;
+    });
+  }
+
+  function makeCover(key: string) {
+    setImages((prev) => {
+      const from = prev.findIndex((img) => img.key === key);
+      if (from <= 0) return prev;
+      return [prev[from]!, ...prev.slice(0, from), ...prev.slice(from + 1)];
+    });
   }
 
   function removeImage(key: string) {
@@ -646,7 +667,7 @@ export function ProductForm({ productId }: { productId?: string }) {
               <p className="text-sm text-muted-foreground">Nenhuma foto adicionada ainda.</p>
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {images.map((img) => (
+                {images.map((img, index) => (
                   <Card key={img.key}>
                     <CardContent className="flex gap-3 p-3">
                       <img
@@ -655,10 +676,48 @@ export function ProductForm({ productId }: { productId?: string }) {
                         className="h-20 w-20 shrink-0 rounded object-cover"
                       />
                       <div className="flex-1 space-y-1">
-                        <Label className="text-xs">Texto alternativo (alt)</Label>
+                        <div className="flex items-center gap-2">
+                          <Label className="text-xs">Texto alternativo (alt)</Label>
+                          {index === 0 ? <Badge>Capa</Badge> : null}
+                        </div>
                         <p className="text-sm text-muted-foreground">
                           {img.altText || "Ainda não complementado — vai salvar usando o título."}
                         </p>
+                        <div className="flex items-center gap-1 pt-1">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7"
+                            disabled={index === 0}
+                            onClick={() => moveImage(img.key, -1)}
+                            aria-label="Mover para antes"
+                          >
+                            <ArrowLeft className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7"
+                            disabled={index === images.length - 1}
+                            onClick={() => moveImage(img.key, 1)}
+                            aria-label="Mover para depois"
+                          >
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </Button>
+                          {index > 0 ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 px-2 text-xs"
+                              onClick={() => makeCover(img.key)}
+                            >
+                              Tornar capa
+                            </Button>
+                          ) : null}
+                        </div>
                       </div>
                       <Button
                         type="button"
