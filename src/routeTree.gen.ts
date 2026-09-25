@@ -35,6 +35,7 @@ import { Route as ProdutoSlugRouteImport } from './routes/produto/$slug'
 import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
 import { Route as AdminCatalogoNovoRouteImport } from './routes/admin/catalogo/novo'
 import { Route as AdminCategoriasIndexRouteImport } from './routes/admin/categorias/index'
+import { Route as AdminEstoqueIndexRouteImport } from './routes/admin/estoque/index'
 import { Route as AdminPedidosIndexRouteImport } from './routes/admin/pedidos/index'
 import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalogo/$id/editar'
 import { Route as AdminMarketingCuponsIndexRouteImport } from './routes/admin/marketing/cupons/index'
@@ -173,6 +174,11 @@ const AdminCategoriasIndexRoute = AdminCategoriasIndexRouteImport.update({
   path: '/admin/categorias/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEstoqueIndexRoute = AdminEstoqueIndexRouteImport.update({
+  id: '/admin/estoque/',
+  path: '/admin/estoque/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPedidosIndexRoute = AdminPedidosIndexRouteImport.update({
   id: '/admin/pedidos/',
   path: '/admin/pedidos/',
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
+  '/admin/estoque/': typeof AdminEstoqueIndexRoute
   '/admin/pedidos/': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
@@ -268,6 +275,7 @@ export interface FileRoutesByTo {
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo': typeof AdminCatalogoIndexRoute
   '/admin/categorias': typeof AdminCategoriasIndexRoute
+  '/admin/estoque': typeof AdminEstoqueIndexRoute
   '/admin/pedidos': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/cupons': typeof AdminMarketingCuponsIndexRoute
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
+  '/admin/estoque/': typeof AdminEstoqueIndexRoute
   '/admin/pedidos/': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
@@ -339,6 +348,7 @@ export interface FileRouteTypes {
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
     | '/admin/categorias/'
+    | '/admin/estoque/'
     | '/admin/pedidos/'
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/cupons/'
@@ -373,6 +383,7 @@ export interface FileRouteTypes {
     | '/admin/catalogo/novo'
     | '/admin/catalogo'
     | '/admin/categorias'
+    | '/admin/estoque'
     | '/admin/pedidos'
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/cupons'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/admin/catalogo/novo'
     | '/admin/catalogo/'
     | '/admin/categorias/'
+    | '/admin/estoque/'
     | '/admin/pedidos/'
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/cupons/'
@@ -442,6 +454,7 @@ export interface RootRouteChildren {
   AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
   AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
   AdminCategoriasIndexRoute: typeof AdminCategoriasIndexRoute
+  AdminEstoqueIndexRoute: typeof AdminEstoqueIndexRoute
   AdminPedidosIndexRoute: typeof AdminPedidosIndexRoute
   AdminCatalogoIdEditarRoute: typeof AdminCatalogoIdEditarRoute
   AdminMarketingCuponsIndexRoute: typeof AdminMarketingCuponsIndexRoute
@@ -634,6 +647,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/estoque/': {
+      id: '/admin/estoque/'
+      path: '/admin/estoque'
+      fullPath: '/admin/estoque/'
+      preLoaderRoute: typeof AdminEstoqueIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pedidos/': {
       id: '/admin/pedidos/'
       path: '/admin/pedidos'
@@ -706,6 +726,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
   AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,
   AdminCategoriasIndexRoute: AdminCategoriasIndexRoute,
+  AdminEstoqueIndexRoute: AdminEstoqueIndexRoute,
   AdminPedidosIndexRoute: AdminPedidosIndexRoute,
   AdminCatalogoIdEditarRoute: AdminCatalogoIdEditarRoute,
   AdminMarketingCuponsIndexRoute: AdminMarketingCuponsIndexRoute,

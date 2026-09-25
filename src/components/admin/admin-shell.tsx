@@ -2,12 +2,16 @@ import { useEffect, type ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
+import { CircleHelp } from "lucide-react";
+
 import { useAdminSession } from "@/lib/admin/use-admin-session";
+import { LOW_STOCK_THRESHOLD, useLowStockCount } from "@/lib/admin/use-low-stock";
 import { Button } from "@/components/ui/button";
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const { status } = useAdminSession();
   const router = useRouter();
+  const lowStockCount = useLowStockCount();
 
   useEffect(() => {
     if (status === "signed-out" || status === "unauthorized") {
@@ -39,13 +43,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
             Visão Geral
           </Link>
           <Link
-            to="/admin/catalogo"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Catálogo
-          </Link>
-          <Link
             to="/admin/categorias"
             className="rounded-md px-3 py-2 hover:bg-accent"
             activeProps={{ className: "bg-accent font-medium" }}
@@ -65,6 +62,36 @@ export function AdminShell({ children }: { children: ReactNode }) {
             activeProps={{ className: "bg-accent font-medium" }}
           >
             Clientes
+          </Link>
+          <p className="mt-3 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Anúncio
+          </p>
+          <Link
+            to="/admin/catalogo"
+            className="rounded-md px-3 py-2 pl-6 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Catálogo
+          </Link>
+          <Link
+            to="/admin/marketing/precificacao"
+            className="rounded-md px-3 py-2 pl-6 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Precificação
+          </Link>
+          <Link
+            to="/admin/estoque"
+            className="flex items-center gap-1.5 rounded-md px-3 py-2 pl-6 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Estoque
+            {lowStockCount > 0 && (
+              <CircleHelp
+                className="h-4 w-4 text-red-600"
+                aria-label={`${lowStockCount} SKU(s) com estoque abaixo de ${LOW_STOCK_THRESHOLD}`}
+              />
+            )}
           </Link>
           <p className="mt-3 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Marketing
@@ -96,13 +123,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
             activeProps={{ className: "bg-accent font-medium" }}
           >
             NPS
-          </Link>
-          <Link
-            to="/admin/marketing/precificacao"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Precificação
           </Link>
           <Link
             to="/admin/metricas"

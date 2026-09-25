@@ -382,6 +382,7 @@ export type Database = {
           payment_provider: string | null;
           payment_status: string | null;
           referrer_user_id: string | null;
+          stock_debited_at: string | null;
           reminder_10min_sent_at: string | null;
           reminder_24h_sent_at: string | null;
           shipping_address: Json | null;
@@ -418,6 +419,7 @@ export type Database = {
           payment_provider?: string | null;
           payment_status?: string | null;
           referrer_user_id?: string | null;
+          stock_debited_at?: string | null;
           reminder_10min_sent_at?: string | null;
           reminder_24h_sent_at?: string | null;
           shipping_address?: Json | null;
@@ -454,6 +456,7 @@ export type Database = {
           payment_provider?: string | null;
           payment_status?: string | null;
           referrer_user_id?: string | null;
+          stock_debited_at?: string | null;
           reminder_10min_sent_at?: string | null;
           reminder_24h_sent_at?: string | null;
           shipping_address?: Json | null;

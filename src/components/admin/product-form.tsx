@@ -27,6 +27,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -92,6 +100,7 @@ export function ProductForm({ productId }: { productId?: string }) {
   const initialDraft = mode === "create" ? getNewProductDraft() : null;
   const [loadingInitial, setLoadingInitial] = useState(mode === "edit");
   const [saving, setSaving] = useState(false);
+  const [pendingValues, setPendingValues] = useState<ProductFormValues | null>(null);
   const [images, setImages] = useState<ImageItem[]>(initialDraft?.images ?? []);
   const [originalImages, setOriginalImages] = useState<ExistingImage[]>([]);
   const [originalVariantIds, setOriginalVariantIds] = useState<string[]>([]);
@@ -284,7 +293,7 @@ export function ProductForm({ productId }: { productId?: string }) {
     setImages((prev) => prev.filter((img) => img.key !== key));
   }
 
-  async function onSubmit(values: ProductFormValues) {
+  async function saveProduct(values: ProductFormValues, chosenStatus: "draft" | "published") {
     if (images.length === 0) {
       toast.error("Adicione pelo menos uma foto do produto.");
       return;
@@ -316,7 +325,7 @@ export function ProductForm({ productId }: { productId?: string }) {
             category_id: values.categoryId,
             description: values.description || null,
             video_url: values.videoUrl || null,
-            status: values.status,
+            status: chosenStatus,
             slug,
             ...fiscalAndSeoPayload,
           })
@@ -333,7 +342,7 @@ export function ProductForm({ productId }: { productId?: string }) {
             category_id: values.categoryId,
             description: values.description || null,
             video_url: values.videoUrl || null,
-            status: values.status,
+            status: chosenStatus,
             ...fiscalAndSeoPayload,
           })
           .eq("id", currentProductId);
@@ -356,7 +365,6 @@ export function ProductForm({ productId }: { productId?: string }) {
           name: variant.name,
           sku: variant.sku,
           gtin_ean: variant.gtinEan || null,
-          stock_quantity: Number.parseInt(variant.stockQuantity ?? "0", 10) || 0,
           package_height_cm: parseDecimalInput(variant.packageHeightCm),
           package_width_cm: parseDecimalInput(variant.packageWidthCm),
           package_length_cm: parseDecimalInput(variant.packageLengthCm),
@@ -364,8 +372,9 @@ export function ProductForm({ productId }: { productId?: string }) {
         };
 
         if (variant.id) {
-          // Price lives exclusively in Admin > Precificação now — never touch it here, or an
-          // edit to name/estoque/frete would silently wipe out a price set on that other screen.
+          // Price lives in Admin > Anúncio > Precificação and stock in Admin > Anúncio > Estoque —
+          // never touch either here, or an edit to name/frete would silently wipe out a value set
+          // on those screens (stock is also debited automatically on every sale).
           const { error } = await supabase
             .from("product_variants")
             .update(commonFields)
@@ -374,7 +383,7 @@ export function ProductForm({ productId }: { productId?: string }) {
         } else {
           const { error } = await supabase
             .from("product_variants")
-            .insert({ ...commonFields, price_cents: 0, compare_at_price_cents: null });
+            .insert({ ...commonFields, price_cents: 0, stock_quantity: 0, compare_at_price_cents: null });
           if (error) throw error;
         }
       }
@@ -427,6 +436,7 @@ export function ProductForm({ productId }: { productId?: string }) {
       toast.error(err instanceof Error ? err.message : "Erro ao salvar o produto.");
     } finally {
       setSaving(false);
+      setPendingValues(null);
     }
   }
 
@@ -436,7 +446,10 @@ export function ProductForm({ productId }: { productId?: string }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit((values) => setPendingValues(values))}
+        className="space-y-6"
+      >
         <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed bg-muted/30 p-4">
           <div>
             <p className="text-sm font-medium text-[#12294f]">IA complementa</p>
@@ -547,28 +560,6 @@ export function ProductForm({ productId }: { productId?: string }) {
                   <FormControl>
                     <Input {...field} placeholder="https://..." />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="w-48">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="draft">Rascunho</SelectItem>
-                      <SelectItem value="published">Publicado</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -828,19 +819,6 @@ export function ProductForm({ productId }: { productId?: string }) {
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name={`variants.${index}.stockQuantity`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Estoque</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="number" min={0} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
                     <Button
                       type="button"
@@ -942,10 +920,41 @@ export function ProductForm({ productId }: { productId?: string }) {
             Cancelar
           </Button>
           <Button type="submit" disabled={saving}>
-            {saving ? "Salvando..." : mode === "create" ? "Criar produto" : "Salvar alterações"}
+            {mode === "create" ? "Criar produto" : "Salvar alterações"}
           </Button>
         </div>
       </form>
+
+      <Dialog
+        open={pendingValues !== null}
+        onOpenChange={(open) => !open && !saving && setPendingValues(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>O que deseja fazer?</DialogTitle>
+            <DialogDescription>
+              Publicado aparece na loja; rascunho fica salvo só aqui no painel.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={saving}
+              onClick={() => pendingValues && saveProduct(pendingValues, "draft")}
+            >
+              Salvar como rascunho
+            </Button>
+            <Button
+              type="button"
+              disabled={saving}
+              onClick={() => pendingValues && saveProduct(pendingValues, "published")}
+            >
+              {saving ? "Salvando..." : "Publicar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Form>
   );
 }
