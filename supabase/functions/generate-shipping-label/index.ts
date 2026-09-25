@@ -5,6 +5,8 @@
 // explicitly clicks "Gerar etiqueta" in /admin/pedidos — never automatically on payment.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
+import { packOrder } from "../_shared/package-dimensions.ts";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -113,23 +115,28 @@ Deno.serve(async (req) => {
       "User-Agent": "ALNA (noreply@alna.sale)",
     };
 
-    // One volume per physical unit — a simple, safe (if not perfectly optimized) approximation;
-    // never under-declares weight/dimensions.
-    const volumes = items.flatMap((item) => {
-      const variant = item.product_variants as unknown as {
-        package_width_cm: number | null;
-        package_height_cm: number | null;
-        package_length_cm: number | null;
-        package_weight_kg: number | null;
-      } | null;
-      const volume = {
-        width: Math.max(11, variant?.package_width_cm ?? 11),
-        height: Math.max(2, variant?.package_height_cm ?? 2),
-        length: Math.max(16, variant?.package_length_cm ?? 16),
-        weight: Math.max(0.1, variant?.package_weight_kg ?? 0.3),
-      };
-      return Array.from({ length: item.quantity }, () => volume);
-    });
+    // One parcel for the whole order, packed from the products' own measures — exactly the same
+    // packing calculate-shipping / checkout-create used to quote and charge the freight.
+    const parcel = packOrder(
+      items.map((item) => {
+        const variant = item.product_variants as unknown as {
+          package_width_cm: number | null;
+          package_height_cm: number | null;
+          package_length_cm: number | null;
+          package_weight_kg: number | null;
+        } | null;
+        return {
+          quantity: item.quantity,
+          height_cm: variant?.package_height_cm ?? null,
+          width_cm: variant?.package_width_cm ?? null,
+          length_cm: variant?.package_length_cm ?? null,
+          weight_kg: variant?.package_weight_kg ?? null,
+        };
+      }),
+    );
+    const volumes = [
+      { width: parcel.width, height: parcel.height, length: parcel.length, weight: parcel.weight },
+    ];
 
     const insuranceValue = items.reduce((sum, i) => sum + (i.unit_price_cents / 100) * i.quantity, 0);
 

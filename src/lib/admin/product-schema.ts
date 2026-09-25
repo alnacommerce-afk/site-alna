@@ -6,10 +6,6 @@ export const variantFormSchema = z.object({
   sku: z.string().min(1, "Informe o SKU"),
   gtinEan: z.string().optional(),
   stockQuantity: z.string().optional(),
-  packageHeightCm: z.string().optional(),
-  packageWidthCm: z.string().optional(),
-  packageLengthCm: z.string().optional(),
-  packageWeightKg: z.string().optional(),
 });
 
 export const productFormSchema = z.object({
@@ -46,10 +42,6 @@ export const emptyVariant: VariantFormValues = {
   sku: "",
   gtinEan: "",
   stockQuantity: "0",
-  packageHeightCm: "",
-  packageWidthCm: "",
-  packageLengthCm: "",
-  packageWeightKg: "",
 };
 
 export const defaultProductFormValues: ProductFormValues = {

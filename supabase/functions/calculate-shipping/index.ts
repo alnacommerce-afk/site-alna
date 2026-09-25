@@ -3,6 +3,8 @@
 // The Melhor Envio token lives in Supabase Vault (Admin > Conexões de API, id "melhor_envio").
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
+import { packOrder } from "../_shared/package-dimensions.ts";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -84,19 +86,31 @@ Deno.serve(async (req) => {
       );
     }
 
-    const products = body.items.map((item) => {
-      const variant = (variants ?? []).find((v) => v.id === item.variantId);
-      if (!variant) throw new Error(`Variante ${item.variantId} não encontrada.`);
-      return {
-        id: variant.id,
-        width: Math.max(11, variant.package_width_cm ?? 11),
-        height: Math.max(2, variant.package_height_cm ?? 2),
-        length: Math.max(16, variant.package_length_cm ?? 16),
-        weight: Math.max(0.1, variant.package_weight_kg ?? 0.3),
-        insurance_value: (variant.price_cents / 100) * item.quantity,
-        quantity: item.quantity,
-      };
-    });
+    // The whole order goes as ONE parcel built from the products' own measures (no box/envelope).
+    const parcel = packOrder(
+      body.items.map((item) => {
+        const variant = (variants ?? []).find((v) => v.id === item.variantId);
+        if (!variant) throw new Error(`Variante ${item.variantId} não encontrada.`);
+        return {
+          quantity: item.quantity,
+          height_cm: variant.package_height_cm,
+          width_cm: variant.package_width_cm,
+          length_cm: variant.package_length_cm,
+          weight_kg: variant.package_weight_kg,
+        };
+      }),
+    );
+    const products = [
+      {
+        id: "pedido",
+        width: parcel.width,
+        height: parcel.height,
+        length: parcel.length,
+        weight: parcel.weight,
+        insurance_value: subtotalCents / 100,
+        quantity: 1,
+      },
+    ];
 
     const meResponse = await fetch("https://melhorenvio.com.br/api/v2/me/shipment/calculate", {
       method: "POST",

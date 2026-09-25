@@ -11,6 +11,7 @@ import { randomPassword } from "../_shared/random-password.ts";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
 import { notifyPaymentConfirmed } from "../_shared/notify-payment-confirmed.ts";
+import { packOrder } from "../_shared/package-dimensions.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -181,18 +182,30 @@ Deno.serve(async (req) => {
 
     let carrierShippingCents = 0;
     if (originZip.length === 8 && destinationZip.length === 8 && meToken) {
-      const meProducts = body.items.map((item) => {
-        const variant = variants.find((v) => v.id === item.variantId)!;
-        return {
-          id: variant.id,
-          width: Math.max(11, variant.package_width_cm ?? 11),
-          height: Math.max(2, variant.package_height_cm ?? 2),
-          length: Math.max(16, variant.package_length_cm ?? 16),
-          weight: Math.max(0.1, variant.package_weight_kg ?? 0.3),
-          insurance_value: (variant.price_cents / 100) * item.quantity,
-          quantity: item.quantity,
-        };
-      });
+      // Same single-parcel packing as calculate-shipping, so the charged freight matches the quote.
+      const parcel = packOrder(
+        body.items.map((item) => {
+          const variant = variants.find((v) => v.id === item.variantId)!;
+          return {
+            quantity: item.quantity,
+            height_cm: variant.package_height_cm,
+            width_cm: variant.package_width_cm,
+            length_cm: variant.package_length_cm,
+            weight_kg: variant.package_weight_kg,
+          };
+        }),
+      );
+      const meProducts = [
+        {
+          id: "pedido",
+          width: parcel.width,
+          height: parcel.height,
+          length: parcel.length,
+          weight: parcel.weight,
+          insurance_value: subtotalCents / 100,
+          quantity: 1,
+        },
+      ];
       const meResp = await fetch("https://melhorenvio.com.br/api/v2/me/shipment/calculate", {
         method: "POST",
         headers: {

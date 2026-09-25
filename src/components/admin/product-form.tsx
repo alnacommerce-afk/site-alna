@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { prepareProductImage } from "@/lib/admin/optimize-image";
-import { formatDecimalToInput, parseDecimalInput, slugify } from "@/lib/money";
+import { slugify } from "@/lib/money";
 import {
   defaultProductFormValues,
   emptyVariant,
@@ -42,12 +42,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -240,10 +234,6 @@ export function ProductForm({ productId }: { productId?: string }) {
           sku: v.sku,
           gtinEan: v.gtin_ean ?? "",
           stockQuantity: String(v.stock_quantity),
-          packageHeightCm: formatDecimalToInput(v.package_height_cm),
-          packageWidthCm: formatDecimalToInput(v.package_width_cm),
-          packageLengthCm: formatDecimalToInput(v.package_length_cm),
-          packageWeightKg: formatDecimalToInput(v.package_weight_kg),
         })),
         ncm: product.ncm ?? "",
         origem: product.origem ?? "",
@@ -386,10 +376,6 @@ export function ProductForm({ productId }: { productId?: string }) {
           name: variant.name,
           sku: variant.sku,
           gtin_ean: variant.gtinEan || null,
-          package_height_cm: parseDecimalInput(variant.packageHeightCm),
-          package_width_cm: parseDecimalInput(variant.packageWidthCm),
-          package_length_cm: parseDecimalInput(variant.packageLengthCm),
-          package_weight_kg: parseDecimalInput(variant.packageWeightKg),
         };
 
         if (variant.id) {
@@ -889,74 +875,6 @@ export function ProductForm({ productId }: { productId?: string }) {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-
-                  <Accordion type="single" collapsible>
-                    <AccordionItem value="envio">
-                      <AccordionTrigger className="text-sm">Envio</AccordionTrigger>
-                      <AccordionContent className="space-y-4">
-                        <div>
-                          <p className="mb-2 text-xs font-medium text-muted-foreground">
-                            Dimensões e peso do pacote — usados no cálculo de frete via Melhor
-                            Envio.{" "}
-                            <span className="text-amber-600">
-                              Cálculo automático pendente: falta configurar a credencial da API do
-                              Melhor Envio.
-                            </span>
-                          </p>
-                          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.packageHeightCm`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Altura (cm)</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} inputMode="decimal" />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.packageWidthCm`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Largura (cm)</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} inputMode="decimal" />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.packageLengthCm`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Comprimento (cm)</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} inputMode="decimal" />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`variants.${index}.packageWeightKg`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Peso (kg)</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} inputMode="decimal" />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
                 </CardContent>
               </Card>
             ))}
