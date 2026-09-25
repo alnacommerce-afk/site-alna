@@ -746,7 +746,7 @@ function ProdutoPage() {
           ) : null}
 
           <div className="mt-5 space-y-1.5">
-            <Label htmlFor="cep">Simular frete</Label>
+            <Label htmlFor="cep">Prazo de entrega</Label>
             <div className="flex gap-2">
               <Input
                 id="cep"
@@ -768,10 +768,7 @@ function ProdutoPage() {
             </div>
             {shippingResult ? (
               <p className="text-sm font-semibold text-[#12294f]">
-                {shippingResult.priceCents === 0
-                  ? "Frete grátis"
-                  : `Frete J&T Express: ${formatCentsToBRL(shippingResult.priceCents)}`}{" "}
-                — chega em até {shippingResult.deliveryTimeDays} dias úteis
+                Chega em até {shippingResult.deliveryTimeDays} dias úteis
               </p>
             ) : shippingError ? (
               <p className="text-sm text-destructive">{shippingError}</p>
