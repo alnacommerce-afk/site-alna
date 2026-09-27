@@ -13,6 +13,10 @@ verify_jwt = true
 [functions.get-shipping-labels]
 verify_jwt = true
 
+# Admin-only — reads label price and live tracking status from Melhor Envio.
+[functions.get-order-shipment-info]
+verify_jwt = true
+
 # Admin-only — calls the Google Analytics Data API with the store's service-account credentials.
 [functions.ga4-realtime-visitors]
 verify_jwt = true

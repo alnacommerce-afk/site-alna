@@ -53,7 +53,9 @@ Deno.serve(async (req) => {
 
     const { data: order, error: orderError } = await admin
       .from("orders")
-      .select("id, customer_name, customer_email, customer_phone, customer_document, shipping_address, tracking_code, status")
+      .select(
+        "id, customer_name, customer_email, customer_phone, customer_document, shipping_address, tracking_code, status",
+      )
       .eq("id", orderId)
       .maybeSingle();
     if (orderError || !order) return jsonResponse({ error: "Pedido não encontrado." }, 404);
@@ -70,7 +72,8 @@ Deno.serve(async (req) => {
         "product_title, quantity, unit_price_cents, product_variants(package_height_cm, package_length_cm, package_weight_kg, package_width_cm)",
       )
       .eq("order_id", orderId);
-    if (itemsError || !items?.length) throw itemsError ?? new Error("Itens do pedido não encontrados.");
+    if (itemsError || !items?.length)
+      throw itemsError ?? new Error("Itens do pedido não encontrados.");
 
     const { data: settings } = await admin
       .from("site_settings")
@@ -138,7 +141,10 @@ Deno.serve(async (req) => {
       { width: parcel.width, height: parcel.height, length: parcel.length, weight: parcel.weight },
     ];
 
-    const insuranceValue = items.reduce((sum, i) => sum + (i.unit_price_cents / 100) * i.quantity, 0);
+    const insuranceValue = items.reduce(
+      (sum, i) => sum + (i.unit_price_cents / 100) * i.quantity,
+      0,
+    );
 
     const cartBody = {
       service: JT_EXPRESS_SERVICE_ID,
@@ -235,6 +241,9 @@ Deno.serve(async (req) => {
     });
     const cartInfo = cartInfoResp.ok ? await cartInfoResp.json() : null;
     const trackingCode = (cartInfo?.tracking as string | undefined) ?? null;
+    // "price" is what the ME wallet was actually charged for this label (see /me/cart response) —
+    // captured here for free since cartInfo is already being fetched for the tracking code.
+    const labelPrice = typeof cartInfo?.price === "number" ? cartInfo.price : null;
 
     await admin
       .from("orders")
@@ -242,6 +251,7 @@ Deno.serve(async (req) => {
         melhor_envio_shipment_id: shipmentId,
         tracking_code: trackingCode,
         label_url: printJson?.url ?? null,
+        label_price_cents: labelPrice != null ? Math.round(labelPrice * 100) : null,
         label_generated_count: 1,
         status: "shipped",
       })

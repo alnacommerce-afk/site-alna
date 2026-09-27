@@ -372,6 +372,7 @@ export type Database = {
           is_new_account: boolean;
           label_generated_count: number;
           label_pdf_url: string | null;
+          label_price_cents: number | null;
           label_url: string | null;
           melhor_envio_shipment_id: string | null;
           nps_score: number | null;
@@ -409,6 +410,7 @@ export type Database = {
           is_new_account?: boolean;
           label_generated_count?: number;
           label_pdf_url?: string | null;
+          label_price_cents?: number | null;
           label_url?: string | null;
           melhor_envio_shipment_id?: string | null;
           nps_score?: number | null;
@@ -446,6 +448,7 @@ export type Database = {
           is_new_account?: boolean;
           label_generated_count?: number;
           label_pdf_url?: string | null;
+          label_price_cents?: number | null;
           label_url?: string | null;
           melhor_envio_shipment_id?: string | null;
           nps_score?: number | null;

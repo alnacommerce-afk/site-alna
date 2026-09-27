@@ -47,9 +47,31 @@ type OrderRow = {
   payment_status: string | null;
   tracking_code: string | null;
   label_url: string | null;
+  label_price_cents: number | null;
   melhor_envio_shipment_id: string | null;
   itemCount: number;
 };
+
+type ShipmentInfo = { status: string | null; labelPriceCents: number | null };
+
+// Valores já vistos vindos de /me/shipment/tracking (ver docs.melhorenvio.com.br/reference/rastreio-de-envios).
+// Qualquer status novo que a Melhor Envio inventar ainda aparece — só cai no fallback capitalizado.
+const TRACKING_STATUS_LABELS: Record<string, string> = {
+  pending: "Aguardando postagem",
+  released: "Liberado para postagem",
+  generated: "Etiqueta gerada",
+  posted: "Postado",
+  in_transit: "Em trânsito",
+  delivered: "Entregue",
+  canceled: "Cancelado",
+  returned: "Devolvido",
+  undelivered: "Não entregue",
+};
+
+function trackingStatusLabel(status: string | null): string {
+  if (!status) return "Não disponível";
+  return TRACKING_STATUS_LABELS[status] ?? status.charAt(0).toUpperCase() + status.slice(1);
+}
 
 type OrderItemRow = {
   sku: string | null;
@@ -86,12 +108,14 @@ function PedidosPage() {
   const [infoOrder, setInfoOrder] = useState<OrderRow | null>(null);
   const [infoItems, setInfoItems] = useState<OrderItemRow[]>([]);
   const [infoLoading, setInfoLoading] = useState(false);
+  const [shipmentInfo, setShipmentInfo] = useState<Record<string, ShipmentInfo>>({});
+  const [shipmentInfoLoading, setShipmentInfoLoading] = useState(false);
 
   async function load() {
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "id, created_at, customer_name, total_cents, payment_method, installment_count, status, payment_status, tracking_code, label_url, melhor_envio_shipment_id, order_items(id)",
+        "id, created_at, customer_name, total_cents, payment_method, installment_count, status, payment_status, tracking_code, label_url, label_price_cents, melhor_envio_shipment_id, order_items(id)",
       )
       .order("created_at", { ascending: false });
 
@@ -110,6 +134,19 @@ function PedidosPage() {
     setLoading(false);
   }
 
+  // Preço da etiqueta e status de rastreio vêm direto da Melhor Envio — não são colunas simples do
+  // banco, então carregam à parte (e não bloqueiam a lista principal aparecer primeiro).
+  async function loadShipmentInfo() {
+    setShipmentInfoLoading(true);
+    const { data, error } = await supabase.functions.invoke("get-order-shipment-info");
+    setShipmentInfoLoading(false);
+    if (error || data?.error) {
+      console.error("[pedidos] falha ao consultar a Melhor Envio", error ?? data?.error);
+      return;
+    }
+    setShipmentInfo(data.orders ?? {});
+  }
+
   async function loadBalance() {
     const { data, error } = await supabase.functions.invoke("melhor-envio-balance");
     if (error || data?.error || data?.balance == null) {
@@ -122,6 +159,7 @@ function PedidosPage() {
   useEffect(() => {
     load();
     loadBalance();
+    loadShipmentInfo();
   }, []);
 
   async function confirmGenerateLabel() {
@@ -141,6 +179,7 @@ function PedidosPage() {
     }
     toast.success(`Etiqueta gerada. Rastreio: ${data.trackingCode ?? "aguardando"}`);
     load();
+    loadShipmentInfo();
   }
 
   async function downloadLabel(order: OrderRow) {
@@ -201,7 +240,11 @@ function PedidosPage() {
             <CardContent className="px-4 py-2">
               <p className="text-xs text-muted-foreground">Saldo Melhor Envio</p>
               <p className="font-semibold text-[#12294f]">
-                {balanceError ? "Indisponível" : balance == null ? "Carregando..." : formatCentsToBRL(Math.round(balance * 100))}
+                {balanceError
+                  ? "Indisponível"
+                  : balance == null
+                    ? "Carregando..."
+                    : formatCentsToBRL(Math.round(balance * 100))}
               </p>
             </CardContent>
           </Card>
@@ -218,81 +261,122 @@ function PedidosPage() {
           Nenhum pedido ainda.
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Data</TableHead>
-              <TableHead>Cliente</TableHead>
-              <TableHead></TableHead>
-              <TableHead>Itens</TableHead>
-              <TableHead>Pagamento</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Rastreio</TableHead>
-              <TableHead>Etiqueta</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {orders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell className="text-sm text-muted-foreground">
-                  {new Date(order.created_at).toLocaleDateString("pt-BR")}
-                </TableCell>
-                <TableCell className="font-medium">{order.customer_name ?? "—"}</TableCell>
-                <TableCell>
-                  <button
-                    type="button"
-                    onClick={() => openInfo(order)}
-                    className="text-muted-foreground hover:text-[#12294f]"
-                    title="Ver itens do pedido"
-                  >
-                    <Info className="h-4 w-4" />
-                  </button>
-                </TableCell>
-                <TableCell>{order.itemCount}</TableCell>
-                <TableCell className="text-sm">
-                  {order.payment_method === "pix"
-                    ? "Pix"
-                    : order.payment_method === "credit_card"
-                      ? `Cartão ${order.installment_count}x`
-                      : "—"}
-                </TableCell>
-                <TableCell className="font-semibold text-[#12294f]">
-                  {formatCentsToBRL(order.total_cents)}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={STATUS_VARIANTS[order.status] ?? "secondary"}>
-                    {STATUS_LABELS[order.status] ?? order.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm">{order.tracking_code ?? "—"}</TableCell>
-                <TableCell className="text-sm">
-                  {order.melhor_envio_shipment_id ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={downloadingFor === order.id}
-                      onClick={() => downloadLabel(order)}
-                    >
-                      {downloadingFor === order.id ? "Preparando..." : "Baixar etiqueta"}
-                    </Button>
-                  ) : order.status === "paid" ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={generatingFor === order.id}
-                      onClick={() => setOrderToLabel(order)}
-                    >
-                      {generatingFor === order.id ? "Gerando..." : "Gerar etiqueta"}
-                    </Button>
-                  ) : (
-                    "—"
-                  )}
-                </TableCell>
+        <div className="overflow-x-hidden">
+          <Table className="table-fixed text-xs">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[7%]">Data</TableHead>
+                <TableHead className="w-[13%]">Cliente</TableHead>
+                <TableHead className="w-[3%]"></TableHead>
+                <TableHead className="w-[5%]">Itens</TableHead>
+                <TableHead className="w-[9%]">Pagamento</TableHead>
+                <TableHead className="w-[8%]">Total</TableHead>
+                <TableHead className="w-[8%]">Status</TableHead>
+                <TableHead className="w-[13%]">Rastreio</TableHead>
+                <TableHead className="w-[9%]">Valor Etiqueta</TableHead>
+                <TableHead className="w-[13%]">Etiqueta</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {orders.map((order) => {
+                const info = shipmentInfo[order.id];
+                return (
+                  <TableRow key={order.id}>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(order.created_at).toLocaleDateString("pt-BR")}
+                    </TableCell>
+                    <TableCell className="truncate font-medium">
+                      {order.customer_name ?? "—"}
+                    </TableCell>
+                    <TableCell>
+                      <button
+                        type="button"
+                        onClick={() => openInfo(order)}
+                        className="text-muted-foreground hover:text-[#12294f]"
+                        title="Ver itens do pedido"
+                      >
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TableCell>
+                    <TableCell>{order.itemCount}</TableCell>
+                    <TableCell>
+                      {order.payment_method === "pix"
+                        ? "Pix"
+                        : order.payment_method === "credit_card"
+                          ? `Cartão ${order.installment_count}x`
+                          : "—"}
+                    </TableCell>
+                    <TableCell className="font-semibold text-[#12294f]">
+                      {formatCentsToBRL(order.total_cents)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className="text-[10px]"
+                        variant={STATUS_VARIANTS[order.status] ?? "secondary"}
+                      >
+                        {STATUS_LABELS[order.status] ?? order.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {!order.melhor_envio_shipment_id ? (
+                        <span className="text-muted-foreground">Aguardando rastreio</span>
+                      ) : (
+                        <>
+                          <p>
+                            {shipmentInfoLoading && !info
+                              ? "Consultando..."
+                              : trackingStatusLabel(info?.status ?? null)}
+                          </p>
+                          {order.tracking_code ? (
+                            <p className="truncate font-mono text-[10px] text-muted-foreground">
+                              {order.tracking_code}
+                            </p>
+                          ) : null}
+                        </>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {order.melhor_envio_shipment_id ? (
+                        (info?.labelPriceCents ?? order.label_price_cents) != null ? (
+                          formatCentsToBRL((info?.labelPriceCents ?? order.label_price_cents)!)
+                        ) : shipmentInfoLoading ? (
+                          <span className="text-muted-foreground">Consultando...</span>
+                        ) : (
+                          <span className="text-muted-foreground">Não disponível</span>
+                        )
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {order.melhor_envio_shipment_id ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={downloadingFor === order.id}
+                          onClick={() => downloadLabel(order)}
+                        >
+                          {downloadingFor === order.id ? "Preparando..." : "Baixar etiqueta"}
+                        </Button>
+                      ) : order.status === "paid" ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={generatingFor === order.id}
+                          onClick={() => setOrderToLabel(order)}
+                        >
+                          {generatingFor === order.id ? "Gerando..." : "Gerar etiqueta"}
+                        </Button>
+                      ) : (
+                        "—"
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <AlertDialog open={!!orderToLabel} onOpenChange={(open) => !open && setOrderToLabel(null)}>
