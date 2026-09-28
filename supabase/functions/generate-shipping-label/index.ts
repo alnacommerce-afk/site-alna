@@ -235,15 +235,22 @@ Deno.serve(async (req) => {
     });
     const printJson = printResp.ok ? await printResp.json() : null;
 
-    // Step 5: fetch the tracking code now that the label exists.
-    const cartInfoResp = await fetch(`https://melhorenvio.com.br/api/v2/me/cart/${shipmentId}`, {
-      headers: meHeaders,
-    });
-    const cartInfo = cartInfoResp.ok ? await cartInfoResp.json() : null;
-    const trackingCode = (cartInfo?.tracking as string | undefined) ?? null;
-    // "price" is what the ME wallet was actually charged for this label (see /me/cart response) —
-    // captured here for free since cartInfo is already being fetched for the tracking code.
-    const labelPrice = typeof cartInfo?.price === "number" ? cartInfo.price : null;
+    // Step 5: fetch the tracking code now that the label exists. NOTE: GET /me/cart/{id} only works
+    // while the shipment is still sitting in the cart — once checkout+generate move it out of the
+    // cart, that endpoint 404s. /me/orders/search is the endpoint that keeps working afterwards,
+    // for a shipment in any lifecycle stage (released, posted, delivered, ...).
+    const orderInfoResp = await fetch(
+      `https://melhorenvio.com.br/api/v2/me/orders/search?q=${shipmentId}`,
+      { headers: meHeaders },
+    );
+    // The API docs show a flat array, but in practice this returns the same paginated shape as
+    // "listar etiquetas" ({ current_page, data: [...] }) — handle both defensively.
+    const orderInfoJson = orderInfoResp.ok ? await orderInfoResp.json() : null;
+    const orderInfo = Array.isArray(orderInfoJson) ? orderInfoJson[0] : orderInfoJson?.data?.[0];
+    const trackingCode = (orderInfo?.tracking as string | undefined) ?? null;
+    // "price" is what the ME wallet was actually charged for this label — captured here for free
+    // since orderInfo is already being fetched for the tracking code.
+    const labelPrice = typeof orderInfo?.price === "number" ? orderInfo.price : null;
 
     await admin
       .from("orders")

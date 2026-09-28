@@ -3,9 +3,13 @@
 // questions:
 //   - POST /me/shipment/tracking (batched, one call for every order) — the live tracking status.
 //     Never persisted: it's meant to always reflect what ME says right now.
-//   - GET /me/cart/{id} (one call per shipment) — the label's price. Only called for orders whose
-//     orders.label_price_cents is still null (labels bought before that column existed); once
-//     fetched it's saved, so this per-shipment call only ever runs once per order.
+//   - GET /me/orders/search?q={id} (one call per shipment) — the label's real price. Only called
+//     for orders whose orders.label_price_cents is still null (labels bought before that column
+//     existed, or before this endpoint fix); once fetched it's saved, so this per-shipment call
+//     only ever runs once per order. NOTE: GET /me/cart/{id} looks similar but only works while the
+//     shipment is still sitting in the cart — once checked out it 404s, which is why this used to
+//     silently fail for every already-generated label. /me/orders/search works for any lifecycle
+//     stage (released, posted, delivered, ...).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const ME_API = "https://melhorenvio.com.br/api/v2";
@@ -104,13 +108,35 @@ Deno.serve(async (req) => {
     const missingPrice = shipped.filter((o) => o.label_price_cents == null);
     for (const order of missingPrice) {
       try {
-        const cartResp = await fetch(`${ME_API}/me/cart/${order.melhor_envio_shipment_id}`, {
-          headers: meHeaders,
-        });
-        if (!cartResp.ok) continue;
-        const cartJson = (await cartResp.json()) as { price?: number | null };
-        if (typeof cartJson.price !== "number") continue;
-        const labelPriceCents = Math.round(cartJson.price * 100);
+        const searchResp = await fetch(
+          `${ME_API}/me/orders/search?q=${order.melhor_envio_shipment_id}`,
+          { headers: meHeaders },
+        );
+        if (!searchResp.ok) {
+          const errText = await searchResp.text();
+          console.error(
+            "[get-order-shipment-info] orders/search falhou",
+            order.id,
+            searchResp.status,
+            errText.slice(0, 300),
+          );
+          continue;
+        }
+        // The API docs show a flat array, but in practice this returns the same paginated shape as
+        // "listar etiquetas" ({ current_page, data: [...] }) — handle both defensively.
+        const searchJson = (await searchResp.json()) as
+          | Array<{ price?: number | null }>
+          | { data?: Array<{ price?: number | null }> };
+        const orderInfo = Array.isArray(searchJson) ? searchJson[0] : searchJson?.data?.[0];
+        if (typeof orderInfo?.price !== "number") {
+          console.error(
+            "[get-order-shipment-info] orders/search sem price",
+            order.id,
+            JSON.stringify(searchJson).slice(0, 300),
+          );
+          continue;
+        }
+        const labelPriceCents = Math.round(orderInfo.price * 100);
         await admin
           .from("orders")
           .update({ label_price_cents: labelPriceCents })
