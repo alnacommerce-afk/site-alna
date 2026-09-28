@@ -1,18 +1,30 @@
 // Admin-only (verify_jwt: true). Powers the "Valor Etiqueta" and "Rastreio" columns in
-// Admin > Pedidos. Two different Melhor Envio endpoints, because they answer two different
+// Admin > Pedidos. Three different Melhor Envio calls, because they answer three different
 // questions:
-//   - POST /me/shipment/tracking (batched, one call for every order) — the live tracking status.
-//     Never persisted: it's meant to always reflect what ME says right now.
-//   - GET /me/orders/search?q={id} (one call per shipment) — the label's real price. Only called
-//     for orders whose orders.label_price_cents is still null (labels bought before that column
-//     existed, or before this endpoint fix); once fetched it's saved, so this per-shipment call
-//     only ever runs once per order. NOTE: GET /me/cart/{id} looks similar but only works while the
-//     shipment is still sitting in the cart — once checked out it 404s, which is why this used to
-//     silently fail for every already-generated label. /me/orders/search works for any lifecycle
-//     stage (released, posted, delivered, ...).
+//   - POST /me/shipment/tracking (batched, one call for every already-shipped order) — the live
+//     tracking status. Never persisted: it's meant to always reflect what ME says right now.
+//   - GET /me/orders/search?q={id} (one call per shipment) — an already-generated label's real,
+//     final price. Only called for shipped orders whose orders.label_price_cents is still null
+//     (labels bought before that column existed, or before this endpoint fix); once fetched it's
+//     saved, so this per-shipment call only ever runs once per order. NOTE: GET /me/cart/{id} looks
+//     similar but only works while the shipment is still sitting in the cart — once checked out it
+//     404s, which is why this used to silently fail for every already-generated label.
+//     /me/orders/search works for any lifecycle stage (released, posted, delivered, ...).
+//   - POST /me/shipment/calculate (one call per paid-but-not-yet-shipped order) — a live quote of
+//     what generating the label would cost right now, so the admin can check their Melhor Envio
+//     balance before clicking "Gerar etiqueta". Same packing/params generate-shipping-label uses to
+//     actually buy the label, so the quote matches what would really be charged. Never persisted —
+//     it's a quote, not a purchase, and could change.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
+import { packOrder } from "../_shared/package-dimensions.ts";
+
 const ME_API = "https://melhorenvio.com.br/api/v2";
+const JT_EXPRESS_SERVICE_ID = 33;
+
+function onlyDigits(value: string | null | undefined) {
+  return (value ?? "").replace(/\D/g, "");
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,6 +42,25 @@ type OrderShipmentRow = {
   id: string;
   melhor_envio_shipment_id: string | null;
   label_price_cents: number | null;
+};
+
+type PendingOrderRow = {
+  id: string;
+  shipping_address: { zip?: string } | null;
+  order_items: { quantity: number; product_variants: PendingVariant | null }[];
+};
+
+type PendingVariant = {
+  package_height_cm: number | null;
+  package_length_cm: number | null;
+  package_weight_kg: number | null;
+  package_width_cm: number | null;
+};
+
+type ShipmentResult = {
+  status: string | null;
+  labelPriceCents: number | null;
+  quotedLabelPriceCents: number | null;
 };
 
 Deno.serve(async (req) => {
@@ -59,9 +90,19 @@ Deno.serve(async (req) => {
       .not("melhor_envio_shipment_id", "is", null);
     if (ordersError) throw ordersError;
 
+    const { data: pending, error: pendingError } = await admin
+      .from("orders")
+      .select(
+        "id, shipping_address, order_items(quantity, product_variants(package_height_cm, package_length_cm, package_weight_kg, package_width_cm))",
+      )
+      .eq("status", "paid")
+      .is("melhor_envio_shipment_id", null);
+    if (pendingError) throw pendingError;
+
     const shipped = (orders ?? []) as OrderShipmentRow[];
-    const result: Record<string, { status: string | null; labelPriceCents: number | null }> = {};
-    if (shipped.length === 0) return jsonResponse({ orders: result });
+    const pendingOrders = (pending ?? []) as unknown as PendingOrderRow[];
+    const result: Record<string, ShipmentResult> = {};
+    if (shipped.length === 0 && pendingOrders.length === 0) return jsonResponse({ orders: result });
 
     const meToken = await admin
       .rpc("get_integration_secret", { p_integration_id: "melhor_envio" })
@@ -76,7 +117,14 @@ Deno.serve(async (req) => {
     };
 
     for (const order of shipped) {
-      result[order.id] = { status: null, labelPriceCents: order.label_price_cents };
+      result[order.id] = {
+        status: null,
+        labelPriceCents: order.label_price_cents,
+        quotedLabelPriceCents: null,
+      };
+    }
+    for (const order of pendingOrders) {
+      result[order.id] = { status: null, labelPriceCents: null, quotedLabelPriceCents: null };
     }
 
     // Live tracking status — one batched call for every shipment.
@@ -144,6 +192,70 @@ Deno.serve(async (req) => {
         result[order.id].labelPriceCents = labelPriceCents;
       } catch (error) {
         console.error("[get-order-shipment-info] preço falhou", order.id, error);
+      }
+    }
+
+    // Live quote for paid orders with no label yet, so the admin can see if their Melhor Envio
+    // balance covers it before clicking "Gerar etiqueta". Same packing generate-shipping-label uses
+    // to buy the real label, so this is the real current cost — not an estimate.
+    if (pendingOrders.length > 0) {
+      const { data: settings } = await admin
+        .from("site_settings")
+        .select("shipping_origin_zip")
+        .eq("id", "default")
+        .maybeSingle();
+      const originZip = onlyDigits(settings?.shipping_origin_zip);
+
+      for (const order of pendingOrders) {
+        try {
+          const destinationZip = onlyDigits(order.shipping_address?.zip);
+          if (originZip.length !== 8 || destinationZip.length !== 8) continue;
+
+          const parcel = packOrder(
+            order.order_items.map((item) => ({
+              quantity: item.quantity,
+              height_cm: item.product_variants?.package_height_cm ?? null,
+              width_cm: item.product_variants?.package_width_cm ?? null,
+              length_cm: item.product_variants?.package_length_cm ?? null,
+              weight_kg: item.product_variants?.package_weight_kg ?? null,
+            })),
+          );
+
+          const calcResp = await fetch(`${ME_API}/me/shipment/calculate`, {
+            method: "POST",
+            headers: meHeaders,
+            body: JSON.stringify({
+              from: { postal_code: originZip },
+              to: { postal_code: destinationZip },
+              products: [
+                {
+                  id: "pedido",
+                  width: parcel.width,
+                  height: parcel.height,
+                  length: parcel.length,
+                  weight: parcel.weight,
+                  insurance_value: 0,
+                  quantity: 1,
+                },
+              ],
+              services: String(JT_EXPRESS_SERVICE_ID),
+            }),
+          });
+          if (!calcResp.ok) {
+            console.error("[get-order-shipment-info] calculate falhou", order.id, calcResp.status);
+            continue;
+          }
+          const calcJson = await calcResp.json();
+          const options = Array.isArray(calcJson) ? calcJson : [calcJson];
+          const jt = (options as Array<Record<string, unknown>>).find(
+            (o) => !o.error && String(o.id) === String(JT_EXPRESS_SERVICE_ID),
+          );
+          if (jt && typeof jt.price !== "undefined") {
+            result[order.id].quotedLabelPriceCents = Math.round(Number(jt.price) * 100);
+          }
+        } catch (error) {
+          console.error("[get-order-shipment-info] cotação falhou", order.id, error);
+        }
       }
     }
 

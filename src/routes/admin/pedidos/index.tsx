@@ -52,7 +52,11 @@ type OrderRow = {
   itemCount: number;
 };
 
-type ShipmentInfo = { status: string | null; labelPriceCents: number | null };
+type ShipmentInfo = {
+  status: string | null;
+  labelPriceCents: number | null;
+  quotedLabelPriceCents: number | null;
+};
 
 // Valores já vistos vindos de /me/shipment/tracking (ver docs.melhorenvio.com.br/reference/rastreio-de-envios).
 // Qualquer status novo que a Melhor Envio inventar ainda aparece — só cai no fallback capitalizado.
@@ -343,6 +347,17 @@ function PedidosPage() {
                           <span className="text-muted-foreground">Consultando...</span>
                         ) : (
                           <span className="text-muted-foreground">Não disponível</span>
+                        )
+                      ) : order.status === "paid" ? (
+                        info?.quotedLabelPriceCents != null ? (
+                          <>
+                            {formatCentsToBRL(info.quotedLabelPriceCents)}
+                            <p className="text-[10px] text-muted-foreground">cotação atual</p>
+                          </>
+                        ) : shipmentInfoLoading ? (
+                          <span className="text-muted-foreground">Consultando...</span>
+                        ) : (
+                          <span className="text-muted-foreground">Indisponível</span>
                         )
                       ) : (
                         <span className="text-muted-foreground">—</span>
