@@ -90,6 +90,7 @@ const STATUS_LABELS: Record<string, string> = {
   shipped: "Enviado",
   completed: "Concluído",
   cancelled: "Cancelado",
+  refunded: "Estornado",
 };
 
 const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive"> = {
@@ -98,6 +99,7 @@ const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive"> =
   shipped: "default",
   completed: "default",
   cancelled: "destructive",
+  refunded: "destructive",
 };
 
 function PedidosPage() {

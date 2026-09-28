@@ -120,12 +120,35 @@ Deno.serve(async (req) => {
     const { data: variants, error: variantsError } = await admin
       .from("product_variants")
       .select(
-        "id, name, sku, price_cents, product_id, products(title), package_height_cm, package_length_cm, package_weight_kg, package_width_cm",
+        "id, name, sku, price_cents, stock_quantity, product_id, products(title), package_height_cm, package_length_cm, package_weight_kg, package_width_cm",
       )
       .in("id", body.items.map((i) => i.variantId));
     if (variantsError) throw variantsError;
     if (!variants || variants.length !== body.items.length) {
       return jsonResponse({ error: "Um ou mais produtos não foram encontrados." }, 400);
+    }
+
+    // 1a. Block the purchase outright if any item now exceeds what's in stock — this is the only
+    // server-side check in the whole flow (the product page's "sem estoque" gating is client-side
+    // only), and it runs before anything is charged or an order row is even created.
+    const insufficientStock = body.items
+      .map((item) => {
+        const variant = variants.find((v) => v.id === item.variantId)!;
+        return { sku: variant.sku, available: variant.stock_quantity, requested: item.quantity };
+      })
+      .filter((item) => item.requested > item.available);
+    if (insufficientStock.length > 0) {
+      const details = insufficientStock
+        .map((item) =>
+          item.available > 0 ? `${item.sku} (restam ${item.available})` : `${item.sku} (sem estoque)`,
+        )
+        .join(", ");
+      return jsonResponse(
+        {
+          error: `Estoque insuficiente para: ${details}. Atualize as quantidades no carrinho e tente novamente.`,
+        },
+        409,
+      );
     }
 
     const orderItemsPayload = body.items.map((item) => {

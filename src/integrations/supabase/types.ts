@@ -555,6 +555,7 @@ export type Database = {
           freight_cost_cents: number | null;
           gtin_ean: string | null;
           id: string;
+          low_stock_alerted_at: string | null;
           margin_pct: number;
           name: string;
           package_height_cm: number | null;
@@ -579,6 +580,7 @@ export type Database = {
           freight_cost_cents?: number | null;
           gtin_ean?: string | null;
           id?: string;
+          low_stock_alerted_at?: string | null;
           margin_pct?: number;
           name: string;
           package_height_cm?: number | null;
@@ -603,6 +605,7 @@ export type Database = {
           freight_cost_cents?: number | null;
           gtin_ean?: string | null;
           id?: string;
+          low_stock_alerted_at?: string | null;
           margin_pct?: number;
           name?: string;
           package_height_cm?: number | null;
@@ -720,6 +723,44 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
+      };
+      restock_notifications: {
+        Row: {
+          created_at: string;
+          email: string;
+          id: string;
+          name: string | null;
+          notified_at: string | null;
+          product_variant_id: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          email: string;
+          id?: string;
+          name?: string | null;
+          notified_at?: string | null;
+          product_variant_id: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          email?: string;
+          id?: string;
+          name?: string | null;
+          notified_at?: string | null;
+          product_variant_id?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "restock_notifications_product_variant_id_fkey";
+            columns: ["product_variant_id"];
+            isOneToOne: false;
+            referencedRelation: "product_variants";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       site_settings: {
         Row: {

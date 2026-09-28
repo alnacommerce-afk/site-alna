@@ -33,6 +33,30 @@ Hoje o DNS do `alna.sale` é gerenciado pelo Lovable (name.com).
 6. Em Custom domains do projeto Pages, adicione `alna.sale` e `www.alna.sale`.
 7. No Lovable, remova `alna.sale` e `www.alna.sale` (o `store.alna.sale` segue como principal).
 
+## alnacommerce.com → alna.sale
+
+`alnacommerce.com` é a marca antiga; hoje só existe para levar quem ainda o usa até `alna.sale`.
+Concluído em 28/09/2026, como zona própria no Cloudflare (registro do domínio continua na Hostnet,
+só o DNS mudou):
+
+1. Domínio adicionado como um **site novo** no Cloudflare (plano Free) — zona própria, separada da
+   de `alna.sale`, mas na mesma conta.
+2. Nameservers do domínio trocados na Hostnet (Registro de domínios > Editar DNS) de
+   `nsa1`–`nsa6.hostnet.com.br` para os dois que o Cloudflare atribuiu a essa zona
+   (`julissa.ns.cloudflare.com` e `morgan.ns.cloudflare.com` — cada zona nova pode receber um par
+   diferente; confira o painel antes de reusar estes).
+3. Registros `A` de `alnacommerce.com` e `www` apontados para `192.0.2.1` (IP de exemplo — nunca
+   respondido de verdade) com **Proxied** (nuvem laranja) ligado. O IP não importa: com o proxy
+   ligado a requisição nunca sai do Cloudflare, então a regra do passo 4 responde antes de tentar
+   alcançar uma origem. Os registros `TXT` de e-mail (`_dmarc`, `resend._domainkey`) e o `A ftp`
+   (Hostnet) foram mantidos como estavam.
+4. Rules > Redirect Rules > Create rule, wildcard pattern:
+   - Request URL: `https://*alnacommerce.com/*`
+   - Target URL: `https://alna.sale/${2}` (`${1}` seria o `www.`/vazio antes do domínio)
+   - Status: 301, "Preserve query string" ligado
+5. SSL/TLS > Edge Certificates > **Always Use HTTPS** ligado, para o acesso por `http://` (sem "s")
+   também cair nessa regra em vez de dar timeout.
+
 ## Estrutura
 
 - `index.html` — a Home inteira (CSS e script embutidos, para a primeira pintura sem requisições extras).

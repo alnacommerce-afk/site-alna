@@ -150,6 +150,26 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f4-wait3", 1260, 550, "Espera 15 dias (e assim por diante)", "wait"),
     emailNode("f4-email3", 1260, 660, "E-mail #3+", "weekly_marketing"),
     plainNode("f4-exit", 1260, 770, "Sair da lista", "exit"),
+
+    // Fluxo 5 — Estoque baixo: a mesma baixa de estoque, seja por venda (débito automático) ou por
+    // edição manual do admin, dispara isso — veja handle_stock_quantity_change() na migração
+    // 20260928000000.
+    plainNode("f5-trigger", 1560, 0, "Estoque de um SKU muda (venda ou edição manual)", "trigger"),
+    plainNode("f5-cond", 1560, 110, "Ficou com 10 unidades ou menos?", "condition"),
+    emailNode("f5-email", 1560, 220, "Aviso de estoque baixo (para o admin)", "low_stock_alert"),
+    plainNode("f5-no", 1800, 110, "Nada acontece", "exit"),
+    plainNode("f5-reset-trigger", 1560, 330, "Admin repõe o estoque para mais de 10", "trigger"),
+    plainNode("f5-reset-note", 1560, 440, "Alerta reseta — avisa de novo se cair outra vez", "wait"),
+
+    // Fluxo 6 — Produto esgotado / lista de espera "Avise-me quando voltar".
+    plainNode("f6-trigger", 2040, 0, "Estoque de um SKU chega a 0", "trigger"),
+    plainNode("f6-ui", 2040, 110, "Página do produto mostra \"Avise-me quando voltar\"", "wait"),
+    plainNode("f6-cond", 2040, 220, "Cliente já tem cadastro?", "condition"),
+    plainNode("f6-yes", 2040, 330, "Marca a caixa (usa o e-mail da conta)", "wait"),
+    plainNode("f6-no", 2280, 330, "Preenche nome + e-mail", "wait"),
+    plainNode("f6-list", 2040, 440, "Entra na lista de espera desse SKU", "trigger"),
+    plainNode("f6-restock-trigger", 2040, 550, "Admin repõe o estoque (de 0 para mais de 0)", "trigger"),
+    emailNode("f6-email", 2040, 660, "Produto voltou! (para cada cliente da lista)", "restock_available"),
   ];
 
   const edges: Edge[] = [
@@ -207,6 +227,26 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f4-5", source: "f4-email2", target: "f4-wait3" },
     { id: "e-f4-6", source: "f4-wait3", target: "f4-email3" },
     { id: "e-f4-7", source: "f4-email3", target: "f4-exit" },
+
+    { id: "e-f5-1", source: "f5-trigger", target: "f5-cond" },
+    { id: "e-f5-2", source: "f5-cond", target: "f5-email", label: "Sim" },
+    { id: "e-f5-3", source: "f5-cond", sourceHandle: "right", target: "f5-no", label: "Não" },
+    { id: "e-f5-4", source: "f5-reset-trigger", target: "f5-reset-note" },
+
+    { id: "e-f6-1", source: "f6-trigger", target: "f6-ui" },
+    { id: "e-f6-2", source: "f6-ui", target: "f6-cond" },
+    { id: "e-f6-3", source: "f6-cond", target: "f6-yes", label: "Sim" },
+    { id: "e-f6-4", source: "f6-cond", sourceHandle: "right", target: "f6-no", label: "Não" },
+    { id: "e-f6-5", source: "f6-yes", target: "f6-list" },
+    { id: "e-f6-6", source: "f6-no", target: "f6-list" },
+    {
+      id: "e-f6-7",
+      source: "f6-list",
+      target: "f6-restock-trigger",
+      label: "espera até repor",
+      style: { strokeDasharray: "4 4" },
+    },
+    { id: "e-f6-8", source: "f6-restock-trigger", target: "f6-email" },
   ];
 
   return { nodes, edges };

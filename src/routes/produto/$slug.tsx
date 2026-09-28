@@ -8,6 +8,7 @@ import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
+import { RestockNotifyBox } from "@/components/site/restock-notify-box";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
@@ -25,6 +26,9 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const SITE_URL = "https://store.alna.sale";
 const PIX_DISCOUNT = 0.04;
+// Both the admin's low-stock e-mail and this customer-facing urgency message use the same
+// threshold — see supabase/migrations/20260928000000_stock_alerts_and_restock_notify.sql.
+const LOW_STOCK_CUSTOMER_THRESHOLD = 10;
 
 type ImageRow = { id: string; storage_path: string; alt_text: string; position: number };
 type VariantRow = {
@@ -678,11 +682,25 @@ function ProdutoPage() {
             {formatCentsToBRL(pixTotal)} no PIX (4% de desconto)
           </p>
           {singleSelected ? (
-            <p className="mt-1 text-xs text-muted-foreground">
-              {singleSelected.stock_quantity > 0
-                ? `${singleSelected.stock_quantity} em estoque`
-                : "Sem estoque no momento"}
-            </p>
+            <>
+              <p
+                className={`mt-1 text-xs ${
+                  singleSelected.stock_quantity > 0 &&
+                  singleSelected.stock_quantity <= LOW_STOCK_CUSTOMER_THRESHOLD
+                    ? "font-semibold text-amber-600"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {singleSelected.stock_quantity <= 0
+                  ? "Sem estoque no momento"
+                  : singleSelected.stock_quantity <= LOW_STOCK_CUSTOMER_THRESHOLD
+                    ? `Últimas ${singleSelected.stock_quantity} unidades!`
+                    : `${singleSelected.stock_quantity} em estoque`}
+              </p>
+              {singleSelected.stock_quantity <= 0 ? (
+                <RestockNotifyBox variantId={singleSelected.id} />
+              ) : null}
+            </>
           ) : null}
 
           <div className="mt-5 space-y-1.5">

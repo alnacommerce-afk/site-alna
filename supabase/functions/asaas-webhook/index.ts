@@ -47,10 +47,13 @@ Deno.serve(async (req) => {
       return jsonResponse({ ok: true, ignored: "missing event/payment" });
     }
 
-    let orderStatus: "paid" | "cancelled" | "pending" | null = null;
+    let orderStatus: "paid" | "cancelled" | "refunded" | "pending" | null = null;
     if (PAID_EVENTS.has(eventType)) orderStatus = "paid";
     else if (FAILED_EVENTS.has(eventType)) orderStatus = "cancelled";
-    else if (REFUNDED_EVENTS.has(eventType)) orderStatus = "cancelled";
+    // Distinct from "cancelled" — the customer's order-timeline dialog and the order_events
+    // trigger both have a dedicated "Pagamento estornado" message for this, since money that was
+    // actually paid and then returned is a different story than a payment that never went through.
+    else if (REFUNDED_EVENTS.has(eventType)) orderStatus = "refunded";
 
     // Fetch the order first so we know its PREVIOUS status — needed to send the "payment
     // confirmed" e-mail exactly once, even if Asaas retries this webhook.
