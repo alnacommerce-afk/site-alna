@@ -434,16 +434,23 @@ function ProdutoPage() {
     );
   }
 
-  // Com 1 variação selecionada, mostra preço/desconto dela normalmente. Com 0 ou várias, não há um
-  // "preço unitário" único pra destacar — usa a mais barata como referência e deixa o Total (que
-  // soma todas as selecionadas) ser o número que realmente importa.
+  // Com 1 variação selecionada, mostra preço/desconto dela normalmente. Com várias selecionadas,
+  // não há um "preço unitário" único pra destacar — usa a mais barata como referência e deixa o
+  // Total (que soma todas as selecionadas) ser o número que realmente importa. Com NENHUMA ainda
+  // selecionada (produto recém-aberto, com mais de uma variação), cai pra mais barata de todas —
+  // nunca mostra R$ 0,00 no topo só porque o cliente ainda não escolheu.
   const singleSelected = selectedVariants.length === 1 ? selectedVariants[0] : null;
+  const cheapestOfAll = variants.reduce<VariantRow | null>(
+    (min, v) => (!min || v.price_cents < min.price_cents ? v : min),
+    null,
+  );
   const referenceVariant =
     singleSelected ??
     selectedVariants.reduce<VariantRow | null>(
       (min, v) => (!min || v.price_cents < min.price_cents ? v : min),
       null,
-    );
+    ) ??
+    cheapestOfAll;
   const unitPrice = referenceVariant?.price_cents ?? 0;
   const compareAt = referenceVariant?.compare_at_price_cents ?? null;
   const off =
