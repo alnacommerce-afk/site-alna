@@ -36,3 +36,7 @@ verify_jwt = false
 # Public: "esqueci minha senha" (always answers the same, whether or not the e-mail has an account).
 [functions.request-password-reset]
 verify_jwt = false
+
+# Admin-only — spends real money (Gemini image generation, once billing is enabled).
+[functions.generate-post-ideas]
+verify_jwt = true
