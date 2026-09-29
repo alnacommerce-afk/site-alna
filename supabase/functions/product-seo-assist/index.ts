@@ -27,6 +27,80 @@ type AiResult = {
   imageAltTexts: string[];
 };
 
+// Gemini occasionally answers 503 "model overloaded" for a few seconds at a time — retrying the
+// same model usually clears it, and falling back to a second model covers the rarer case where an
+// entire model is down for longer. Each attempt has its own timeout so a hung request never leaves
+// the admin staring at "Analisando..." indefinitely; worst case here is under a minute.
+// Verified live against this account's key on 2026-09-29: gemini-3.6-flash was timing out (no
+// response at all, not even a fast error) while the whole "flash" tier was 503 "high demand" —
+// but the "-lite" tier answered 200 instantly. Lite models run on separate, less contended
+// capacity, so they're the fallback rather than another full-size flash model.
+const MODEL_PLAN: { model: string; attempts: number }[] = [
+  { model: "gemini-3.6-flash", attempts: 1 },
+  { model: "gemini-3.5-flash-lite", attempts: 2 },
+  { model: "gemini-3.1-flash-lite", attempts: 1 },
+];
+const REQUEST_TIMEOUT_MS = 12_000;
+const RETRY_DELAY_MS = 1_000;
+
+class AiKeyError extends Error {}
+class AiRateLimitError extends Error {}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function callGemini(apiKey: string, prompt: string): Promise<string> {
+  let lastError = "";
+
+  for (const { model, attempts } of MODEL_PLAN) {
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      let response: Response;
+      try {
+        response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { responseMimeType: "application/json" },
+            }),
+            signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+          },
+        );
+      } catch (error) {
+        // Network failure or our own timeout — treat the same as an outage on this model.
+        lastError = `${model}: ${error instanceof Error ? error.message : String(error)}`;
+        continue;
+      }
+
+      if (response.status === 400 || response.status === 403) throw new AiKeyError();
+      if (response.status === 429) throw new AiRateLimitError();
+
+      if (response.status === 503) {
+        lastError = `${model}: 503 (sobrecarregado)`;
+        if (attempt < attempts) await sleep(RETRY_DELAY_MS * attempt);
+        continue;
+      }
+      if (!response.ok) {
+        lastError = `${model}: ${response.status} ${(await response.text()).slice(0, 200)}`;
+        continue;
+      }
+
+      const json = await response.json();
+      const content: string = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+      if (content) return content;
+      lastError = `${model}: resposta vazia`;
+    }
+  }
+
+  throw new Error(
+    `A IA está indisponível no momento (tentamos ${MODEL_PLAN.map((m) => m.model).join(" e ")}). ` +
+      `Tente novamente em alguns instantes. Detalhe: ${lastError}`,
+  );
+}
+
 function extractJson(text: string): unknown {
   const fenced = text.match(/```json\s*([\s\S]*?)```/i) ?? text.match(/```\s*([\s\S]*?)```/);
   const raw = fenced ? fenced[1] : text;
@@ -114,34 +188,21 @@ Responda APENAS com um JSON no formato exato:
 {"titleSuggestion":"...","focusKeyword":"...","seoTitle":"...","seoDescription":"...","seoKeywords":["...","..."],"imageAltTexts":["...","..."]}
 O array "imageAltTexts" deve ter exatamente ${imageCount} itens.`;
 
-    const aiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseMimeType: "application/json" },
-        }),
-      },
-    );
-
-    if (aiResponse.status === 400 || aiResponse.status === 403) {
-      return jsonResponse(
-        { error: "A chave de IA configurada foi rejeitada pelo Google. Verifique em Conexões de API." },
-        502,
-      );
+    let content: string;
+    try {
+      content = await callGemini(apiKey, prompt);
+    } catch (error) {
+      if (error instanceof AiKeyError) {
+        return jsonResponse(
+          { error: "A chave de IA configurada foi rejeitada pelo Google. Verifique em Conexões de API." },
+          502,
+        );
+      }
+      if (error instanceof AiRateLimitError) {
+        return jsonResponse({ error: "Limite de uso da IA atingido. Tente novamente em instantes." }, 429);
+      }
+      throw error;
     }
-    if (aiResponse.status === 429) {
-      return jsonResponse({ error: "Limite de uso da IA atingido. Tente novamente em instantes." }, 429);
-    }
-    if (!aiResponse.ok) {
-      const errText = await aiResponse.text();
-      throw new Error(`Falha ao chamar a IA (${aiResponse.status}): ${errText.slice(0, 300)}`);
-    }
-
-    const aiJson = await aiResponse.json();
-    const content: string = aiJson.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
     const parsed = extractJson(content) as Partial<AiResult>;
 
     const result: AiResult = {
