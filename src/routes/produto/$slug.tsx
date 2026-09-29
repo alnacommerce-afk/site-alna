@@ -457,6 +457,9 @@ function ProdutoPage() {
     compareAt && compareAt > unitPrice
       ? Math.round(((compareAt - unitPrice) / compareAt) * 100)
       : null;
+  // Preço unitário no PIX (a linha logo abaixo do preço de destaque) — segue o unitPrice de
+  // referência, não a seleção; senão mostrava R$ 0,00 ali pelo mesmo motivo do preço de cima.
+  const unitPixPrice = Math.round(unitPrice * (1 - PIX_DISCOUNT));
   const subtotal = selectedVariants.reduce((sum, v) => sum + v.price_cents, 0) * quantity;
   const pixTotal = Math.round(subtotal * (1 - PIX_DISCOUNT));
   const anyInStock = selectedVariants.some((v) => v.stock_quantity > 0);
@@ -686,7 +689,7 @@ function ProdutoPage() {
             ) : null}
           </div>
           <p className="mt-1 text-sm font-semibold text-[#16a34a]">
-            {formatCentsToBRL(pixTotal)} no PIX (4% de desconto)
+            {formatCentsToBRL(unitPixPrice)} no PIX (4% de desconto)
           </p>
           {singleSelected ? (
             <>
