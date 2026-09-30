@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
@@ -31,7 +32,8 @@ type SalesSummary = {
 };
 
 type VisitorsState =
-  | { status: "loading" | "not_configured" | "error" }
+  | { status: "loading" | "not_configured" }
+  | { status: "error"; message?: string }
   | { status: "ok"; count: number };
 
 function startOfToday() {
@@ -96,8 +98,22 @@ function AdminOverviewPage() {
     async function loadVisitors() {
       const { data, error } = await supabase.functions.invoke("ga4-realtime-visitors");
       if (cancelled) return;
-      if (error || data?.error) {
-        setVisitors({ status: "error" });
+      if (error) {
+        // supabase-js returns data: null on any non-2xx response — the JSON body we actually sent
+        // (our { error: "..." } message) only comes back via error.context, per their own docs.
+        let message: string | undefined;
+        if (error instanceof FunctionsHttpError) {
+          try {
+            message = (await error.context.json())?.error;
+          } catch {
+            // body wasn't JSON — fall through to the generic error.message below
+          }
+        }
+        setVisitors({ status: "error", message: message ?? error.message });
+        return;
+      }
+      if (data?.error) {
+        setVisitors({ status: "error", message: data.error });
         return;
       }
       if (data?.configured === false) {
@@ -145,6 +161,7 @@ function AdminOverviewPage() {
             ) : visitors.status === "error" ? (
               <p className="mt-1 text-xs text-destructive">
                 Não foi possível consultar o Google Analytics agora.
+                {visitors.message ? ` (${visitors.message})` : ""}
               </p>
             ) : null}
           </div>
