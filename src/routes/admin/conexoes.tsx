@@ -54,6 +54,10 @@ const SECRET_INTEGRATIONS = new Set([
 // Keys WE issue to another platform (as opposed to keys we paste in from a provider).
 const GENERATABLE_KEY_INTEGRATIONS = new Set(["finmarket_hub_api", "asaas_webhook"]);
 
+// google_analytics is a whole service-account JSON file (many real lines), not a one-line token —
+// needs a <textarea> so pasted newlines survive instead of being silently stripped by an <input>.
+const MULTILINE_SECRET_INTEGRATIONS = new Set(["google_analytics"]);
+
 function generateApiKey(): string {
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
@@ -377,16 +381,39 @@ function ConexoesPage() {
                         {hasSecret ? "Substituir chave" : "Chave / Token de API"}
                       </Label>
                       <div className="flex gap-2">
-                        <Input
-                          id={`secret-${connection.id}`}
-                          type="password"
-                          autoComplete="off"
-                          placeholder={hasSecret ? "•••••••••••••••• (salva)" : "Cole a chave aqui"}
-                          value={secretDraft[connection.id] ?? ""}
-                          onChange={(e) =>
-                            setSecretDraft((prev) => ({ ...prev, [connection.id]: e.target.value }))
-                          }
-                        />
+                        {
+                          // google_analytics is a multi-line service-account JSON, not a one-line
+                          // token — pasting real newlines into a single-line <input> gets them
+                          // silently stripped by the browser, corrupting the JSON before it's even
+                          // saved. A <textarea> preserves them; every other integration here is a
+                          // one-line key/token, so it keeps the masked single-line input.
+                          MULTILINE_SECRET_INTEGRATIONS.has(connection.id) ? (
+                            <Textarea
+                              id={`secret-${connection.id}`}
+                              rows={4}
+                              autoComplete="off"
+                              placeholder={
+                                hasSecret ? "(chave já salva — cole para substituir)" : "Cole o JSON aqui"
+                              }
+                              value={secretDraft[connection.id] ?? ""}
+                              onChange={(e) =>
+                                setSecretDraft((prev) => ({ ...prev, [connection.id]: e.target.value }))
+                              }
+                              className="font-mono text-xs"
+                            />
+                          ) : (
+                            <Input
+                              id={`secret-${connection.id}`}
+                              type="password"
+                              autoComplete="off"
+                              placeholder={hasSecret ? "•••••••••••••••• (salva)" : "Cole a chave aqui"}
+                              value={secretDraft[connection.id] ?? ""}
+                              onChange={(e) =>
+                                setSecretDraft((prev) => ({ ...prev, [connection.id]: e.target.value }))
+                              }
+                            />
+                          )
+                        }
                         <Button
                           size="sm"
                           onClick={() => saveSecret(connection.id)}
