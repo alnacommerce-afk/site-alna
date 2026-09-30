@@ -104,7 +104,10 @@ async function generateImage(
   const parts: unknown[] = [{ text: prompt }];
   for (const img of referenceImages) parts.push({ inlineData: { mimeType: img.mimeType, data: img.base64 } });
 
-  const json = await callGemini(apiKey, IMAGE_MODEL, parts, 45_000);
+  // Verified live on 2026-09-30 (billing freshly enabled): a real image took ~90s to come back —
+  // much slower than any text call. 45s was too tight and aborted before Gemini ever answered
+  // ("Signal timed out."), even though the request would have succeeded given more time.
+  const json = await callGemini(apiKey, IMAGE_MODEL, parts, 120_000);
   const responseParts = (json.candidates?.[0]?.content?.parts ?? []) as Array<{
     inlineData?: { data: string; mimeType?: string };
   }>;
