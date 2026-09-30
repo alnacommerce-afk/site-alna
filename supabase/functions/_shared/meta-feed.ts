@@ -69,6 +69,12 @@ const csvCell = (value: string | number | null | undefined): string => {
   return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 };
 
+// Google's own text-feed docs (support.google.com/merchants/answer/12631822) walk through a
+// tab-delimited .txt/.tsv file, not comma-separated — and TSV has no quoting convention, so a
+// value just can't contain a literal tab or newline. Meta's CSV keeps the comma+quote escaping above.
+const tsvCell = (value: string | number | null | undefined): string =>
+  String(value ?? "").replace(/[\t\r\n]+/g, " ").trim();
+
 const money = (cents: number): string => `${(cents / 100).toFixed(2)} BRL`;
 
 // Descriptions are written with light markdown (**bold**, # headings, [links](url)); Meta shows the raw
@@ -87,7 +93,9 @@ const plainText = (source: string | null, fallback: string): string => {
 export function buildFeedCsv(products: FeedProduct[], options: Options): string {
   const google = options.target === "google";
   const columns = FEED_COLUMNS.filter((column) => google || column !== "identifier_exists");
-  const rows: string[] = [columns.join(",")];
+  const cell = google ? tsvCell : csvCell;
+  const delimiter = google ? "\t" : ",";
+  const rows: string[] = [columns.join(delimiter)];
 
   for (const product of products) {
     const images = [...(product.product_images ?? [])].sort((a, b) => a.position - b.position);
@@ -107,7 +115,11 @@ export function buildFeedCsv(products: FeedProduct[], options: Options): string 
         item_group_id: product.id,
         title: multiple && variant.name?.trim() ? `${title} - ${variant.name.trim()}` : title,
         description,
-        availability: variant.stock_quantity > 0 ? "in stock" : "out of stock",
+        // Google requires the underscored form (in_stock/out_of_stock); Meta's own spec uses the
+        // spaced one — https://support.google.com/merchants/answer/6324448 confirms Google's.
+        availability: variant.stock_quantity > 0
+          ? (google ? "in_stock" : "in stock")
+          : (google ? "out_of_stock" : "out of stock"),
         inventory: Math.max(0, variant.stock_quantity),
         condition: "new",
         // Meta: `price` is the regular price and `sale_price` the discounted one.
@@ -128,7 +140,7 @@ export function buildFeedCsv(products: FeedProduct[], options: Options): string 
         // Products without a barcode must say so, or Google flags them as missing identifiers.
         identifier_exists: validGtin(variant.gtin_ean) ? "yes" : "no",
       };
-      rows.push(columns.map((column) => csvCell(cells[column])).join(","));
+      rows.push(columns.map((column) => cell(cells[column])).join(delimiter));
     });
   }
 

@@ -31,17 +31,22 @@ Deno.serve(async (req) => {
     return new Response("Feed indisponível no momento.", { status: 503 });
   }
 
+  const isGoogle = new URL(req.url).searchParams.get("for") === "google";
   const csv = buildFeedCsv((data ?? []) as FeedProduct[], {
     siteUrl: STORE_URL,
     imageBaseUrl: `${supabaseUrl}/storage/v1/object/public/product-media/`,
     brand: "ALNA",
     // Merchant Center feed: ...meta-catalog-feed?for=google
-    target: new URL(req.url).searchParams.get("for") === "google" ? "google" : "meta",
+    target: isGoogle ? "google" : "meta",
   });
 
   return new Response(req.method === "HEAD" ? null : csv, {
     headers: {
-      "Content-Type": "text/csv; charset=utf-8",
+      // Merchant Center's text feed is tab-delimited (support.google.com/merchants/answer/12631822),
+      // hence the different MIME type — Meta's stays plain comma-separated CSV.
+      "Content-Type": isGoogle
+        ? "text/tab-separated-values; charset=utf-8"
+        : "text/csv; charset=utf-8",
       "Cache-Control": "public, max-age=300",
     },
   });
