@@ -44,13 +44,15 @@ Uma linha por **variação** (SKU), não por produto — por isso o Merchant Cen
 pro Storage (de propósito — WebP não é universalmente aceito por Meta/WhatsApp/e-mail). Isso já
 evita o problema mais comum de "tipo de imagem não aceito" no Google Shopping.
 
-Ainda assim, `prepareProductImage` tem um caminho de fallback que devolve o **arquivo original sem
-conversão** quando: é GIF animado ou SVG, o canvas falha, ou o JPEG recodificado não ficaria menor
-que o original. Se o admin subir uma foto que já veio em WebP do celular/print de tela e cair nesse
-fallback, ela sobe como WebP mesmo — provável causa real por trás de um aviso "Tipo de imagem não
-aceito em [additional_image_link]" (visto pela primeira vez em 30/09/2026, no produto
-`TOA_FOLHA_1`). Se isso se repetir em vários produtos, vale forçar a conversão pra JPEG sempre
-(remover esse fallback), em vez de só confiar que o admin nunca vai enviar WebP.
+`prepareProductImage` só devolve o **arquivo original sem conversão** em três casos: é GIF animado
+ou SVG (perderiam a natureza ao passar pelo canvas), o canvas falha de verdade, ou — só quando o
+original já era JPEG/PNG — o JPEG recodificado não ficaria menor. Corrigido em 30/09/2026: antes
+desse último caso valia pra QUALQUER formato original, então uma foto que já veio em WebP do
+celular/print de tela (formato pequeno o bastante pra "vencer" o JPEG recodificado) subia como WebP
+mesmo — causa real por trás de um aviso "Tipo de imagem não aceito em [additional_image_link]" no
+Merchant Center (visto pela primeira vez em 30/09/2026, no produto `TOA_FOLHA_1`). Agora qualquer
+formato que não seja JPEG/PNG (WebP, AVIF, HEIC, BMP, TIFF...) sempre vira JPEG, mesmo perdendo em
+tamanho — evitar um formato rejeitado importa mais que economizar alguns KB.
 
 **Dois avisos do Merchant Center que parecem parecidos mas são bem diferentes:**
 
