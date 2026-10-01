@@ -27,6 +27,16 @@ export async function injectGa4IfConfigured() {
       gtag('js', new Date());
       gtag('config', '${measurementId}', { linker: { domains: ['alna.sale', 'store.alna.sale'] } });`;
     document.head.appendChild(inline);
+
+    // gtag.js normally strips its own "_gl" linker param from the visible URL right after
+    // reading it, but that cleanup only happens near page load — since we inject the tag late
+    // (on purpose, to not block the first paint), that window has already passed. Clean it up
+    // ourselves so a visitor arriving from alna.sale doesn't keep seeing the "_gl=..." junk.
+    if (window.location.search.includes("_gl=")) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("_gl");
+      window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+    }
   } catch {
     // Analytics is best-effort — never let a failed fetch break the page.
   }
