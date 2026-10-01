@@ -111,6 +111,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
             Cupons
           </Link>
           <Link
+            to="/admin/marketing/campanhas"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Campanhas
+          </Link>
+          <Link
             to="/admin/marketing/fluxo-email"
             className="rounded-md px-3 py-2 hover:bg-accent"
             activeProps={{ className: "bg-accent font-medium" }}

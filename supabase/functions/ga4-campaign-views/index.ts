@@ -1,6 +1,7 @@
-// Admin-only (verify_jwt: true). Reports how many people are on the site right now, via the
-// Google Analytics Data API's realtime report. Auth is a Google service-account JWT-bearer flow
-// handled by _shared/google-analytics-auth.ts (no user OAuth/redirect needed).
+// Admin-only (verify_jwt: true). For the "Visualizações nos últimos 30 dias" column in
+// Admin > Marketing > Campanhas: given a list of utm_campaign slugs, returns how many page views
+// the Google Analytics Data API attributes to each one in the last 30 days. Same service-account
+// auth as ga4-realtime-visitors (see _shared/google-analytics-auth.ts).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { loadGa4Credentials } from "../_shared/google-analytics-auth.ts";
 
@@ -37,15 +38,29 @@ Deno.serve(async (req) => {
     });
     if (!isAdmin) return jsonResponse({ error: "Acesso restrito a administradores." }, 403);
 
+    const body = await req.json().catch(() => ({}));
+    const campaigns = Array.isArray(body.campaigns)
+      ? (body.campaigns.filter((c: unknown): c is string => typeof c === "string" && c.length > 0) as string[])
+      : [];
+    if (campaigns.length === 0) return jsonResponse({ configured: true, views: {} });
+
     const credentials = await loadGa4Credentials(admin);
     if (!credentials) return jsonResponse({ configured: false });
 
     const reportResp = await fetch(
-      `https://analyticsdata.googleapis.com/v1beta/properties/${credentials.propertyId}:runRealtimeReport`,
+      `https://analyticsdata.googleapis.com/v1beta/properties/${credentials.propertyId}:runReport`,
       {
         method: "POST",
         headers: { Authorization: `Bearer ${credentials.accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ metrics: [{ name: "activeUsers" }] }),
+        body: JSON.stringify({
+          dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+          dimensions: [{ name: "sessionCampaignName" }],
+          metrics: [{ name: "screenPageViews" }],
+          dimensionFilter: {
+            filter: { fieldName: "sessionCampaignName", inListFilter: { values: campaigns } },
+          },
+          limit: campaigns.length,
+        }),
       },
     );
     if (!reportResp.ok) {
@@ -53,11 +68,17 @@ Deno.serve(async (req) => {
       throw new Error(`Google Analytics Data API ${reportResp.status}: ${errText.slice(0, 300)}`);
     }
     const reportJson = await reportResp.json();
-    const activeUsers = Number(reportJson.rows?.[0]?.metricValues?.[0]?.value ?? 0);
 
-    return jsonResponse({ configured: true, activeUsers });
+    const views: Record<string, number> = Object.fromEntries(campaigns.map((c) => [c, 0]));
+    for (const row of reportJson.rows ?? []) {
+      const name = row.dimensionValues?.[0]?.value;
+      const count = Number(row.metricValues?.[0]?.value ?? 0);
+      if (name && name in views) views[name] = count;
+    }
+
+    return jsonResponse({ configured: true, views });
   } catch (error) {
-    console.error("[ga4-realtime-visitors]", error);
+    console.error("[ga4-campaign-views]", error);
     const message = error instanceof Error ? error.message : "Erro ao consultar o Google Analytics.";
     return jsonResponse({ error: message }, 500);
   }

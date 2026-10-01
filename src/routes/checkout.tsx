@@ -7,6 +7,7 @@ import { cardFeePercentFor, grossUpForCardFee, PIX_DISCOUNT } from "@/lib/paymen
 import { useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { getReferralCode } from "@/lib/referral/referral-code";
+import { getCampaignCode } from "@/lib/marketing/campaign-tracking";
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -159,6 +160,7 @@ function CheckoutPage() {
           paymentMethod,
           couponCode: coupon?.code,
           referredByCode: getReferralCode() ?? undefined,
+          utmCampaign: getCampaignCode() ?? undefined,
           installmentCount: paymentMethod === "credit_card" ? installmentCount : undefined,
           creditCard:
             paymentMethod === "credit_card"

@@ -21,6 +21,9 @@ verify_jwt = true
 [functions.ga4-realtime-visitors]
 verify_jwt = true
 
+[functions.ga4-campaign-views]
+verify_jwt = true
+
 # Called by FinMarket HUB with an x-api-key header (Vault secret "finmarket_hub_api"), not a session JWT.
 [functions.sales-report]
 verify_jwt = false

@@ -50,6 +50,7 @@ type CheckoutBody = {
   installmentCount?: number;
   couponCode?: string;
   referredByCode?: string;
+  utmCampaign?: string;
   creditCard?: {
     holderName: string;
     number: string;
@@ -383,6 +384,7 @@ Deno.serve(async (req) => {
         discount_cents: discountCents,
         is_new_account: !!newAccount,
         referrer_user_id: referrerUserId,
+        utm_campaign: body.utmCampaign?.trim() || null,
         payment_provider: "asaas",
         payment_method: body.paymentMethod,
         installment_count: installmentCount,

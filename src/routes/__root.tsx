@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "../components/ui/sonner";
 import { CartProvider } from "../lib/cart/cart-context";
 import { captureReferralCodeFromUrl } from "../lib/referral/referral-code";
+import { captureCampaignFromUrl } from "../lib/marketing/campaign-tracking";
 
 function NotFoundComponent() {
   return (
@@ -130,6 +131,7 @@ function RootComponent() {
 
   useEffect(() => {
     captureReferralCodeFromUrl();
+    captureCampaignFromUrl();
     // Analytics is not needed for the first paint — run it once the browser is idle.
     // Loaded with a dynamic import so the Supabase client stays out of the entry bundle.
     const runAnalytics = () =>
