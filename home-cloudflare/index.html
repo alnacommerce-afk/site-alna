@@ -41,6 +41,12 @@ p,h1,h2{margin:0}
 .btn-green{background:#16a34a;color:#fff;padding:.75rem 1.25rem}.btn-green:hover{background:#15803d}
 .btn-navy{background:#12294f;color:#fff;padding:.75rem 1.25rem}.btn-navy:hover{background:#0f2247}
 .btn-white{background:#fff;color:#12294f;padding:.625rem 1.25rem;box-shadow:0 10px 15px -3px rgba(0,0,0,.25)}.btn-white:hover{background:rgba(255,255,255,.9)}
+.hero-cta{flex-direction:column;gap:.15rem;padding:1rem 1.75rem;border-radius:.75rem;background:linear-gradient(135deg,#16a34a,#0d9355);color:#fff;box-shadow:0 14px 30px -8px rgba(22,163,74,.6);animation:hero-cta-pulse 2.4s ease-in-out infinite;transition:transform .2s,box-shadow .2s}
+.hero-cta:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 18px 34px -8px rgba(22,163,74,.7)}
+.hero-cta b{font-size:1.1rem;font-weight:900;letter-spacing:.01em;line-height:1.15}
+.hero-cta span{font-size:.75rem;font-weight:700;letter-spacing:.03em;opacity:.95}
+@keyframes hero-cta-pulse{0%,100%{box-shadow:0 14px 30px -8px rgba(22,163,74,.6)}50%{box-shadow:0 14px 34px -4px rgba(22,163,74,.85)}}
+@media(prefers-reduced-motion:reduce){.hero-cta{animation:none;transition:none}.hero-cta:hover{transform:none}}
 
 /* header */
 .top{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.08);position:relative;z-index:10}
@@ -198,7 +204,7 @@ p,h1,h2{margin:0}
       text stays. */
    (function(){var M=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];document.getElementById('mes').textContent='Mês de '+M[new Date(Date.now()-10800000).getUTCMonth()];})();
    </script>
-   <a class="btn btn-white" href="https://store.alna.sale/loja">VER PRODUTOS COM DESCONTO →</a>
+   <a class="btn hero-cta" href="https://store.alna.sale/loja"><b>VEJA TODOS OS PRODUTOS</b><span>GARANTA O DESCONTO DO MÊS →</span></a>
   </div>
  </section>
 
