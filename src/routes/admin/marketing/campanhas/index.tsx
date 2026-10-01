@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { storeLink } from "@/lib/site-urls";
+import { SITE_URL } from "@/lib/site-urls";
 
 export const Route = createFileRoute("/admin/marketing/campanhas/")({
   head: () => ({
@@ -45,10 +45,11 @@ function slugify(name: string) {
   );
 }
 
+// Uses the root domain (alna.sale), not store.alna.sale directly — it's the domain people actually
+// see on a flyer/outdoor ad, and home-cloudflare's _redirects 301s /loja to the store subdomain
+// while preserving the query string, so the UTM params still land on the order.
 function campaignLink(utmCampaign: string) {
-  return storeLink(
-    `/loja?utm_source=campanha&utm_medium=offline&utm_campaign=${encodeURIComponent(utmCampaign)}`,
-  );
+  return `${SITE_URL}/loja?utm_source=campanha&utm_medium=offline&utm_campaign=${encodeURIComponent(utmCampaign)}`;
 }
 
 type ViewsState =
