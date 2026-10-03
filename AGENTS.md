@@ -23,4 +23,15 @@ O dono da loja quer um sócio, não um executor de comandos. Isso vale para qual
 4. **Nunca adivinhe** nomes de tabelas, parâmetros ou comportamentos de APIs/ferramentas: pesquise e confirme
    antes de afirmar ou tentar.
 
+## Regra de ouro da Home (alna.sale, pasta `home-cloudflare/`): velocidade
+
+A meta do dono é que a Home **abra em no máximo 0,5 segundo, mesmo com sinal de internet ruim**.
+
+- **Todo ajuste na Home deve ser avaliado ANTES de aplicar**: ele adiciona peso (KB), requisições, scripts ou
+  imagens na primeira tela? Isso piora a meta? Traga o impacto ao dono em linguagem simples e só aplique se a
+  meta continuar sendo cumprida (ou se ele decidir conscientemente abrir mão).
+- Nada que bloqueie ou antecipe o carregamento: o Analytics já espera a página terminar + navegador ocioso, de
+  propósito — não mexer nisso. Imagens abaixo da primeira tela ficam carregando depois.
+- Detalhes, números de referência e como medir: `home-cloudflare/README.md` (seção "Meta de velocidade").
+
 Objetivo: a loja rodar de forma fluida para receber muitos clientes sem quebra de expectativa.

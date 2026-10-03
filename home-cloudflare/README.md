@@ -69,3 +69,28 @@ só o DNS mudou):
 Cada bloco (`.blk`) começa invisível e entra em fila, na ordem da página: espera a imagem do bloco
 carregar, faz fade + deslize, e só então libera o próximo. Sem JavaScript (ou com "reduzir
 movimento" ativo) tudo aparece direto.
+
+## Meta de velocidade (regra do dono — 03/10/2026)
+
+**A Home deve abrir em no máximo 0,5 s, mesmo com sinal ruim.** Antes de qualquer ajuste aqui, avaliar o
+impacto na meta (peso, nº de requisições, scripts, imagens na primeira tela) e avisar o dono antes de aplicar.
+
+O que já protege a meta (não desfazer): HTML com CSS e JS embutidos (zero requisição bloqueante), só o logo e
+a imagem principal carregam de cara, banners abaixo da dobra carregam depois, imagens em WebP com cache de
+7 dias, e o GA4 só carrega depois do `load` + navegador ocioso (por isso a contagem de visitas muito rápidas
+pode ficar um pouco abaixo do real — troca aceita de propósito para não pesar na abertura).
+
+**Medição de referência (03/10/2026, computador do dono, conexão boa):** primeiro byte ~0,11 s, página pronta
+~0,22 s, 5 requisições, ~65 KB (HTML ~23 KB + logo ~39 KB + imagem principal ~25 KB).
+
+**Limite físico a ter em mente:** em sinal fraco de verdade (perfil "4G lento": ~150 ms de ida e volta e
+~1,6 Mbps), só abrir a conexão com o servidor (DNS + TCP + TLS + pedido) já consome ~4 idas e voltas, ou seja,
+~0,6 s numa **primeira visita**, antes de chegar qualquer byte. Em visitas seguintes (conexão e imagens já em
+cache) a estimativa é ~0,3 s. Portanto, em sinal muito ruim a primeira visita tende a passar de 0,5 s por
+causa da rede, não do site — o que controlamos é não piorar: manter o total de bytes e requisições da
+primeira tela o menor possível. Estimativa feita por cálculo a partir de medições reais de conexão; ainda não
+foi medida num celular de verdade.
+
+**Como medir:** abrir a Home num celular real com 4G fraco (ou DevTools > Network > "Slow 4G", cache
+desativado) e olhar o tempo até aparecer a imagem principal; comparar com os números acima antes e depois do
+ajuste.
