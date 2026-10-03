@@ -1,12 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Copy } from "lucide-react";
+import { Copy, Trash2 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -45,11 +55,10 @@ function slugify(name: string) {
   );
 }
 
-// Uses the root domain (alna.sale), not store.alna.sale directly — it's the domain people actually
-// see on a flyer/outdoor ad, and home-cloudflare's _redirects 301s /loja to the store subdomain
-// while preserving the query string, so the UTM params still land on the order.
+// Lands on the Home (alna.sale), the address printed on flyers/outdoor ads. The Home's own script
+// passes utm_campaign along to every link into the store, so the order still records the campaign.
 function campaignLink(utmCampaign: string) {
-  return `${SITE_URL}/loja?utm_source=campanha&utm_medium=offline&utm_campaign=${encodeURIComponent(utmCampaign)}`;
+  return `${SITE_URL}/?utm_source=campanha&utm_medium=offline&utm_campaign=${encodeURIComponent(utmCampaign)}`;
 }
 
 type ViewsState =
@@ -64,6 +73,7 @@ function CampanhasPage() {
   const [views, setViews] = useState<ViewsState>({ status: "loading" });
   const [newName, setNewName] = useState("");
   const [generating, setGenerating] = useState(false);
+  const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
 
   useEffect(() => {
     async function loadCampaigns() {
@@ -152,6 +162,19 @@ function CampanhasPage() {
     setGenerating(false);
   }
 
+  async function confirmDelete() {
+    if (!campaignToDelete) return;
+    const campaign = campaignToDelete;
+    setCampaignToDelete(null);
+    const { error } = await supabase.from("marketing_campaigns").delete().eq("id", campaign.id);
+    if (error) {
+      toast.error("Não foi possível excluir a campanha.");
+      return;
+    }
+    setCampaigns((prev) => (prev ?? []).filter((c) => c.id !== campaign.id));
+    toast.success("Campanha excluída.");
+  }
+
   function copyLink(utmCampaign: string) {
     navigator.clipboard
       .writeText(campaignLink(utmCampaign))
@@ -183,12 +206,13 @@ function CampanhasPage() {
             <TableHead>Link UTM</TableHead>
             <TableHead>Visualizações (30 dias)</TableHead>
             <TableHead>Nº de vendas</TableHead>
+            <TableHead className="w-12" />
           </TableRow>
         </TableHeader>
         <TableBody>
           {campaigns === null ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
+              <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
                 Carregando...
               </TableCell>
             </TableRow>
@@ -213,6 +237,17 @@ function CampanhasPage() {
                 </TableCell>
                 <TableCell>{renderViews(campaign.utm_campaign)}</TableCell>
                 <TableCell>{salesCounts[campaign.utm_campaign] ?? 0}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    aria-label={`Excluir campanha ${campaign.name}`}
+                    onClick={() => setCampaignToDelete(campaign)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           )}
@@ -239,9 +274,27 @@ function CampanhasPage() {
             </TableCell>
             <TableCell className="text-muted-foreground">—</TableCell>
             <TableCell className="text-muted-foreground">—</TableCell>
+            <TableCell />
           </TableRow>
         </TableBody>
       </Table>
+
+      <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir campanha</AlertDialogTitle>
+            <AlertDialogDescription>
+              Excluir a campanha "{campaignToDelete?.name}"? Ela some desta lista, mas o link continua
+              funcionando e as vendas já feitas por ele continuam registradas nos pedidos. Se você criar
+              uma campanha com o mesmo nome depois, os números voltam a aparecer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Excluir</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminShell>
   );
 }

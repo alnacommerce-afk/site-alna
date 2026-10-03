@@ -303,6 +303,22 @@ p,h1,h2{margin:0}
 })();
 </script>
 <script>
+/* Campaign links (Admin > Marketing > Campanhas) land here. The store lives on another domain, so its
+   localStorage can't see this visit: copy the utm_* params onto every link into the store, and the
+   store's own capture then attaches the campaign to the order. */
+(function(){
+ try{
+  var q=new URLSearchParams(location.search),c=q.get('utm_campaign');
+  if(!c)return;
+  [].forEach.call(document.querySelectorAll('a[href^="https://store.alna.sale"]'),function(a){
+   var u=new URL(a.href);
+   ['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(q.get(k))u.searchParams.set(k,q.get(k));});
+   a.href=u.toString();
+  });
+ }catch(e){}
+})();
+</script>
+<script>
 /* GA4 (same property as the store). Loaded only after the page finished loading and the browser is
    idle, so it never competes with first paint. The ID is public; keep it in sync with Admin > Configurações. */
 window.addEventListener('load',function(){
