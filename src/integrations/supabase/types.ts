@@ -904,6 +904,10 @@ export type Database = {
         Returns: undefined
       }
       get_customer_user_id: { Args: { p_email: string }; Returns: string }
+      get_site_settings_admin: {
+        Args: never
+        Returns: Database["public"]["Tables"]["site_settings"]["Row"]
+      }
       get_integration_secret: {
         Args: { p_integration_id: string }
         Returns: string

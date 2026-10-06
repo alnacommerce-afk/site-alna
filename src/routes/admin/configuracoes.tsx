@@ -75,11 +75,9 @@ function ConfiguracoesPage() {
 
   useEffect(() => {
     async function load() {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("id", "default")
-        .single();
+      // site_settings holds private fields (admin e-mail, shipping origin address), so the table is
+      // only readable column-by-column by the public site; the admin gets the full row from this RPC.
+      const { data, error } = await supabase.rpc("get_site_settings_admin");
 
       if (error || !data) {
         toast.error("Não foi possível carregar as configurações.");
