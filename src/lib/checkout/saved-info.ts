@@ -7,6 +7,9 @@ export type SavedCheckoutInfo = {
   email: string;
   phone: string;
   zip: string;
+  // CEP a que street/number/complement/... pertencem. A página do produto e o carrinho gravam só o
+  // `zip`; sem isto, um CEP novo ficaria colado no endereço de uma compra anterior.
+  addressZip: string;
   street: string;
   number: string;
   complement: string;

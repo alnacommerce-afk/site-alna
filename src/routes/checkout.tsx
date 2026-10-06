@@ -1,11 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
 import { cardFeePercentFor, grossUpForCardFee, PIX_DISCOUNT } from "@/lib/payment-fees";
 import { useCart } from "@/lib/cart/cart-context";
-import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
+import {
+  getSavedCheckoutInfo,
+  saveCheckoutInfo,
+  type SavedCheckoutInfo,
+} from "@/lib/checkout/saved-info";
 import { getReferralCode } from "@/lib/referral/referral-code";
 import { getCampaignCode } from "@/lib/marketing/campaign-tracking";
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
@@ -52,13 +56,20 @@ function CheckoutPage() {
   const [emailConfirm, setEmailConfirm] = useState("");
   const [phone, setPhone] = useState(saved.phone ?? "");
 
+  // The saved street/number/... are only reused when they belong to the saved CEP — the product page
+  // and cart save the CEP alone, which would otherwise glue a new CEP onto an old purchase's address.
+  const savedAddress: Partial<SavedCheckoutInfo> =
+    saved.addressZip && saved.addressZip === onlyDigits(saved.zip ?? "") ? saved : {};
+  // CEP the street/number/... currently on screen belong to; a different CEP wipes them.
+  const addressZipRef = useRef<string>(savedAddress.addressZip ?? "");
+
   const [cep, setCep] = useState(saved.zip ?? "");
-  const [street, setStreet] = useState(saved.street ?? "");
-  const [number, setNumber] = useState(saved.number ?? "");
-  const [complement, setComplement] = useState(saved.complement ?? "");
-  const [neighborhood, setNeighborhood] = useState(saved.neighborhood ?? "");
-  const [city, setCity] = useState(saved.city ?? "");
-  const [state, setState] = useState(saved.state ?? "");
+  const [street, setStreet] = useState(savedAddress.street ?? "");
+  const [number, setNumber] = useState(savedAddress.number ?? "");
+  const [complement, setComplement] = useState(savedAddress.complement ?? "");
+  const [neighborhood, setNeighborhood] = useState(savedAddress.neighborhood ?? "");
+  const [city, setCity] = useState(savedAddress.city ?? "");
+  const [state, setState] = useState(savedAddress.state ?? "");
   const [lookingUpCep, setLookingUpCep] = useState(false);
 
   const [shippingCents, setShippingCents] = useState<number | null>(null);
@@ -78,23 +89,51 @@ function CheckoutPage() {
   async function handleCepBlur() {
     const digits = onlyDigits(cep);
     if (digits.length !== 8) return;
-    saveCheckoutInfo({ zip: digits });
 
-    setLookingUpCep(true);
-    setShippingError(null);
-    try {
-      const viaCepResp = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
-      const viaCep = await viaCepResp.json();
-      if (!viaCep.erro) {
-        setStreet(viaCep.logradouro ?? "");
-        setNeighborhood(viaCep.bairro ?? "");
-        setCity(viaCep.localidade ?? "");
-        setState(viaCep.uf ?? "");
+    // A different CEP means a different destination: wipe the whole address (including number and
+    // complement, which ViaCEP never returns) so nothing from the previous address rides along — a
+    // parcel must never go to the new street with the old house number.
+    const cepChanged = digits !== addressZipRef.current;
+    if (cepChanged) {
+      addressZipRef.current = digits;
+      setStreet("");
+      setNumber("");
+      setComplement("");
+      setNeighborhood("");
+      setCity("");
+      setState("");
+      saveCheckoutInfo({
+        zip: digits,
+        addressZip: "",
+        street: "",
+        number: "",
+        complement: "",
+        neighborhood: "",
+        city: "",
+        state: "",
+      });
+    } else {
+      saveCheckoutInfo({ zip: digits });
+    }
+
+    if (cepChanged || !street) {
+      setLookingUpCep(true);
+      setShippingError(null);
+      try {
+        const viaCepResp = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+        const viaCep = await viaCepResp.json();
+        // If ViaCEP doesn't know this CEP the fields stay empty, to be typed by hand.
+        if (!viaCep.erro) {
+          setStreet(viaCep.logradouro ?? "");
+          setNeighborhood(viaCep.bairro ?? "");
+          setCity(viaCep.localidade ?? "");
+          setState(viaCep.uf ?? "");
+        }
+      } catch {
+        // ViaCEP indisponível — deixa os campos para preenchimento manual.
+      } finally {
+        setLookingUpCep(false);
       }
-    } catch {
-      // ViaCEP indisponível — deixa os campos para preenchimento manual.
-    } finally {
-      setLookingUpCep(false);
     }
 
     setCalculatingShipping(true);
@@ -186,6 +225,7 @@ function CheckoutPage() {
         email,
         phone,
         zip: onlyDigits(cep),
+        addressZip: onlyDigits(cep),
         street,
         number,
         complement,
