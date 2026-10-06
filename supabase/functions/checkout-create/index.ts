@@ -12,6 +12,7 @@ import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
 import { notifyPaymentConfirmed } from "../_shared/notify-payment-confirmed.ts";
 import { packOrder } from "../_shared/package-dimensions.ts";
+import { reportPaymentProblem } from "../_shared/payment-alert.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -329,7 +330,28 @@ Deno.serve(async (req) => {
     const findResp = await fetch(`${ASAAS_API}/customers?cpfCnpj=${cpfCnpj}`, {
       headers: asaasHeaders,
     });
-    if (!findResp.ok) throw new Error(`Asaas customers lookup ${findResp.status}`);
+    if (!findResp.ok) {
+      // 401/403 = our credential is the problem, not the customer's data. Tell the admin right away
+      // (with Asaas's own error code, which says WHY) and show the customer a plain message instead
+      // of "Asaas customers lookup 401".
+      const asaasBody = await findResp.json().catch(() => null);
+      const asaasCode = asaasBody?.errors?.[0]?.code ?? "sem código";
+      if (findResp.status === 401 || findResp.status === 403) {
+        await reportPaymentProblem(
+          admin,
+          "checkout_asaas",
+          `Um cliente tentou pagar e a Asaas recusou nossa credencial (${findResp.status}, ${asaasCode}).`,
+        );
+        return jsonResponse(
+          {
+            error:
+              "Pagamento indisponível no momento. Tente novamente em alguns minutos ou fale com a gente pelo WhatsApp.",
+          },
+          503,
+        );
+      }
+      throw new Error(`Asaas customers lookup ${findResp.status} (${asaasCode})`);
+    }
     const findJson = await findResp.json();
     let asaasCustomerId: string | undefined = findJson?.data?.[0]?.id;
 

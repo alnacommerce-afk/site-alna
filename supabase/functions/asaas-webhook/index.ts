@@ -3,6 +3,7 @@
 // register this same token in Asaas > Configurações > Integração > Webhooks when adding the URL.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { notifyPaymentConfirmed } from "../_shared/notify-payment-confirmed.ts";
+import { reportPaymentProblem } from "../_shared/payment-alert.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -43,6 +44,15 @@ Deno.serve(async (req) => {
     const event = await req.json();
     const eventType = event?.event as string | undefined;
     const payment = event?.payment as { id?: string; status?: string } | undefined;
+
+    // API-key lifecycle events (docs.asaas.com/docs/eventos-para-chaves-de-api): the key is about to
+    // expire from inactivity, or was disabled / expired / deleted. Warn the admin before checkout breaks.
+    if (eventType === "ACCESS_TOKEN_EXPIRING_SOON" || eventType === "ACCESS_TOKEN_DISABLED" ||
+      eventType === "ACCESS_TOKEN_EXPIRED" || eventType === "ACCESS_TOKEN_DELETED") {
+      await reportPaymentProblem(admin, "asaas_api_key", `A Asaas avisou: ${eventType}.`);
+      return jsonResponse({ ok: true });
+    }
+
     if (!eventType || !payment?.id) {
       return jsonResponse({ ok: true, ignored: "missing event/payment" });
     }
