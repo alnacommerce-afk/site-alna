@@ -57,7 +57,8 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   tela). Por isso "Aplicar a todos" e "Usar média real" nas colunas de cupom e de frete pedem uma confirmação que
   mostra o antes/depois da soma dos preços; os campos por linha são editáveis a qualquer momento.
 - "Usar média real" nunca preenche sozinho. Média de cupom = descontos ÷ valor vendido (antes do cupom); média de
-  frete = etiquetas pagas pela loja ÷ valor pago; ambas sobre pedidos pagos/enviados/concluídos nos últimos 90 dias
+  frete = etiquetas pagas pela loja ÷ valor vendido em produtos (sem o frete que o cliente pagou, que financia
+  a etiqueta, e já sem o cupom); ambas sobre pedidos pagos/enviados/concluídos nos últimos 90 dias
   (`src/lib/admin/sales-averages.ts`). A coluna "Frete até a capital" foi removida da tela.
 - Telas novas/alteradas: Cupons (quadro "Média de uso do cupom" com 30/60/90 dias) e "Gasto com frete"
   (`/admin/marketing/gasto-frete`, 7 e 30 dias, etiqueta zerada quando o cliente pagou o frete).
