@@ -117,3 +117,15 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   `marketing_subscribers` (função `unsubscribe-email`).
 - E-mail da pesquisa (`post_purchase_nps`): assunto "Como foi sua compra, {{nome}}?" e texto humilde; SEM promessa de desconto
   (ainda não existe cupom por responder; ver pendência com o dono).
+
+## e-mail de marketing redesenhado + menu "E-mail marketing" (07/10/2026)
+- Layout do e-mail (`supabase/functions/_shared/marketing-email.ts`): saudação, bloco do cupom (botão verde com o código,
+  leva a `https://store.alna.sale/loja?cupom=CODIGO`) e uma linha por produto, imagem e texto alternando de lado (imagem e botão
+  "Ver produto" abrem a página do produto; texto = título, 1ª frase da descrição, preço). Modelo `weekly_marketing` reescrito.
+- Link `?cupom=`: o site guarda o código (`src/lib/marketing/pending-coupon.ts`) e o carrinho o mostra já digitado no campo de
+  cupom (o cliente ainda clica em Aplicar; o cupom é validado normalmente).
+- Nova tela Admin > Marketing > **E-mail marketing** (`/admin/marketing/email-marketing`): troca do cupom da campanha (grava
+  `email_templates.coupon_id` do `weekly_marketing`), produtos de reserva (`featured_product_ids`, usados só sem novidades),
+  lista de quem está na lista de marketing e de quem saiu (`email_suppressions`), e a data da próxima campanha.
+- PENDENTE de decisão do dono: até 3 cupons por pedido (hoje o carrinho, `checkout-create`, `validate-coupon` e o gatilho de
+  contagem aceitam 1 só).

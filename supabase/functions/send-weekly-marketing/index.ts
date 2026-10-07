@@ -7,6 +7,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
+import { buildCouponBlockHtml, buildProductsHtml, type MarketingProduct } from "../_shared/marketing-email.ts";
 
 const SITE_URL = "https://store.alna.sale";
 const CAMPAIGN_EVERY_DAYS = 20;
@@ -23,10 +24,6 @@ function jsonResponse(body: unknown, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
-}
-
-function formatBRL(cents: number) {
-  return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 Deno.serve(async (req) => {
@@ -61,7 +58,8 @@ Deno.serve(async (req) => {
     const recipients = (subscribers ?? []).filter((s) => !suppressed.has(s.email.toLowerCase()));
 
     // Products that entered since the last campaign, newest first.
-    const productSelect = "id, title, slug, product_images(storage_path, position), product_variants(price_cents)";
+    const productSelect =
+      "id, title, slug, description, product_images(storage_path, position), product_variants(price_cents)";
     const { data: newProducts } = await admin
       .from("products")
       .select(productSelect)
@@ -105,25 +103,19 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!claimed) return jsonResponse({ ok: true, sent: 0, reason: "outra execução já cuidou deste ciclo" });
 
-    const productsHtml = `<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:16px 0;">${products
-      .map((p) => {
-        const image = [...(p.product_images ?? [])].sort((a, b) => a.position - b.position)[0];
-        const imageUrl = image
-          ? admin.storage.from("product-media").getPublicUrl(image.storage_path).data.publicUrl
-          : "";
-        const price = (p.product_variants ?? [])[0]?.price_cents;
-        return `<a href="${SITE_URL}/produto/${p.slug}" style="display:block;width:140px;text-decoration:none;color:#12294f;">
-            ${imageUrl ? `<img src="${imageUrl}" style="width:140px;height:140px;object-fit:cover;border-radius:8px;" />` : ""}
-            <p style="margin:6px 0 0;font-size:12px;font-weight:600;">${p.title}</p>
-            ${price != null ? `<p style="margin:2px 0 0;font-size:13px;font-weight:bold;color:#16a34a;">${formatBRL(price)}</p>` : ""}
-          </a>`;
-      })
-      .join("")}</div>`;
-
+    const marketingProducts: MarketingProduct[] = products.map((p) => {
+      const image = [...(p.product_images ?? [])].sort((x, y) => x.position - y.position)[0];
+      return {
+        title: p.title,
+        slug: p.slug,
+        description: p.description ?? null,
+        imageUrl: image ? admin.storage.from("product-media").getPublicUrl(image.storage_path).data.publicUrl : null,
+        priceCents: (p.product_variants ?? [])[0]?.price_cents ?? null,
+      };
+    });
+    const productsHtml = buildProductsHtml(marketingProducts);
     const coupon = await resolveTemplateCoupon(admin, "weekly_marketing");
-    const cupomBlocoHtml = coupon
-      ? `<p style="text-align:center;margin:20px 0;">Use o cupom <strong style="color:#16a34a;">${coupon.code}</strong> e ganhe ${coupon.discountPercent}% de desconto${coupon.minOrderCents > 0 ? ` em compras acima de ${formatBRL(coupon.minOrderCents)}` : " na sua próxima compra"}!</p>`
-      : "";
+    const cupomBlocoHtml = buildCouponBlockHtml(coupon);
 
     const resendKey = await admin
       .rpc("get_integration_secret", { p_integration_id: "resend" })

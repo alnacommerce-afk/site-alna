@@ -868,6 +868,7 @@ export type Database = {
           email: string | null
           facebook_url: string | null
           free_shipping_threshold_cents: number
+          marketing_last_campaign_at: string | null
           ga4_measurement_id: string | null
           ga4_property_id: string | null
           id: string
@@ -894,6 +895,7 @@ export type Database = {
           email?: string | null
           facebook_url?: string | null
           free_shipping_threshold_cents?: number
+          marketing_last_campaign_at?: string | null
           ga4_measurement_id?: string | null
           ga4_property_id?: string | null
           id?: string
@@ -920,6 +922,7 @@ export type Database = {
           email?: string | null
           facebook_url?: string | null
           free_shipping_threshold_cents?: number
+          marketing_last_campaign_at?: string | null
           ga4_measurement_id?: string | null
           ga4_property_id?: string | null
           id?: string

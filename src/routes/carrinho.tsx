@@ -9,6 +9,7 @@ import { useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { fetchShippingQuote, onlyDigits, type ShippingQuote } from "@/lib/shipping/quote";
 import { validateCoupon } from "@/lib/checkout/validate-coupon";
+import { clearPendingCoupon, getPendingCoupon } from "@/lib/marketing/pending-coupon";
 import { SiteHeader } from "@/components/site/site-header";
 import { FreeShippingProgress } from "@/components/site/free-shipping-progress";
 import { PromotedCouponBox } from "@/components/site/promoted-coupon-box";
@@ -40,6 +41,12 @@ function CarrinhoPage() {
   const [calculatingShipping, setCalculatingShipping] = useState(false);
 
   const [couponInput, setCouponInput] = useState("");
+  // Coupon coming from the marketing e-mail button: arrives typed in the field, the customer just applies it.
+  // (Read after mount so the server-rendered page and the first client render match.)
+  useEffect(() => {
+    const pending = getPendingCoupon();
+    if (pending) setCouponInput(pending);
+  }, []);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
@@ -113,6 +120,7 @@ function CarrinhoPage() {
       minOrderCents: result.minOrderCents,
     });
     setCouponInput("");
+    clearPendingCoupon();
   }
 
   const shippingCents = quote?.priceCents ?? null;
