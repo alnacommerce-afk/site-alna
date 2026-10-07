@@ -67,31 +67,46 @@ export type Database = {
       coupons: {
         Row: {
           active: boolean
+          alerted_1_at: string | null
+          alerted_5_at: string | null
           code: string
           created_at: string
           discount_percent: number
           id: string
+          max_uses: number | null
           min_order_cents: number
+          show_on_site: boolean
+          uses_count: number
           valid_from: string | null
           valid_until: string | null
         }
         Insert: {
           active?: boolean
+          alerted_1_at?: string | null
+          alerted_5_at?: string | null
           code: string
           created_at?: string
           discount_percent: number
           id?: string
+          max_uses?: number | null
           min_order_cents?: number
+          show_on_site?: boolean
+          uses_count?: number
           valid_from?: string | null
           valid_until?: string | null
         }
         Update: {
           active?: boolean
+          alerted_1_at?: string | null
+          alerted_5_at?: string | null
           code?: string
           created_at?: string
           discount_percent?: number
           id?: string
+          max_uses?: number | null
           min_order_cents?: number
+          show_on_site?: boolean
+          uses_count?: number
           valid_from?: string | null
           valid_until?: string | null
         }
@@ -420,6 +435,7 @@ export type Database = {
         Row: {
           asaas_customer_id: string | null
           coupon_code: string | null
+          coupon_counted_at: string | null
           created_at: string
           customer_document: string | null
           customer_email: string | null
@@ -460,6 +476,7 @@ export type Database = {
         Insert: {
           asaas_customer_id?: string | null
           coupon_code?: string | null
+          coupon_counted_at?: string | null
           created_at?: string
           customer_document?: string | null
           customer_email?: string | null
@@ -500,6 +517,7 @@ export type Database = {
         Update: {
           asaas_customer_id?: string | null
           coupon_code?: string | null
+          coupon_counted_at?: string | null
           created_at?: string
           customer_document?: string | null
           customer_email?: string | null

@@ -36,7 +36,7 @@ export function wrapBranded(innerHtml: string, options?: { unsubscribeLink?: str
 export async function resolveTemplateCoupon(
   admin: SupabaseClient,
   templateId: string,
-): Promise<{ code: string; discountPercent: number } | null> {
+): Promise<{ code: string; discountPercent: number; minOrderCents: number } | null> {
   const { data: template } = await admin
     .from("email_templates")
     .select("coupon_id")
@@ -46,7 +46,7 @@ export async function resolveTemplateCoupon(
 
   const { data: coupon } = await admin
     .from("coupons")
-    .select("code, discount_percent, valid_from, valid_until, active")
+    .select("code, discount_percent, valid_from, valid_until, active, min_order_cents")
     .eq("id", template.coupon_id)
     .maybeSingle();
   if (!coupon) return null;
@@ -58,7 +58,11 @@ export async function resolveTemplateCoupon(
     (!coupon.valid_until || new Date(coupon.valid_until) >= now);
   if (!validNow) return null;
 
-  return { code: coupon.code, discountPercent: Number(coupon.discount_percent) };
+  return {
+    code: coupon.code,
+    discountPercent: Number(coupon.discount_percent),
+    minOrderCents: Number(coupon.min_order_cents ?? 0),
+  };
 }
 
 export async function renderEmailTemplate(

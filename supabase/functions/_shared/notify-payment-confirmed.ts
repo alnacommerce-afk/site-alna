@@ -5,7 +5,7 @@
 import type { SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { randomPassword } from "./random-password.ts";
 import { sendEmail } from "./send-email.ts";
-import { renderEmailTemplate } from "./render-template.ts";
+import { renderEmailTemplate, resolveTemplateCoupon } from "./render-template.ts";
 
 const SITE_URL = "https://store.alna.sale";
 
@@ -110,15 +110,21 @@ async function creditReferralReward(admin: SupabaseClient, referrerUserId: strin
     return;
   }
 
-  const code = `INDIQUE-${randomPassword(6).toUpperCase()}`;
-  const { error: couponError } = await admin.from("coupons").insert({
-    code,
-    discount_percent: 5,
-    active: true,
-  });
-  if (couponError) {
-    console.error("[notify-payment-confirmed] falha ao gerar cupom de indicação", couponError);
-    return;
+  // The coupon linked to the "referral_reward" template (Admin > Marketing > Fluxo de E-mail) is the one
+  // sent; only if none is linked do we fall back to minting a one-off 5% code per reward.
+  const linked = await resolveTemplateCoupon(admin, "referral_reward");
+  let code = linked?.code ?? "";
+  if (!code) {
+    code = `INDIQUE-${randomPassword(6).toUpperCase()}`;
+    const { error: couponError } = await admin.from("coupons").insert({
+      code,
+      discount_percent: 5,
+      active: true,
+    });
+    if (couponError) {
+      console.error("[notify-payment-confirmed] falha ao gerar cupom de indicação", couponError);
+      return;
+    }
   }
 
   const rendered = await renderEmailTemplate(admin, "referral_reward", {

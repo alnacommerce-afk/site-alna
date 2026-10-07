@@ -11,6 +11,7 @@ import { fetchShippingQuote, onlyDigits, type ShippingQuote } from "@/lib/shippi
 import { validateCoupon } from "@/lib/checkout/validate-coupon";
 import { SiteHeader } from "@/components/site/site-header";
 import { FreeShippingProgress } from "@/components/site/free-shipping-progress";
+import { PromotedCouponBox } from "@/components/site/promoted-coupon-box";
 import { CompleteOrderSuggestions } from "@/components/site/complete-order-suggestions";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
@@ -146,6 +147,9 @@ function CarrinhoPage() {
                     subtotalCents={subtotalCents}
                     thresholdCents={freeShippingThresholdCents}
                   />
+                  <div className="mt-3">
+                    <PromotedCouponBox canApply />
+                  </div>
                 </div>
               )}
             </div>

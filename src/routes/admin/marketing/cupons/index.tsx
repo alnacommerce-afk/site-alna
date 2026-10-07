@@ -48,6 +48,9 @@ type Coupon = {
   code: string;
   discount_percent: number;
   min_order_cents: number;
+  max_uses: number | null;
+  uses_count: number;
+  show_on_site: boolean;
   valid_from: string | null;
   valid_until: string | null;
   active: boolean;
@@ -57,6 +60,8 @@ type FormState = {
   code: string;
   discountPercent: string;
   minOrder: string;
+  maxUses: string;
+  showOnSite: boolean;
   hasValidFrom: boolean;
   validFrom: string;
   hasValidUntil: boolean;
@@ -68,6 +73,8 @@ const emptyForm: FormState = {
   code: "",
   discountPercent: "10",
   minOrder: "",
+  maxUses: "",
+  showOnSite: false,
   hasValidFrom: false,
   validFrom: "",
   hasValidUntil: false,
@@ -92,7 +99,9 @@ function CuponsPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from("coupons")
-      .select("id, code, discount_percent, min_order_cents, valid_from, valid_until, active")
+      .select(
+        "id, code, discount_percent, min_order_cents, max_uses, uses_count, show_on_site, valid_from, valid_until, active",
+      )
       .order("created_at", { ascending: false });
     if (error) {
       toast.error("Não foi possível carregar os cupons.");
@@ -119,6 +128,8 @@ function CuponsPage() {
       code: coupon.code,
       discountPercent: String(coupon.discount_percent),
       minOrder: coupon.min_order_cents > 0 ? formatCentsToInput(coupon.min_order_cents) : "",
+      maxUses: coupon.max_uses === null ? "" : String(coupon.max_uses),
+      showOnSite: coupon.show_on_site,
       hasValidFrom: !!coupon.valid_from,
       validFrom: toDateInput(coupon.valid_from),
       hasValidUntil: !!coupon.valid_until,
@@ -145,8 +156,12 @@ function CuponsPage() {
       code,
       discount_percent: discountPercent,
       min_order_cents: parseCentsFromInput(form.minOrder),
-      valid_from: form.hasValidFrom && form.validFrom ? new Date(form.validFrom).toISOString() : null,
-      valid_until: form.hasValidUntil && form.validUntil ? new Date(form.validUntil).toISOString() : null,
+      max_uses: form.maxUses.trim() === "" ? null : Math.max(0, Math.floor(Number(form.maxUses))),
+      show_on_site: form.showOnSite,
+      valid_from:
+        form.hasValidFrom && form.validFrom ? new Date(form.validFrom).toISOString() : null,
+      valid_until:
+        form.hasValidUntil && form.validUntil ? new Date(form.validUntil).toISOString() : null,
       active: form.active,
     };
 
@@ -157,7 +172,9 @@ function CuponsPage() {
     setSaving(false);
     if (error) {
       toast.error(
-        error.code === "23505" ? "Já existe um cupom com esse código." : "Não foi possível salvar o cupom.",
+        error.code === "23505"
+          ? "Já existe um cupom com esse código."
+          : "Não foi possível salvar o cupom.",
       );
       return;
     }
@@ -204,6 +221,7 @@ function CuponsPage() {
               <TableHead>Código</TableHead>
               <TableHead>Desconto</TableHead>
               <TableHead>Pedido mínimo</TableHead>
+              <TableHead>Usos / saldo</TableHead>
               <TableHead>Vigência</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Ações</TableHead>
@@ -215,7 +233,29 @@ function CuponsPage() {
                 <TableCell className="font-mono font-semibold">{coupon.code}</TableCell>
                 <TableCell>{coupon.discount_percent}%</TableCell>
                 <TableCell className="text-sm text-muted-foreground">
-                  {coupon.min_order_cents > 0 ? formatCentsToBRL(coupon.min_order_cents) : "Sem mínimo"}
+                  {coupon.min_order_cents > 0
+                    ? formatCentsToBRL(coupon.min_order_cents)
+                    : "Sem mínimo"}
+                </TableCell>
+                <TableCell className="text-sm">
+                  {coupon.max_uses === null ? (
+                    <span className="text-muted-foreground">
+                      Sem limite ({coupon.uses_count} usos)
+                    </span>
+                  ) : (
+                    <span>
+                      {coupon.uses_count} / {coupon.max_uses} ·{" "}
+                      <strong
+                        className={
+                          coupon.max_uses - coupon.uses_count <= 5
+                            ? "text-destructive"
+                            : "text-[#16a34a]"
+                        }
+                      >
+                        saldo {coupon.max_uses - coupon.uses_count}
+                      </strong>
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {coupon.valid_from || coupon.valid_until
@@ -283,8 +323,41 @@ function CuponsPage() {
                 inputMode="decimal"
               />
               <p className="text-xs text-muted-foreground">
-                O desconto só vale quando os produtos do carrinho somam esse valor (sem contar o frete).
+                O desconto só vale quando os produtos do carrinho somam esse valor (sem contar o
+                frete).
               </p>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="coupon-max-uses">Limite de usos</Label>
+              <Input
+                id="coupon-max-uses"
+                type="number"
+                min={0}
+                value={form.maxUses}
+                onChange={(e) => setForm((prev) => ({ ...prev, maxUses: e.target.value }))}
+                placeholder="Sem limite"
+              />
+              <p className="text-xs text-muted-foreground">
+                Conta quando o pagamento é confirmado. O cupom nunca é barrado: se passar do limite,
+                o saldo fica negativo (-1, -2...) e você recebe um e-mail. Avisos em 5 e em 1 uso
+                restante. Para repor, é só aumentar este número.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <div>
+                <Label htmlFor="coupon-show">Divulgar no site</Label>
+                <p className="text-xs text-muted-foreground">
+                  Mostra o código, a condição e o termômetro de cupons restantes na loja e no
+                  carrinho (só um cupom por vez).
+                </p>
+              </div>
+              <Switch
+                id="coupon-show"
+                checked={form.showOnSite}
+                onCheckedChange={(checked) => setForm((prev) => ({ ...prev, showOnSite: checked }))}
+              />
             </div>
 
             <div className="space-y-2 rounded-md border p-3">
@@ -293,7 +366,9 @@ function CuponsPage() {
                 <Switch
                   id="coupon-has-from"
                   checked={form.hasValidFrom}
-                  onCheckedChange={(checked) => setForm((prev) => ({ ...prev, hasValidFrom: checked }))}
+                  onCheckedChange={(checked) =>
+                    setForm((prev) => ({ ...prev, hasValidFrom: checked }))
+                  }
                 />
               </div>
               {form.hasValidFrom ? (
@@ -311,7 +386,9 @@ function CuponsPage() {
                 <Switch
                   id="coupon-has-until"
                   checked={form.hasValidUntil}
-                  onCheckedChange={(checked) => setForm((prev) => ({ ...prev, hasValidUntil: checked }))}
+                  onCheckedChange={(checked) =>
+                    setForm((prev) => ({ ...prev, hasValidUntil: checked }))
+                  }
                 />
               </div>
               {form.hasValidUntil ? (
@@ -346,7 +423,10 @@ function CuponsPage() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!couponToDelete} onOpenChange={(open) => !open && setCouponToDelete(null)}>
+      <AlertDialog
+        open={!!couponToDelete}
+        onOpenChange={(open) => !open && setCouponToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir cupom</AlertDialogTitle>

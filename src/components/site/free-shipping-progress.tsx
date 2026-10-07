@@ -4,6 +4,7 @@ import { Truck } from "lucide-react";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
 import { useSiteSettings } from "@/lib/site-data";
+import { PromotedCouponBox } from "@/components/site/promoted-coupon-box";
 
 export function FreeShippingProgress({
   subtotalCents,
@@ -52,24 +53,28 @@ export function FreeShippingBanner() {
 
   if (items.length === 0) {
     return (
-      <div className="flex items-center gap-3 rounded-lg border border-[#16a34a]/30 bg-[#16a34a]/5 p-4">
-        <Truck className="h-5 w-5 shrink-0 text-[#16a34a]" />
-        <p className="text-sm text-[#12294f]">
-          <strong>Frete grátis em compras acima de {formatCentsToBRL(thresholdCents)}.</strong> Junte
-          vários itens no carrinho e não pague frete.
-        </p>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3 rounded-lg border border-[#16a34a]/30 bg-[#16a34a]/5 p-4">
+          <Truck className="h-5 w-5 shrink-0 text-[#16a34a]" />
+          <p className="text-sm text-[#12294f]">
+            <strong>Frete grátis em compras acima de {formatCentsToBRL(thresholdCents)}.</strong>{" "}
+            Junte vários itens no carrinho e não pague frete.
+          </p>
+        </div>
+        <PromotedCouponBox />
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <FreeShippingProgress subtotalCents={subtotalCents} thresholdCents={thresholdCents} />
       <div className="text-right">
         <Link to="/carrinho" className="text-xs font-semibold text-[#16a34a] hover:underline">
           Ver meu carrinho
         </Link>
       </div>
+      <PromotedCouponBox />
     </div>
   );
 }

@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
 
     const coupon = await resolveTemplateCoupon(admin, "weekly_marketing");
     const cupomBlocoHtml = coupon
-      ? `<p style="text-align:center;margin:20px 0;">Use o cupom <strong style="color:#16a34a;">${coupon.code}</strong> e ganhe ${coupon.discountPercent}% OFF!</p>`
+      ? `<p style="text-align:center;margin:20px 0;">Use o cupom <strong style="color:#16a34a;">${coupon.code}</strong> e ganhe ${coupon.discountPercent}% OFF${coupon.minOrderCents > 0 ? ` em compras acima de ${formatBRL(coupon.minOrderCents)}` : ""}!</p>`
       : "";
 
     const resendKey = await admin
