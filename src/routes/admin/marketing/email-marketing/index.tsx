@@ -30,12 +30,14 @@ type Subscriber = { email: string; name: string | null; source: string | null; s
 type Suppression = { email: string; unsubscribed_at: string };
 type Coupon = { id: string; code: string; discount_percent: number; min_order_cents: number; active: boolean };
 type ProductOption = { id: string; title: string };
+type SentCampaign = { id: string; sent_at: string; subject: string; recipients: number };
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString("pt-BR");
 
 function EmailMarketingPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [suppressions, setSuppressions] = useState<Suppression[]>([]);
+  const [sentCampaigns, setSentCampaigns] = useState<SentCampaign[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [products, setProducts] = useState<ProductOption[]>([]);
   const [couponId, setCouponId] = useState<string>(NO_COUPON);
@@ -48,7 +50,7 @@ function EmailMarketingPage() {
 
   useEffect(() => {
     async function load() {
-      const [subs, sups, cps, prods, template, settings] = await Promise.all([
+      const [subs, sups, cps, prods, template, settings, sent] = await Promise.all([
         supabase
           .from("marketing_subscribers")
           .select("email, name, source, subscribed_at")
@@ -69,7 +71,13 @@ function EmailMarketingPage() {
           .eq("id", TEMPLATE_ID)
           .maybeSingle(),
         supabase.from("site_settings").select("marketing_last_campaign_at").eq("id", "default").maybeSingle(),
+        supabase
+          .from("marketing_email_campaigns")
+          .select("id, sent_at, subject, recipients")
+          .order("sent_at", { ascending: false })
+          .limit(20),
       ]);
+      setSentCampaigns((sent.data ?? []) as SentCampaign[]);
       setSubscribers((subs.data ?? []) as Subscriber[]);
       setSuppressions((sups.data ?? []) as Suppression[]);
       setCoupons((cps.data ?? []) as Coupon[]);
@@ -209,6 +217,39 @@ function EmailMarketingPage() {
               <Button onClick={saveProducts} disabled={savingProducts}>
                 {savingProducts ? "Salvando..." : "Salvar produtos"}
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-base">Campanhas enviadas ({sentCampaigns.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-3 text-sm text-muted-foreground">
+                O título muda sozinho a cada campanha e nunca se repete.
+              </p>
+              {sentCampaigns.length ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Data</TableHead>
+                      <TableHead>Título</TableHead>
+                      <TableHead>Enviados</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sentCampaigns.map((c) => (
+                      <TableRow key={c.id}>
+                        <TableCell>{formatDate(c.sent_at)}</TableCell>
+                        <TableCell>{c.subject.replace("{{nome}}", "[nome]")}</TableCell>
+                        <TableCell>{c.recipients}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-sm text-muted-foreground">Nenhuma campanha enviada ainda.</p>
+              )}
             </CardContent>
           </Card>
 

@@ -129,3 +129,13 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   lista de quem está na lista de marketing e de quem saiu (`email_suppressions`), e a data da próxima campanha.
 - PENDENTE de decisão do dono: até 3 cupons por pedido (hoje o carrinho, `checkout-create`, `validate-coupon` e o gatilho de
   contagem aceitam 1 só).
+
+## marketing_email_campaigns + preço "de/por" + título que nunca repete + menu em gavetas (07/10/2026)
+- Tabela `marketing_email_campaigns` (id, sent_at, subject único, recipients, product_count; RLS só admin): histórico das
+  campanhas de e-mail marketing. ATENÇÃO: `marketing_campaigns` já existe e é a lista de campanhas UTM — não confundir.
+- `send-weekly-marketing` escolhe, a cada campanha, um título que nunca foi usado (12 ideias, algumas com o nome do 1º produto;
+  esgotadas, acrescenta a data) e grava no histórico; o campo "assunto" do modelo `weekly_marketing` deixou de valer (fica só
+  como reserva). Preço do produto no e-mail = variação mais barata, com o preço "de" (`compare_at_price_cents`) riscado ao lado
+  quando maior, igual à loja.
+- Admin: "Anúncio" e "Marketing" viraram gavetas que recolhem/expandem com animação (abrem sozinhas na página atual e lembram a
+  última escolha neste navegador). Tela E-mail marketing ganhou o quadro "Campanhas enviadas".

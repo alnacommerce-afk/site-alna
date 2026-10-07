@@ -12,6 +12,8 @@ export type MarketingProduct = {
   description: string | null;
   imageUrl: string | null;
   priceCents: number | null;
+  /** Full ("de") price shown struck through next to the current one, when higher than it. */
+  compareAtPriceCents?: number | null;
 };
 
 export type MarketingCoupon = { code: string; discountPercent: number; minOrderCents: number };
@@ -72,11 +74,45 @@ export function buildProductsHtml(products: MarketingProduct[]) {
     const textCell = `<td valign="middle" style="padding:14px;">
         <p style="margin:0;font-size:16px;font-weight:bold;line-height:1.3;color:${NAVY};"><a href="${link}" style="color:${NAVY};text-decoration:none;">${escapeHtml(product.title)}</a></p>
         ${description ? `<p style="margin:8px 0 0;font-size:13px;line-height:1.5;color:#4b5563;">${description}</p>` : ""}
-        ${product.priceCents != null ? `<p style="margin:10px 0 0;font-size:18px;font-weight:bold;color:${GREEN};">${formatBRL(product.priceCents)}</p>` : ""}
+        ${product.priceCents != null ? `<p style="margin:10px 0 0;font-size:18px;font-weight:bold;color:${GREEN};">${product.compareAtPriceCents != null && product.compareAtPriceCents > product.priceCents ? `<span style="font-size:13px;font-weight:normal;color:#9ca3af;text-decoration:line-through;margin-right:6px;">${formatBRL(product.compareAtPriceCents)}</span>` : ""}${formatBRL(product.priceCents)}</p>` : ""}
         <p style="margin:12px 0 0;"><a href="${link}" style="display:inline-block;background:${NAVY};color:#ffffff;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:bold;text-decoration:none;">Ver produto</a></p>
       </td>`;
     const cells = index % 2 === 0 ? imageCell + textCell : textCell + imageCell;
     return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;"><tr>${cells}</tr></table>`;
   });
   return `<div style="margin:20px 0;">${rows.join("")}</div>`;
+}
+
+// Every campaign gets a title nobody has received before. The ideas rotate; "{produto}" is the first
+// product of the campaign, "{{nome}}" is filled in per recipient. If every idea was already used (with the
+// same product), the date is appended, so a title never repeats.
+const SUBJECT_IDEAS = [
+  "{{nome}}, chegou novidade na ALNA 💚",
+  "Olha o que acabou de chegar na ALNA",
+  "{produto} chegou na ALNA: vem ver!",
+  "Novidades para a sua casa, {{nome}} 🏠",
+  "Separamos um cupom e novidades para você 🎁",
+  "{{nome}}, já viu o que tem de novo na ALNA?",
+  "Sua próxima compra com desconto e novidades na ALNA",
+  "Tem produto novo esperando por você 💚",
+  "Novidades fresquinhas da ALNA para você, {{nome}}",
+  "{produto}: veja essa e outras novidades",
+  "Que tal renovar a casa? Novidades na ALNA",
+  "{{nome}}, preparamos algo especial para você 🎉",
+];
+
+export function pickCampaignSubject(usedSubjects: Set<string>, firstProductTitle: string | null, now: Date) {
+  const product = (firstProductTitle ?? "").trim().slice(0, 40);
+  const candidates = SUBJECT_IDEAS.filter((idea) => product || !idea.includes("{produto}")).map((idea) =>
+    idea.replace("{produto}", product),
+  );
+  const fresh = candidates.find((subject) => !usedSubjects.has(subject));
+  if (fresh) return fresh;
+  const stamp = now.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const base = candidates.length ? candidates : [SUBJECT_IDEAS[0]];
+  for (let round = 1; ; round++) {
+    const suffix = round === 1 ? ` (${stamp})` : ` (${stamp} · ${round})`;
+    const dated = base.find((subject) => !usedSubjects.has(`${subject}${suffix}`));
+    if (dated) return `${dated}${suffix}`;
+  }
 }

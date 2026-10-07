@@ -1,12 +1,94 @@
-import { useEffect, type ReactNode } from "react";
-import { Link, useRouter } from "@tanstack/react-router";
+import { useEffect, useState, type ReactNode } from "react";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
-import { CircleAlert } from "lucide-react";
+import { ChevronDown, CircleAlert } from "lucide-react";
 
 import { useAdminSession } from "@/lib/admin/use-admin-session";
 import { LOW_STOCK_THRESHOLD, useLowStockCount } from "@/lib/admin/use-low-stock";
 import { Button } from "@/components/ui/button";
+
+const ANUNCIO_PATHS = [
+  "/admin/catalogo",
+  "/admin/marketing/precificacao",
+  "/admin/estoque",
+  "/admin/medidas",
+];
+const MARKETING_PATHS = [
+  "/admin/marketing/cupons",
+  "/admin/marketing/campanhas",
+  "/admin/marketing/gasto-frete",
+  "/admin/marketing/fluxo-email",
+  "/admin/marketing/email-marketing",
+  "/admin/emails",
+  "/admin/marketing/nps",
+  "/admin/marketing/ideias-post",
+];
+
+// A menu section that folds like a drawer: click the title to hide/show its items. It opens by itself
+// when the current page belongs to it, and remembers the last choice in this browser.
+function NavGroup({
+  id,
+  title,
+  paths,
+  children,
+}: {
+  id: string;
+  title: string;
+  paths: string[];
+  children: ReactNode;
+}) {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const containsCurrentPage = paths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  const storageKey = `alna_admin_nav_${id}`;
+  const [open, setOpen] = useState(() => {
+    if (containsCurrentPage) return true;
+    try {
+      return localStorage.getItem(storageKey) === "open";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    if (containsCurrentPage) setOpen(true);
+  }, [containsCurrentPage]);
+
+  function toggle() {
+    const next = !open;
+    setOpen(next);
+    try {
+      localStorage.setItem(storageKey, next ? "open" : "closed");
+    } catch {
+      // remembering the choice is only a convenience
+    }
+  }
+
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:bg-accent"
+      >
+        {title}
+        <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${open ? "" : "-rotate-90"}`} />
+      </button>
+      <div
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="flex flex-col gap-1 pt-1 [&>a]:pl-6" inert={!open}>
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const { status } = useAdminSession();
@@ -63,9 +145,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           >
             Clientes
           </Link>
-          <p className="mt-3 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Anúncio
-          </p>
+          <NavGroup id="anuncio" title="Anúncio" paths={ANUNCIO_PATHS}>
           <Link
             to="/admin/catalogo"
             className="rounded-md px-3 py-2 pl-6 hover:bg-accent"
@@ -100,9 +180,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
           >
             Medidas
           </Link>
-          <p className="mt-3 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Marketing
-          </p>
+          </NavGroup>
+          <NavGroup id="marketing" title="Marketing" paths={MARKETING_PATHS}>
           <Link
             to="/admin/marketing/cupons"
             className="rounded-md px-3 py-2 hover:bg-accent"
@@ -159,9 +238,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
           >
             Ideias de Post
           </Link>
+          </NavGroup>
           <Link
             to="/admin/metricas"
-            className="rounded-md px-3 py-2 hover:bg-accent"
+            className="mt-3 rounded-md px-3 py-2 hover:bg-accent"
             activeProps={{ className: "bg-accent font-medium" }}
           >
             Métricas

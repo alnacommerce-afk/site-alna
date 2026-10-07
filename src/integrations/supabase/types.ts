@@ -321,6 +321,30 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_email_campaigns: {
+        Row: {
+          id: string
+          product_count: number
+          recipients: number
+          sent_at: string
+          subject: string
+        }
+        Insert: {
+          id?: string
+          product_count?: number
+          recipients?: number
+          sent_at?: string
+          subject: string
+        }
+        Update: {
+          id?: string
+          product_count?: number
+          recipients?: number
+          sent_at?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       marketing_subscribers: {
         Row: {
           email: string

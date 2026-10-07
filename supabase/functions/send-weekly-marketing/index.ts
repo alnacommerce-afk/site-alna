@@ -7,7 +7,12 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
-import { buildCouponBlockHtml, buildProductsHtml, type MarketingProduct } from "../_shared/marketing-email.ts";
+import {
+  buildCouponBlockHtml,
+  buildProductsHtml,
+  pickCampaignSubject,
+  type MarketingProduct,
+} from "../_shared/marketing-email.ts";
 
 const SITE_URL = "https://store.alna.sale";
 const CAMPAIGN_EVERY_DAYS = 20;
@@ -59,7 +64,7 @@ Deno.serve(async (req) => {
 
     // Products that entered since the last campaign, newest first.
     const productSelect =
-      "id, title, slug, description, product_images(storage_path, position), product_variants(price_cents)";
+      "id, title, slug, description, product_images(storage_path, position), product_variants(price_cents, compare_at_price_cents)";
     const { data: newProducts } = await admin
       .from("products")
       .select(productSelect)
@@ -105,15 +110,29 @@ Deno.serve(async (req) => {
 
     const marketingProducts: MarketingProduct[] = products.map((p) => {
       const image = [...(p.product_images ?? [])].sort((x, y) => x.position - y.position)[0];
+      // Same rule as the store listing: the price shown is the cheapest variant's (with its own "de" price).
+      const cheapest = [...(p.product_variants ?? [])].sort((x, y) => x.price_cents - y.price_cents)[0];
       return {
         title: p.title,
         slug: p.slug,
         description: p.description ?? null,
         imageUrl: image ? admin.storage.from("product-media").getPublicUrl(image.storage_path).data.publicUrl : null,
-        priceCents: (p.product_variants ?? [])[0]?.price_cents ?? null,
+        priceCents: cheapest?.price_cents ?? null,
+        compareAtPriceCents: cheapest?.compare_at_price_cents ?? null,
       };
     });
     const productsHtml = buildProductsHtml(marketingProducts);
+
+    // A title nobody received before (the history lives in marketing_email_campaigns).
+    const { data: pastCampaigns } = await admin.from("marketing_email_campaigns").select("subject");
+    const campaignSubject = pickCampaignSubject(
+      new Set((pastCampaigns ?? []).map((c) => c.subject)),
+      marketingProducts[0]?.title ?? null,
+      new Date(),
+    );
+    await admin
+      .from("marketing_email_campaigns")
+      .insert({ subject: campaignSubject, recipients: recipients.length, product_count: products.length });
     const coupon = await resolveTemplateCoupon(admin, "weekly_marketing");
     const cupomBlocoHtml = buildCouponBlockHtml(coupon);
 
@@ -135,6 +154,7 @@ Deno.serve(async (req) => {
         {
           unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?email=${encodeURIComponent(sub.email)}`,
           recipientEmail: sub.email,
+          subject: campaignSubject,
         },
       );
       if (rendered) {
@@ -143,7 +163,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return jsonResponse({ ok: true, sent, products: products.length, usedFallback });
+    return jsonResponse({ ok: true, sent, products: products.length, usedFallback, subject: campaignSubject });
   } catch (error) {
     console.error("[send-weekly-marketing]", error);
     const message = error instanceof Error ? error.message : "Erro ao enviar marketing.";

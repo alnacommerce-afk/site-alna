@@ -12,6 +12,8 @@ export type RenderOptions = {
   unsubscribeLink?: string;
   /** Address the message is being sent to, shown in that footer line. */
   recipientEmail?: string;
+  /** Replaces the template's subject (still gets the {{tokens}} filled in). */
+  subject?: string;
 };
 
 export function wrapBranded(innerHtml: string, options?: RenderOptions): string {
@@ -96,7 +98,7 @@ export async function renderEmailTemplate(
     text.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => tokens[key] ?? "");
 
   return {
-    subject: fill(data.subject),
+    subject: fill(options?.subject ?? data.subject),
     html: wrapBranded(fill(data.html_body), options),
     templateId,
   };
