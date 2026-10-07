@@ -183,6 +183,36 @@ export type Database = {
           },
         ]
       }
+      google_review_stats: {
+        Row: {
+          id: string
+          star_1: number
+          star_2: number
+          star_3: number
+          star_4: number
+          star_5: number
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          star_1?: number
+          star_2?: number
+          star_3?: number
+          star_4?: number
+          star_5?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          star_1?: number
+          star_2?: number
+          star_3?: number
+          star_4?: number
+          star_5?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integration_connections: {
         Row: {
           id: string

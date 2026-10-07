@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MessageSquareText } from "lucide-react";
+import { GoogleRatingsCard } from "@/components/admin/google-ratings-card";
 import {
   Table,
   TableBody,
@@ -57,11 +58,14 @@ function NpsPage() {
 
   return (
     <AdminShell>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold">NPS</h1>
-        <p className="text-sm text-muted-foreground">
-          Respostas da pesquisa de satisfação enviada 7 dias após a entrega.
-        </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold">NPS</h1>
+          <p className="text-sm text-muted-foreground">
+            Respostas da pesquisa de satisfação enviada 7 dias após a entrega.
+          </p>
+        </div>
+        <GoogleRatingsCard />
       </div>
 
       {loading ? (
