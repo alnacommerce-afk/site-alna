@@ -40,6 +40,8 @@ Deno.serve(async (req) => {
     await admin
       .from("email_suppressions")
       .upsert({ email, unsubscribed_at: new Date().toISOString() });
+    // Also leaves the marketing list for good (the campaign sender additionally skips suppressed addresses).
+    await admin.from("marketing_subscribers").delete().ilike("email", email);
 
     return htmlResponse(
       "Você não vai mais receber nossos e-mails de carrinho abandonado e promoções. Você continuará recebendo apenas os e-mails essenciais sobre pedidos que você mesmo fizer.",

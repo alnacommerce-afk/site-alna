@@ -101,3 +101,19 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - O pedido vira `shipped` ao gerar a etiqueta. Enquanto o ponto de coleta não bipar, o selo mostra **"Preparado para envio"**
   em Minha Conta (usa o evento `posted` de `order_events`) e em Admin > Pedidos (usa o status ao vivo do Melhor Envio:
   pending/generated/released). Depois do bip vira "Enviado"; entregue continua "Concluído". Sem mudança no banco.
+
+## marketing_campaign_every_20_days (aplicada em 07/10/2026)
+- **E-mail "Obrigado! Indique e ganhe 5%" (`nps_thank_you`) descontinuado**: modelo apagado; `submit-nps-survey` e `record-nps` não o enviam
+  mais (a própria página da pesquisa agradece e mostra o link de indicação para nota 5+).
+- **Lista de marketing:** nota **0 a 3 fica de fora; 4 a 10 entra** (quem já cancelou o recebimento não volta).
+- **Campanha única a cada 20 dias** para TODA a lista (antes era um ritmo por pessoa: 15/20/15 dias). `send-weekly-marketing`
+  (cron diário 10:00 UTC) só dispara quando passaram 20 dias de `site_settings.marketing_last_campaign_at` (relógio iniciado em
+  07/10/2026 → 1ª campanha em 27/10/2026). Mostra os produtos publicados desde a campanha anterior (mais novos primeiro, até 6);
+  sem novidades usa os produtos escolhidos no modelo; sem nenhum, espera. Lista vazia também espera sem gastar o ciclo.
+- **Cupom:** o modelo `weekly_marketing` usa `RECOMPRA5%OFF` (estava em 10% por engano, corrigido para 5%, limite de 10 usos
+  que só avisa). Modelo reescrito ("Chegaram novidades na ALNA para você") com botão "Ver todas as novidades".
+- **Rodapé de cancelamento** (marketing e lembretes de carrinho): "Esta mensagem foi enviada para o e-mail X. Se não quiser
+  receber esses e-mails da ALNA, cancele o recebimento AQUI." O clique em AQUI põe o e-mail na lista de cancelados e o remove de
+  `marketing_subscribers` (função `unsubscribe-email`).
+- E-mail da pesquisa (`post_purchase_nps`): assunto "Como foi sua compra, {{nome}}?" e texto humilde; SEM promessa de desconto
+  (ainda não existe cupom por responder; ver pendência com o dono).

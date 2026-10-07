@@ -3,10 +3,11 @@
 // do. First submission wins — the score can't be overwritten by revisiting the page later.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { randomPassword } from "../_shared/random-password.ts";
-import { sendEmail } from "../_shared/send-email.ts";
-import { renderEmailTemplate } from "../_shared/render-template.ts";
 
+// From this score up the customer sees the referral link on the page.
 const PROMOTER_THRESHOLD = 5;
+// Notes 0-3 never enter the marketing list; 4-10 do.
+const MARKETING_MIN_SCORE = 4;
 // Notes up to this score get the "conte o que aconteceu" box on the landing page; the text is kept
 // for the admin (Marketing > NPS) to follow up on.
 const FEEDBACK_MAX_SCORE = 5;
@@ -148,36 +149,27 @@ Deno.serve(async (req) => {
     let referralLink: string | null = null;
 
     if (order.customer_email) {
-      const resendKey = await admin
-        .rpc("get_integration_secret", { p_integration_id: "resend" })
-        .then((r) => r.data as string | null);
-      const customerUserId =
-        order.user_id ?? (await getOrCreateCustomerUserId(admin, order.customer_email, order.customer_name));
-      const referralCode = customerUserId ? await getOrCreateReferralCode(admin, customerUserId) : null;
-      if (referralCode) referralLink = `${SITE_URL}/loja?ref=${referralCode}`;
-
-      const rendered = await renderEmailTemplate(admin, "nps_thank_you", {
-        nome: order.customer_name ?? "cliente",
-        link_indicacao: referralLink ?? `${SITE_URL}/conta`,
-      });
-      if (rendered) {
-        await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
+      // Referral link shown on the page (and in Minha Conta) — only for customers who liked the experience.
+      // The "obrigado" e-mail that used to carry it was discontinued: the page itself says thanks.
+      if (promoter) {
+        const customerUserId =
+          order.user_id ?? (await getOrCreateCustomerUserId(admin, order.customer_email, order.customer_name));
+        const referralCode = customerUserId ? await getOrCreateReferralCode(admin, customerUserId) : null;
+        if (referralCode) referralLink = `${SITE_URL}/loja?ref=${referralCode}`;
       }
 
-      if (promoter) {
-        // next_email_at starts the 15-day wait for their first marketing e-mail (send-weekly-marketing
-        // reschedules it after every send — 20 days after the 1st, 15 days after every one since).
-        const { data: existingSubscriber } = await admin
-          .from("marketing_subscribers")
-          .select("email")
-          .eq("email", order.customer_email)
-          .maybeSingle();
-        if (!existingSubscriber) {
+      // Marketing list: notes 0-3 stay out, 4-10 join (unless the person opted out before). The campaign
+      // e-mail (send-weekly-marketing) goes to everyone on the list every 20 days.
+      if (score >= MARKETING_MIN_SCORE) {
+        const [{ data: existingSubscriber }, { data: suppressed }] = await Promise.all([
+          admin.from("marketing_subscribers").select("email").eq("email", order.customer_email).maybeSingle(),
+          admin.from("email_suppressions").select("email").ilike("email", order.customer_email).maybeSingle(),
+        ]);
+        if (!existingSubscriber && !suppressed) {
           await admin.from("marketing_subscribers").insert({
             email: order.customer_email,
             name: order.customer_name,
             source: "nps_promoter",
-            next_email_at: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
           });
         }
       }

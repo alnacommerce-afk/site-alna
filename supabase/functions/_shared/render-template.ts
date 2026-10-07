@@ -7,9 +7,20 @@ import type { SupabaseClient } from "jsr:@supabase/supabase-js@2";
 // The only image in any e-mail. Served by the static Home (see /home-cloudflare/assets).
 const LOGO_URL = "https://alna.sale/assets/logo-alna.png";
 
-export function wrapBranded(innerHtml: string, options?: { unsubscribeLink?: string }): string {
+export type RenderOptions = {
+  /** One-click opt-out link; when present the footer gets the "cancele o recebimento AQUI" line. */
+  unsubscribeLink?: string;
+  /** Address the message is being sent to, shown in that footer line. */
+  recipientEmail?: string;
+};
+
+export function wrapBranded(innerHtml: string, options?: RenderOptions): string {
   const unsubscribeBlock = options?.unsubscribeLink
-    ? `<p style="margin-top:16px;font-size:12px;">
+    ? options.recipientEmail
+      ? `<p style="margin:16px 0 0;font-size:11px;color:#9ca3af;">
+         Esta mensagem foi enviada para o e-mail ${options.recipientEmail}. Se não quiser receber esses e-mails da ALNA, cancele o recebimento <a href="${options.unsubscribeLink}" style="color:#6b7280;text-decoration:underline;">AQUI</a>.
+       </p>`
+      : `<p style="margin-top:16px;font-size:12px;">
          <a href="${options.unsubscribeLink}" style="color:#9ca3af;">Não quero mais receber esses avisos</a>
        </p>`
     : "";
@@ -69,7 +80,7 @@ export async function renderEmailTemplate(
   admin: SupabaseClient,
   templateId: string,
   tokens: Record<string, string>,
-  options?: { unsubscribeLink?: string },
+  options?: RenderOptions,
 ): Promise<{ subject: string; html: string; templateId: string } | null> {
   const { data, error } = await admin
     .from("email_templates")

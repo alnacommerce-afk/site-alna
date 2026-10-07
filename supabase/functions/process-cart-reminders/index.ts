@@ -112,7 +112,10 @@ Deno.serve(async (req) => {
           pix_qr_html: pixQrHtml,
           botao_checkout: botaoCheckout,
         },
-        { unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}` },
+        {
+          unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}`,
+          recipientEmail: order.customer_email,
+        },
       );
       if (rendered) {
         await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
@@ -159,7 +162,10 @@ Deno.serve(async (req) => {
           cupom_bloco_html: cupomBlocoHtml,
           botao_checkout: botaoCheckout,
         },
-        { unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}` },
+        {
+          unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}`,
+          recipientEmail: order.customer_email,
+        },
       );
       if (rendered) {
         await sendEmail(resendKey, { to: order.customer_email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
