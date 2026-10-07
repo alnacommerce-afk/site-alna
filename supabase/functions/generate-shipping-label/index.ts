@@ -5,6 +5,7 @@
 // explicitly clicks "Gerar etiqueta" in /admin/pedidos — never automatically on payment.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
+import { notifyOrderShipped } from "../_shared/notify-order-status.ts";
 import { packOrder } from "../_shared/package-dimensions.ts";
 
 const corsHeaders = {
@@ -263,6 +264,14 @@ Deno.serve(async (req) => {
         status: "shipped",
       })
       .eq("id", orderId);
+
+    // "Pedido enviado" e-mail. If Melhor Envio hasn't published the tracking code yet, nothing is sent
+    // here — sync-delivery-status fills the code in later and sends it then (once, via the same claim).
+    try {
+      await notifyOrderShipped(admin, orderId, trackingCode);
+    } catch (mailError) {
+      console.error("[generate-shipping-label] falha no e-mail de pedido enviado", mailError);
+    }
 
     return jsonResponse({ trackingCode, labelUrl: printJson?.url ?? null });
   } catch (error) {

@@ -84,8 +84,8 @@ const NO_COUPON_VALUE = "__none__";
 function wrapBrandedPreview(innerHtml: string) {
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; max-width: 520px; margin: 0 auto; background:#ffffff;">
-    <div style="background:#12294f; padding:20px 24px; text-align:center;">
-      <span style="color:#ffffff; font-size:20px; font-weight:800; letter-spacing:0.5px;">ALNA COMMERCE</span>
+    <div style="background:#ffffff; padding:20px 24px; text-align:center; border-bottom:4px solid #12294f;">
+      <img src="https://alna.sale/assets/logo-alna.png" alt="ALNA" width="140" style="display:inline-block; height:auto; border:0;">
     </div>
     <div style="padding:28px 24px; color:#12294f; font-size:15px; line-height:1.55;">
       ${innerHtml}
@@ -119,6 +119,9 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f1-event", 230, 120, "Evento: pagamento confirmado (webhook Asaas ou cartão aprovado)", "wait"),
     emailNode("f1-email2", 230, 240, "Pagamento confirmado (+ acesso à conta, se novo cliente)", "payment_confirmed"),
     emailNode("f1-referral", 0, 350, "Recompensa de indicação (se o pedido veio de um link)", "referral_reward"),
+    emailNode("f1-admin", 0, 240, "Aviso de venda (para o admin)", "admin_new_sale"),
+    plainNode("f1-label", 230, 350, "Admin gera a etiqueta no sistema (Admin > Pedidos)", "wait"),
+    emailNode("f1-email3", 230, 460, "Pedido enviado + código de rastreio", "order_shipped"),
 
     // Fluxo 2 — Recuperação de carrinho. As duas ramificações "Pagou? → Sim" e o pagamento após a
     // "última chance" apontam de volta para f1-email2 em vez de terminar num "Fim" separado.
@@ -127,19 +130,21 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     emailNode("f2-email1", 480, 350, "Carrinho esperando", "cart_reminder_10min"),
     plainNode("f2-wait2", 480, 460, "Espera 24 horas", "wait"),
     plainNode("f2-cond2", 480, 570, "Pagou?", "condition"),
-    emailNode("f2-email2", 480, 680, "Última chance + cupom", "cart_reminder_24h"),
+    emailNode("f2-email2", 480, 680, "Última chance + cupom pessoal (uso único, 7 dias)", "cart_reminder_24h"),
     plainNode("f2-exit", 480, 790, "Sair da lista", "exit"),
 
     // Fluxo 3 — Pós-compra / NPS / indicação — encadeado direto do Fluxo 1.
-    plainNode("f3-trigger", 840, 240, "Entrega confirmada (rastreio)", "trigger"),
+    plainNode("f3-trigger", 840, 240, "Transportadora confirma a entrega (conferido a cada 30 min)", "trigger"),
     emailNode("f3-email0", 840, 350, "Pedido chegou!", "delivery_confirmed"),
     plainNode("f3-wait", 840, 460, "Espera 1 dia", "wait"),
-    emailNode("f3-email1", 840, 570, "Participe e ganhe 5% na próxima compra", "post_purchase_nps"),
-    plainNode("f3-click", 840, 680, "Cliente responde na landing page (nota + indicaria)", "wait"),
+    emailNode("f3-email1", 840, 570, "Pesquisa de satisfação (sem promessa de desconto)", "post_purchase_nps"),
+    plainNode("f3-click", 840, 680, "Cliente abre a página, dá a nota e clica em Submeter", "wait"),
     emailNode("f3-email2", 840, 790, "Obrigado + indique e ganhe 5%", "nps_thank_you"),
-    plainNode("f3-cond", 840, 900, "Nota ≥ 5?", "condition"),
-    plainNode("f3-list", 840, 1010, "Entra na lista de marketing", "trigger"),
-    plainNode("f3-end", 1120, 900, "Fim (sem marketing)", "exit"),
+    plainNode("f3-cond", 840, 900, "Qual foi a nota?", "condition"),
+    plainNode("f3-list", 840, 1010, "Nota 5 a 10: entra na lista de marketing + link de indicação", "trigger"),
+    plainNode("f3-google", 840, 1120, "Nota 6 a 10: aparece o botão \"Nos avalie no Google\"", "wait"),
+    plainNode("f3-low", 1090, 900, "Nota 0 a 5: aparece a caixa \"Nos diga o que aconteceu\" (vai para Marketing > NPS)", "wait"),
+    plainNode("f3-back", 840, 1230, "Botão \"Voltar para a loja\" (store.alna.sale/loja)", "exit"),
 
     // Fluxo 4 — Marketing por assinante: 15 dias → 1º e-mail, 20 dias → 2º, 15 em 15 dias depois.
     plainNode("f4-trigger", 1260, 0, "Cliente na lista de marketing", "trigger"),
@@ -162,6 +167,16 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f5-reset-note", 1560, 440, "Alerta reseta — avisa de novo se cair outra vez", "wait"),
 
     // Fluxo 6 — Produto esgotado / lista de espera "Avise-me quando voltar".
+    // Fluxo 7 — Pagamento recusado / estorno (o cliente sempre é avisado, uma vez por mudança de situação).
+    plainNode("f7-trigger1", 2520, 0, "Asaas avisa: pagamento recusado ou reprovado (ou pedido pago cancelado)", "trigger"),
+    emailNode("f7-email1", 2520, 110, "Pedido cancelado (nada foi cobrado)", "order_cancelled"),
+    plainNode("f7-trigger2", 2520, 250, "Asaas avisa: estorno do pagamento", "trigger"),
+    emailNode("f7-email2", 2520, 360, "Estorno registrado", "order_refunded"),
+
+    // Fluxo 8 — Aviso de cupom para o admin.
+    plainNode("f8-trigger", 2520, 520, "Cupom usado: chega a 5, a 1 ou passa do limite", "trigger"),
+    emailNode("f8-email", 2520, 630, "Aviso de cupom (para o admin)", "coupon_alert"),
+
     plainNode("f6-trigger", 2040, 0, "Estoque de um SKU chega a 0", "trigger"),
     plainNode("f6-ui", 2040, 110, "Página do produto mostra \"Avise-me quando voltar\"", "wait"),
     plainNode("f6-cond", 2040, 220, "Cliente já tem cadastro?", "condition"),
@@ -184,9 +199,12 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
       label: "se tem indicador",
       style: { strokeDasharray: "4 4" },
     },
+    { id: "e-f1-6", source: "f1-email2", target: "f1-admin", sourceHandle: "right", style: { strokeDasharray: "4 4" } },
+    { id: "e-f1-7", source: "f1-email2", target: "f1-label" },
+    { id: "e-f1-8", source: "f1-label", target: "f1-email3" },
     {
       id: "e-f1-f3",
-      source: "f1-email2",
+      source: "f1-email3",
       sourceHandle: "right",
       target: "f3-trigger",
       label: "produto entregue",
@@ -217,8 +235,11 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f3-3", source: "f3-email1", target: "f3-click" },
     { id: "e-f3-4", source: "f3-click", target: "f3-email2" },
     { id: "e-f3-5", source: "f3-email2", target: "f3-cond" },
-    { id: "e-f3-6", source: "f3-cond", target: "f3-list", label: "Sim" },
-    { id: "e-f3-7", source: "f3-cond", sourceHandle: "right", target: "f3-end", label: "Não" },
+    { id: "e-f3-6", source: "f3-cond", target: "f3-list", label: "5 a 10" },
+    { id: "e-f3-7", source: "f3-cond", sourceHandle: "right", target: "f3-low", label: "0 a 5" },
+    { id: "e-f3-8", source: "f3-list", target: "f3-google" },
+    { id: "e-f3-9", source: "f3-google", target: "f3-back" },
+    { id: "e-f3-10", source: "f3-low", target: "f3-back", style: { strokeDasharray: "4 4" } },
 
     { id: "e-f4-1", source: "f4-trigger", target: "f4-wait1" },
     { id: "e-f4-2", source: "f4-wait1", target: "f4-email1" },
@@ -232,6 +253,10 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f5-2", source: "f5-cond", target: "f5-email", label: "Sim" },
     { id: "e-f5-3", source: "f5-cond", sourceHandle: "right", target: "f5-no", label: "Não" },
     { id: "e-f5-4", source: "f5-reset-trigger", target: "f5-reset-note" },
+
+    { id: "e-f7-1", source: "f7-trigger1", target: "f7-email1" },
+    { id: "e-f7-2", source: "f7-trigger2", target: "f7-email2" },
+    { id: "e-f8-1", source: "f8-trigger", target: "f8-email" },
 
     { id: "e-f6-1", source: "f6-trigger", target: "f6-ui" },
     { id: "e-f6-2", source: "f6-ui", target: "f6-cond" },

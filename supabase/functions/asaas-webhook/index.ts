@@ -4,6 +4,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { notifyPaymentConfirmed } from "../_shared/notify-payment-confirmed.ts";
 import { reportPaymentProblem } from "../_shared/payment-alert.ts";
+import { notifyOrderCancelled, notifyOrderRefunded } from "../_shared/notify-order-status.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -89,6 +90,27 @@ Deno.serve(async (req) => {
         is_new_account: existingOrder.is_new_account,
         referrer_user_id: existingOrder.referrer_user_id,
       });
+    }
+
+    // Customer e-mails for the sad paths, once per order (Asaas retries webhooks, and sends several
+    // events for one payment, so we only act on an actual change of status).
+    if (existingOrder && orderStatus && existingOrder.status !== orderStatus) {
+      const statusEmailOrder = {
+        id: existingOrder.id,
+        customer_name: existingOrder.customer_name,
+        customer_email: existingOrder.customer_email,
+        total_cents: existingOrder.total_cents,
+      };
+      if (orderStatus === "refunded") {
+        await notifyOrderRefunded(admin, statusEmailOrder);
+      } else if (orderStatus === "cancelled") {
+        // A refused card / risk-analysis rejection always deserves an explanation. PAYMENT_DELETED on a
+        // still-unpaid order is just the charge being cleaned up (customer never paid), so stay quiet
+        // there; on an already-paid order it's a real cancellation the customer must hear about.
+        const refused = eventType !== "PAYMENT_DELETED";
+        const wasPaid = ["paid", "shipped", "completed"].includes(existingOrder.status);
+        if (refused || wasPaid) await notifyOrderCancelled(admin, statusEmailOrder);
+      }
     }
 
     return jsonResponse({ ok: true });

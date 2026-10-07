@@ -62,3 +62,15 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   (`src/lib/admin/sales-averages.ts`). A coluna "Frete até a capital" foi removida da tela.
 - Telas novas/alteradas: Cupons (quadro "Média de uso do cupom" com 30/60/90 dias) e "Gasto com frete"
   (`/admin/marketing/gasto-frete`, 7 e 30 dias, etiqueta zerada quando o cliente pagou o frete).
+
+## order_status_emails_and_survey_text (aplicada em 07/10/2026)
+- `orders.shipped_email_sent_at`: marca que o e-mail "Pedido enviado" já saiu (garante 1 só por pedido; pedidos que
+  já tinham código de rastreio foram marcados na hora, para ninguém receber aviso retroativo).
+- Novos modelos de e-mail: `order_shipped` (código de rastreio), `order_cancelled` (pagamento recusado/cancelado, "nada
+  foi cobrado") e `order_refunded` (estorno registrado). Editáveis em Admin > Marketing > Fluxo de E-mail.
+- `post_purchase_nps` reescrito: assunto "Como foi a sua compra na ALNA, {{nome}}?", sem promessa de desconto por
+  participar; botão "Responder a pesquisa".
+- Quando sai cada e-mail: "enviado" quando a etiqueta é gerada e o código existe (se o código só aparecer depois,
+  o `sync-delivery-status` envia nessa hora); "cancelado" em recusa de cartão/reprovação de risco (e em
+  PAYMENT_DELETED só se o pedido já estava pago); "estorno" em PAYMENT_REFUNDED/PARTIALLY_REFUNDED. Todos só
+  disparam na mudança de situação, então reenvio do webhook pela Asaas não duplica.

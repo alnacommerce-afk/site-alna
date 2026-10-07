@@ -97,6 +97,27 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json();
     const orderId = body?.orderId as string | undefined;
+
+    // Second step of the page: after the score was recorded, a customer who gave a low note can tell
+    // us what happened. Accepted once, and only for orders whose recorded score asks for it.
+    if (body?.action === "feedback") {
+      if (!orderId || typeof body?.feedback !== "string") {
+        return jsonResponse({ error: "Dados da pesquisa inválidos." }, 400);
+      }
+      const text = body.feedback.trim().slice(0, FEEDBACK_MAX_LENGTH);
+      if (!text) return jsonResponse({ error: "Escreva a sua mensagem antes de enviar." }, 400);
+      const { data: saved } = await admin
+        .from("orders")
+        .update({ nps_feedback: text })
+        .eq("id", orderId)
+        .lte("nps_score", FEEDBACK_MAX_SCORE)
+        .is("nps_feedback", null)
+        .select("id")
+        .maybeSingle();
+      if (!saved) return jsonResponse({ ok: true, alreadySent: true });
+      return jsonResponse({ ok: true });
+    }
+
     const score = Number(body?.score);
     const wouldRecommend = body?.wouldRecommend;
     if (!orderId || !Number.isInteger(score) || score < 0 || score > 10 || typeof wouldRecommend !== "boolean") {

@@ -4,6 +4,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
+import { notifyOrderShipped } from "../_shared/notify-order-status.ts";
 
 const ME_API = "https://melhorenvio.com.br/api/v2";
 const SITE_URL = "https://store.alna.sale";
@@ -78,6 +79,9 @@ Deno.serve(async (req) => {
             .update({ tracking_code: entry.tracking })
             .eq("id", order.id)
             .is("tracking_code", null);
+          // The label was generated before the code existed: this is the first moment we can tell the
+          // customer. No-op if the "pedido enviado" e-mail already went out.
+          await notifyOrderShipped(admin, order.id, entry.tracking);
         }
         if (entry?.delivered_at) {
           const { error: deliveredError } = await admin
