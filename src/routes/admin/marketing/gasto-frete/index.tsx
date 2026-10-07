@@ -90,7 +90,10 @@ function GastoFretePage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="7">Últimos 7 dias</SelectItem>
+            <SelectItem value="15">Últimos 15 dias</SelectItem>
             <SelectItem value="30">Últimos 30 dias</SelectItem>
+            <SelectItem value="45">Últimos 45 dias</SelectItem>
+            <SelectItem value="60">Últimos 60 dias</SelectItem>
           </SelectContent>
         </Select>
       </div>
