@@ -140,3 +140,13 @@ Evitar "sem juros" (o total do cartão muda com as parcelas) e "visite nossa loj
   aparecerem lá.
 - Orçamento inicial sugerido: R$ 15–20/dia por 1–2 semanas; depois revisar termos de pesquisa, cliques e vendas e
   ajustar títulos, palavras-chave e orçamento.
+
+**Estratégia do anúncio (definida pelo dono em 07/10/2026):** a loja tem itens de R$ 2 a R$ 17 e frete grátis só a
+partir de R$ 150; o cliente é incentivado a encher o carrinho. Os anúncios miram compra em quantidade/atacado.
+Por isso o endereço final deve ser a Loja (não um produto isolado) e a loja ganhou o aviso de progresso do frete
+grátis (loja e página do produto) e a seção "Complete seu pedido" no carrinho.
+Regiões para começar: SC, PR, RS, SP, RJ, MG. Frete medido com 1 tábua (R$ 6,30): Curitiba R$ 15,30 (3 dias), São Paulo
+R$ 15,02 (4), Rio/BH R$ 15,28 (4), Florianópolis R$ 16,68 (3), Porto Alegre R$ 19,21 (3), Brasília R$ 22,33 (6), Recife
+R$ 24,09 (8), Manaus R$ 33,76 (13).
+Lacunas para atacado (não tratadas): preço por quantidade, pedido mínimo, texto do anúncio voltado a revenda.
+

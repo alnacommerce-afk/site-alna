@@ -10,6 +10,7 @@ import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-inf
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
 import { RestockNotifyBox } from "@/components/site/restock-notify-box";
 import { SiteHeader } from "@/components/site/site-header";
+import { FreeShippingBanner } from "@/components/site/free-shipping-progress";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
 import { Reveal } from "@/components/site/reveal";
@@ -828,10 +829,14 @@ function ProdutoPage() {
             </p>
           </div>
 
+          <div className="mt-5">
+            <FreeShippingBanner />
+          </div>
+
           <Button
             type="button"
             size="lg"
-            className="mt-5 w-full bg-[#16a34a] text-base font-bold hover:bg-[#16a34a]/90"
+            className="mt-3 w-full bg-[#16a34a] text-base font-bold hover:bg-[#16a34a]/90"
             disabled={!hasSelection || !anyInStock}
             onClick={handleAddToCart}
           >

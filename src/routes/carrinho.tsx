@@ -10,6 +10,8 @@ import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-inf
 import { fetchShippingQuote, onlyDigits, type ShippingQuote } from "@/lib/shipping/quote";
 import { validateCoupon } from "@/lib/checkout/validate-coupon";
 import { SiteHeader } from "@/components/site/site-header";
+import { FreeShippingProgress } from "@/components/site/free-shipping-progress";
+import { CompleteOrderSuggestions } from "@/components/site/complete-order-suggestions";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
 import { Button } from "@/components/ui/button";
@@ -25,43 +27,6 @@ export const Route = createFileRoute("/carrinho")({
   }),
   component: CarrinhoPage,
 });
-
-function FreeShippingProgress({
-  subtotalCents,
-  thresholdCents,
-}: {
-  subtotalCents: number;
-  thresholdCents: number;
-}) {
-  const reached = subtotalCents >= thresholdCents;
-  const pct = Math.min(100, Math.round((subtotalCents / thresholdCents) * 100));
-  const remainingCents = Math.max(0, thresholdCents - subtotalCents);
-
-  return (
-    <div className="rounded-lg border border-[#12294f]/10 bg-[#fcfbf8] p-4">
-      <div className="flex items-center gap-2 text-sm font-semibold text-[#12294f]">
-        <Truck className="h-4 w-4 shrink-0 text-[#16a34a]" />
-        {reached ? (
-          <span>Você garantiu frete grátis! 🎉</span>
-        ) : (
-          <span>
-            Faltam <strong>{formatCentsToBRL(remainingCents)}</strong> em compras para ganhar frete
-            grátis
-          </span>
-        )}
-      </div>
-      <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-[#12294f]/10">
-        <div
-          className="h-full rounded-full bg-[#16a34a] transition-all duration-300"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <p className="mt-1 text-right text-xs text-muted-foreground">
-        {formatCentsToBRL(subtotalCents)} de {formatCentsToBRL(thresholdCents)} para frete grátis
-      </p>
-    </div>
-  );
-}
 
 function CarrinhoPage() {
   const { data: siteSettings } = useSiteSettings();
@@ -241,6 +206,10 @@ function CarrinhoPage() {
                     </div>
                   </div>
                 ))}
+
+                {freeShippingThresholdCents !== null && subtotalCents < freeShippingThresholdCents ? (
+                  <CompleteOrderSuggestions />
+                ) : null}
               </div>
 
               <div className="h-fit space-y-4 rounded-lg border border-[#12294f]/10 p-5">

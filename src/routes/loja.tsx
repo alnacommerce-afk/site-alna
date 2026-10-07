@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import heroAmbassador from "@/assets/brand/hero-ambassador-cutout.png";
 import { SiteHeader } from "@/components/site/site-header";
+import { FreeShippingBanner } from "@/components/site/free-shipping-progress";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
 import { Reveal } from "@/components/site/reveal";
@@ -429,6 +430,10 @@ function LojaPage() {
           </div>
         </div>
       </section>
+
+      <div className="mx-auto max-w-6xl px-4 pt-6">
+        <FreeShippingBanner />
+      </div>
 
       <Await promise={catalog} fallback={<CatalogSkeleton />}>
         {(data) => (
