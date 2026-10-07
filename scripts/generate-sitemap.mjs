@@ -22,6 +22,7 @@ const staticUrls = [
   { loc: `${SITE_URL}/politica-de-privacidade`, changefreq: "yearly", priority: "0.3" },
   { loc: `${SITE_URL}/termos-de-uso`, changefreq: "yearly", priority: "0.3" },
   { loc: `${SITE_URL}/politica-de-troca-e-devolucao`, changefreq: "yearly", priority: "0.3" },
+  { loc: `${SITE_URL}/atacado`, changefreq: "monthly", priority: "0.7" },
   { loc: `${SITE_URL}/sobre`, changefreq: "yearly", priority: "0.4" },
   { loc: `${SITE_URL}/contato`, changefreq: "yearly", priority: "0.4" },
 ];
