@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight, ShoppingCart } from "lucide-react";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
@@ -78,6 +79,29 @@ export const Route = createFileRoute("/atacado")({
   component: AtacadoPage,
 });
 
+// Botão principal da página: grande, cor de destaque e com a vantagem logo abaixo, para quem chega
+// de um anúncio saber exatamente o que fazer.
+function BigCta({ freeShipping }: { freeShipping: string }) {
+  return (
+    <div className="pt-4">
+      <Button
+        asChild
+        size="lg"
+        className="h-16 w-full rounded-xl bg-gradient-to-r from-[#16a34a] to-[#15803d] px-8 text-lg font-extrabold shadow-xl shadow-[#16a34a]/30 transition-transform hover:scale-[1.02] hover:from-[#15803d] hover:to-[#166534] sm:w-auto sm:min-w-[22rem]"
+      >
+        <Link to="/loja" search={{ categoria: undefined }}>
+          <ShoppingCart className="mr-3 h-6 w-6" />
+          Ver produtos e montar meu pedido
+          <ArrowRight className="ml-3 h-6 w-6" />
+        </Link>
+      </Button>
+      <p className="mt-3 text-sm font-semibold text-[#12294f]">
+        5% de desconto acima de R$ 250 · Frete grátis acima de {freeShipping} · Nota fiscal
+      </p>
+    </div>
+  );
+}
+
 function AtacadoPage() {
   const { data: siteSettings } = useSiteSettings();
   const freeShipping = formatCentsToBRL(siteSettings?.free_shipping_threshold_cents ?? 15000);
@@ -92,18 +116,7 @@ function AtacadoPage() {
           <strong>todos os produtos do site</strong>. Monte o pedido direto no site ou fale com a
           gente para quantidades maiores.
         </p>
-        <div className="flex flex-wrap gap-3 pt-2">
-          <Button asChild className="bg-[#16a34a] font-bold hover:bg-[#16a34a]/90">
-            <Link to="/loja" search={{ categoria: undefined }}>
-              Ver produtos e montar o pedido
-            </Link>
-          </Button>
-          <Button asChild variant="outline">
-            <a href={WHATSAPP_ATACADO_URL} target="_blank" rel="noopener noreferrer">
-              Falar no WhatsApp
-            </a>
-          </Button>
-        </div>
+        <BigCta freeShipping={freeShipping} />
       </LegalSection>
 
       <LegalSection heading="Condições para compras em quantidade">
@@ -232,6 +245,10 @@ function AtacadoPage() {
           </p>
         </div>
       </LegalSection>
+      <div className="mt-10 rounded-2xl bg-[#f0fdf4] p-6">
+        <p className="text-lg font-bold text-[#12294f]">Pronto para montar o seu pedido?</p>
+        <BigCta freeShipping={freeShipping} />
+      </div>
     </LegalPageLayout>
   );
 }
