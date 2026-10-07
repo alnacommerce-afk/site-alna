@@ -8,22 +8,60 @@ import { useSiteSettings } from "@/lib/site-data";
 import { STORE_URL } from "@/lib/site-urls";
 
 const PAGE_URL = `${STORE_URL}/atacado`;
-const TITLE = "Atacado de Utensílios de Madeira para Cozinha";
+const TITLE = "Atacado de Utilidades Domésticas, Toalhas e Cozinha";
 const DESCRIPTION =
-  "Compre utensílios de madeira em quantidade para revenda: 5% de desconto acima de R$ 250, frete grátis acima de R$ 150 e nota fiscal para empresas.";
+  "Compre em quantidade para revenda: utensílios de madeira, toalhas e mais. 5% de desconto acima de R$ 250, frete grátis acima de R$ 150 e nota fiscal.";
 
 const WHATSAPP_ATACADO_URL = `${WHATSAPP_URL}?text=${encodeURIComponent(
   "Olá! Quero comprar em quantidade na ALNA (atacado).",
 )}`;
 
-const FEATURED_PRODUCTS = [
-  { slug: "tabua-de-corte-madeira-antibacteriana-para-cozinha", name: "Tábua de corte de madeira" },
-  { slug: "pilao-de-madeira-com-socador-para-temperos-e-alho", name: "Pilão de madeira com socador" },
-  { slug: "rolo-de-massa-de-madeira-macica-para-pao-e-pizza", name: "Rolo de massa de madeira maciça" },
-  { slug: "colher-de-madeira", name: "Colher de madeira" },
-  { slug: "prato-de-madeira-pinus-redondo-22cm-servir", name: "Prato de madeira pinus redondo" },
-  { slug: "bandeja-de-madeira-natural", name: "Bandeja de madeira natural" },
-];
+const FEATURED_GROUPS = [
+  {
+    heading: "Cozinha: utensílios de madeira",
+    category: "cozinha",
+    products: [
+      {
+        slug: "tabua-de-corte-madeira-antibacteriana-para-cozinha",
+        name: "Tábua de corte de madeira",
+      },
+      {
+        slug: "pilao-de-madeira-com-socador-para-temperos-e-alho",
+        name: "Pilão de madeira com socador",
+      },
+      {
+        slug: "rolo-de-massa-de-madeira-macica-para-pao-e-pizza",
+        name: "Rolo de massa de madeira maciça",
+      },
+      { slug: "colher-de-madeira", name: "Colher de madeira" },
+      {
+        slug: "prato-de-madeira-pinus-redondo-22cm-servir",
+        name: "Prato de madeira pinus redondo",
+      },
+      { slug: "bandeja-de-madeira-natural", name: "Bandeja de madeira natural" },
+    ],
+  },
+  {
+    heading: "Toalhas de banho e rosto",
+    category: "toalhas",
+    products: [
+      { slug: "toalha-colore-500g-80x150", name: "Toalha de banho Banhão 500g" },
+      { slug: "toalha-paris-270g-68x140", name: "Toalha de banho Paris 100% algodão" },
+      { slug: "toalha-rubi-400g-80x150", name: "Toalha Rubi 400g" },
+      { slug: "toalha-luxo-banho-e-rosto", name: "Jogo de toalhas banho e rosto" },
+      { slug: "toalha-de-time", name: "Toalha branca para sublimação" },
+    ],
+  },
+  {
+    heading: "Roupas e meias",
+    category: "roupas",
+    products: [
+      { slug: "camiseta-protecao-uv-50-manga-longa-unissex", name: "Camiseta proteção UV 50+" },
+      { slug: "short-tactel", name: "Short tactel de secagem rápida" },
+      { slug: "meia-termica-para-frio-intenso-canelada-unissex", name: "Meia térmica canelada" },
+    ],
+  },
+] as const;
 
 export const Route = createFileRoute("/atacado")({
   head: () => ({
@@ -48,9 +86,11 @@ function AtacadoPage() {
     <LegalPageLayout title={TITLE}>
       <LegalSection heading="Compre em quantidade para o seu negócio">
         <p>
-          A ALNA vende utensílios de madeira e utilidades domésticas para quem compra em volume:
-          lojas, restaurantes, padarias, lanchonetes, buffets e revendedores. Monte o pedido direto
-          no site, com as condições abaixo, ou fale com a gente para quantidades maiores.
+          A ALNA vende para quem compra em volume: lojas, restaurantes, padarias, lanchonetes,
+          buffets e revendedores. São utensílios de madeira para cozinha, toalhas de banho e rosto,
+          roupas e utilidades domésticas, e as condições abaixo valem para{" "}
+          <strong>todos os produtos do site</strong>. Monte o pedido direto no site ou fale com a
+          gente para quantidades maiores.
         </p>
         <div className="flex flex-wrap gap-3 pt-2">
           <Button asChild className="bg-[#16a34a] font-bold hover:bg-[#16a34a]/90">
@@ -89,32 +129,44 @@ function AtacadoPage() {
         </p>
       </LegalSection>
 
-      <LegalSection heading="Produtos mais pedidos para revenda">
+      <LegalSection heading="O que você encontra para revenda">
         <p>
-          Utensílios de madeira para cozinha que giram bem em lojas e em uso profissional. Veja
-          cada produto, as variações de tamanho e o estoque disponível:
+          Todo o catálogo vale para compra em quantidade. Veja alguns itens de cada categoria, as
+          variações disponíveis e o estoque de cada um:
         </p>
-        <ul className="list-disc space-y-1 pl-5">
-          {FEATURED_PRODUCTS.map((product) => (
-            <li key={product.slug}>
+        {FEATURED_GROUPS.map((group) => (
+          <div key={group.category}>
+            <h3 className="font-semibold text-[#12294f]">
               <Link
-                to="/produto/$slug"
-                params={{ slug: product.slug }}
-                className="font-semibold text-[#16a34a] hover:underline"
+                to="/loja"
+                search={{ categoria: group.category }}
+                className="hover:text-[#16a34a] hover:underline"
               >
-                {product.name}
+                {group.heading}
               </Link>
-            </li>
-          ))}
-        </ul>
+            </h3>
+            <ul className="mt-1 list-disc space-y-1 pl-5">
+              {group.products.map((product) => (
+                <li key={product.slug}>
+                  <Link
+                    to="/produto/$slug"
+                    params={{ slug: product.slug }}
+                    className="font-semibold text-[#16a34a] hover:underline"
+                  >
+                    {product.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
         <p>
-          Também temos itens de cama, mesa e banho.{" "}
           <Link
             to="/loja"
             search={{ categoria: undefined }}
             className="font-semibold text-[#16a34a] hover:underline"
           >
-            Ver todos os produtos
+            Ver todos os produtos da loja
           </Link>
           .
         </p>
@@ -122,7 +174,10 @@ function AtacadoPage() {
 
       <LegalSection heading="Como comprar em quantidade">
         <ol className="list-decimal space-y-1 pl-5">
-          <li>Escolha os produtos e as quantidades na loja e adicione ao carrinho.</li>
+          <li>
+            Escolha os produtos (de qualquer categoria) e as quantidades na loja e adicione ao
+            carrinho.
+          </li>
           <li>
             Acompanhe a barra do frete grátis e, ao passar de R$ 250,00, aplique o cupom ALNA5%OFF.
           </li>
