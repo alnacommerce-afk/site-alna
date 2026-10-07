@@ -74,3 +74,14 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   o `sync-delivery-status` envia nessa hora); "cancelado" em recusa de cartão/reprovação de risco (e em
   PAYMENT_DELETED só se o pedido já estava pago); "estorno" em PAYMENT_REFUNDED/PARTIALLY_REFUNDED. Todos só
   disparam na mudança de situação, então reenvio do webhook pela Asaas não duplica.
+
+## order_prepared_and_posted_emails (aplicada em 07/10/2026) — substitui o "Pedido enviado" acima
+- O e-mail "Pedido enviado" dizia "a caminho" cedo demais (a etiqueta só significa que o pacote foi embalado). Foi
+  trocado por dois: `order_prepared` ("preparado para envio, será deixado no ponto de coleta", sai ao gerar a etiqueta,
+  sem precisar de código) e `order_posted` ("já foi deixado no ponto de coleta" + código de rastreio + link
+  `https://www.melhorrastreio.com.br/app/jet/<código>`, sai quando o Melhor Envio informa `posted_at`, na conferência
+  de até 30 min). O modelo `order_shipped` foi apagado.
+- Novas colunas `orders.prepared_email_sent_at` e `orders.posted_email_sent_at` (uma só mensagem de cada por pedido).
+  `orders.shipped_email_sent_at` ficou sem uso (pode ser apagada depois). Pedidos já concluídos foram marcados para não
+  receber nada retroativo.
+- `sync-delivery-status` também reenvia o "preparado" se o envio na geração da etiqueta falhou (rede de segurança).

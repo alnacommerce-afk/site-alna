@@ -4,7 +4,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
-import { notifyOrderShipped } from "../_shared/notify-order-status.ts";
+import { notifyOrderPosted, notifyOrderPrepared } from "../_shared/notify-order-status.ts";
 
 const ME_API = "https://melhorenvio.com.br/api/v2";
 const SITE_URL = "https://store.alna.sale";
@@ -36,7 +36,9 @@ Deno.serve(async (req) => {
 
     const { data: orders } = await admin
       .from("orders")
-      .select("id, melhor_envio_shipment_id, customer_name, customer_email")
+      .select(
+        "id, melhor_envio_shipment_id, customer_name, customer_email, tracking_code, prepared_email_sent_at, posted_email_sent_at",
+      )
       .eq("status", "shipped")
       .is("delivered_at", null)
       .not("melhor_envio_shipment_id", "is", null);
@@ -79,9 +81,18 @@ Deno.serve(async (req) => {
             .update({ tracking_code: entry.tracking })
             .eq("id", order.id)
             .is("tracking_code", null);
-          // The label was generated before the code existed: this is the first moment we can tell the
-          // customer. No-op if the "pedido enviado" e-mail already went out.
-          await notifyOrderShipped(admin, order.id, entry.tracking);
+        }
+
+        // Customer e-mails about the parcel's journey (each goes out once, guarded by a claim column).
+        // 1) "Preparado": normally sent when the label is generated; this is the safety net if that failed
+        //    (and covers labels generated before this e-mail existed). Skipped once the parcel is posted.
+        if (!order.prepared_email_sent_at && !order.posted_email_sent_at && !entry?.posted_at) {
+          await notifyOrderPrepared(admin, order.id);
+        }
+        // 2) "Deixado no ponto de coleta + rastreio": the carrier has scanned the parcel in. Waits for the
+        //    tracking code, if it isn't there yet (tries again on the next run).
+        if (entry?.posted_at && !order.posted_email_sent_at && !entry?.delivered_at) {
+          await notifyOrderPosted(admin, order.id, entry.tracking ?? order.tracking_code);
         }
         if (entry?.delivered_at) {
           const { error: deliveredError } = await admin

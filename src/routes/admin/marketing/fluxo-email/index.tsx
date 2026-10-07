@@ -121,7 +121,9 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     emailNode("f1-referral", 0, 350, "Recompensa de indicação (se o pedido veio de um link)", "referral_reward"),
     emailNode("f1-admin", 0, 240, "Aviso de venda (para o admin)", "admin_new_sale"),
     plainNode("f1-label", 230, 350, "Admin gera a etiqueta no sistema (Admin > Pedidos)", "wait"),
-    emailNode("f1-email3", 230, 460, "Pedido enviado + código de rastreio", "order_shipped"),
+    emailNode("f1-email3", 230, 460, "Pedido preparado (será deixado no ponto de coleta)", "order_prepared"),
+    plainNode("f1-post", 230, 570, "Ponto de coleta registra o recebimento (bipa)", "wait"),
+    emailNode("f1-email4", 230, 680, "Deixado no ponto de coleta + código e link de rastreio", "order_posted"),
 
     // Fluxo 2 — Recuperação de carrinho. As duas ramificações "Pagou? → Sim" e o pagamento após a
     // "última chance" apontam de volta para f1-email2 em vez de terminar num "Fim" separado.
@@ -202,9 +204,11 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f1-6", source: "f1-email2", target: "f1-admin", sourceHandle: "right", style: { strokeDasharray: "4 4" } },
     { id: "e-f1-7", source: "f1-email2", target: "f1-label" },
     { id: "e-f1-8", source: "f1-label", target: "f1-email3" },
+    { id: "e-f1-9", source: "f1-email3", target: "f1-post" },
+    { id: "e-f1-10", source: "f1-post", target: "f1-email4" },
     {
       id: "e-f1-f3",
-      source: "f1-email3",
+      source: "f1-email4",
       sourceHandle: "right",
       target: "f3-trigger",
       label: "produto entregue",
