@@ -197,7 +197,7 @@ function CheckoutPage() {
           shippingAddress: { zip: cep, street, number, complement, neighborhood, city, state },
           items: items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
           paymentMethod,
-          couponCode: coupon?.code,
+          couponCode: discountCents > 0 ? coupon?.code : undefined,
           referredByCode: getReferralCode() ?? undefined,
           utmCampaign: getCampaignCode() ?? undefined,
           installmentCount: paymentMethod === "credit_card" ? installmentCount : undefined,
@@ -264,8 +264,9 @@ function CheckoutPage() {
                   <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="cpf">CPF</Label>
+                  <Label htmlFor="cpf">CPF ou CNPJ</Label>
                   <Input id="cpf" value={cpf} onChange={(e) => setCpf(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Emitimos nota fiscal para CPF e CNPJ.</p>
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="phone">WhatsApp</Label>

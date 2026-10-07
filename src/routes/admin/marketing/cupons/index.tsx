@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { formatCentsToBRL, formatCentsToInput, parseCentsFromInput } from "@/lib/money";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ type Coupon = {
   id: string;
   code: string;
   discount_percent: number;
+  min_order_cents: number;
   valid_from: string | null;
   valid_until: string | null;
   active: boolean;
@@ -54,6 +56,7 @@ type Coupon = {
 type FormState = {
   code: string;
   discountPercent: string;
+  minOrder: string;
   hasValidFrom: boolean;
   validFrom: string;
   hasValidUntil: boolean;
@@ -64,6 +67,7 @@ type FormState = {
 const emptyForm: FormState = {
   code: "",
   discountPercent: "10",
+  minOrder: "",
   hasValidFrom: false,
   validFrom: "",
   hasValidUntil: false,
@@ -88,7 +92,7 @@ function CuponsPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from("coupons")
-      .select("id, code, discount_percent, valid_from, valid_until, active")
+      .select("id, code, discount_percent, min_order_cents, valid_from, valid_until, active")
       .order("created_at", { ascending: false });
     if (error) {
       toast.error("Não foi possível carregar os cupons.");
@@ -114,6 +118,7 @@ function CuponsPage() {
     setForm({
       code: coupon.code,
       discountPercent: String(coupon.discount_percent),
+      minOrder: coupon.min_order_cents > 0 ? formatCentsToInput(coupon.min_order_cents) : "",
       hasValidFrom: !!coupon.valid_from,
       validFrom: toDateInput(coupon.valid_from),
       hasValidUntil: !!coupon.valid_until,
@@ -139,6 +144,7 @@ function CuponsPage() {
     const payload = {
       code,
       discount_percent: discountPercent,
+      min_order_cents: parseCentsFromInput(form.minOrder),
       valid_from: form.hasValidFrom && form.validFrom ? new Date(form.validFrom).toISOString() : null,
       valid_until: form.hasValidUntil && form.validUntil ? new Date(form.validUntil).toISOString() : null,
       active: form.active,
@@ -197,6 +203,7 @@ function CuponsPage() {
             <TableRow>
               <TableHead>Código</TableHead>
               <TableHead>Desconto</TableHead>
+              <TableHead>Pedido mínimo</TableHead>
               <TableHead>Vigência</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Ações</TableHead>
@@ -207,6 +214,9 @@ function CuponsPage() {
               <TableRow key={coupon.id}>
                 <TableCell className="font-mono font-semibold">{coupon.code}</TableCell>
                 <TableCell>{coupon.discount_percent}%</TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {coupon.min_order_cents > 0 ? formatCentsToBRL(coupon.min_order_cents) : "Sem mínimo"}
+                </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {coupon.valid_from || coupon.valid_until
                     ? `${coupon.valid_from ? toDateInput(coupon.valid_from) : "—"} até ${
@@ -261,6 +271,20 @@ function CuponsPage() {
                 value={form.discountPercent}
                 onChange={(e) => setForm((prev) => ({ ...prev, discountPercent: e.target.value }))}
               />
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="coupon-min-order">Pedido mínimo (R$)</Label>
+              <Input
+                id="coupon-min-order"
+                value={form.minOrder}
+                onChange={(e) => setForm((prev) => ({ ...prev, minOrder: e.target.value }))}
+                placeholder="Sem mínimo"
+                inputMode="decimal"
+              />
+              <p className="text-xs text-muted-foreground">
+                O desconto só vale quando os produtos do carrinho somam esse valor (sem contar o frete).
+              </p>
             </div>
 
             <div className="space-y-2 rounded-md border p-3">

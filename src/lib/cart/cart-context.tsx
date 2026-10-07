@@ -11,7 +11,7 @@ export type CartItem = {
   maxQuantity: number;
 };
 
-export type CartCoupon = { code: string; discountPercent: number };
+export type CartCoupon = { code: string; discountPercent: number; minOrderCents?: number };
 
 type CartState = { items: CartItem[]; coupon: CartCoupon | null };
 
@@ -114,9 +114,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       itemCount: state.items.reduce((sum, i) => sum + i.quantity, 0),
       subtotalCents,
       coupon: state.coupon,
-      discountCents: state.coupon
-        ? Math.round(subtotalCents * (state.coupon.discountPercent / 100))
-        : 0,
+      discountCents:
+        state.coupon && subtotalCents >= (state.coupon.minOrderCents ?? 0)
+          ? Math.round(subtotalCents * (state.coupon.discountPercent / 100))
+          : 0,
       add: (item, quantity = 1) => dispatch({ type: "add", item, quantity }),
       setQuantity: (variantId, quantity) => dispatch({ type: "setQuantity", variantId, quantity }),
       remove: (variantId) => dispatch({ type: "remove", variantId }),

@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data: coupon } = await admin
       .from("coupons")
-      .select("code, discount_percent, valid_from, valid_until, active")
+      .select("code, discount_percent, valid_from, valid_until, active, min_order_cents")
       .eq("code", code.trim().toUpperCase())
       .maybeSingle();
 
@@ -41,7 +41,12 @@ Deno.serve(async (req) => {
       return jsonResponse({ valid: false, error: "Cupom inválido ou expirado." });
     }
 
-    return jsonResponse({ valid: true, code: coupon.code, discountPercent: Number(coupon.discount_percent) });
+    return jsonResponse({
+      valid: true,
+      code: coupon.code,
+      discountPercent: Number(coupon.discount_percent),
+      minOrderCents: Number(coupon.min_order_cents ?? 0),
+    });
   } catch (error) {
     console.error("[validate-coupon]", error);
     return jsonResponse({ valid: false, error: "Erro ao validar cupom." }, 500);

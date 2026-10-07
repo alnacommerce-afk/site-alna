@@ -71,6 +71,7 @@ export type Database = {
           created_at: string
           discount_percent: number
           id: string
+          min_order_cents: number
           valid_from: string | null
           valid_until: string | null
         }
@@ -80,6 +81,7 @@ export type Database = {
           created_at?: string
           discount_percent: number
           id?: string
+          min_order_cents?: number
           valid_from?: string | null
           valid_until?: string | null
         }
@@ -89,6 +91,7 @@ export type Database = {
           created_at?: string
           discount_percent?: number
           id?: string
+          min_order_cents?: number
           valid_from?: string | null
           valid_until?: string | null
         }

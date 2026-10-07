@@ -100,7 +100,17 @@ function CarrinhoPage() {
       setCouponError(result.error);
       return;
     }
-    setCoupon({ code: result.code, discountPercent: result.discountPercent });
+    if (subtotalCents < result.minOrderCents) {
+      setCouponError(
+        `Esse cupom vale para compras a partir de ${formatCentsToBRL(result.minOrderCents)}. Faltam ${formatCentsToBRL(result.minOrderCents - subtotalCents)}.`,
+      );
+      return;
+    }
+    setCoupon({
+      code: result.code,
+      discountPercent: result.discountPercent,
+      minOrderCents: result.minOrderCents,
+    });
     setCouponInput("");
   }
 
@@ -255,6 +265,12 @@ function CarrinhoPage() {
                       </Button>
                     </div>
                   )}
+                  {coupon && discountCents === 0 && (coupon.minOrderCents ?? 0) > subtotalCents ? (
+                    <p className="text-xs text-amber-700">
+                      Esse cupom vale para compras a partir de {formatCentsToBRL(coupon.minOrderCents ?? 0)}.
+                      Faltam {formatCentsToBRL((coupon.minOrderCents ?? 0) - subtotalCents)}.
+                    </p>
+                  ) : null}
                   {couponError ? <p className="text-xs text-destructive">{couponError}</p> : null}
                 </div>
 
@@ -309,6 +325,9 @@ function CarrinhoPage() {
                 </Button>
                 <p className="text-center text-xs text-muted-foreground">
                   Você vai receber e-mails sobre o status do seu pedido.
+                </p>
+                <p className="text-center text-xs text-muted-foreground">
+                  Emitimos nota fiscal para CPF e CNPJ.
                 </p>
               </div>
             </div>

@@ -176,14 +176,15 @@ Deno.serve(async (req) => {
       const code = body.couponCode.trim().toUpperCase();
       const { data: coupon } = await admin
         .from("coupons")
-        .select("code, discount_percent, valid_from, valid_until, active")
+        .select("code, discount_percent, valid_from, valid_until, active, min_order_cents")
         .eq("code", code)
         .maybeSingle();
       const now = new Date();
       const withinWindow =
         coupon?.active &&
         (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
-        (!coupon.valid_until || new Date(coupon.valid_until) >= now);
+        (!coupon.valid_until || new Date(coupon.valid_until) >= now) &&
+        subtotalCents >= (coupon.min_order_cents ?? 0);
       if (withinWindow) {
         discountCents = Math.round(subtotalCents * (Number(coupon.discount_percent) / 100));
         appliedCouponCode = coupon.code;
