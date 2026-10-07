@@ -198,9 +198,10 @@ function PedidosPage() {
       toast.error(data?.error ?? "Não foi possível preparar a etiqueta.");
       return;
     }
-    // Cache-bust: the URL is the same every time for a given order, so without this the browser
-    // can silently reopen an old cached copy instead of fetching the freshly-generated file.
-    window.open(`${data.url}?t=${Date.now()}`, "_blank");
+    // The bucket is private, so data.url is a signed URL that already carries "?token=...". Never append
+    // anything to it (a second "?" ends up inside the token and storage answers InvalidJWT). It is also
+    // a new URL on every call, so there is no stale-cache problem to work around.
+    window.open(data.url, "_blank");
   }
 
   async function downloadAllLabels() {
@@ -218,7 +219,7 @@ function PedidosPage() {
       toast.error(data?.error ?? "Não foi possível preparar as etiquetas.");
       return;
     }
-    window.open(`${data.url}?t=${Date.now()}`, "_blank");
+    window.open(data.url, "_blank");
   }
 
   async function openInfo(order: OrderRow) {
