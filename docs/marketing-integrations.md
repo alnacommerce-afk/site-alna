@@ -150,3 +150,9 @@ R$ 15,02 (4), Rio/BH R$ 15,28 (4), Florianópolis R$ 16,68 (3), Porto Alegre R$ 
 R$ 24,09 (8), Manaus R$ 33,76 (13).
 Lacunas para atacado (não tratadas): preço por quantidade, pedido mínimo, texto do anúncio voltado a revenda.
 
+**Textos para o público de atacado (propostos em 07/10/2026):**
+- Descrição (máx. 60): `Compre em quantidade para o seu negócio ou revenda.` · `Nota fiscal para empresas. Compre em quantidade.`
+- Descrição (máx. 90): `Compras acima de R$ 250: 5% de desconto. Ideal para revenda e grandes quantidades.` · `Compre em quantidade para o seu negócio. Emitimos nota fiscal para empresas.`
+- Título opcional (máx. 30): `Compre em Quantidade`
+- Sem o código do cupom no anúncio (ALNA5%OFF tem palavra toda em maiúsculas, e a política editorial reprova); sem siglas como CPF/CNPJ. A nota fiscal é emitida à mão pelo dono por enquanto (depois automática pela Asaas).
+
