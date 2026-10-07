@@ -96,3 +96,8 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Página do pedido (`/pedido/<id>`): mostra a linha do tempo assim que existe etiqueta (não espera mais o código de
   rastreio), consulta o Melhor Envio ao vivo pelo id do envio e deixou de expor o link "Ver etiqueta de envio" ao cliente
   (`get-order-status` não devolve mais `label_url`); ganhou o link "Acompanhar a entrega" (melhorrastreio, J&T).
+
+## selo "Preparado para envio" (07/10/2026, só front-end)
+- O pedido vira `shipped` ao gerar a etiqueta. Enquanto o ponto de coleta não bipar, o selo mostra **"Preparado para envio"**
+  em Minha Conta (usa o evento `posted` de `order_events`) e em Admin > Pedidos (usa o status ao vivo do Melhor Envio:
+  pending/generated/released). Depois do bip vira "Enviado"; entregue continua "Concluído". Sem mudança no banco.

@@ -72,6 +72,10 @@ const TRACKING_STATUS_LABELS: Record<string, string> = {
   undelivered: "Não entregue",
 };
 
+// The order turns "shipped" as soon as the label is generated; until the collection point scans the parcel
+// the badge says "Preparado para envio" (same wording as the customer's order history).
+const NOT_YET_POSTED = new Set(["pending", "generated", "released"]);
+
 function trackingStatusLabel(status: string | null): string {
   if (!status) return "Não disponível";
   return TRACKING_STATUS_LABELS[status] ?? status.charAt(0).toUpperCase() + status.slice(1);
@@ -321,7 +325,9 @@ function PedidosPage() {
                         className="text-[10px]"
                         variant={STATUS_VARIANTS[order.status] ?? "secondary"}
                       >
-                        {STATUS_LABELS[order.status] ?? order.status}
+                        {order.status === "shipped" && info?.status && NOT_YET_POSTED.has(info.status)
+                          ? "Preparado para envio"
+                          : (STATUS_LABELS[order.status] ?? order.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>

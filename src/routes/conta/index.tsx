@@ -58,6 +58,8 @@ function MinhaContaPage() {
   const [loading, setLoading] = useState(true);
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<OrderRow | null>(null);
+  // Orders whose parcel was already left at the collection point (same "posted" event the order history shows).
+  const [postedOrderIds, setPostedOrderIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function load() {
@@ -65,8 +67,19 @@ function MinhaContaPage() {
         .from("orders")
         .select("id, created_at, total_cents, payment_method, status, tracking_code")
         .order("created_at", { ascending: false });
-      setOrders((data ?? []) as OrderRow[]);
+      const loaded = (data ?? []) as OrderRow[];
+      setOrders(loaded);
       setLoading(false);
+
+      const shippedIds = loaded.filter((o) => o.status === "shipped").map((o) => o.id);
+      if (shippedIds.length) {
+        const { data: posted } = await supabase
+          .from("order_events")
+          .select("order_id")
+          .eq("kind", "posted")
+          .in("order_id", shippedIds);
+        setPostedOrderIds(new Set((posted ?? []).map((e) => e.order_id)));
+      }
     }
     load();
   }, []);
@@ -155,7 +168,9 @@ function MinhaContaPage() {
               <div className="flex items-center gap-3">
                 <span className="font-bold text-[#12294f]">{formatCentsToBRL(order.total_cents)}</span>
                 <Badge variant={STATUS_VARIANTS[order.status] ?? "secondary"}>
-                  {STATUS_LABELS[order.status] ?? order.status}
+                  {order.status === "shipped" && !postedOrderIds.has(order.id)
+                    ? "Preparado para envio"
+                    : (STATUS_LABELS[order.status] ?? order.status)}
                 </Badge>
               </div>
             </button>
