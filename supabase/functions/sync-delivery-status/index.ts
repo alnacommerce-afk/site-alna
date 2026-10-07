@@ -1,4 +1,4 @@
-// Public — only ever called by the pg_cron job, every 30 minutes. Confirms real delivery via
+// Public — only ever called by the pg_cron job, every 10 minutes. Confirms real delivery via
 // Melhor Envio's tracking endpoint for shipped orders, so process-post-purchase-nps only surveys
 // customers whose order actually arrived (never a guess based on elapsed time).
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -68,8 +68,8 @@ Deno.serve(async (req) => {
             {
               order_id: order.id,
               kind: "posted",
-              title: "Pedido postado",
-              detail: "Seu pedido foi entregue à transportadora e está a caminho.",
+              title: "Deixado no ponto de coleta",
+              detail: "Seu pedido foi deixado no ponto de coleta e está a caminho.",
               occurred_at: entry.posted_at,
             },
             { onConflict: "order_id,kind", ignoreDuplicates: true },
@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
             .eq("id", order.id);
           if (deliveredError) {
             // Don't send the "chegou" e-mail if this didn't actually persist — otherwise the
-            // order keeps matching the query above and we'd resend it every 30 minutes forever.
+            // order keeps matching the query above and we'd resend it on every run forever.
             console.error("[sync-delivery-status] falha ao gravar entrega", order.id, deliveredError);
             continue;
           }

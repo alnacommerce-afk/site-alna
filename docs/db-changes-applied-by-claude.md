@@ -85,3 +85,14 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   `orders.shipped_email_sent_at` ficou sem uso (pode ser apagada depois). Pedidos já concluídos foram marcados para não
   receber nada retroativo.
 - `sync-delivery-status` também reenvia o "preparado" se o envio na geração da etiqueta falhou (rede de segurança).
+
+## sync_order_step_texts_and_cron_10min (aplicada em 07/10/2026)
+- Regra do dono: status e textos do pedido iguais em todos os lugares (Minha Conta, página do pedido, admin, e-mails, mapa).
+  Etapas e nomes padrão: "Pagamento confirmado" → "Pedido preparado para envio" (etiqueta gerada, aparece na hora) →
+  "Deixado no ponto de coleta" (Melhor Envio informa `posted_at`) → "Pedido entregue".
+- `track_order_events()` e os eventos já gravados (`label_generated`, `posted`) usam o novo texto.
+- `sync-delivery-status` (cron `sync-delivery-status`, job 2) passou de `*/30` para `*/10 * * * *`: Minha Conta e e-mails
+  chegam no máximo 10 min depois do Melhor Envio.
+- Página do pedido (`/pedido/<id>`): mostra a linha do tempo assim que existe etiqueta (não espera mais o código de
+  rastreio), consulta o Melhor Envio ao vivo pelo id do envio e deixou de expor o link "Ver etiqueta de envio" ao cliente
+  (`get-order-status` não devolve mais `label_url`); ganhou o link "Acompanhar a entrega" (melhorrastreio, J&T).

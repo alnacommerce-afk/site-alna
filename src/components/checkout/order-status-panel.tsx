@@ -11,21 +11,26 @@ function formatDate(iso: string) {
 }
 
 function TrackingTimeline({ order }: { order: NonNullable<ReturnType<typeof useOrderStatus>["data"]>["order"] }) {
-  if (!order.tracking_code) return null;
+  // Nothing to show until the shipping label exists (same moment "Pedido preparado para envio" appears in Minha Conta).
+  if (!order.melhor_envio_shipment_id && !order.tracking_code) return null;
   const posted = order.tracking?.postedAt ?? null;
   const delivered = order.tracking?.deliveredAt ?? null;
 
+  // Same steps and wording as the order history in Minha Conta (order-timeline-dialog.tsx).
   const steps = [
     { label: "Pagamento confirmado", done: true, date: null as string | null },
-    { label: posted ? "Coletado pela transportadora" : "Aguardando coleta", done: !!posted, date: posted },
-    { label: "Entregue", done: !!delivered, date: delivered },
+    { label: "Pedido preparado para envio", done: true, date: null as string | null },
+    { label: "Deixado no ponto de coleta", done: !!posted, date: posted },
+    { label: "Pedido entregue", done: !!delivered, date: delivered },
   ];
 
   return (
     <div className="mt-6 rounded-lg border border-[#12294f]/10 bg-[#fcfbf8] p-4 text-left">
-      <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        <Truck className="h-3.5 w-3.5" /> Rastreio J&amp;T Express: {order.tracking_code}
-      </p>
+      {order.tracking_code ? (
+        <p className="flex flex-wrap items-center gap-x-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <Truck className="h-3.5 w-3.5" /> Rastreio J&amp;T Express: {order.tracking_code}
+        </p>
+      ) : null}
       <ol className="mt-3 space-y-2 text-sm">
         {steps.map((step) => (
           <li key={step.label} className="flex items-center gap-2">
@@ -41,14 +46,14 @@ function TrackingTimeline({ order }: { order: NonNullable<ReturnType<typeof useO
           </li>
         ))}
       </ol>
-      {order.label_url ? (
+      {order.tracking_code ? (
         <a
-          href={order.label_url}
+          href={`https://www.melhorrastreio.com.br/app/jet/${encodeURIComponent(order.tracking_code)}`}
           target="_blank"
           rel="noreferrer"
           className="mt-3 inline-block text-xs text-[#16a34a] hover:underline"
         >
-          Ver etiqueta de envio
+          Acompanhar a entrega
         </a>
       ) : null}
     </div>

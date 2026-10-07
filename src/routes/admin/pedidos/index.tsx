@@ -64,7 +64,7 @@ const TRACKING_STATUS_LABELS: Record<string, string> = {
   pending: "Aguardando postagem",
   released: "Liberado para postagem",
   generated: "Etiqueta gerada",
-  posted: "Postado",
+  posted: "Deixado no ponto de coleta",
   in_transit: "Em trânsito",
   delivered: "Entregue",
   canceled: "Cancelado",

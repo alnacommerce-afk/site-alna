@@ -23,8 +23,8 @@ type OrderItem = { id: string; product_title: string; variant_name: string | nul
 const STEPS: { kind: string; title: string; pending: string }[] = [
   { kind: "order_created", title: "Compra realizada", pending: "Aguardando a criação do pedido." },
   { kind: "payment_confirmed", title: "Pagamento confirmado", pending: "Aguardando a confirmação do pagamento." },
-  { kind: "label_generated", title: "Etiqueta de envio gerada", pending: "Estamos preparando o seu pedido." },
-  { kind: "posted", title: "Pedido postado", pending: "Assim que a transportadora receber o pedido, ele aparece aqui." },
+  { kind: "label_generated", title: "Pedido preparado para envio", pending: "Estamos preparando o seu pedido." },
+  { kind: "posted", title: "Deixado no ponto de coleta", pending: "Assim que o ponto de coleta registrar o recebimento, ele aparece aqui." },
   { kind: "delivered", title: "Pedido entregue", pending: "Previsão: quando a transportadora concluir a entrega." },
 ];
 const STOPPING_KINDS = ["cancelled", "refunded"];
@@ -141,7 +141,7 @@ export function OrderTimelineDialog({
                       </div>
                       <div className="pb-5">
                         <p className={done ? "font-semibold text-[#12294f]" : "text-muted-foreground"}>
-                          {event?.title ?? step.title}
+                          {step.title}
                         </p>
                         {event ? (
                           <>

@@ -12,7 +12,7 @@ export type OrderStatusResponse = {
     total_cents: number;
     installment_count: number;
     tracking_code: string | null;
-    label_url: string | null;
+    melhor_envio_shipment_id: string | null;
     tracking: { status: string; postedAt: string | null; deliveredAt: string | null } | null;
   };
   pix: { encodedImage: string; payload: string; expirationDate: string } | null;

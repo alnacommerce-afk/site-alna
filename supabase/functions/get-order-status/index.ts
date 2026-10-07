@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     const { data: order, error } = await admin
       .from("orders")
       .select(
-        "id, status, payment_status, payment_method, payment_id, total_cents, subtotal_cents, shipping_cost_cents, installment_count, created_at, tracking_code, label_url, melhor_envio_shipment_id",
+        "id, status, payment_status, payment_method, payment_id, total_cents, subtotal_cents, shipping_cost_cents, installment_count, created_at, tracking_code, melhor_envio_shipment_id",
       )
       .eq("id", orderId)
       .maybeSingle();
@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
       postedAt: string | null;
       deliveredAt: string | null;
     } | null = null;
-    if (order.tracking_code) {
+    if (order.melhor_envio_shipment_id) {
       const meToken = await admin
         .rpc("get_integration_secret", { p_integration_id: "melhor_envio" })
         .then((r) => r.data as string | null);

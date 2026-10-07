@@ -136,7 +136,7 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f2-exit", 480, 790, "Sair da lista", "exit"),
 
     // Fluxo 3 — Pós-compra / NPS / indicação — encadeado direto do Fluxo 1.
-    plainNode("f3-trigger", 840, 240, "Transportadora confirma a entrega (conferido a cada 30 min)", "trigger"),
+    plainNode("f3-trigger", 840, 240, "Transportadora confirma a entrega (conferido a cada 10 min)", "trigger"),
     emailNode("f3-email0", 840, 350, "Pedido chegou!", "delivery_confirmed"),
     plainNode("f3-wait", 840, 460, "Espera 1 dia", "wait"),
     emailNode("f3-email1", 840, 570, "Pesquisa de satisfação (sem promessa de desconto)", "post_purchase_nps"),
