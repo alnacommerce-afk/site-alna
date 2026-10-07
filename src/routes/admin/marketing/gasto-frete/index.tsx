@@ -3,7 +3,14 @@ import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
-import { PAID_STATUSES, isShippingPaidByStore, sinceDays } from "@/lib/admin/sales-averages";
+import {
+  PAID_STATUSES,
+  isShippingPaidByStore,
+  productsPaidCents,
+  sinceDays,
+} from "@/lib/admin/sales-averages";
+import { CircleHelp } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AdminShell } from "@/components/admin/admin-shell";
 import {
   Select,
@@ -29,7 +36,8 @@ export const Route = createFileRoute("/admin/marketing/gasto-frete/")({
 type OrderRow = {
   id: string;
   created_at: string;
-  total_cents: number;
+  subtotal_cents: number;
+  discount_cents: number;
   shipping_cost_cents: number | null;
   label_price_cents: number | null;
   payment_method: string | null;
@@ -47,6 +55,26 @@ function paymentLabel(order: OrderRow) {
   return "—";
 }
 
+function HelpTip({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label={`O que significa ${title}`}
+          className="text-muted-foreground hover:text-[#12294f]"
+        >
+          <CircleHelp className="h-4 w-4" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 space-y-2 text-sm">
+        <p className="font-semibold text-[#12294f]">{title}</p>
+        {children}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function GastoFretePage() {
   const [days, setDays] = useState("30");
   const [orders, setOrders] = useState<OrderRow[] | null>(null);
@@ -56,7 +84,7 @@ function GastoFretePage() {
     supabase
       .from("orders")
       .select(
-        "id, created_at, total_cents, shipping_cost_cents, label_price_cents, payment_method, installment_count, order_items(product_title, variant_name, quantity)",
+        "id, created_at, subtotal_cents, discount_cents, shipping_cost_cents, label_price_cents, payment_method, installment_count, order_items(product_title, variant_name, quantity)",
       )
       .in("status", [...PAID_STATUSES])
       .gte("created_at", sinceDays(Number(days)))
@@ -64,7 +92,7 @@ function GastoFretePage() {
       .then(({ data }) => setOrders((data ?? []) as OrderRow[]));
   }, [days]);
 
-  const faturamento = (orders ?? []).reduce((sum, o) => sum + o.total_cents, 0);
+  const faturamento = (orders ?? []).reduce((sum, o) => sum + productsPaidCents(o), 0);
   const etiquetas = (orders ?? []).reduce(
     (sum, o) => sum + (isShippingPaidByStore(o) ? (o.label_price_cents ?? 0) : 0),
     0,
@@ -100,24 +128,56 @@ function GastoFretePage() {
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-lg border p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Faturamento
+            <HelpTip title="Faturamento">
+              <p>
+                É o que os clientes pagaram <strong>pelos produtos</strong> nos pedidos pagos do
+                período, já com o cupom descontado.
+              </p>
+              <p>
+                O frete que o cliente pagou <strong>não entra</strong>: esse dinheiro serve para
+                pagar a etiqueta, não é da loja. Exemplo: uma colher de R$ 2,53 com frete de R$
+                17,43 deixa R$ 19,96 no caixa, mas aparece aqui só como R$ 2,53 — o cliente
+                financiou a etiqueta.
+              </p>
+            </HelpTip>
           </p>
           <p className="mt-1 text-2xl font-bold text-[#12294f]">
             {orders ? formatCentsToBRL(faturamento) : "—"}
           </p>
         </div>
         <div className="rounded-lg border p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Etiquetas
+            <HelpTip title="Etiquetas">
+              <p>
+                Soma das etiquetas que <strong>a loja pagou</strong>: só os pedidos com frete
+                grátis, marcados como "Pago pelo site".
+              </p>
+              <p>
+                Pedidos em que o cliente pagou o frete ("Pago pelo cliente"){" "}
+                <strong>não somam</strong>: a etiqueta saiu do dinheiro dele.
+              </p>
+            </HelpTip>
           </p>
           <p className="mt-1 text-2xl font-bold text-[#12294f]">
             {orders ? formatCentsToBRL(etiquetas) : "—"}
           </p>
         </div>
         <div className="rounded-lg border p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Custo
+            <HelpTip title="Custo">
+              <p>
+                É <strong>Etiquetas ÷ Faturamento</strong>: quanto de cada R$ 100 vendidos em
+                produto você gastou com etiquetas que bancou.
+              </p>
+              <p>
+                Exemplo: venda de R$ 150 com etiqueta de R$ 25 = 16,7%. Esse é o número para usar em
+                Precificação &gt; Custo do frete.
+              </p>
+            </HelpTip>
           </p>
           <p className="mt-1 text-2xl font-bold text-[#12294f]">
             {orders ? `${custoPct.toFixed(1).replace(".", ",")}%` : "—"}
@@ -153,7 +213,8 @@ function GastoFretePage() {
           <TableBody>
             {orders.map((order) => {
               const storePays = isShippingPaidByStore(order);
-              const label = storePays ? order.label_price_cents : 0;
+              const paid = productsPaidCents(order);
+              const label = order.label_price_cents;
               return (
                 <TableRow key={order.id}>
                   <TableCell>{new Date(order.created_at).toLocaleDateString("pt-BR")}</TableCell>
@@ -169,23 +230,29 @@ function GastoFretePage() {
                       .join(", ")}
                   </TableCell>
                   <TableCell>{paymentLabel(order)}</TableCell>
-                  <TableCell>{formatCentsToBRL(order.total_cents)}</TableCell>
+                  <TableCell>{formatCentsToBRL(paid)}</TableCell>
                   <TableCell>
-                    {!storePays ? (
-                      <span>
-                        {formatCentsToBRL(0)}{" "}
-                        <span className="text-muted-foreground">(pago pelo cliente)</span>
-                      </span>
-                    ) : label == null ? (
+                    {label == null ? (
                       <span className="text-muted-foreground">etiqueta não gerada</span>
                     ) : (
-                      formatCentsToBRL(label)
+                      <span className={storePays ? "" : "text-muted-foreground"}>
+                        {formatCentsToBRL(label)}
+                      </span>
                     )}
+                    <p
+                      className={
+                        storePays
+                          ? "font-semibold text-destructive"
+                          : "font-semibold text-[#16a34a]"
+                      }
+                    >
+                      {storePays ? "Pago pelo site" : "Pago pelo cliente"}
+                    </p>
                   </TableCell>
                   <TableCell>
-                    {label == null || order.total_cents <= 0
+                    {!storePays || label == null || paid <= 0
                       ? "—"
-                      : formatPct((label / order.total_cents) * 100)}
+                      : formatPct((label / paid) * 100)}
                   </TableCell>
                 </TableRow>
               );
