@@ -72,3 +72,31 @@ sempre que uma foto é trocada.
 `scripts/generate-sitemap.mjs` regera `public/sitemap.xml` com todos os produtos publicados +
 páginas estáticas da loja; roda automaticamente como `prebuild` (ver `package.json`). Antes de
 30/09/2026 o sitemap só tinha as páginas institucionais — nenhum produto aparecia pro Google.
+
+## Perfil da Empresa no Google (avaliações)
+
+- **Link para pedir avaliação (usar em campanhas, e-mails, QR Code, redes sociais, WhatsApp):**
+  `https://g.page/r/CaVwVCwnaWATECA/review`
+- O Google informa que perfis com **5 ou mais avaliações** tendem a atrair mais clientes; em 07/10/2026 o perfil
+  ainda estava com **0 avaliações** (aviso "Vá de 0 para mais de 5 avaliações" recebido do Google).
+
+**Regras do Google (confirmadas na política oficial de conteúdo do Google Maps, em
+support.google.com/contributionpolicy/answer/7400114) — valem para qualquer campanha nossa:**
+
+- **Proibido dar qualquer vantagem em troca da avaliação:** desconto, cupom, brinde, pontos, sorteio. Mesmo
+  "avalie e ganhe 5%" é violação e pode levar à remoção das avaliações ou suspensão do perfil.
+- **Proibido pedir avaliação só de quem está satisfeito** (ex.: mandar o link só para quem deu nota alta no NPS
+  e desviar os insatisfeitos para um formulário privado). Se o link for enviado, vai para **todos** os clientes
+  do grupo escolhido, sem filtrar por nota ou humor.
+- Permitido: pedir de forma simples e honesta ("sua opinião ajuda outros clientes"), sem prometer nada.
+
+**Ideias de uso (nenhuma aplicada ainda — cada uma precisa de avaliação de impacto e aprovação do dono):**
+
+1. E-mail de entrega confirmada (`delivery_confirmed`) ou de agradecimento: botão "Avaliar a ALNA no Google"
+   enviado a todos os pedidos entregues.
+2. QR Code com o link no cartão/folheto dentro da caixa do pedido e nos panfletos.
+3. Link na Home e no rodapé da loja (Home: só um link de texto, sem peso extra — respeitar a meta de 0,5 s,
+   ver `home-cloudflare/README.md`).
+4. Responder a toda avaliação recebida (positiva ou negativa) — o Google valoriza e quem lê vê atenção.
+5. Atenção ao fluxo NPS atual: o e-mail `nps_thank_you` já separa "promotores" por nota. Se o link do Google
+   for incluído ali, ele precisa ir para todos que responderem, não só os promotores (seria "filtrar").
