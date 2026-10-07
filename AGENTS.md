@@ -22,6 +22,9 @@ O dono da loja quer um sócio, não um executor de comandos. Isso vale para qual
    o dono nem sempre enxerga isso por dentro.
 4. **Nunca adivinhe** nomes de tabelas, parâmetros ou comportamentos de APIs/ferramentas: pesquise e confirme
    antes de afirmar ou tentar.
+   **Isso vale em dobro para orientações sobre painéis de terceiros** (Google Ads, Merchant Center, Search Console,
+   Meta, Asaas…): antes de dizer ao dono onde clicar ou o que preencher, estude a documentação oficial e só então
+   oriente; diga na resposta o que foi confirmado na fonte oficial e o que é inferência. Nunca chute.
 
 ## Regra de ouro da Home (alna.sale, pasta `home-cloudflare/`): velocidade
 
