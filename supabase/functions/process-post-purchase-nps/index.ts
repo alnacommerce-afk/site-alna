@@ -1,4 +1,4 @@
-// Public — only ever called by the pg_cron job, hourly. Surveys customers 7 days after their
+// Public — only ever called by the pg_cron job, hourly. Surveys customers 1 day after their
 // order's REAL confirmed delivery (set by sync-delivery-status) — never a time-based guess.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
@@ -34,13 +34,13 @@ Deno.serve(async (req) => {
       .rpc("get_integration_secret", { p_integration_id: "resend" })
       .then((r) => r.data as string | null);
 
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
     const { data: due } = await admin
       .from("orders")
       .select("id, customer_name, customer_email, total_cents")
       .not("delivered_at", "is", null)
-      .lte("delivered_at", sevenDaysAgo)
+      .lte("delivered_at", oneDayAgo)
       .is("nps_survey_sent_at", null);
 
     let sent = 0;

@@ -133,7 +133,7 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     // Fluxo 3 — Pós-compra / NPS / indicação — encadeado direto do Fluxo 1.
     plainNode("f3-trigger", 840, 240, "Entrega confirmada (rastreio)", "trigger"),
     emailNode("f3-email0", 840, 350, "Pedido chegou!", "delivery_confirmed"),
-    plainNode("f3-wait", 840, 460, "Espera 7 dias", "wait"),
+    plainNode("f3-wait", 840, 460, "Espera 1 dia", "wait"),
     emailNode("f3-email1", 840, 570, "Participe e ganhe 5% na próxima compra", "post_purchase_nps"),
     plainNode("f3-click", 840, 680, "Cliente responde na landing page (nota + indicaria)", "wait"),
     emailNode("f3-email2", 840, 790, "Obrigado + indique e ganhe 5%", "nps_thank_you"),

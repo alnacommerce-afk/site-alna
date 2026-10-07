@@ -94,7 +94,7 @@ support.google.com/contributionpolicy/answer/7400114) — valem para qualquer ca
 - Permitido: pedir de forma simples e honesta ("sua opinião ajuda outros clientes"), sem prometer nada.
 
 **Decisão do dono (07/10/2026) — como o link é usado hoje:** na página da pesquisa de satisfação
-(`/pesquisa/<pedido>`, link do e-mail enviado 7 dias após a entrega), quem dá **nota 0–5** vê a caixa "Nos diga o
+(`/pesquisa/<pedido>`, link do e-mail enviado 1 dia após a entrega confirmada), quem dá **nota 0–5** vê a caixa "Nos diga o
 que aconteceu" (texto salvo em `orders.nps_feedback`, visível em Admin > Marketing > NPS pelo ícone ao lado da
 nota) e quem dá **nota 6–10** vê, no pop-up de agradecimento, a mensagem pedindo e o botão "Nos avalie no Google"
 (`GOOGLE_REVIEW_URL` em `src/lib/site-urls.ts`). O dono quis que só clientes satisfeitos fossem convidados a

@@ -62,7 +62,7 @@ function NpsPage() {
         <div>
           <h1 className="text-xl font-semibold">NPS</h1>
           <p className="text-sm text-muted-foreground">
-            Respostas da pesquisa de satisfação enviada 7 dias após a entrega.
+            Respostas da pesquisa de satisfação enviada 1 dia após a entrega.
           </p>
         </div>
         <GoogleRatingsCard />
