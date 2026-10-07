@@ -192,7 +192,7 @@ function CampanhasPage() {
   return (
     <AdminShell>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold">Campanhas</h1>
+        <h1 className="text-xl font-semibold">Campanhas link UTM</h1>
         <p className="text-sm text-muted-foreground">
           Gere um link com UTM para campanhas de panfleto, outdoor, redes sociais etc. e acompanhe
           quantas visualizações e vendas cada uma trouxe.
