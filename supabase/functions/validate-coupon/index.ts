@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data: coupon } = await admin
       .from("coupons")
-      .select("code, discount_percent, valid_from, valid_until, active, min_order_cents")
+      .select("code, discount_percent, valid_from, valid_until, active, min_order_cents, personal_for_email, max_uses, uses_count")
       .eq("code", code.trim().toUpperCase())
       .maybeSingle();
 
@@ -39,6 +39,9 @@ Deno.serve(async (req) => {
 
     if (!withinWindow) {
       return jsonResponse({ valid: false, error: "Cupom inválido ou expirado." });
+    }
+    if (coupon.personal_for_email && coupon.uses_count >= (coupon.max_uses ?? 1)) {
+      return jsonResponse({ valid: false, error: "Esse cupom pessoal já foi utilizado." });
     }
 
     return jsonResponse({

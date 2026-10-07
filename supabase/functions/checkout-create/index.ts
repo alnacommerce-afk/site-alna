@@ -176,10 +176,25 @@ Deno.serve(async (req) => {
       const code = body.couponCode.trim().toUpperCase();
       const { data: coupon } = await admin
         .from("coupons")
-        .select("code, discount_percent, valid_from, valid_until, active, min_order_cents")
+        .select(
+          "code, discount_percent, valid_from, valid_until, active, min_order_cents, personal_for_email, max_uses, uses_count",
+        )
         .eq("code", code)
         .maybeSingle();
       const now = new Date();
+      // Personal (abandoned-cart) coupons never fail silently: the customer sees the discount in the cart,
+      // so a refusal here must be explained instead of quietly charging the full price.
+      if (coupon?.personal_for_email) {
+        if (coupon.personal_for_email !== body.customer.email.trim().toLowerCase()) {
+          return jsonResponse({ error: "Esse cupom é pessoal e só vale para o e-mail que o recebeu." }, 400);
+        }
+        if (coupon.uses_count >= (coupon.max_uses ?? 1)) {
+          return jsonResponse({ error: "Esse cupom pessoal já foi utilizado." }, 400);
+        }
+        if (!coupon.active || (coupon.valid_until && new Date(coupon.valid_until) < now)) {
+          return jsonResponse({ error: "Esse cupom pessoal venceu." }, 400);
+        }
+      }
       const withinWindow =
         coupon?.active &&
         (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&

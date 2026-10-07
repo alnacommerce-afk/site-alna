@@ -33,3 +33,18 @@ só definiu o mínimo de R$ 250 (25000).
 
 Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com termômetro), `INDICA5%OFF` (indicação),
 `NOVIDADE5%OFF` (e-mail semanal) e `ALNA10%OFF` (carrinho abandonado 24h).
+
+## personal_cart_coupons (aplicada em 07/10/2026)
+- `coupons.personal_for_email` e `coupons.auto_generated`: cupom pessoal do e-mail de carrinho abandonado de 24h.
+- Regras (função `supabase/functions/_shared/personal-coupon.ts`): o cupom ligado ao modelo `cart_reminder_24h`
+  (`ALNA10%OFF`, que segue ativo por causa dos panfletos) serve só de **molde** (percentual e mínimo). Cada e-mail
+  recebe um código `VOLTA-XXXXXX` de **uso único**, amarrado ao e-mail do cliente, válido por **7 dias**.
+  Se o cliente abandonar de novo com o código ainda válido e não usado, recebe **o mesmo código**; se o último foi
+  emitido há menos de **30 dias** (venceu ou foi usado), o e-mail sai **sem cupom**; depois de 30 dias, código novo.
+- O uso conta quando o pagamento é confirmado (mesmo gatilho dos outros cupons). Cupons automáticos não disparam os
+  avisos de 5/1 uso ao admin. No `checkout-create`, cupom pessoal é estrito: outro e-mail, já usado ou vencido
+  devolve erro explicado em vez de ser ignorado.
+- `ALNA10%OFF` ganhou `max_uses = 10` (aviso e termômetro, nunca bloqueia), editável em Admin > Marketing > Cupons.
+- O modelo de e-mail `cart_reminder_24h` agora usa os campos `{{chamada}}` (assunto) e `{{cupom_bloco_html}}` (some
+  quando o cliente não tem direito a cupom novo).
+- Admin > Cupons esconde os cupons automáticos e mostra o contador "X cupons pessoais gerados, Y já usados".

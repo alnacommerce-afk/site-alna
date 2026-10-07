@@ -5,6 +5,7 @@
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
+import { getPersonalCoupon } from "../_shared/personal-coupon.ts";
 
 const SITE_URL = "https://store.alna.sale";
 const ASAAS_API = "https://api.asaas.com/v3";
@@ -121,7 +122,9 @@ Deno.serve(async (req) => {
     }
 
     // Step 2: 24-hour follow-up (only for orders that already got the 10-minute nudge).
-    const coupon = await resolveTemplateCoupon(admin, "cart_reminder_24h");
+    // The coupon linked to this template (ALNA10%OFF) is only the model for the percentage/minimum;
+    // each customer gets a personal single-use code copied from it (see _shared/personal-coupon.ts).
+    const couponModel = await resolveTemplateCoupon(admin, "cart_reminder_24h");
 
     const { data: due24h } = await admin
       .from("orders")
@@ -137,6 +140,14 @@ Deno.serve(async (req) => {
         continue;
       }
       const { botaoCheckout } = await buildPaymentBlocks(admin, order);
+      const personal = couponModel
+        ? await getPersonalCoupon(admin, order.customer_email, couponModel)
+        : null;
+      const cupomBlocoHtml = personal
+        ? `<p>Pra te ajudar a aproveitar, preparamos um cupom exclusivo, só seu:</p>
+<p style="font-size: 20px; font-weight: bold; color: #16a34a;">${personal.code}</p>
+<p>Use no carrinho para garantir ${personal.discountPercent}% de desconto${personal.minOrderCents > 0 ? ` em compras acima de ${formatBRL(personal.minOrderCents)}` : ""}. Vale até ${personal.validUntil.toLocaleDateString("pt-BR")} e só pode ser usado uma vez.</p>`
+        : "";
       const rendered = await renderEmailTemplate(
         admin,
         "cart_reminder_24h",
@@ -144,8 +155,8 @@ Deno.serve(async (req) => {
           nome: order.customer_name ?? "cliente",
           pedido_curto: order.id.slice(0, 8),
           total: formatBRL(order.total_cents),
-          cupom_codigo: coupon?.code ?? "",
-          cupom_desconto: coupon ? String(coupon.discountPercent) : "",
+          chamada: personal ? `${personal.discountPercent}% OFF no seu carrinho` : "seu pedido ainda está esperando",
+          cupom_bloco_html: cupomBlocoHtml,
           botao_checkout: botaoCheckout,
         },
         { unsubscribeLink: `${supabaseUrl}/functions/v1/unsubscribe-email?orderId=${order.id}` },

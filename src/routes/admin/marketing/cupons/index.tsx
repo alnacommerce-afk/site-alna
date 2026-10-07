@@ -94,6 +94,7 @@ function CuponsPage() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
+  const [personalCount, setPersonalCount] = useState({ total: 0, used: 0 });
 
   async function load() {
     setLoading(true);
@@ -102,6 +103,7 @@ function CuponsPage() {
       .select(
         "id, code, discount_percent, min_order_cents, max_uses, uses_count, show_on_site, valid_from, valid_until, active",
       )
+      .eq("auto_generated", false)
       .order("created_at", { ascending: false });
     if (error) {
       toast.error("Não foi possível carregar os cupons.");
@@ -109,6 +111,18 @@ function CuponsPage() {
       return;
     }
     setCoupons(data ?? []);
+    const [{ count: total }, { count: used }] = await Promise.all([
+      supabase
+        .from("coupons")
+        .select("id", { count: "exact", head: true })
+        .eq("auto_generated", true),
+      supabase
+        .from("coupons")
+        .select("id", { count: "exact", head: true })
+        .eq("auto_generated", true)
+        .gte("uses_count", 1),
+    ]);
+    setPersonalCount({ total: total ?? 0, used: used ?? 0 });
     setLoading(false);
   }
 
@@ -207,6 +221,13 @@ function CuponsPage() {
         </div>
         <Button onClick={openCreateDialog}>Novo cupom</Button>
       </div>
+
+      <p className="mb-4 text-sm text-muted-foreground">
+        <strong className="text-[#12294f]">{personalCount.total}</strong> cupons pessoais gerados
+        automaticamente (carrinho abandonado),{" "}
+        <strong className="text-[#12294f]">{personalCount.used}</strong> já usados. Cada um vale uma
+        vez, só para o e-mail do cliente, por 7 dias.
+      </p>
 
       {loading ? (
         <p className="text-sm text-muted-foreground">Carregando...</p>

@@ -69,12 +69,14 @@ export type Database = {
           active: boolean
           alerted_1_at: string | null
           alerted_5_at: string | null
+          auto_generated: boolean
           code: string
           created_at: string
           discount_percent: number
           id: string
           max_uses: number | null
           min_order_cents: number
+          personal_for_email: string | null
           show_on_site: boolean
           uses_count: number
           valid_from: string | null
@@ -84,12 +86,14 @@ export type Database = {
           active?: boolean
           alerted_1_at?: string | null
           alerted_5_at?: string | null
+          auto_generated?: boolean
           code: string
           created_at?: string
           discount_percent: number
           id?: string
           max_uses?: number | null
           min_order_cents?: number
+          personal_for_email?: string | null
           show_on_site?: boolean
           uses_count?: number
           valid_from?: string | null
@@ -99,12 +103,14 @@ export type Database = {
           active?: boolean
           alerted_1_at?: string | null
           alerted_5_at?: string | null
+          auto_generated?: boolean
           code?: string
           created_at?: string
           discount_percent?: number
           id?: string
           max_uses?: number | null
           min_order_cents?: number
+          personal_for_email?: string | null
           show_on_site?: boolean
           uses_count?: number
           valid_from?: string | null
