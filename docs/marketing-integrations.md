@@ -77,6 +77,9 @@ páginas estáticas da loja; roda automaticamente como `prebuild` (ver `package.
 
 - **Link para pedir avaliação (usar em campanhas, e-mails, QR Code, redes sociais, WhatsApp):**
   `https://g.page/r/CaVwVCwnaWATECA/review`
+- **Place ID** do perfil (descoberto seguindo o link de avaliação; serve para a API de Locais do Google):
+  `ChIJ34ZjdmmrzgwRpXBULCdpYBM`. Página pública: `https://www.google.com/maps/place/?q=place_id:ChIJ34ZjdmmrzgwRpXBULCdpYBM`
+  (sem login mostra só a nota média; total e distribuição por estrela não aparecem na visualização limitada).
 - O Google informa que perfis com **5 ou mais avaliações** tendem a atrair mais clientes; em 07/10/2026 o perfil
   ainda estava com **0 avaliações** (aviso "Vá de 0 para mais de 5 avaliações" recebido do Google).
 
