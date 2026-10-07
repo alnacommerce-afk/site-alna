@@ -114,16 +114,20 @@ adicionar o link do Google a outros e-mails/canais filtrando por nota, e nunca o
 Conta do Google Ads `635-244-4697` (login informacoes.asm@gmail.com). Site do anúncio: `alna.sale`.
 
 **Títulos** (máx. 30 caracteres; essa tela aceita só 5):
-ALNA | Utilidades Domésticas · Utensílios de Madeira · Tábua de Corte de Madeira · 4% OFF no Pix | Compre Online ·
+Alna | Utilidades Domésticas · Utensílios de Madeira · Tábua de Corte de Madeira · 4% de Desconto no Pix ·
 Frete Grátis Acima de R$ 150
 
 **Descrições** (a 1ª tem máx. 60; as demais, 90):
 1. Utensílios de madeira para a sua cozinha. Compre online.
-2. Utilidades para cozinha e mesa em madeira. Frete grátis acima de R$ 150 e 4% OFF no Pix.
-3. Monte uma cozinha mais prática com a ALNA. Pague no Pix ou cartão e receba em casa.
+2. Madeira p/ cozinha e mesa. Frete grátis acima de R$ 150 e 4% de desconto no Pix.
+3. Monte uma cozinha mais prática com a Alna. Pague no Pix ou cartão e receba em casa.
 4. Tábuas, colheres, pilão e bandejas. Entregamos no Brasil.
 
 Botão de chamada: desligado.
+
+**Política editorial do Google Ads (confirmada em 07/10/2026):** nada de palavra inteira em MAIÚSCULAS nos
+textos — a versão inicial com "ALNA" e "OFF" foi reprovada ("Maiúsculas e minúsculas"). Escrever "Alna" e "de
+desconto". Marcas e siglas só passam com pedido de revisão (support.google.com/adspolicy/answer/14848295).
 
 **O anúncio promete — manter verdadeiro:** frete grátis acima de R$ 150 (`site_settings.free_shipping_threshold_cents`)
 e 4% de desconto no Pix (`PIX_DISCOUNT` em `supabase/functions/checkout-create`). Se um deles mudar, atualizar o anúncio.
