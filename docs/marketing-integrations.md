@@ -108,3 +108,31 @@ adicionar o link do Google a outros e-mails/canais filtrando por nota, e nunca o
 2. Responder a toda avaliação recebida (positiva ou negativa).
 3. **Não** colocar panfleto/QR de avaliação dentro da caixa do pedido: atingiria também clientes com problema de
    entrega ou produto (decisão do dono).
+
+## Google Ads — campanha "Cozinha" (criada em 07/10/2026)
+
+Conta do Google Ads `635-244-4697` (login informacoes.asm@gmail.com). Site do anúncio: `alna.sale`.
+
+**Títulos** (máx. 30 caracteres; essa tela aceita só 5):
+ALNA | Utilidades Domésticas · Utensílios de Madeira · Tábua de Corte de Madeira · 4% OFF no Pix | Compre Online ·
+Frete Grátis Acima de R$ 150
+
+**Descrições** (a 1ª tem máx. 60; as demais, 90):
+1. Utensílios de madeira para a sua cozinha. Compre online.
+2. Utilidades para cozinha e mesa em madeira. Frete grátis acima de R$ 150 e 4% OFF no Pix.
+3. Monte uma cozinha mais prática com a ALNA. Pague no Pix ou cartão e receba em casa.
+4. Tábuas, colheres, pilão e bandejas. Entregamos no Brasil.
+
+Botão de chamada: desligado.
+
+**O anúncio promete — manter verdadeiro:** frete grátis acima de R$ 150 (`site_settings.free_shipping_threshold_cents`)
+e 4% de desconto no Pix (`PIX_DISCOUNT` em `supabase/functions/checkout-create`). Se um deles mudar, atualizar o anúncio.
+Evitar "sem juros" (o total do cartão muda com as parcelas) e "visite nossa loja" (a loja é só online).
+
+**Pendências e próximos passos:**
+- Palavras negativas: `fitness`, `academia`, `moda fitness`, `roupa`, `legging`, `treino` (a homônima Alna Fitness,
+  `alnabrasil.com.br`, aparece junto nos resultados do Google).
+- Endereço final: o link da campanha "Google Ads - Cozinha" gerado em Admin > Marketing > Campanhas, para as vendas
+  aparecerem lá.
+- Orçamento inicial sugerido: R$ 15–20/dia por 1–2 semanas; depois revisar termos de pesquisa, cliques e vendas e
+  ajustar títulos, palavras-chave e orçamento.
