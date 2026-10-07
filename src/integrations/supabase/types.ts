@@ -402,6 +402,7 @@ export type Database = {
           label_price_cents: number | null
           label_url: string | null
           melhor_envio_shipment_id: string | null
+          nps_feedback: string | null
           nps_score: number | null
           nps_survey_sent_at: string | null
           nps_would_recommend: boolean | null
@@ -441,6 +442,7 @@ export type Database = {
           label_price_cents?: number | null
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
+          nps_feedback?: string | null
           nps_score?: number | null
           nps_survey_sent_at?: string | null
           nps_would_recommend?: boolean | null
@@ -480,6 +482,7 @@ export type Database = {
           label_price_cents?: number | null
           label_url?: string | null
           melhor_envio_shipment_id?: string | null
+          nps_feedback?: string | null
           nps_score?: number | null
           nps_survey_sent_at?: string | null
           nps_would_recommend?: boolean | null

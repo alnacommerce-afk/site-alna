@@ -90,13 +90,18 @@ support.google.com/contributionpolicy/answer/7400114) — valem para qualquer ca
   do grupo escolhido, sem filtrar por nota ou humor.
 - Permitido: pedir de forma simples e honesta ("sua opinião ajuda outros clientes"), sem prometer nada.
 
-**Ideias de uso (nenhuma aplicada ainda — cada uma precisa de avaliação de impacto e aprovação do dono):**
+**Decisão do dono (07/10/2026) — como o link é usado hoje:** na página da pesquisa de satisfação
+(`/pesquisa/<pedido>`, link do e-mail enviado 7 dias após a entrega), quem dá **nota 0–5** vê a caixa "Nos diga o
+que aconteceu" (texto salvo em `orders.nps_feedback`, visível em Admin > Marketing > NPS pelo ícone ao lado da
+nota) e quem dá **nota 6–10** vê, no pop-up de agradecimento, a mensagem pedindo e o botão "Nos avalie no Google"
+(`GOOGLE_REVIEW_URL` em `src/lib/site-urls.ts`). O dono quis que só clientes satisfeitos fossem convidados a
+avaliar no Google. **Risco assumido conscientemente:** a política do Google trata isso como "selecionar quem é
+convidado a avaliar" (review gating), o que pode levar à remoção de avaliações ou suspensão do perfil. Não
+adicionar o link do Google a outros e-mails/canais filtrando por nota, e nunca oferecer vantagem em troca.
 
-1. E-mail de entrega confirmada (`delivery_confirmed`) ou de agradecimento: botão "Avaliar a ALNA no Google"
-   enviado a todos os pedidos entregues.
-2. QR Code com o link no cartão/folheto dentro da caixa do pedido e nos panfletos.
-3. Link na Home e no rodapé da loja (Home: só um link de texto, sem peso extra — respeitar a meta de 0,5 s,
-   ver `home-cloudflare/README.md`).
-4. Responder a toda avaliação recebida (positiva ou negativa) — o Google valoriza e quem lê vê atenção.
-5. Atenção ao fluxo NPS atual: o e-mail `nps_thank_you` já separa "promotores" por nota. Se o link do Google
-   for incluído ali, ele precisa ir para todos que responderem, não só os promotores (seria "filtrar").
+**Outras ideias (não aplicadas — cada uma precisa de avaliação de impacto e aprovação do dono):**
+
+1. Link de texto no rodapé da loja e na Home (Home: respeitar a meta de 0,5 s, ver `home-cloudflare/README.md`).
+2. Responder a toda avaliação recebida (positiva ou negativa).
+3. **Não** colocar panfleto/QR de avaliação dentro da caixa do pedido: atingiria também clientes com problema de
+   entrega ou produto (decisão do dono).

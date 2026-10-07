@@ -8,3 +8,6 @@ export const STORE_URL = "https://store.alna.sale";
 export const CONTACT_EMAIL = "contato@alna.sale";
 
 export const storeLink = (path = "/loja") => `${STORE_URL}${path}`;
+
+// Link de avaliação do Perfil da Empresa no Google (ver docs/marketing-integrations.md).
+export const GOOGLE_REVIEW_URL = "https://g.page/r/CaVwVCwnaWATECA/review";

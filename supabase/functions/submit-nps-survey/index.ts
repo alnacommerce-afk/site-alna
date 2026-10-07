@@ -7,6 +7,10 @@ import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
 
 const PROMOTER_THRESHOLD = 5;
+// Notes up to this score get the "conte o que aconteceu" box on the landing page; the text is kept
+// for the admin (Marketing > NPS) to follow up on.
+const FEEDBACK_MAX_SCORE = 5;
+const FEEDBACK_MAX_LENGTH = 1000;
 const SITE_URL = "https://store.alna.sale";
 
 const corsHeaders = {
@@ -109,9 +113,14 @@ Deno.serve(async (req) => {
       return jsonResponse({ ok: true, alreadyAnswered: true });
     }
 
+    const feedback =
+      score <= FEEDBACK_MAX_SCORE && typeof body?.feedback === "string"
+        ? body.feedback.trim().slice(0, FEEDBACK_MAX_LENGTH) || null
+        : null;
+
     await admin
       .from("orders")
-      .update({ nps_score: score, nps_would_recommend: wouldRecommend })
+      .update({ nps_score: score, nps_would_recommend: wouldRecommend, nps_feedback: feedback })
       .eq("id", orderId);
 
     const promoter = score >= PROMOTER_THRESHOLD;

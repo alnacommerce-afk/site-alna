@@ -6,10 +6,16 @@ import { toast } from "sonner";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { GOOGLE_REVIEW_URL } from "@/lib/site-urls";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
 const SCORES = Array.from({ length: 11 }, (_, i) => i);
+// Up to this score the customer is asked what happened; from the next one up we also invite them to
+// review us on Google.
+const FEEDBACK_MAX_SCORE = 5;
+const GOOGLE_REVIEW_MIN_SCORE = 6;
 
 export const Route = createFileRoute("/pesquisa/$orderId")({
   head: () => ({
@@ -22,7 +28,9 @@ export const Route = createFileRoute("/pesquisa/$orderId")({
 });
 
 type PageStatus = "loading" | "error" | "form" | "finished";
-type SubmitResult = { alreadyAnswered: true } | { alreadyAnswered: false; promoter: boolean; referralLink: string | null };
+type SubmitResult =
+  | { alreadyAnswered: true }
+  | { alreadyAnswered: false; promoter: boolean; referralLink: string | null; score: number };
 
 function PesquisaPage() {
   const { orderId } = Route.useParams();
@@ -31,6 +39,7 @@ function PesquisaPage() {
   const [customerName, setCustomerName] = useState<string | null>(null);
   const [wouldRecommend, setWouldRecommend] = useState<boolean | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<SubmitResult | null>(null);
 
@@ -66,7 +75,12 @@ function PesquisaPage() {
       const resp = await fetch(`${FUNCTIONS_URL}/submit-nps-survey`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, score, wouldRecommend }),
+        body: JSON.stringify({
+          orderId,
+          score,
+          wouldRecommend,
+          feedback: score <= FEEDBACK_MAX_SCORE ? feedback : undefined,
+        }),
       });
       const json = await resp.json();
       if (!resp.ok) {
@@ -76,7 +90,7 @@ function PesquisaPage() {
       setResult(
         json.alreadyAnswered
           ? { alreadyAnswered: true }
-          : { alreadyAnswered: false, promoter: json.promoter, referralLink: json.referralLink },
+          : { alreadyAnswered: false, promoter: json.promoter, referralLink: json.referralLink, score },
       );
     } catch {
       toast.error("Não foi possível registrar sua resposta agora.");
@@ -159,6 +173,23 @@ function PesquisaPage() {
                 </div>
               </div>
 
+              {score !== null && score <= FEEDBACK_MAX_SCORE ? (
+                <div>
+                  <p className="font-semibold text-[#12294f]">Nos diga o que aconteceu</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Queremos entender e melhorar. Conte com sinceridade o que não saiu como esperado.
+                  </p>
+                  <Textarea
+                    className="mt-3"
+                    rows={4}
+                    maxLength={1000}
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    placeholder="Escreva aqui (opcional)"
+                  />
+                </div>
+              ) : null}
+
               <Button className="w-full" onClick={handleSubmit} disabled={submitting}>
                 {submitting ? "Enviando..." : "Submeter pesquisa"}
               </Button>
@@ -201,6 +232,20 @@ function PesquisaPage() {
               <DialogHeader>
                 <DialogTitle>Obrigado! 🎉</DialogTitle>
               </DialogHeader>
+              {result.score >= GOOGLE_REVIEW_MIN_SCORE ? (
+                <div className="rounded-md bg-[#12294f]/5 p-4">
+                  <p className="text-sm text-[#12294f]">
+                    Somos uma loja pequena e cada avaliação no Google nos ajuda a alcançar mais pessoas.
+                    Se puder dedicar 1 minuto, você estará fazendo parte do nosso crescimento. Muito
+                    obrigado por nos ajudar!
+                  </p>
+                  <Button asChild className="mt-3 w-full">
+                    <a href={GOOGLE_REVIEW_URL} target="_blank" rel="noopener noreferrer">
+                      Nos avalie no Google
+                    </a>
+                  </Button>
+                </div>
+              ) : null}
               <p className="text-sm text-muted-foreground">
                 Você pode ganhar <strong>5% de desconto</strong> na próxima compra automaticamente —
                 é só indicar nossa loja com o link abaixo. Você também pode ver esse link a
