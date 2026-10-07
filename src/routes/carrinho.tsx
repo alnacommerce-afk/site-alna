@@ -5,11 +5,11 @@ import { Minus, Plus, Tag, Trash2, Truck } from "lucide-react";
 import { useSiteSettings } from "@/lib/site-data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCentsToBRL } from "@/lib/money";
-import { useCart } from "@/lib/cart/cart-context";
+import { MAX_COUPONS, useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { fetchShippingQuote, onlyDigits, type ShippingQuote } from "@/lib/shipping/quote";
 import { validateCoupon } from "@/lib/checkout/validate-coupon";
-import { clearPendingCoupon, getPendingCoupon } from "@/lib/marketing/pending-coupon";
+import { capturePendingCouponFromUrl, clearPendingCoupon, getPendingCoupon } from "@/lib/marketing/pending-coupon";
 import { SiteHeader } from "@/components/site/site-header";
 import { FreeShippingProgress } from "@/components/site/free-shipping-progress";
 import { PromotedCouponBox } from "@/components/site/promoted-coupon-box";
@@ -33,7 +33,8 @@ export const Route = createFileRoute("/carrinho")({
 function CarrinhoPage() {
   const { data: siteSettings } = useSiteSettings();
   const freeShippingThresholdCents = siteSettings?.free_shipping_threshold_cents ?? null;
-  const { items, subtotalCents, coupon, discountCents, setQuantity, remove, setCoupon } = useCart();
+  const { items, subtotalCents, coupons, eligibleCoupons, discountPercent, discountCents, setQuantity, remove, addCoupon, removeCoupon } =
+    useCart();
 
   const [cep, setCep] = useState(() => getSavedCheckoutInfo().zip ?? "");
   const [quote, setQuote] = useState<ShippingQuote | null>(null);
@@ -44,7 +45,8 @@ function CarrinhoPage() {
   // Coupon coming from the marketing e-mail button: arrives typed in the field, the customer just applies it.
   // (Read after mount so the server-rendered page and the first client render match.)
   useEffect(() => {
-    const pending = getPendingCoupon();
+    // Also reads the URL itself: landing straight on /carrinho?cupom=... runs this before the root capture.
+    const pending = capturePendingCouponFromUrl() ?? getPendingCoupon();
     if (pending) setCouponInput(pending);
   }, []);
   const [couponError, setCouponError] = useState<string | null>(null);
@@ -100,8 +102,16 @@ function CarrinhoPage() {
 
   async function handleApplyCoupon() {
     if (!couponInput.trim()) return;
-    setApplyingCoupon(true);
     setCouponError(null);
+    if (coupons.length >= MAX_COUPONS) {
+      setCouponError(`Você pode usar até ${MAX_COUPONS} cupons por pedido.`);
+      return;
+    }
+    if (coupons.some((c) => c.code === couponInput.trim().toUpperCase())) {
+      setCouponError("Esse cupom já está neste pedido.");
+      return;
+    }
+    setApplyingCoupon(true);
     const result = await validateCoupon(couponInput);
     setApplyingCoupon(false);
     if (!result.valid) {
@@ -114,7 +124,7 @@ function CarrinhoPage() {
       );
       return;
     }
-    setCoupon({
+    addCoupon({
       code: result.code,
       discountPercent: result.discountPercent,
       minOrderCents: result.minOrderCents,
@@ -246,20 +256,32 @@ function CarrinhoPage() {
                   <Label htmlFor="cart-coupon" className="flex items-center gap-1.5">
                     <Tag className="h-3.5 w-3.5" /> Cupom de desconto
                   </Label>
-                  {coupon ? (
-                    <div className="flex items-center justify-between rounded-md border border-[#16a34a]/30 bg-[#16a34a]/5 px-3 py-2 text-sm">
-                      <span className="font-semibold text-[#16a34a]">
-                        {coupon.code} aplicado (-{coupon.discountPercent}%)
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setCoupon(null)}
-                        className="text-xs text-muted-foreground hover:text-destructive"
-                      >
-                        Remover
-                      </button>
-                    </div>
-                  ) : (
+                  {coupons.map((coupon) => {
+                    const eligible = subtotalCents >= (coupon.minOrderCents ?? 0);
+                    return (
+                      <div key={coupon.code} className="space-y-1">
+                        <div className="flex items-center justify-between rounded-md border border-[#16a34a]/30 bg-[#16a34a]/5 px-3 py-2 text-sm">
+                          <span className="font-semibold text-[#16a34a]">
+                            {coupon.code} {eligible ? "aplicado" : "adicionado"} (-{coupon.discountPercent}%)
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeCoupon(coupon.code)}
+                            className="text-xs text-muted-foreground hover:text-destructive"
+                          >
+                            Remover
+                          </button>
+                        </div>
+                        {!eligible ? (
+                          <p className="text-xs text-amber-700">
+                            Esse cupom vale para compras a partir de {formatCentsToBRL(coupon.minOrderCents ?? 0)}.
+                            Faltam {formatCentsToBRL((coupon.minOrderCents ?? 0) - subtotalCents)}.
+                          </p>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                  {coupons.length < MAX_COUPONS ? (
                     <div className="flex gap-2">
                       <Input
                         id="cart-coupon"
@@ -276,11 +298,15 @@ function CarrinhoPage() {
                         {applyingCoupon ? "..." : "Aplicar"}
                       </Button>
                     </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      Limite de {MAX_COUPONS} cupons por pedido atingido.
+                    </p>
                   )}
-                  {coupon && discountCents === 0 && (coupon.minOrderCents ?? 0) > subtotalCents ? (
-                    <p className="text-xs text-amber-700">
-                      Esse cupom vale para compras a partir de {formatCentsToBRL(coupon.minOrderCents ?? 0)}.
-                      Faltam {formatCentsToBRL((coupon.minOrderCents ?? 0) - subtotalCents)}.
+                  {coupons.length > 0 && coupons.length < MAX_COUPONS ? (
+                    <p className="text-xs text-muted-foreground">
+                      Você pode adicionar mais {MAX_COUPONS - coupons.length}{" "}
+                      {MAX_COUPONS - coupons.length === 1 ? "cupom" : "cupons"}: os descontos se somam.
                     </p>
                   ) : null}
                   {couponError ? <p className="text-xs text-destructive">{couponError}</p> : null}
@@ -288,7 +314,10 @@ function CarrinhoPage() {
 
                 {discountCents > 0 ? (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Desconto ({coupon?.code})</span>
+                    <span className="text-muted-foreground">
+                      Desconto ({eligibleCoupons.map((c) => c.code).join(" + ")}
+                      {eligibleCoupons.length > 1 ? ` = -${discountPercent}%` : ""})
+                    </span>
                     <span className="font-semibold text-[#16a34a]">
                       -{formatCentsToBRL(discountCents)}
                     </span>

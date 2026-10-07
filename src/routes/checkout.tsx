@@ -43,7 +43,7 @@ const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
 const INSTALLMENT_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
 
 function CheckoutPage() {
-  const { items, subtotalCents, coupon, discountCents, clear } = useCart();
+  const { items, subtotalCents, eligibleCoupons, discountPercent, discountCents, clear } = useCart();
   const [resultOpen, setResultOpen] = useState(false);
   const [resultOrderId, setResultOrderId] = useState<string | null>(null);
   const saved = useMemo(() => getSavedCheckoutInfo(), []);
@@ -197,7 +197,7 @@ function CheckoutPage() {
           shippingAddress: { zip: cep, street, number, complement, neighborhood, city, state },
           items: items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
           paymentMethod,
-          couponCode: discountCents > 0 ? coupon?.code : undefined,
+          couponCodes: eligibleCoupons.length ? eligibleCoupons.map((c) => c.code) : undefined,
           referredByCode: getReferralCode() ?? undefined,
           utmCampaign: getCampaignCode() ?? undefined,
           installmentCount: paymentMethod === "credit_card" ? installmentCount : undefined,
@@ -463,7 +463,10 @@ function CheckoutPage() {
               </div>
               {discountCents > 0 ? (
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Desconto ({coupon?.code})</span>
+                  <span className="text-muted-foreground">
+                    Desconto ({eligibleCoupons.map((c) => c.code).join(" + ")}
+                    {eligibleCoupons.length > 1 ? ` = -${discountPercent}%` : ""})
+                  </span>
                   <span className="text-[#16a34a]">-{formatCentsToBRL(discountCents)}</span>
                 </div>
               ) : null}

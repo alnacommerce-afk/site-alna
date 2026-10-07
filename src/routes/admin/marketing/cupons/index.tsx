@@ -175,6 +175,11 @@ function CuponsPage() {
       toast.error("Informe o código do cupom.");
       return;
     }
+    // Orders keep their coupons as a comma-separated list, so a code can't contain a comma.
+    if (code.includes(",")) {
+      toast.error("O código do cupom não pode ter vírgula.");
+      return;
+    }
     if (!discountPercent || discountPercent <= 0 || discountPercent > 100) {
       toast.error("Informe um desconto entre 1 e 100%.");
       return;

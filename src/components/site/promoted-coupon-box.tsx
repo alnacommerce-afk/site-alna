@@ -3,7 +3,7 @@ import { Ticket } from "lucide-react";
 import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
-import { useCart } from "@/lib/cart/cart-context";
+import { MAX_COUPONS, useCart } from "@/lib/cart/cart-context";
 import { Button } from "@/components/ui/button";
 
 const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
@@ -34,14 +34,15 @@ function usePromotedCoupon() {
 // box disappears once the coupon has no uses left, so urgency is never invented.
 export function PromotedCouponBox({ canApply = false }: { canApply?: boolean }) {
   const { data: coupon } = usePromotedCoupon();
-  const { subtotalCents, coupon: appliedCoupon, setCoupon } = useCart();
+  const { subtotalCents, coupons: appliedCoupons, addCoupon } = useCart();
 
   if (!coupon) return null;
   if (coupon.remaining !== null && coupon.remaining <= 0) return null;
 
   const minOrder = coupon.minOrderCents;
   const reached = subtotalCents >= minOrder;
-  const applied = appliedCoupon?.code === coupon.code;
+  const applied = appliedCoupons.some((c) => c.code === coupon.code);
+  const limitReached = appliedCoupons.length >= MAX_COUPONS;
   const pctLeft =
     coupon.maxUses && coupon.remaining !== null
       ? Math.max(0, Math.min(100, Math.round((coupon.remaining / coupon.maxUses) * 100)))
@@ -82,13 +83,17 @@ export function PromotedCouponBox({ canApply = false }: { canApply?: boolean }) 
         <div className="mt-3">
           {applied ? (
             <p className="text-sm font-semibold text-[#16a34a]">Cupom aplicado neste pedido.</p>
+          ) : limitReached ? (
+            <p className="text-sm text-[#12294f]">
+              Você já tem {MAX_COUPONS} cupons neste pedido. Remova um para usar este.
+            </p>
           ) : reached ? (
             <Button
               type="button"
               size="sm"
               className="bg-[#16a34a] font-bold hover:bg-[#16a34a]/90"
               onClick={() => {
-                setCoupon({
+                addCoupon({
                   code: coupon.code,
                   discountPercent: coupon.discountPercent,
                   minOrderCents: minOrder,

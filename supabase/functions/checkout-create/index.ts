@@ -49,7 +49,10 @@ type CheckoutBody = {
   items: CheckoutItem[];
   paymentMethod: "pix" | "credit_card";
   installmentCount?: number;
+  /** Legacy single coupon (older cached pages). */
   couponCode?: string;
+  /** Up to MAX_COUPONS coupons; their percentages add up. */
+  couponCodes?: string[];
   referredByCode?: string;
   utmCampaign?: string;
   creditCard?: {
@@ -91,6 +94,9 @@ function grossUpForCardFee(baseCents: number, installmentCount: number) {
   const totalCents = Math.round((baseCents + CARD_FIXED_FEE_CENTS) / (1 - pct));
   return totalCents;
 }
+
+// Most coupons that can be combined in one order (keep in sync with MAX_COUPONS in src/lib/cart/cart-context.tsx).
+const MAX_COUPONS = 3;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -169,40 +175,56 @@ Deno.serve(async (req) => {
       0,
     );
 
-    // 1b. Validate the coupon server-side — never trust a discount value from the client.
+    // 1b. Validate the coupons server-side — never trust a discount value from the client. Up to
+    // MAX_COUPONS coupons can be combined and their percentages add up (never above 100%).
     let discountCents = 0;
     let appliedCouponCode: string | null = null;
-    if (body.couponCode) {
-      const code = body.couponCode.trim().toUpperCase();
-      const { data: coupon } = await admin
+    const requestedCodes = [
+      ...new Set(
+        [...(body.couponCodes ?? []), ...(body.couponCode ? [body.couponCode] : [])]
+          .map((c) => String(c).trim().toUpperCase())
+          .filter(Boolean),
+      ),
+    ].slice(0, MAX_COUPONS);
+    if (requestedCodes.length) {
+      const { data: coupons } = await admin
         .from("coupons")
         .select(
           "code, discount_percent, valid_from, valid_until, active, min_order_cents, personal_for_email, max_uses, uses_count",
         )
-        .eq("code", code)
-        .maybeSingle();
+        .in("code", requestedCodes);
       const now = new Date();
-      // Personal (abandoned-cart) coupons never fail silently: the customer sees the discount in the cart,
-      // so a refusal here must be explained instead of quietly charging the full price.
-      if (coupon?.personal_for_email) {
-        if (coupon.personal_for_email !== body.customer.email.trim().toLowerCase()) {
-          return jsonResponse({ error: "Esse cupom é pessoal e só vale para o e-mail que o recebeu." }, 400);
+      const appliedCodes: string[] = [];
+      let totalPercent = 0;
+      for (const code of requestedCodes) {
+        const coupon = (coupons ?? []).find((c) => c.code === code);
+        // Personal (abandoned-cart) coupons never fail silently: the customer sees the discount in the cart,
+        // so a refusal here must be explained instead of quietly charging the full price.
+        if (coupon?.personal_for_email) {
+          if (coupon.personal_for_email !== body.customer.email.trim().toLowerCase()) {
+            return jsonResponse({ error: "Esse cupom é pessoal e só vale para o e-mail que o recebeu." }, 400);
+          }
+          if (coupon.uses_count >= (coupon.max_uses ?? 1)) {
+            return jsonResponse({ error: "Esse cupom pessoal já foi utilizado." }, 400);
+          }
+          if (!coupon.active || (coupon.valid_until && new Date(coupon.valid_until) < now)) {
+            return jsonResponse({ error: "Esse cupom pessoal venceu." }, 400);
+          }
         }
-        if (coupon.uses_count >= (coupon.max_uses ?? 1)) {
-          return jsonResponse({ error: "Esse cupom pessoal já foi utilizado." }, 400);
-        }
-        if (!coupon.active || (coupon.valid_until && new Date(coupon.valid_until) < now)) {
-          return jsonResponse({ error: "Esse cupom pessoal venceu." }, 400);
+        const withinWindow =
+          coupon?.active &&
+          (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
+          (!coupon.valid_until || new Date(coupon.valid_until) >= now) &&
+          subtotalCents >= (coupon.min_order_cents ?? 0);
+        if (coupon && withinWindow) {
+          totalPercent += Number(coupon.discount_percent);
+          appliedCodes.push(coupon.code);
         }
       }
-      const withinWindow =
-        coupon?.active &&
-        (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
-        (!coupon.valid_until || new Date(coupon.valid_until) >= now) &&
-        subtotalCents >= (coupon.min_order_cents ?? 0);
-      if (withinWindow) {
-        discountCents = Math.round(subtotalCents * (Number(coupon.discount_percent) / 100));
-        appliedCouponCode = coupon.code;
+      if (appliedCodes.length) {
+        discountCents = Math.round(subtotalCents * (Math.min(100, totalPercent) / 100));
+        // Stored as a comma-separated list; count_coupon_use_on_paid counts each code once the order is paid.
+        appliedCouponCode = appliedCodes.join(",");
       }
     }
 

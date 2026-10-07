@@ -139,3 +139,15 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   quando maior, igual à loja.
 - Admin: "Anúncio" e "Marketing" viraram gavetas que recolhem/expandem com animação (abrem sozinhas na página atual e lembram a
   última escolha neste navegador). Tela E-mail marketing ganhou o quadro "Campanhas enviadas".
+
+## até 3 cupons por pedido, somando (aplicada em 07/10/2026)
+- Decisão do dono: até **3 cupons por pedido, os percentuais se SOMAM, sem teto** (só nunca passa de 100% do pedido).
+  Cada cupom segue as próprias regras (valor mínimo, validade, pessoal/uso único); o que não cumpre o mínimo não desconta.
+- Carrinho (`cart-context.tsx`): lista `coupons` (migra o antigo `coupon` único do localStorage); `eligibleCoupons` e
+  `discountPercent`. Carrinho/checkout mostram cada cupom com "Remover", o campo continua até o 3º e o resumo mostra
+  "Desconto (A + B + C = -X%)".
+- `checkout-create` recebe `couponCodes[]` (aceita ainda `couponCode`), valida cada um no servidor e grava em
+  `orders.coupon_code` a lista separada por VÍRGULA ("A,B,C"; por isso o código de cupom não pode ter vírgula — o cadastro em
+  Cupons agora recusa).
+- Gatilho `count_coupon_use_on_paid` percorre a lista: cada cupom ganha 1 uso (e seus próprios avisos de 5/1/estourou) quando o
+  pedido é pago. Relatórios (média de cupom, Precificação, sales-report) já leem `discount_cents`/`coupon_code`, sem mudança.
