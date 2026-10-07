@@ -43,6 +43,7 @@ import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalo
 import { Route as AdminMarketingCampanhasIndexRouteImport } from './routes/admin/marketing/campanhas/index'
 import { Route as AdminMarketingCuponsIndexRouteImport } from './routes/admin/marketing/cupons/index'
 import { Route as AdminMarketingFluxoEmailIndexRouteImport } from './routes/admin/marketing/fluxo-email/index'
+import { Route as AdminMarketingGastoFreteIndexRouteImport } from './routes/admin/marketing/gasto-frete/index'
 import { Route as AdminMarketingIdeiasPostIndexRouteImport } from './routes/admin/marketing/ideias-post/index'
 import { Route as AdminMarketingNpsIndexRouteImport } from './routes/admin/marketing/nps/index'
 import { Route as AdminMarketingPrecificacaoIndexRouteImport } from './routes/admin/marketing/precificacao/index'
@@ -221,6 +222,12 @@ const AdminMarketingFluxoEmailIndexRoute =
     path: '/admin/marketing/fluxo-email/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminMarketingGastoFreteIndexRoute =
+  AdminMarketingGastoFreteIndexRouteImport.update({
+    id: '/admin/marketing/gasto-frete/',
+    path: '/admin/marketing/gasto-frete/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminMarketingIdeiasPostIndexRoute =
   AdminMarketingIdeiasPostIndexRouteImport.update({
     id: '/admin/marketing/ideias-post/',
@@ -274,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/admin/marketing/campanhas/': typeof AdminMarketingCampanhasIndexRoute
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email/': typeof AdminMarketingFluxoEmailIndexRoute
+  '/admin/marketing/gasto-frete/': typeof AdminMarketingGastoFreteIndexRoute
   '/admin/marketing/ideias-post/': typeof AdminMarketingIdeiasPostIndexRoute
   '/admin/marketing/nps/': typeof AdminMarketingNpsIndexRoute
   '/admin/marketing/precificacao/': typeof AdminMarketingPrecificacaoIndexRoute
@@ -313,6 +321,7 @@ export interface FileRoutesByTo {
   '/admin/marketing/campanhas': typeof AdminMarketingCampanhasIndexRoute
   '/admin/marketing/cupons': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email': typeof AdminMarketingFluxoEmailIndexRoute
+  '/admin/marketing/gasto-frete': typeof AdminMarketingGastoFreteIndexRoute
   '/admin/marketing/ideias-post': typeof AdminMarketingIdeiasPostIndexRoute
   '/admin/marketing/nps': typeof AdminMarketingNpsIndexRoute
   '/admin/marketing/precificacao': typeof AdminMarketingPrecificacaoIndexRoute
@@ -353,6 +362,7 @@ export interface FileRoutesById {
   '/admin/marketing/campanhas/': typeof AdminMarketingCampanhasIndexRoute
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/fluxo-email/': typeof AdminMarketingFluxoEmailIndexRoute
+  '/admin/marketing/gasto-frete/': typeof AdminMarketingGastoFreteIndexRoute
   '/admin/marketing/ideias-post/': typeof AdminMarketingIdeiasPostIndexRoute
   '/admin/marketing/nps/': typeof AdminMarketingNpsIndexRoute
   '/admin/marketing/precificacao/': typeof AdminMarketingPrecificacaoIndexRoute
@@ -394,6 +404,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/campanhas/'
     | '/admin/marketing/cupons/'
     | '/admin/marketing/fluxo-email/'
+    | '/admin/marketing/gasto-frete/'
     | '/admin/marketing/ideias-post/'
     | '/admin/marketing/nps/'
     | '/admin/marketing/precificacao/'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/campanhas'
     | '/admin/marketing/cupons'
     | '/admin/marketing/fluxo-email'
+    | '/admin/marketing/gasto-frete'
     | '/admin/marketing/ideias-post'
     | '/admin/marketing/nps'
     | '/admin/marketing/precificacao'
@@ -472,6 +484,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/campanhas/'
     | '/admin/marketing/cupons/'
     | '/admin/marketing/fluxo-email/'
+    | '/admin/marketing/gasto-frete/'
     | '/admin/marketing/ideias-post/'
     | '/admin/marketing/nps/'
     | '/admin/marketing/precificacao/'
@@ -512,6 +525,7 @@ export interface RootRouteChildren {
   AdminMarketingCampanhasIndexRoute: typeof AdminMarketingCampanhasIndexRoute
   AdminMarketingCuponsIndexRoute: typeof AdminMarketingCuponsIndexRoute
   AdminMarketingFluxoEmailIndexRoute: typeof AdminMarketingFluxoEmailIndexRoute
+  AdminMarketingGastoFreteIndexRoute: typeof AdminMarketingGastoFreteIndexRoute
   AdminMarketingIdeiasPostIndexRoute: typeof AdminMarketingIdeiasPostIndexRoute
   AdminMarketingNpsIndexRoute: typeof AdminMarketingNpsIndexRoute
   AdminMarketingPrecificacaoIndexRoute: typeof AdminMarketingPrecificacaoIndexRoute
@@ -757,6 +771,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingFluxoEmailIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/marketing/gasto-frete/': {
+      id: '/admin/marketing/gasto-frete/'
+      path: '/admin/marketing/gasto-frete'
+      fullPath: '/admin/marketing/gasto-frete/'
+      preLoaderRoute: typeof AdminMarketingGastoFreteIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/marketing/ideias-post/': {
       id: '/admin/marketing/ideias-post/'
       path: '/admin/marketing/ideias-post'
@@ -816,6 +837,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMarketingCampanhasIndexRoute: AdminMarketingCampanhasIndexRoute,
   AdminMarketingCuponsIndexRoute: AdminMarketingCuponsIndexRoute,
   AdminMarketingFluxoEmailIndexRoute: AdminMarketingFluxoEmailIndexRoute,
+  AdminMarketingGastoFreteIndexRoute: AdminMarketingGastoFreteIndexRoute,
   AdminMarketingIdeiasPostIndexRoute: AdminMarketingIdeiasPostIndexRoute,
   AdminMarketingNpsIndexRoute: AdminMarketingNpsIndexRoute,
   AdminMarketingPrecificacaoIndexRoute: AdminMarketingPrecificacaoIndexRoute,

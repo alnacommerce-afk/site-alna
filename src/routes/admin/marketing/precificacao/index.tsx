@@ -5,16 +5,20 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL, formatDecimalToInput, parseDecimalInput } from "@/lib/money";
+import { loadSalesAverages, type SalesAverages } from "@/lib/admin/sales-averages";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -30,40 +34,8 @@ export const Route = createFileRoute("/admin/marketing/precificacao/")({
 });
 
 const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
-const DEFAULT_UF = "SP";
-
-// Capital CEPs — each verified live against ViaCEP before shipping this page, since Melhor
-// Envio's calculate endpoint needs a real, deliverable postal code (a bare "70000-000"-style
-// guess for a capital is not guaranteed to actually exist).
-const BRAZIL_STATES = [
-  { uf: "AC", name: "Acre", capitalCep: "69921092" },
-  { uf: "AL", name: "Alagoas", capitalCep: "57041350" },
-  { uf: "AP", name: "Amapá", capitalCep: "68900013" },
-  { uf: "AM", name: "Amazonas", capitalCep: "69057004" },
-  { uf: "BA", name: "Bahia", capitalCep: "41500620" },
-  { uf: "CE", name: "Ceará", capitalCep: "60176210" },
-  { uf: "DF", name: "Distrito Federal", capitalCep: "72615002" },
-  { uf: "ES", name: "Espírito Santo", capitalCep: "29016345" },
-  { uf: "GO", name: "Goiás", capitalCep: "74053010" },
-  { uf: "MA", name: "Maranhão", capitalCep: "65066660" },
-  { uf: "MT", name: "Mato Grosso", capitalCep: "78049531" },
-  { uf: "MS", name: "Mato Grosso do Sul", capitalCep: "79070060" },
-  { uf: "MG", name: "Minas Gerais", capitalCep: "30510670" },
-  { uf: "PA", name: "Pará", capitalCep: "66814133" },
-  { uf: "PB", name: "Paraíba", capitalCep: "58010820" },
-  { uf: "PR", name: "Paraná", capitalCep: "80020924" },
-  { uf: "PE", name: "Pernambuco", capitalCep: "50060003" },
-  { uf: "PI", name: "Piauí", capitalCep: "64060810" },
-  { uf: "RJ", name: "Rio de Janeiro", capitalCep: "21011718" },
-  { uf: "RN", name: "Rio Grande do Norte", capitalCep: "59073817" },
-  { uf: "RS", name: "Rio Grande do Sul", capitalCep: "91250373" },
-  { uf: "RO", name: "Rondônia", capitalCep: "76811278" },
-  { uf: "RR", name: "Roraima", capitalCep: "69301970" },
-  { uf: "SC", name: "Santa Catarina", capitalCep: "88010000" },
-  { uf: "SP", name: "São Paulo", capitalCep: "04939180" },
-  { uf: "SE", name: "Sergipe", capitalCep: "49081000" },
-  { uf: "TO", name: "Tocantins", capitalCep: "77001900" },
-];
+// Média usada pelos botões "Usar média real" de cupom e de frete.
+const AVERAGE_WINDOW_DAYS = 90;
 
 type VariantRow = {
   id: string;
@@ -77,41 +49,93 @@ type VariantRow = {
   tax_rate_pct: number;
   card_fee_pct: number;
   margin_pct: number;
+  coupon_avg_pct: number;
+  shipping_cost_pct: number;
   discount_pct: number;
   productTitle: string;
 };
 
-type PctField = "tax_rate_pct" | "card_fee_pct" | "margin_pct" | "discount_pct";
-type PctDraftKey = "tax" | "card" | "margin" | "discount";
+type PctField =
+  | "tax_rate_pct"
+  | "card_fee_pct"
+  | "margin_pct"
+  | "coupon_avg_pct"
+  | "shipping_cost_pct"
+  | "discount_pct";
+type PctDraftKey = "tax" | "card" | "margin" | "coupon" | "shipping" | "discount";
 const FIELD_TO_DRAFT_KEY: Record<PctField, PctDraftKey> = {
   tax_rate_pct: "tax",
   card_fee_pct: "card",
   margin_pct: "margin",
+  coupon_avg_pct: "coupon",
+  shipping_cost_pct: "shipping",
   discount_pct: "discount",
 };
-type RowDraft = { tax: string; card: string; margin: string; discount: string };
-const EMPTY_ROW_DRAFT: RowDraft = { tax: "0", card: "0", margin: "0", discount: "0" };
+const FIELD_LABELS: Record<PctField, string> = {
+  tax_rate_pct: "Imposto",
+  card_fee_pct: "Cartão",
+  margin_pct: "Margem",
+  coupon_avg_pct: "Média em cupom",
+  shipping_cost_pct: "Custo do frete",
+  discount_pct: "Desconto no anúncio",
+};
+// Estas duas mexem no preço de TODA a loja na hora, então pedem uma confirmação com o antes e o depois.
+const CONFIRM_FIELDS: PctField[] = ["coupon_avg_pct", "shipping_cost_pct"];
 
-type FreightState = { status: "loading" | "ok" | "error"; cents: number | null };
+function buildPctPayload(field: PctField, parsed: number) {
+  switch (field) {
+    case "tax_rate_pct":
+      return { tax_rate_pct: parsed };
+    case "card_fee_pct":
+      return { card_fee_pct: parsed };
+    case "margin_pct":
+      return { margin_pct: parsed };
+    case "coupon_avg_pct":
+      return { coupon_avg_pct: parsed };
+    case "shipping_cost_pct":
+      return { shipping_cost_pct: parsed };
+    case "discount_pct":
+      return { discount_pct: parsed };
+  }
+}
 
-// Preço de venda = Custo ÷ [1 − (Imposto% + Cartão% + Margem%)]. Custo é a soma dos 3 valores que
-// o FinMarket HUB reporta por SKU (compra + extra + frete) — os três são descontados do preço
-// final (não do custo), por isso somam juntos no divisor. Ex.: custo R$7, imposto 6% + cartão 2% +
-// margem 20% → R$7 ÷ (1 − 0,28) = R$9,72, com 20% de margem líquida de verdade. Imposto, cartão e
-// margem são todos por variação — um produto específico pode precisar de um % diferente do resto.
+type RowDraft = Record<PctDraftKey, string>;
+const EMPTY_ROW_DRAFT: RowDraft = {
+  tax: "0",
+  card: "0",
+  margin: "0",
+  coupon: "0",
+  shipping: "0",
+  discount: "0",
+};
+
+// Preço de venda = Custo ÷ [1 − (Imposto% + Cartão% + Margem% + Cupom% + Frete%)]. Custo é a soma dos 3
+// valores que o FinMarket HUB reporta por SKU (compra + extra + frete de compra) — descontados do preço
+// final (não do custo), por isso somam juntos no divisor. Cupom e frete grátis (etiqueta) funcionam do
+// mesmo jeito: são uma fatia do preço de venda que não chega ao bolso. Ex.: custo R$7, imposto 6% +
+// cartão 2% + margem 20% + cupom 5% + frete 10% → R$7 ÷ (1 − 0,43) = R$12,28, com 20% de margem líquida
+// de verdade. Todos os % são por variação — um produto específico pode precisar de um % diferente.
 function computeVariantPricing(row: VariantRow) {
   const hasCost = row.cost_cents != null;
   const custoTotalCents =
     (row.cost_cents ?? 0) + (row.extra_cost_cents ?? 0) + (row.freight_cost_cents ?? 0);
-  const denom = 1 - (row.tax_rate_pct + row.card_fee_pct + row.margin_pct) / 100;
+  const denom =
+    1 -
+    (row.tax_rate_pct +
+      row.card_fee_pct +
+      row.margin_pct +
+      row.coupon_avg_pct +
+      row.shipping_cost_pct) /
+      100;
   const precoCalculadoCents = hasCost && denom > 0 ? Math.round(custoTotalCents / denom) : null;
-  // Quanto do preço final vira imposto, cartão e margem, em reais.
-  const impostoCents =
-    precoCalculadoCents != null ? Math.round(precoCalculadoCents * (row.tax_rate_pct / 100)) : null;
-  const cartaoCents =
-    precoCalculadoCents != null ? Math.round(precoCalculadoCents * (row.card_fee_pct / 100)) : null;
-  const margemCents =
-    precoCalculadoCents != null ? Math.round(precoCalculadoCents * (row.margin_pct / 100)) : null;
+  // Quanto do preço final vira imposto, cartão, margem, cupom e frete, em reais.
+  const parte = (pct: number) =>
+    precoCalculadoCents != null ? Math.round(precoCalculadoCents * (pct / 100)) : null;
+  const impostoCents = parte(row.tax_rate_pct);
+  const cartaoCents = parte(row.card_fee_pct);
+  const margemCents = parte(row.margin_pct);
+  const cupomCents = parte(row.coupon_avg_pct);
+  const freteCents = parte(row.shipping_cost_pct);
   // Preço "de" (vitrine): mais alto que o preço calculado, de forma que aplicando o desconto do
   // anúncio o cliente pague exatamente o preço calculado. Sem desconto, não existe preço "de".
   const anuncioCents =
@@ -124,27 +148,64 @@ function computeVariantPricing(row: VariantRow) {
     impostoCents,
     cartaoCents,
     margemCents,
+    cupomCents,
+    freteCents,
     anuncioCents,
     precoCalculadoCents,
     denomValid: denom > 0,
   };
 }
 
+function PctCell({
+  value,
+  reais,
+  onChange,
+  onBlur,
+}: {
+  value: string;
+  reais?: string;
+  onChange: (value: string) => void;
+  onBlur: () => void;
+}) {
+  return (
+    <TableCell>
+      <div className="flex items-center gap-1">
+        <Input
+          className="h-6 w-12 text-xs"
+          inputMode="decimal"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
+        />
+        <span>%</span>
+      </div>
+      {reais !== undefined ? <p className="mt-0.5 text-muted-foreground">{reais}</p> : null}
+    </TableCell>
+  );
+}
+
 function PrecificacaoPage() {
   const [rows, setRows] = useState<VariantRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  const [bulkDrafts, setBulkDrafts] = useState({ tax: "", card: "", margin: "", discount: "" });
+  const [bulkDrafts, setBulkDrafts] = useState<RowDraft>({
+    tax: "",
+    card: "",
+    margin: "",
+    coupon: "",
+    shipping: "",
+    discount: "",
+  });
   const [rowDrafts, setRowDrafts] = useState<Record<string, RowDraft>>({});
-  const [selectedUf, setSelectedUf] = useState<Record<string, string>>({});
-  const [freight, setFreight] = useState<Record<string, FreightState>>({});
+  const [averages, setAverages] = useState<SalesAverages | null>(null);
+  const [pendingBulk, setPendingBulk] = useState<{ field: PctField; value: number } | null>(null);
   const applyingRef = useRef(false);
 
   async function load() {
     const { data, error } = await supabase
       .from("product_variants")
       .select(
-        "id, sku, name, price_cents, compare_at_price_cents, cost_cents, extra_cost_cents, freight_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, discount_pct, products!inner(title, status)",
+        "id, sku, name, price_cents, compare_at_price_cents, cost_cents, extra_cost_cents, freight_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, coupon_avg_pct, shipping_cost_pct, discount_pct, products!inner(title, status)",
       )
       .eq("products.status", "published")
       .order("sku");
@@ -155,7 +216,7 @@ function PrecificacaoPage() {
       return;
     }
 
-    const variantRows = (data ?? []).map((v) => ({
+    const variantRows: VariantRow[] = (data ?? []).map((v) => ({
       id: v.id,
       sku: v.sku,
       name: v.name,
@@ -167,6 +228,8 @@ function PrecificacaoPage() {
       tax_rate_pct: v.tax_rate_pct,
       card_fee_pct: v.card_fee_pct,
       margin_pct: v.margin_pct,
+      coupon_avg_pct: v.coupon_avg_pct,
+      shipping_cost_pct: v.shipping_cost_pct,
       discount_pct: v.discount_pct,
       productTitle: (v.products as { title: string } | null)?.title ?? "",
     }));
@@ -179,28 +242,23 @@ function PrecificacaoPage() {
             tax: formatDecimalToInput(v.tax_rate_pct),
             card: formatDecimalToInput(v.card_fee_pct),
             margin: formatDecimalToInput(v.margin_pct),
+            coupon: formatDecimalToInput(v.coupon_avg_pct),
+            shipping: formatDecimalToInput(v.shipping_cost_pct),
             discount: formatDecimalToInput(v.discount_pct),
           },
         ]),
       ),
     );
-    setSelectedUf((prev) => ({
-      ...Object.fromEntries(variantRows.map((v) => [v.id, DEFAULT_UF])),
-      ...prev,
-    }));
     setLoading(false);
-
-    for (const v of variantRows) {
-      calculateFreight(v.id, DEFAULT_UF);
-    }
   }
 
   useEffect(() => {
     load();
+    loadSalesAverages(AVERAGE_WINDOW_DAYS).then(setAverages);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Preço = Custo ÷ [1 − (imposto% + cartão% + margem%)] e preço "de" = Preço ÷ (1 − desconto%) —
+  // Preço = Custo ÷ [1 − (imposto% + cartão% + margem% + cupom% + frete%)] e preço "de" = Preço ÷ (1 − desconto%) —
   // ambos aplicados automaticamente no product_variants de cada anúncio sempre que o custo (API)
   // ou qualquer % daquela variação mudam.
   useEffect(() => {
@@ -252,13 +310,6 @@ function PrecificacaoPage() {
     })();
   }, [rows, loading]);
 
-  function buildPctPayload(field: PctField, parsed: number) {
-    if (field === "tax_rate_pct") return { tax_rate_pct: parsed };
-    if (field === "card_fee_pct") return { card_fee_pct: parsed };
-    if (field === "margin_pct") return { margin_pct: parsed };
-    return { discount_pct: parsed };
-  }
-
   async function saveRowPct(rowId: string, field: PctField, rawValue: string) {
     const parsed = parseDecimalInput(rawValue) ?? 0;
     const current = rows.find((r) => r.id === rowId);
@@ -277,14 +328,8 @@ function PrecificacaoPage() {
   // Preenche o % de todos os anúncios de uma vez (campo do cabeçalho) — cada linha continua
   // editável individualmente depois, para o caso de um produto específico precisar de uma
   // margem/imposto/cartão diferente do resto.
-  async function applyBulkPct(field: PctField, rawValue: string) {
+  async function applyBulkPct(field: PctField, parsed: number) {
     const draftKey = FIELD_TO_DRAFT_KEY[field];
-    const trimmed = rawValue.trim();
-    if (!trimmed || rows.length === 0) {
-      setBulkDrafts((prev) => ({ ...prev, [draftKey]: "" }));
-      return;
-    }
-    const parsed = parseDecimalInput(trimmed) ?? 0;
     const ids = rows.map((r) => r.id);
     const { error } = await supabase
       .from("product_variants")
@@ -305,15 +350,46 @@ function PrecificacaoPage() {
       return next;
     });
     setBulkDrafts((prev) => ({ ...prev, [draftKey]: "" }));
-    const labels: Record<PctField, string> = {
-      tax_rate_pct: "Imposto",
-      card_fee_pct: "Cartão",
-      margin_pct: "Margem",
-      discount_pct: "Desconto no anúncio",
-    };
     toast.success(
-      `${labels[field]} aplicado a ${ids.length} anúncio(s) — ajuste linha a linha se algum precisar ser diferente.`,
+      `${FIELD_LABELS[field]} aplicado a ${ids.length} anúncio(s) — ajuste linha a linha se algum precisar ser diferente.`,
     );
+  }
+
+  // Ponto de entrada do "Aplicar a todos": campos que mexem no preço da loja inteira pedem confirmação.
+  function requestBulkPct(field: PctField, rawValue: string) {
+    const draftKey = FIELD_TO_DRAFT_KEY[field];
+    const trimmed = rawValue.trim();
+    if (!trimmed || rows.length === 0) {
+      setBulkDrafts((prev) => ({ ...prev, [draftKey]: "" }));
+      return;
+    }
+    const parsed = parseDecimalInput(trimmed) ?? 0;
+    if (CONFIRM_FIELDS.includes(field)) {
+      setPendingBulk({ field, value: parsed });
+      return;
+    }
+    applyBulkPct(field, parsed);
+  }
+
+  // Antes/depois do preço de 1 unidade de cada produto com custo, se o % fosse aplicado a todos.
+  function previewBulk(field: PctField, value: number) {
+    let before = 0;
+    let after = 0;
+    let changed = 0;
+    for (const row of rows) {
+      const now = computeVariantPricing(row).precoCalculadoCents;
+      const next = computeVariantPricing({ ...row, [field]: value }).precoCalculadoCents;
+      if (now == null || next == null) continue;
+      before += now;
+      after += next;
+      if (now !== next) changed++;
+    }
+    return {
+      before,
+      after,
+      changed,
+      variationPct: before > 0 ? ((after - before) / before) * 100 : 0,
+    };
   }
 
   async function syncCosts() {
@@ -336,39 +412,63 @@ function PrecificacaoPage() {
     }
   }
 
-  async function calculateFreight(variantId: string, uf: string) {
-    const state = BRAZIL_STATES.find((s) => s.uf === uf);
-    if (!state) return;
-    setFreight((prev) => ({ ...prev, [variantId]: { status: "loading", cents: null } }));
-    try {
-      const resp = await fetch(`${FUNCTIONS_URL}/calculate-shipping`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          destinationZip: state.capitalCep,
-          items: [{ variantId, quantity: 1 }],
-        }),
-      });
-      const json = await resp.json();
-      if (!resp.ok || json.error) {
-        setFreight((prev) => ({ ...prev, [variantId]: { status: "error", cents: null } }));
-        return;
-      }
-      // originalPriceCents (not priceCents) — a real freight cost regardless of the free-shipping
-      // promotion, since this screen is checking actual carrier cost, not a customer-facing quote.
-      setFreight((prev) => ({
-        ...prev,
-        [variantId]: { status: "ok", cents: json.originalPriceCents },
-      }));
-    } catch {
-      setFreight((prev) => ({ ...prev, [variantId]: { status: "error", cents: null } }));
-    }
+  function setDraft(rowId: string, base: RowDraft, key: PctDraftKey, value: string) {
+    setRowDrafts((prev) => ({ ...prev, [rowId]: { ...(prev[rowId] ?? base), [key]: value } }));
   }
 
-  function handleUfChange(variantId: string, uf: string) {
-    setSelectedUf((prev) => ({ ...prev, [variantId]: uf }));
-    calculateFreight(variantId, uf);
+  function renderBulkHeader({
+    field,
+    draftKey,
+    title,
+    suggestion,
+  }: {
+    field: PctField;
+    draftKey: PctDraftKey;
+    title: string;
+    suggestion?: { value: number; hint: string } | undefined;
+  }) {
+    return (
+      <div className="space-y-1">
+        <span>{title}</span>
+        <Input
+          className="h-6 w-14 text-xs"
+          inputMode="decimal"
+          placeholder="Aplicar a todos"
+          value={bulkDrafts[draftKey]}
+          onChange={(e) => setBulkDrafts((prev) => ({ ...prev, [draftKey]: e.target.value }))}
+          onBlur={() => requestBulkPct(field, bulkDrafts[draftKey])}
+        />
+        <span className="block font-normal text-muted-foreground">% (todos)</span>
+        {suggestion ? (
+          <button
+            type="button"
+            className="block text-left font-normal text-[#16a34a] underline"
+            onClick={() => setPendingBulk({ field, value: suggestion.value })}
+          >
+            Usar média real ({formatDecimalToInput(suggestion.value)}%)
+            <span className="block text-muted-foreground no-underline">{suggestion.hint}</span>
+          </button>
+        ) : null}
+      </div>
+    );
   }
+
+  const couponSuggestion =
+    averages && averages.grossCents > 0
+      ? {
+          value: Math.round(averages.couponPct * 10) / 10,
+          hint: `${averages.paidOrders} vendas em ${AVERAGE_WINDOW_DAYS} dias`,
+        }
+      : undefined;
+  const shippingSuggestion =
+    averages && averages.revenueCents > 0
+      ? {
+          value: Math.round(averages.shippingPct * 10) / 10,
+          hint: `${averages.paidOrders} vendas em ${AVERAGE_WINDOW_DAYS} dias`,
+        }
+      : undefined;
+
+  const preview = pendingBulk ? previewBulk(pendingBulk.field, pendingBulk.value) : null;
 
   return (
     <AdminShell>
@@ -376,9 +476,10 @@ function PrecificacaoPage() {
         <div>
           <h1 className="text-xl font-semibold">Precificação</h1>
           <p className="text-sm text-muted-foreground">
-            Custo puxado do FinMarket HUB; imposto, cartão, margem e desconto no anúncio por SKU — o
-            preço de venda (e o "de" riscado, quando há desconto) é calculado e aplicado sozinho. O
-            frete (Melhor Envio) até a capital de qualquer estado aparece na hora.
+            Custo puxado do FinMarket HUB; imposto, cartão, margem, média em cupom, custo do frete e
+            desconto no anúncio por SKU — o preço de venda (e o "de" riscado, quando há desconto) é
+            calculado e aplicado sozinho, na hora em que qualquer % muda. Cupom e frete começam em
+            0%: preencha à mão ou use a média real das vendas (últimos {AVERAGE_WINDOW_DAYS} dias).
           </p>
         </div>
         <Button type="button" variant="outline" size="sm" disabled={syncing} onClick={syncCosts}>
@@ -400,75 +501,59 @@ function PrecificacaoPage() {
               <TableRow>
                 <TableHead className="w-[14%]">SKU</TableHead>
                 <TableHead className="w-[9%]">Custo (API)</TableHead>
-                <TableHead className="w-[11%]">
-                  <div className="space-y-1">
-                    <span>Imposto (% + R$)</span>
-                    <Input
-                      className="h-6 w-14 text-xs"
-                      inputMode="decimal"
-                      placeholder="Aplicar a todos"
-                      value={bulkDrafts.tax}
-                      onChange={(e) => setBulkDrafts((prev) => ({ ...prev, tax: e.target.value }))}
-                      onBlur={() => applyBulkPct("tax_rate_pct", bulkDrafts.tax)}
-                    />
-                    <span className="font-normal text-muted-foreground">% (todos)</span>
-                  </div>
+                <TableHead className="w-[10%]">
+                  {renderBulkHeader({
+                    field: "tax_rate_pct",
+                    draftKey: "tax",
+                    title: "Imposto (% + R$)",
+                  })}
+                </TableHead>
+                <TableHead className="w-[10%]">
+                  {renderBulkHeader({
+                    field: "card_fee_pct",
+                    draftKey: "card",
+                    title: "Cartão (% + R$)",
+                  })}
+                </TableHead>
+                <TableHead className="w-[10%]">
+                  {renderBulkHeader({
+                    field: "margin_pct",
+                    draftKey: "margin",
+                    title: "Margem (% + R$)",
+                  })}
                 </TableHead>
                 <TableHead className="w-[11%]">
-                  <div className="space-y-1">
-                    <span>Cartão (% + R$)</span>
-                    <Input
-                      className="h-6 w-14 text-xs"
-                      inputMode="decimal"
-                      placeholder="Aplicar a todos"
-                      value={bulkDrafts.card}
-                      onChange={(e) => setBulkDrafts((prev) => ({ ...prev, card: e.target.value }))}
-                      onBlur={() => applyBulkPct("card_fee_pct", bulkDrafts.card)}
-                    />
-                    <span className="font-normal text-muted-foreground">% (todos)</span>
-                  </div>
+                  {renderBulkHeader({
+                    field: "coupon_avg_pct",
+                    draftKey: "coupon",
+                    title: "Média em cupom (% + R$)",
+                    suggestion: couponSuggestion,
+                  })}
                 </TableHead>
                 <TableHead className="w-[11%]">
-                  <div className="space-y-1">
-                    <span>Margem (% + R$)</span>
-                    <Input
-                      className="h-6 w-14 text-xs"
-                      inputMode="decimal"
-                      placeholder="Aplicar a todos"
-                      value={bulkDrafts.margin}
-                      onChange={(e) =>
-                        setBulkDrafts((prev) => ({ ...prev, margin: e.target.value }))
-                      }
-                      onBlur={() => applyBulkPct("margin_pct", bulkDrafts.margin)}
-                    />
-                    <span className="font-normal text-muted-foreground">% (todos)</span>
-                  </div>
+                  {renderBulkHeader({
+                    field: "shipping_cost_pct",
+                    draftKey: "shipping",
+                    title: "Custo do frete (% + R$)",
+                    suggestion: shippingSuggestion,
+                  })}
                 </TableHead>
-                <TableHead className="w-[12%]">
-                  <div className="space-y-1">
-                    <span>Desconto no anúncio</span>
-                    <Input
-                      className="h-6 w-14 text-xs"
-                      inputMode="decimal"
-                      placeholder="Aplicar a todos"
-                      value={bulkDrafts.discount}
-                      onChange={(e) =>
-                        setBulkDrafts((prev) => ({ ...prev, discount: e.target.value }))
-                      }
-                      onBlur={() => applyBulkPct("discount_pct", bulkDrafts.discount)}
-                    />
-                    <span className="font-normal text-muted-foreground">% (todos)</span>
-                  </div>
+                <TableHead className="w-[11%]">
+                  {renderBulkHeader({
+                    field: "discount_pct",
+                    draftKey: "discount",
+                    title: "Desconto no anúncio",
+                  })}
                 </TableHead>
-                <TableHead className="w-[15%]">Preço no anúncio</TableHead>
-                <TableHead className="w-[14%]">Frete até a capital</TableHead>
+                <TableHead className="w-[14%]">Preço no anúncio</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.map((row) => {
                 const calc = computeVariantPricing(row);
-                const freightInfo = freight[row.id];
                 const draft = rowDrafts[row.id] ?? EMPTY_ROW_DRAFT;
+                const reais = (cents: number | null) =>
+                  calc.hasCost && cents != null ? formatCentsToBRL(cents) : "—";
 
                 return (
                   <TableRow key={row.id}>
@@ -486,85 +571,41 @@ function PrecificacaoPage() {
                         <span className="text-muted-foreground">não sincronizado</span>
                       )}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Input
-                          className="h-6 w-12 text-xs"
-                          inputMode="decimal"
-                          value={draft.tax}
-                          onChange={(e) =>
-                            setRowDrafts((prev) => ({
-                              ...prev,
-                              [row.id]: { ...(prev[row.id] ?? draft), tax: e.target.value },
-                            }))
-                          }
-                          onBlur={() => saveRowPct(row.id, "tax_rate_pct", draft.tax)}
-                        />
-                        <span>%</span>
-                      </div>
-                      <p className="mt-0.5 text-muted-foreground">
-                        {calc.hasCost && calc.impostoCents != null
-                          ? formatCentsToBRL(calc.impostoCents)
-                          : "—"}
-                      </p>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Input
-                          className="h-6 w-12 text-xs"
-                          inputMode="decimal"
-                          value={draft.card}
-                          onChange={(e) =>
-                            setRowDrafts((prev) => ({
-                              ...prev,
-                              [row.id]: { ...(prev[row.id] ?? draft), card: e.target.value },
-                            }))
-                          }
-                          onBlur={() => saveRowPct(row.id, "card_fee_pct", draft.card)}
-                        />
-                        <span>%</span>
-                      </div>
-                      <p className="mt-0.5 text-muted-foreground">
-                        {calc.cartaoCents != null ? formatCentsToBRL(calc.cartaoCents) : "—"}
-                      </p>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Input
-                          className="h-6 w-12 text-xs"
-                          inputMode="decimal"
-                          value={draft.margin}
-                          onChange={(e) =>
-                            setRowDrafts((prev) => ({
-                              ...prev,
-                              [row.id]: { ...(prev[row.id] ?? draft), margin: e.target.value },
-                            }))
-                          }
-                          onBlur={() => saveRowPct(row.id, "margin_pct", draft.margin)}
-                        />
-                        <span>%</span>
-                      </div>
-                      <p className="mt-0.5 text-muted-foreground">
-                        {calc.margemCents != null ? formatCentsToBRL(calc.margemCents) : "—"}
-                      </p>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Input
-                          className="h-6 w-12 text-xs"
-                          inputMode="decimal"
-                          value={draft.discount}
-                          onChange={(e) =>
-                            setRowDrafts((prev) => ({
-                              ...prev,
-                              [row.id]: { ...(prev[row.id] ?? draft), discount: e.target.value },
-                            }))
-                          }
-                          onBlur={() => saveRowPct(row.id, "discount_pct", draft.discount)}
-                        />
-                        <span>%</span>
-                      </div>
-                    </TableCell>
+                    <PctCell
+                      value={draft.tax}
+                      reais={reais(calc.impostoCents)}
+                      onChange={(v) => setDraft(row.id, draft, "tax", v)}
+                      onBlur={() => saveRowPct(row.id, "tax_rate_pct", draft.tax)}
+                    />
+                    <PctCell
+                      value={draft.card}
+                      reais={reais(calc.cartaoCents)}
+                      onChange={(v) => setDraft(row.id, draft, "card", v)}
+                      onBlur={() => saveRowPct(row.id, "card_fee_pct", draft.card)}
+                    />
+                    <PctCell
+                      value={draft.margin}
+                      reais={reais(calc.margemCents)}
+                      onChange={(v) => setDraft(row.id, draft, "margin", v)}
+                      onBlur={() => saveRowPct(row.id, "margin_pct", draft.margin)}
+                    />
+                    <PctCell
+                      value={draft.coupon}
+                      reais={reais(calc.cupomCents)}
+                      onChange={(v) => setDraft(row.id, draft, "coupon", v)}
+                      onBlur={() => saveRowPct(row.id, "coupon_avg_pct", draft.coupon)}
+                    />
+                    <PctCell
+                      value={draft.shipping}
+                      reais={reais(calc.freteCents)}
+                      onChange={(v) => setDraft(row.id, draft, "shipping", v)}
+                      onBlur={() => saveRowPct(row.id, "shipping_cost_pct", draft.shipping)}
+                    />
+                    <PctCell
+                      value={draft.discount}
+                      onChange={(v) => setDraft(row.id, draft, "discount", v)}
+                      onBlur={() => saveRowPct(row.id, "discount_pct", draft.discount)}
+                    />
                     <TableCell className="font-semibold text-[#12294f]">
                       {calc.precoCalculadoCents != null ? (
                         calc.anuncioCents != null ? (
@@ -578,36 +619,10 @@ function PrecificacaoPage() {
                           formatCentsToBRL(calc.precoCalculadoCents)
                         )
                       ) : !calc.denomValid ? (
-                        <span className="text-destructive">imposto+cartão+margem ≥ 100%</span>
+                        <span className="text-destructive">soma dos % ≥ 100%</span>
                       ) : (
                         "—"
                       )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Select
-                          value={selectedUf[row.id] ?? DEFAULT_UF}
-                          onValueChange={(uf) => handleUfChange(row.id, uf)}
-                        >
-                          <SelectTrigger className="h-7 w-16 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {BRAZIL_STATES.map((s) => (
-                              <SelectItem key={s.uf} value={s.uf}>
-                                {s.uf}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <span className="text-muted-foreground">
-                          {!freightInfo || freightInfo.status === "loading"
-                            ? "Calculando..."
-                            : freightInfo.status === "error"
-                              ? "Indisponível"
-                              : formatCentsToBRL(freightInfo.cents ?? 0)}
-                        </span>
-                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -616,6 +631,59 @@ function PrecificacaoPage() {
           </Table>
         </div>
       )}
+
+      <AlertDialog open={!!pendingBulk} onOpenChange={(open) => !open && setPendingBulk(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Aplicar {pendingBulk ? formatDecimalToInput(pendingBulk.value) : ""}% em "
+              {pendingBulk ? FIELD_LABELS[pendingBulk.field] : ""}" para todos?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-sm">
+                {preview && preview.changed > 0 ? (
+                  <p>
+                    Os preços de <strong>{preview.changed}</strong> anúncio(s) mudam{" "}
+                    <strong>na hora, na loja inteira</strong>. Somando 1 unidade de cada produto: de{" "}
+                    <strong>{formatCentsToBRL(preview.before)}</strong> para{" "}
+                    <strong>{formatCentsToBRL(preview.after)}</strong> (
+                    {preview.variationPct >= 0 ? "+" : ""}
+                    {preview.variationPct.toFixed(1).replace(".", ",")}%).
+                  </p>
+                ) : (
+                  <p>Nenhum preço muda com esse valor.</p>
+                )}
+                <p className="text-muted-foreground">
+                  Depois você ainda pode ajustar linha a linha, ou trocar o valor quando tiver uma
+                  média melhor.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                if (pendingBulk) {
+                  setBulkDrafts((prev) => ({
+                    ...prev,
+                    [FIELD_TO_DRAFT_KEY[pendingBulk.field]]: "",
+                  }));
+                }
+              }}
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingBulk) applyBulkPct(pendingBulk.field, pendingBulk.value);
+                setPendingBulk(null);
+              }}
+            >
+              Aplicar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminShell>
   );
 }

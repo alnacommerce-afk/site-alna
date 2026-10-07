@@ -48,3 +48,16 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - O modelo de e-mail `cart_reminder_24h` agora usa os campos `{{chamada}}` (assunto) e `{{cupom_bloco_html}}` (some
   quando o cliente não tem direito a cupom novo).
 - Admin > Cupons esconde os cupons automáticos e mostra o contador "X cupons pessoais gerados, Y já usados".
+
+## pricing_coupon_and_shipping_pct (aplicada em 07/10/2026)
+- `product_variants.coupon_avg_pct` e `product_variants.shipping_cost_pct` (padrão 0, por variação): entram no
+  divisor da fórmula de preço em Admin > Marketing > Precificação, junto com imposto, cartão e margem:
+  `preço = custo ÷ [1 − (imposto + cartão + margem + cupom + frete)%]`.
+- ATENÇÃO: a Precificação **aplica o preço sozinha, na hora**, sempre que qualquer % muda (comportamento antigo da
+  tela). Por isso "Aplicar a todos" e "Usar média real" nas colunas de cupom e de frete pedem uma confirmação que
+  mostra o antes/depois da soma dos preços; os campos por linha são editáveis a qualquer momento.
+- "Usar média real" nunca preenche sozinho. Média de cupom = descontos ÷ valor vendido (antes do cupom); média de
+  frete = etiquetas pagas pela loja ÷ valor pago; ambas sobre pedidos pagos/enviados/concluídos nos últimos 90 dias
+  (`src/lib/admin/sales-averages.ts`). A coluna "Frete até a capital" foi removida da tela.
+- Telas novas/alteradas: Cupons (quadro "Média de uso do cupom" com 30/60/90 dias) e "Gasto com frete"
+  (`/admin/marketing/gasto-frete`, 7 e 30 dias, etiqueta zerada quando o cliente pagou o frete).

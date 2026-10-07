@@ -639,6 +639,7 @@ export type Database = {
           compare_at_price_cents: number | null
           cost_cents: number | null
           cost_synced_at: string | null
+          coupon_avg_pct: number
           created_at: string
           discount_pct: number
           extra_cost_cents: number | null
@@ -654,6 +655,7 @@ export type Database = {
           package_width_cm: number | null
           price_cents: number
           product_id: string
+          shipping_cost_pct: number
           sku: string
           stock_quantity: number
           tax_rate_pct: number
@@ -664,6 +666,7 @@ export type Database = {
           compare_at_price_cents?: number | null
           cost_cents?: number | null
           cost_synced_at?: string | null
+          coupon_avg_pct?: number
           created_at?: string
           discount_pct?: number
           extra_cost_cents?: number | null
@@ -679,6 +682,7 @@ export type Database = {
           package_width_cm?: number | null
           price_cents: number
           product_id: string
+          shipping_cost_pct?: number
           sku: string
           stock_quantity?: number
           tax_rate_pct?: number
@@ -689,6 +693,7 @@ export type Database = {
           compare_at_price_cents?: number | null
           cost_cents?: number | null
           cost_synced_at?: string | null
+          coupon_avg_pct?: number
           created_at?: string
           discount_pct?: number
           extra_cost_cents?: number | null
@@ -704,6 +709,7 @@ export type Database = {
           package_width_cm?: number | null
           price_cents?: number
           product_id?: string
+          shipping_cost_pct?: number
           sku?: string
           stock_quantity?: number
           tax_rate_pct?: number

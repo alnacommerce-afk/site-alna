@@ -4,6 +4,14 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL, formatCentsToInput, parseCentsFromInput } from "@/lib/money";
+import { loadSalesAverages, type SalesAverages } from "@/lib/admin/sales-averages";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -95,6 +103,8 @@ function CuponsPage() {
   const [saving, setSaving] = useState(false);
   const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
   const [personalCount, setPersonalCount] = useState({ total: 0, used: 0 });
+  const [avgDays, setAvgDays] = useState("90");
+  const [averages, setAverages] = useState<SalesAverages | null>(null);
 
   async function load() {
     setLoading(true);
@@ -129,6 +139,11 @@ function CuponsPage() {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    setAverages(null);
+    loadSalesAverages(Number(avgDays)).then(setAverages);
+  }, [avgDays]);
 
   function openCreateDialog() {
     setEditingId(null);
@@ -220,6 +235,32 @@ function CuponsPage() {
           </p>
         </div>
         <Button onClick={openCreateDialog}>Novo cupom</Button>
+      </div>
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border p-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Média de uso do cupom
+          </p>
+          <p className="mt-1 text-3xl font-bold text-[#12294f]">
+            {averages ? `${averages.couponPct.toFixed(1).replace(".", ",")}%` : "—"}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {averages
+              ? `${formatCentsToBRL(averages.couponCents)} de desconto em ${formatCentsToBRL(averages.grossCents)} vendidos · ${averages.ordersWithCoupon} de ${averages.paidOrders} pedidos pagos usaram cupom`
+              : "Calculando..."}
+          </p>
+        </div>
+        <Select value={avgDays} onValueChange={setAvgDays}>
+          <SelectTrigger className="w-40">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="30">Últimos 30 dias</SelectItem>
+            <SelectItem value="60">Últimos 60 dias</SelectItem>
+            <SelectItem value="90">Últimos 90 dias</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <p className="mb-4 text-sm text-muted-foreground">
