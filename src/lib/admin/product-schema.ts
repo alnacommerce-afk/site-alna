@@ -16,7 +16,6 @@ export const productFormSchema = z.object({
     .max(60, "O título deve ter no máximo 60 caracteres"),
   categoryId: z.string().min(1, "Selecione uma categoria"),
   description: z.string().optional(),
-  videoUrl: z.string().trim().url("Informe uma URL válida").optional().or(z.literal("")),
   status: z.enum(["draft", "published"]),
   variants: z.array(variantFormSchema).min(1, "Adicione pelo menos uma variação"),
   // Fiscal — um único conjunto de dados para o produto, aplicado a todas as variações.
@@ -48,7 +47,6 @@ export const defaultProductFormValues: ProductFormValues = {
   title: "",
   categoryId: "",
   description: "",
-  videoUrl: "",
   status: "draft",
   variants: [emptyVariant],
   // Defaults usuais da ALNA — a maioria dos produtos usa exatamente estes códigos;

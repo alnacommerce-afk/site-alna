@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles, Trash2, Video } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -64,6 +64,17 @@ type AiSuggestion = {
 
 type ImageItem = ProductDraftImage;
 
+// Videos are stored in our own bucket, so keep them light: the store only downloads one when a customer plays it.
+const MAX_VIDEO_BYTES = 8 * 1024 * 1024;
+const COVER_MAX_SIDE = 640;
+const STORAGE_MARKER = "/product-media/";
+
+/** Storage path of a file in the product-media bucket, or null for an external link (old YouTube links). */
+function storagePathOf(url: string | null): string | null {
+  if (!url || !url.includes(STORAGE_MARKER)) return null;
+  return decodeURIComponent(url.split(STORAGE_MARKER)[1] ?? "") || null;
+}
+
 type ExistingImage = { id: string; storage_path: string; alt_text: string; position: number };
 
 function newKey() {
@@ -98,6 +109,13 @@ export function ProductForm({ productId }: { productId?: string }) {
   const [images, setImages] = useState<ImageItem[]>(initialDraft?.images ?? []);
   const [originalImages, setOriginalImages] = useState<ExistingImage[]>([]);
   const [originalVariantIds, setOriginalVariantIds] = useState<string[]>([]);
+  // Video (own file) + its cover image. The cover is what the customer sees in the gallery before pressing play.
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [existingVideoUrl, setExistingVideoUrl] = useState<string | null>(null);
+  const [existingPosterUrl, setExistingPosterUrl] = useState<string | null>(null);
+  const [removeVideo, setRemoveVideo] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiTitleSuggestion, setAiTitleSuggestion] = useState<string | null>(null);
 
@@ -199,7 +217,7 @@ export function ProductForm({ productId }: { productId?: string }) {
       const { data: product, error } = await supabase
         .from("products")
         .select(
-          "title, slug, description, video_url, status, category_id, ncm, origem, cfop_venda_mesmo_estado, cfop_venda_outros_estados, cfop_exportacao, csosn, cest, focus_keyword, seo_title, seo_description, seo_keywords",
+          "title, slug, description, video_url, video_poster_url, status, category_id, ncm, origem, cfop_venda_mesmo_estado, cfop_venda_outros_estados, cfop_exportacao, csosn, cest, focus_keyword, seo_title, seo_description, seo_keywords",
         )
         .eq("id", editingProductId)
         .single();
@@ -226,7 +244,6 @@ export function ProductForm({ productId }: { productId?: string }) {
         title: product.title,
         categoryId: product.category_id ?? "",
         description: product.description ?? "",
-        videoUrl: product.video_url ?? "",
         status: product.status,
         variants: (variants ?? []).map((v) => ({
           id: v.id,
@@ -248,6 +265,8 @@ export function ProductForm({ productId }: { productId?: string }) {
         seoKeywords: product.seo_keywords ?? [],
       });
       setOriginalVariantIds((variants ?? []).map((v) => v.id));
+      setExistingVideoUrl(product.video_url ?? null);
+      setExistingPosterUrl(product.video_poster_url ?? null);
 
       const existing = productImages ?? [];
       setOriginalImages(existing);
@@ -304,9 +323,51 @@ export function ProductForm({ productId }: { productId?: string }) {
     setImages((prev) => prev.filter((img) => img.key !== key));
   }
 
+  function handleVideoPick(file: File | null) {
+    if (!file) return;
+    if (file.type !== "video/mp4" && !file.name.toLowerCase().endsWith(".mp4")) {
+      toast.error("O vídeo precisa ser um arquivo MP4.");
+      return;
+    }
+    if (file.size > MAX_VIDEO_BYTES) {
+      toast.error(`O vídeo tem ${(file.size / 1048576).toFixed(1)} MB. O limite é 8 MB (o ideal é cerca de 3 MB).`);
+      return;
+    }
+    setVideoFile(file);
+    setRemoveVideo(false);
+  }
+
+  function handleCoverPick(file: File | null) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("A capa precisa ser uma imagem.");
+      return;
+    }
+    if (coverPreview?.startsWith("blob:")) URL.revokeObjectURL(coverPreview);
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
+    setRemoveVideo(false);
+  }
+
+  function handleRemoveVideo() {
+    setVideoFile(null);
+    setCoverFile(null);
+    setCoverPreview(null);
+    setRemoveVideo(true);
+  }
+
   async function saveProduct(values: ProductFormValues, chosenStatus: "draft" | "published") {
     if (images.length === 0) {
       toast.error("Adicione pelo menos uma foto do produto.");
+      return;
+    }
+    const keepsVideo = !removeVideo && (videoFile || existingVideoUrl);
+    if (videoFile && !coverFile && !existingPosterUrl) {
+      toast.error("Adicione também a capa do vídeo (a imagem que aparece antes do play).");
+      return;
+    }
+    if (coverFile && !keepsVideo) {
+      toast.error("Você escolheu uma capa, mas falta enviar o vídeo.");
       return;
     }
 
@@ -335,7 +396,6 @@ export function ProductForm({ productId }: { productId?: string }) {
             title: values.title,
             category_id: values.categoryId,
             description: values.description || null,
-            video_url: values.videoUrl || null,
             status: chosenStatus,
             slug,
             ...fiscalAndSeoPayload,
@@ -352,7 +412,6 @@ export function ProductForm({ productId }: { productId?: string }) {
             title: values.title,
             category_id: values.categoryId,
             description: values.description || null,
-            video_url: values.videoUrl || null,
             status: chosenStatus,
             ...fiscalAndSeoPayload,
           })
@@ -434,6 +493,44 @@ export function ProductForm({ productId }: { productId?: string }) {
           });
           if (insertError) throw insertError;
         }
+      }
+
+      // Video + cover: upload the new files, then point the product at them (and clean up what was replaced).
+      if (videoFile || coverFile || removeVideo) {
+        const oldPaths = [storagePathOf(existingVideoUrl), storagePathOf(existingPosterUrl)];
+        const publicUrl = (path: string) => supabase.storage.from("product-media").getPublicUrl(path).data.publicUrl;
+        let nextVideoUrl = removeVideo ? null : existingVideoUrl;
+        let nextPosterUrl = removeVideo ? null : existingPosterUrl;
+        const replaced: (string | null)[] = removeVideo ? oldPaths : [];
+
+        if (!removeVideo && videoFile) {
+          const path = `${currentProductId}/video-${crypto.randomUUID()}.mp4`;
+          const { error: videoError } = await supabase.storage
+            .from("product-media")
+            .upload(path, videoFile, { contentType: "video/mp4", cacheControl: "31536000" });
+          if (videoError) throw videoError;
+          nextVideoUrl = publicUrl(path);
+          replaced.push(storagePathOf(existingVideoUrl));
+        }
+        if (!removeVideo && coverFile) {
+          const prepared = await prepareProductImage(coverFile, COVER_MAX_SIDE);
+          const path = `${currentProductId}/video-capa-${crypto.randomUUID()}.${prepared.extension}`;
+          const { error: coverError } = await supabase.storage
+            .from("product-media")
+            .upload(path, prepared.body, { contentType: prepared.contentType, cacheControl: "31536000" });
+          if (coverError) throw coverError;
+          nextPosterUrl = publicUrl(path);
+          replaced.push(storagePathOf(existingPosterUrl));
+        }
+
+        const { error: videoSaveError } = await supabase
+          .from("products")
+          .update({ video_url: nextVideoUrl, video_poster_url: nextPosterUrl })
+          .eq("id", currentProductId);
+        if (videoSaveError) throw videoSaveError;
+
+        const toRemove = replaced.filter((p): p is string => !!p);
+        if (toRemove.length) await supabase.storage.from("product-media").remove(toRemove);
       }
 
       if (mode === "create") clearNewProductDraft();
@@ -558,19 +655,72 @@ export function ProductForm({ productId }: { productId?: string }) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="videoUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Vídeo (URL do YouTube, Vimeo, etc.)</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="https://..." />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-3 rounded-lg border p-4">
+              <div>
+                <Label className="flex items-center gap-1.5">
+                  <Video className="h-4 w-4" /> Vídeo do produto
+                </Label>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Envie o vídeo em <strong>MP4 de até 8 MB</strong> (o ideal é cerca de 3 MB, para a página abrir
+                  rápido) e a <strong>capa</strong> que o cliente vê antes de apertar o play. O vídeo aparece como a
+                  2ª miniatura da galeria.
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <Label htmlFor="product-video-file" className="text-xs">
+                    Vídeo (MP4)
+                  </Label>
+                  <Input
+                    id="product-video-file"
+                    type="file"
+                    accept="video/mp4"
+                    onChange={(event) => handleVideoPick(event.target.files?.[0] ?? null)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {videoFile
+                      ? `Novo: ${videoFile.name} (${(videoFile.size / 1048576).toFixed(1)} MB)`
+                      : existingVideoUrl && !removeVideo
+                        ? storagePathOf(existingVideoUrl)
+                          ? "Vídeo atual enviado. Escolha outro arquivo para trocar."
+                          : "Vídeo atual: link externo antigo. Envie um arquivo MP4 para substituir."
+                        : "Nenhum vídeo."}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="product-video-cover" className="text-xs">
+                    Capa do vídeo (imagem)
+                  </Label>
+                  <div className="flex items-center gap-3">
+                    {coverPreview || (existingPosterUrl && !removeVideo) ? (
+                      <img
+                        src={coverPreview ?? existingPosterUrl ?? ""}
+                        alt="Capa do vídeo"
+                        className="h-16 w-16 shrink-0 rounded border object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded border border-dashed text-[10px] text-muted-foreground">
+                        sem capa
+                      </span>
+                    )}
+                    <Input
+                      id="product-video-cover"
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => handleCoverPick(event.target.files?.[0] ?? null)}
+                    />
+                  </div>
+                </div>
+              </div>
+              {videoFile || coverFile || (existingVideoUrl && !removeVideo) ? (
+                <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={handleRemoveVideo}>
+                  <Trash2 className="mr-1 h-4 w-4" /> Remover vídeo
+                </Button>
+              ) : null}
+              {removeVideo ? (
+                <p className="text-xs text-amber-700">O vídeo será removido quando você salvar o produto.</p>
+              ) : null}
+            </div>
 
             <div className="space-y-3 rounded-lg border p-4">
               <p className="text-sm font-medium text-[#12294f]">

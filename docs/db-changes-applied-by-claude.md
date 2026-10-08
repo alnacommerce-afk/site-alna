@@ -168,3 +168,11 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   se o produto tem 1 só foto). Ao clicar, toca **no lugar da foto grande** (Shorts em formato vertical com faixas pretas), com
   autoplay; o player só é carregado nesse clique (não pesa a página). O link "▶ Assistir vídeo" e a janela foram removidos.
   Miniatura = imagem do próprio YouTube (Vimeo mostra um quadro azul com o play). Vale para todo produto com vídeo cadastrado.
+
+## vídeo enviado como arquivo MP4 + capa (08/10/2026)
+- Coluna `products.video_poster_url` (capa do vídeo). `products.video_url` agora aponta para o MP4 guardado no bucket
+  `product-media` (`<produto>/video-<uuid>.mp4`; capa `<produto>/video-capa-<uuid>.jpg`, redimensionada a 640 px).
+- Admin > Catálogo > produto: o campo de link (YouTube/Vimeo) foi REMOVIDO e substituído por "Enviar vídeo (MP4, até 8 MB; ideal
+  ~3 MB)" ao lado de "Capa do vídeo (imagem)". Trocar/remover apaga os arquivos antigos do armazenamento. Link antigo de YouTube
+  já cadastrado continua tocando até o MP4 ser enviado (o formulário mostra "link externo antigo").
+- Loja: arquivo toca num `<video>` simples dentro da galeria (2ª miniatura = a capa), só baixado após o clique.

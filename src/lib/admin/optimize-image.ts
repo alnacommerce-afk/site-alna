@@ -26,7 +26,7 @@ function original(file: File): PreparedImage {
   };
 }
 
-export async function prepareProductImage(file: File): Promise<PreparedImage> {
+export async function prepareProductImage(file: File, maxSide: number = MAX_SIDE): Promise<PreparedImage> {
   // Animated / vector formats would lose their nature when drawn on a canvas.
   if (!file.type.startsWith("image/") || file.type === "image/gif" || file.type === "image/svg+xml") {
     return original(file);
@@ -34,7 +34,7 @@ export async function prepareProductImage(file: File): Promise<PreparedImage> {
 
   try {
     const bitmap = await createImageBitmap(file); // honours the EXIF orientation
-    const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+    const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
     const width = Math.max(1, Math.round(bitmap.width * scale));
     const height = Math.max(1, Math.round(bitmap.height * scale));
 

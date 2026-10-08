@@ -91,8 +91,10 @@ type VideoEmbed = {
   url: string;
   /** YouTube Shorts are portrait (9:16), everything else is 16:9. */
   vertical: boolean;
-  /** Picture shown on the gallery thumbnail (YouTube only; Vimeo has no public one). */
+  /** Picture shown on the gallery thumbnail (our own cover; for old YouTube links, YouTube's frame). */
   thumbnailUrl: string | null;
+  /** True when it is a video file from our own storage (plays in a plain <video>, no third-party player). */
+  file?: boolean;
 };
 
 const youtubeThumbnail = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
@@ -105,6 +107,9 @@ function withAutoplay(embedUrl: string) {
 function toEmbedUrl(url: string): VideoEmbed | null {
   try {
     const u = new URL(url);
+    if (/\.(mp4|webm)$/i.test(u.pathname)) {
+      return { url, vertical: false, thumbnailUrl: null, file: true };
+    }
     const isYoutube = u.hostname === "youtube.com" || u.hostname.endsWith(".youtube.com");
     if (isYoutube) {
       if (u.searchParams.get("v")) {
@@ -143,7 +148,7 @@ export const Route = createFileRoute("/produto/$slug")({
     const { data: product } = await supabase
       .from("products")
       .select(
-        `id, title, slug, description, video_url, seo_title, seo_description, focus_keyword,
+        `id, title, slug, description, video_url, video_poster_url, seo_title, seo_description, focus_keyword,
          category_id,
          categories(name, slug),
          product_images(id, storage_path, alt_text, position),
@@ -427,7 +432,11 @@ function ProdutoPage() {
   );
   const variants = (product?.product_variants ?? []) as VariantRow[];
 
-  const video = product?.video_url ? toEmbedUrl(product.video_url) : null;
+  const parsedVideo = product?.video_url ? toEmbedUrl(product.video_url) : null;
+  // Our own cover image (set in the admin) wins over any automatic thumbnail.
+  const video = parsedVideo
+    ? { ...parsedVideo, thumbnailUrl: product?.video_poster_url || parsedVideo.thumbnailUrl }
+    : null;
   // Gallery: the photos, with the video as the 2nd item (or the last one, when there is a single photo).
   const media = useMemo<MediaItem[]>(() => {
     const items: MediaItem[] = images.map((image) => ({ kind: "image", image }));
@@ -631,13 +640,25 @@ function ProdutoPage() {
             {showingVideo && video ? (
               // Plays right here in the gallery (loaded only now, after the customer picked it).
               <div className="flex h-full w-full items-center justify-center bg-black">
-                <iframe
-                  src={withAutoplay(video.url)}
-                  title="Vídeo do produto"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className={video.vertical ? "aspect-[9/16] h-full" : "aspect-video w-full"}
-                />
+                {video.file ? (
+                  <video
+                    src={video.url}
+                    poster={video.thumbnailUrl ?? undefined}
+                    controls
+                    autoPlay
+                    playsInline
+                    preload="auto"
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <iframe
+                    src={withAutoplay(video.url)}
+                    title="Vídeo do produto"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className={video.vertical ? "aspect-[9/16] h-full" : "aspect-video w-full"}
+                  />
+                )}
               </div>
             ) : images.length > 0 ? (
               <>
