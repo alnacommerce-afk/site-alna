@@ -176,3 +176,14 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   ~3 MB)" ao lado de "Capa do vídeo (imagem)". Trocar/remover apaga os arquivos antigos do armazenamento. Link antigo de YouTube
   já cadastrado continua tocando até o MP4 ser enviado (o formulário mostra "link externo antigo").
 - Loja: arquivo toca num `<video>` simples dentro da galeria (2ª miniatura = a capa), só baixado após o clique.
+
+## /loja: ajustes de carregamento do LCP (08/10/2026, só front-end; nenhum espaço no back end)
+- PageSpeed celular de 08/10/2026 (antes): Loja 70–81 (oscila), LCP 9,6 s, FCP 2,1 s, ~4 MB de peso; Home 99, Atacado 97, Checkout 96,
+  Produto 94, Carrinho 91.
+- Foto da modelo (continua o PNG de 590 KB — o dono decidiu NÃO converter para WebP): `fetchPriority="high"`, largura/altura
+  declaradas (1344×752) e sem o fade de entrada (era a causa de 0,14 s de espera + 0,6 s de fade).
+- Cartões de produto: só os 2 primeiros carregam logo (eram 6); os demais ficam em lazy.
+- `<main>` envolvendo o conteúdo da página (acessibilidade). O cabeçalho e o rodapé ficam fora.
+- PENDENTE de decisão do dono: contraste. O verde da marca #16a34a dá 3,3:1 (mínimo 4,5:1 para texto pequeno) no texto branco
+  sobre verde (barra do topo, selos "OFF", "Loja ALNA") e no texto verde sobre branco (cupom, links). Opção: #15803d (≈5:1) só nos
+  textos pequenos. Fotos dos cartões têm 1200 px mostradas a ~208 px (cópias menores usariam mais armazenamento; fica para depois).

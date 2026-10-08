@@ -379,7 +379,7 @@ function Catalog({
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {filteredProducts.map((product, index) => (
               <Reveal key={product.id} index={index}>
-                <ProductGridCard product={product} priority={index < 6} />
+                <ProductGridCard product={product} priority={index < 2} />
               </Reveal>
             ))}
           </div>
@@ -397,6 +397,7 @@ function LojaPage() {
     <div className="min-h-screen bg-white">
       <SiteHeader />
 
+      <main>
       <section className="relative overflow-hidden bg-gradient-to-br from-[#fcfbf8] via-[#fcfbf8] to-[#f5e6bd]">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-2 px-4 py-8 sm:grid-cols-[1fr_320px] sm:gap-6 sm:py-10">
           <div className="reveal text-center sm:text-left">
@@ -411,7 +412,7 @@ function LojaPage() {
               e carinho para o seu dia a dia.
             </p>
           </div>
-          <div className="reveal [--reveal-delay:140ms] relative mx-auto h-[280px] w-full max-w-[300px] overflow-hidden sm:h-[360px] sm:max-w-none">
+          <div className="relative mx-auto h-[280px] w-full max-w-[300px] overflow-hidden sm:h-[360px] sm:max-w-none">
             {/* Glow quente atrás dela — funde a temperatura de cor do estúdio (neutra) com o
                 gradiente creme/dourado da seção, em vez de ela "flutuar" sobre um fundo cru. */}
             <div className="absolute left-1/2 top-[6%] h-[80%] w-[85%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(245,230,189,0.6),transparent_75%)]" />
@@ -425,6 +426,10 @@ function LojaPage() {
             <img
               src={heroAmbassador}
               alt="Cliente sorridente da ALNA apresentando os produtos da loja"
+              width={1344}
+              height={752}
+              // It is the largest thing on the first screen (the "LCP"): fetch it first and show it at once.
+              fetchPriority="high"
               className="absolute left-1/2 top-0 h-[132%] w-auto max-w-none -translate-x-1/2 [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_55%,transparent_75%)] [filter:drop-shadow(0_10px_8px_rgba(18,41,79,0.16))_saturate(1.04)_sepia(0.05)] [mask-image:linear-gradient(to_bottom,black_0%,black_55%,transparent_75%)]"
             />
           </div>
@@ -445,6 +450,7 @@ function LojaPage() {
           />
         )}
       </Await>
+      </main>
 
       <SiteFooter />
       <WhatsappFloatButton />
