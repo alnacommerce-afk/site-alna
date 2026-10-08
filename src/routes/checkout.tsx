@@ -86,9 +86,16 @@ function CheckoutPage() {
 
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleCepBlur() {
+  // Id of the latest CEP lookup; answers from an older one (the shopper kept typing) are discarded.
+  const cepRequestRef = useRef(0);
+
+  // Looks up the address (ViaCEP) and the freight at the same time, so a slow address service never
+  // holds back the freight — and with it the "Finalizar pedido" button.
+  async function resolveCep() {
     const digits = onlyDigits(cep);
     if (digits.length !== 8) return;
+    const requestId = ++cepRequestRef.current;
+    const isStale = () => requestId !== cepRequestRef.current;
 
     // A different CEP means a different destination: wipe the whole address (including number and
     // complement, which ViaCEP never returns) so nothing from the previous address rides along — a
@@ -116,31 +123,38 @@ function CheckoutPage() {
       saveCheckoutInfo({ zip: digits });
     }
 
-    if (cepChanged || !street) {
-      setLookingUpCep(true);
-      setShippingError(null);
-      try {
-        const viaCepResp = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
-        const viaCep = await viaCepResp.json();
-        // If ViaCEP doesn't know this CEP the fields stay empty, to be typed by hand.
-        if (!viaCep.erro) {
-          setStreet(viaCep.logradouro ?? "");
-          setNeighborhood(viaCep.bairro ?? "");
-          setCity(viaCep.localidade ?? "");
-          setState(viaCep.uf ?? "");
-        }
-      } catch {
-        // ViaCEP indisponível — deixa os campos para preenchimento manual.
-      } finally {
-        setLookingUpCep(false);
-      }
-    }
-
+    setShippingError(null);
     setCalculatingShipping(true);
-    const result = await fetchShippingQuote(
+    const quotePromise = fetchShippingQuote(
       digits,
       items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
     );
+
+    if (cepChanged || !street) {
+      setLookingUpCep(true);
+      void (async () => {
+        try {
+          const viaCepResp = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+          const viaCep = await viaCepResp.json();
+          // If ViaCEP doesn't know this CEP the fields stay empty, to be typed by hand.
+          if (!isStale() && !viaCep.erro) {
+            setStreet(viaCep.logradouro ?? "");
+            setNeighborhood(viaCep.bairro ?? "");
+            setCity(viaCep.localidade ?? "");
+            setState(viaCep.uf ?? "");
+          }
+        } catch {
+          // ViaCEP indisponível — deixa os campos para preenchimento manual.
+        } finally {
+          if (!isStale()) setLookingUpCep(false);
+        }
+      })();
+    } else {
+      setLookingUpCep(false);
+    }
+
+    const result = await quotePromise;
+    if (isStale()) return;
     setCalculatingShipping(false);
     if ("error" in result) {
       setShippingCents(null);
@@ -150,10 +164,22 @@ function CheckoutPage() {
     }
   }
 
+  // Freight is quoted as soon as the CEP has its 8 digits (with or without the hyphen) and again when
+  // the cart changes — the shopper no longer has to leave the field for the button to unlock.
+  const cepDigits = onlyDigits(cep);
+  const itemsKey = items.map((i) => `${i.variantId}:${i.quantity}`).join("|");
   useEffect(() => {
-    if (items.length > 0 && onlyDigits(cep).length === 8) void handleCepBlur();
+    if (cepDigits.length !== 8 || items.length === 0) {
+      cepRequestRef.current++;
+      setShippingCents(null);
+      setShippingError(null);
+      setCalculatingShipping(false);
+      setLookingUpCep(false);
+      return;
+    }
+    void resolveCep();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.length]);
+  }, [cepDigits, itemsKey]);
 
   const baseTotalCents = shippingCents != null ? subtotalCents - discountCents + shippingCents : null;
   const displayTotalCents =
@@ -309,7 +335,7 @@ function CheckoutPage() {
                     id="cep"
                     value={cep}
                     onChange={(e) => setCep(e.target.value)}
-                    onBlur={handleCepBlur}
+                    inputMode="numeric"
                     placeholder="00000-000"
                   />
                   {lookingUpCep ? (
@@ -358,7 +384,12 @@ function CheckoutPage() {
                     Frete J&amp;T Express: {shippingCents === 0 ? "Grátis" : formatCentsToBRL(shippingCents)}
                   </span>
                 ) : shippingError ? (
-                  <span className="text-destructive">{shippingError}</span>
+                  <span className="text-destructive">
+                    {shippingError}{" "}
+                    <button type="button" className="font-semibold underline" onClick={() => void resolveCep()}>
+                      Tentar de novo
+                    </button>
+                  </span>
                 ) : (
                   <span className="text-muted-foreground">
                     Informe o CEP para calcular o frete.

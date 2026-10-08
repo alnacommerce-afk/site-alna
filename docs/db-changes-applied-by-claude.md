@@ -220,3 +220,11 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   estruturados (JSON-LD com endereço e CEP) atualizados. Home: 23.354 → 23.636 bytes (+282 B, +1,2%), 0 requisições novas.
 - Google Ads: a conta é paga por pessoa física (ALEXANDER DOS SANTOS MACHADO), o site é da LTDA; mudar o tipo do perfil de pagamentos
   exige falar com o suporte do Google Ads. Cloudflare: "Always Use HTTPS" ligado em alnacommerce.com (http agora 301 em 0,2 s).
+
+## 08/10/2026 — Checkout: frete calculado ao digitar o CEP
+
+- `src/routes/checkout.tsx`: o frete passa a ser calculado assim que o CEP tem 8 números (com ou sem hífen), sem precisar sair do campo;
+  busca do endereço (ViaCEP) e cálculo do frete rodam ao mesmo tempo; respostas antigas são descartadas se o cliente continua digitando;
+  CEP incompleto zera o frete (botão "Finalizar pedido" fica desabilitado até calcular); erro mostra "Tentar de novo".
+  Nenhuma mudança de banco, nenhum arquivo/imagem novo; peso da página praticamente igual.
+- Teste de pagamento com a conta Asaas nova (ALNA COMMERCE LTDA): pedido 79a722c7 (Pix R$ 20,26) criado 18:25 UTC e marcado Pago em ~1 min pelo webhook.
