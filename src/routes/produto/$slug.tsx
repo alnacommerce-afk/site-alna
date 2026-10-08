@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Await, createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Maximize2, Minus, Plus, ShieldCheck, Star, Truck, Undo2 } from "lucide-react";
+import { Maximize2, Minus, Play, Plus, ShieldCheck, Star, Truck, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +31,7 @@ const PIX_DISCOUNT = 0.04;
 // threshold — see supabase/migrations/20260928000000_stock_alerts_and_restock_notify.sql.
 const LOW_STOCK_CUSTOMER_THRESHOLD = 10;
 
+type MediaItem = { kind: "image"; image: ImageRow } | { kind: "video" };
 type ImageRow = { id: string; storage_path: string; alt_text: string; position: number };
 type VariantRow = {
   id: string;
@@ -86,7 +87,20 @@ async function fetchExtras(productId: string, categoryId: string | null): Promis
   }
 }
 
-type VideoEmbed = { url: string; /** YouTube Shorts are portrait (9:16), everything else is 16:9. */ vertical: boolean };
+type VideoEmbed = {
+  url: string;
+  /** YouTube Shorts are portrait (9:16), everything else is 16:9. */
+  vertical: boolean;
+  /** Picture shown on the gallery thumbnail (YouTube only; Vimeo has no public one). */
+  thumbnailUrl: string | null;
+};
+
+const youtubeThumbnail = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+
+/** The same embed address, asking the player to start as soon as it loads (the customer just clicked it). */
+function withAutoplay(embedUrl: string) {
+  return `${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=1&rel=0&playsinline=1`;
+}
 
 function toEmbedUrl(url: string): VideoEmbed | null {
   try {
@@ -94,21 +108,29 @@ function toEmbedUrl(url: string): VideoEmbed | null {
     const isYoutube = u.hostname === "youtube.com" || u.hostname.endsWith(".youtube.com");
     if (isYoutube) {
       if (u.searchParams.get("v")) {
-        return { url: `https://www.youtube.com/embed/${u.searchParams.get("v")}`, vertical: false };
+        const id = u.searchParams.get("v") as string;
+        return { url: `https://www.youtube.com/embed/${id}`, vertical: false, thumbnailUrl: youtubeThumbnail(id) };
       }
       // youtube.com/shorts/ID (vertical video), /live/ID and /embed/ID
       const [kind, id] = u.pathname.split("/").filter(Boolean);
       if (id && (kind === "shorts" || kind === "live" || kind === "embed")) {
-        return { url: `https://www.youtube.com/embed/${id}`, vertical: kind === "shorts" };
+        return {
+          url: `https://www.youtube.com/embed/${id}`,
+          vertical: kind === "shorts",
+          thumbnailUrl: youtubeThumbnail(id),
+        };
       }
       return null;
     }
     if (u.hostname === "youtu.be") {
-      return { url: `https://www.youtube.com/embed${u.pathname}`, vertical: false };
+      const id = u.pathname.split("/").filter(Boolean)[0];
+      return id
+        ? { url: `https://www.youtube.com/embed/${id}`, vertical: false, thumbnailUrl: youtubeThumbnail(id) }
+        : null;
     }
     if (u.hostname.includes("vimeo.com")) {
       const id = u.pathname.split("/").filter(Boolean).pop();
-      return id ? { url: `https://player.vimeo.com/video/${id}`, vertical: false } : null;
+      return id ? { url: `https://player.vimeo.com/video/${id}`, vertical: false, thumbnailUrl: null } : null;
     }
     return null;
   } catch {
@@ -405,9 +427,16 @@ function ProdutoPage() {
   );
   const variants = (product?.product_variants ?? []) as VariantRow[];
 
+  const video = product?.video_url ? toEmbedUrl(product.video_url) : null;
+  // Gallery: the photos, with the video as the 2nd item (or the last one, when there is a single photo).
+  const media = useMemo<MediaItem[]>(() => {
+    const items: MediaItem[] = images.map((image) => ({ kind: "image", image }));
+    if (video) items.splice(Math.min(1, items.length), 0, { kind: "video" });
+    return items;
+  }, [images, video]);
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
-  const [videoOpen, setVideoOpen] = useState(false);
   // Com 1 só variação não há escolha real — vem pré-selecionada. Com mais de uma, começa vazio: o
   // cliente precisa escolher pelo menos uma pra continuar, e pode marcar mais de uma ao mesmo tempo.
   const [selectedVariantIds, setSelectedVariantIds] = useState<string[]>(
@@ -425,7 +454,10 @@ function ProdutoPage() {
 
   const selectedVariants = variants.filter((v) => selectedVariantIds.includes(v.id));
   const hasSelection = selectedVariants.length > 0;
-  const currentImage = images[selectedImageIndex] ?? images[0];
+  const selectedMedia = media[selectedImageIndex] ?? media[0];
+  const showingVideo = selectedMedia?.kind === "video";
+  // The photo behind the zoom and the cart thumbnail: the selected one, or the cover while the video plays.
+  const currentImage = selectedMedia?.kind === "image" ? selectedMedia.image : images[0];
 
   function toggleVariant(id: string) {
     setSelectedVariantIds((prev) =>
@@ -488,7 +520,7 @@ function ProdutoPage() {
   const maxQuantity = selectedVariants.length
     ? Math.min(...selectedVariants.map((v) => v.stock_quantity))
     : 1;
-  const video = product.video_url ? toEmbedUrl(product.video_url) : null;
+
 
   async function handleCheckShipping(options?: { silent?: boolean }) {
     const digits = onlyDigits(cep);
@@ -591,12 +623,23 @@ function ProdutoPage() {
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 pb-14 sm:grid-cols-2">
         <div>
           <div className="relative aspect-square overflow-hidden rounded-xl border border-[#12294f]/10 bg-[#fcfbf8]">
-            {off ? (
+            {off && !showingVideo ? (
               <span className="absolute left-3 top-3 z-10 rounded-full bg-[#16a34a] px-2.5 py-1 text-xs font-bold text-white">
                 {off}% OFF
               </span>
             ) : null}
-            {images.length > 0 ? (
+            {showingVideo && video ? (
+              // Plays right here in the gallery (loaded only now, after the customer picked it).
+              <div className="flex h-full w-full items-center justify-center bg-black">
+                <iframe
+                  src={withAutoplay(video.url)}
+                  title="Vídeo do produto"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className={video.vertical ? "aspect-[9/16] h-full" : "aspect-video w-full"}
+                />
+              </div>
+            ) : images.length > 0 ? (
               <>
                 <img
                   src={
@@ -622,38 +665,44 @@ function ProdutoPage() {
             )}
           </div>
 
-          {images.length > 1 ? (
+          {media.length > 1 ? (
             <div className="mt-3 grid grid-cols-5 gap-2">
-              {images.map((img, index) => (
+              {media.map((item, index) => (
                 <button
-                  key={img.id}
+                  key={item.kind === "image" ? item.image.id : "video"}
                   type="button"
                   onClick={() => setSelectedImageIndex(index)}
-                  className={`aspect-square overflow-hidden rounded-md border-2 bg-[#fcfbf8] ${
+                  aria-label={item.kind === "video" ? "Ver vídeo do produto" : undefined}
+                  className={`relative aspect-square overflow-hidden rounded-md border-2 bg-[#fcfbf8] ${
                     index === selectedImageIndex ? "border-[#16a34a]" : "border-transparent"
                   }`}
                 >
-                  <img
-                    src={
-                      supabase.storage.from("product-media").getPublicUrl(img.storage_path).data
-                        .publicUrl
-                    }
-                    alt={img.alt_text}
-                    className="h-full w-full object-cover"
-                  />
+                  {item.kind === "image" ? (
+                    <img
+                      src={
+                        supabase.storage.from("product-media").getPublicUrl(item.image.storage_path).data
+                          .publicUrl
+                      }
+                      alt={item.image.alt_text}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <>
+                      {video?.thumbnailUrl ? (
+                        <img src={video.thumbnailUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="block h-full w-full bg-[#12294f]" />
+                      )}
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white">
+                          <Play className="h-4 w-4 fill-white" />
+                        </span>
+                      </span>
+                    </>
+                  )}
                 </button>
               ))}
             </div>
-          ) : null}
-
-          {video ? (
-            <button
-              type="button"
-              onClick={() => setVideoOpen(true)}
-              className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-[#16a34a] hover:underline"
-            >
-              ▶ Assistir vídeo do produto
-            </button>
           ) : null}
 
           <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
@@ -668,23 +717,6 @@ function ProdutoPage() {
                   alt={currentImage.alt_text}
                   className="h-full w-full rounded-md object-contain"
                 />
-              ) : null}
-            </DialogContent>
-          </Dialog>
-
-          <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
-            <DialogContent className={video?.vertical ? "max-w-sm" : "max-w-2xl"}>
-              <DialogTitle className="sr-only">Vídeo do produto</DialogTitle>
-              {video ? (
-                <div className={video.vertical ? "mx-auto aspect-[9/16] max-h-[75vh]" : "aspect-video"}>
-                  <iframe
-                    src={video.url}
-                    title="Vídeo do produto"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="h-full w-full rounded-md"
-                  />
-                </div>
               ) : null}
             </DialogContent>
           </Dialog>

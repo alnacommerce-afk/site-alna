@@ -162,3 +162,9 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Vídeo do produto: campo "Vídeo" em Admin > Catálogo > (produto); na loja aparece o link "▶ Assistir vídeo do produto" logo
   abaixo das miniaturas das fotos e abre numa janela. Passou a aceitar links do YouTube Shorts (`youtube.com/shorts/ID`), /live e
   /embed; Shorts abre em formato vertical (9:16).
+
+## vídeo dentro da galeria do produto (07/10/2026, só front-end)
+- O vídeo (campo "Vídeo" do produto) agora é uma miniatura com botão de play na **2ª posição** da fila de fotos (ou a última,
+  se o produto tem 1 só foto). Ao clicar, toca **no lugar da foto grande** (Shorts em formato vertical com faixas pretas), com
+  autoplay; o player só é carregado nesse clique (não pesa a página). O link "▶ Assistir vídeo" e a janela foram removidos.
+  Miniatura = imagem do próprio YouTube (Vimeo mostra um quadro azul com o play). Vale para todo produto com vídeo cadastrado.
