@@ -37,4 +37,16 @@ A meta do dono é que a Home **abra em no máximo 0,5 segundo, mesmo com sinal d
   propósito — não mexer nisso. Imagens abaixo da primeira tela ficam carregando depois.
 - Detalhes, números de referência e como medir: `home-cloudflare/README.md` (seção "Meta de velocidade").
 
+## Regra de ouro de TODO o site: velocidade e espaço antes de qualquer mudança
+
+A prioridade do dono é a **velocidade de abrir o site** (experiência do cliente). Isso vale para a loja inteira
+(store.alna.sale), não só para a Home. **Toda e qualquer mudança** (função, imagem, vídeo, e-mail, tela, biblioteca)
+deve, ANTES de ser aplicada, ser avaliada e apresentada ao dono assim:
+
+- **Espaço no back end:** quanto armazenamento/tráfego do Supabase ela ocupa (plano grátis: 1 GB de armazenamento e
+  5 GB/mês de saída; uso em 08/10/2026: ~25 MB).
+- **Efeito no carregamento:** se ajuda ou prejudica (peso, nº de pedidos, tempo até aparecer algo), em linguagem simples.
+- Só aplicar se o carregamento não piorar; depois, medir de novo (PageSpeed celular em pagespeed.web.dev; o dono envia os prints).
+- Notas de referência (PageSpeed celular, 08/10/2026): Home 99, Atacado 97, Checkout 96, Produto 94, Carrinho 91, Loja 81.
+
 Objetivo: a loja rodar de forma fluida para receber muitos clientes sem quebra de expectativa.
