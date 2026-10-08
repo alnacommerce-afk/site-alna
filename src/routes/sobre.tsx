@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 import { STORE_URL } from "@/lib/site-urls";
@@ -32,6 +32,27 @@ function SobrePage() {
           casa em um lugar ainda melhor.
         </p>
         <p>Mais do que vender, queremos fazer parte do seu dia a dia.</p>
+      </LegalSection>
+
+      <LegalSection heading="Quem somos">
+        <p>
+          A <strong>ALNA COMMERCE</strong> (CNPJ 57.135.009/0001-27), de Brusque, Santa Catarina, é
+          uma loja virtual própria que vende utensílios de madeira para cozinha, toalhas, itens de
+          cama, mesa e banho e roupas, com nota fiscal e entrega para todo o Brasil. Também
+          atendemos compras em quantidade para revenda: veja a página de{" "}
+          <Link to="/atacado" className="font-semibold text-[#15803d] hover:underline">
+            atacado
+          </Link>
+          .
+        </p>
+        <p>
+          Atendimento de segunda a sexta, das 8h às 18h, e aos sábados, das 8h às 12h, pelo
+          WhatsApp (51) 99491-1125 e pelo e-mail contato@alna.sale. Veja também a nossa página de{" "}
+          <Link to="/contato" className="font-semibold text-[#15803d] hover:underline">
+            contato
+          </Link>
+          .
+        </p>
       </LegalSection>
 
       <LegalSection heading="Por que comprar na ALNA?">

@@ -198,3 +198,15 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Base do cliente (gzip): `index` 98 kB (React + TanStack Router/Start/Query), `client` 56 kB (supabase-js), `awaited` 14 kB,
   `site-footer` 13 kB, `link` 13 kB… ≈ 240 kB em ~24 arquivos por página. Telas do admin (fluxo-email 66 kB, product-form 35 kB) são
   carregadas só no admin. Não vale trocar o supabase-js por `fetch` agora (refator grande, risco no checkout, ganho pequeno).
+
+## Confiança da empresa para o Google Ads + verificação da página de atacado (08/10/2026)
+- Contexto: conta Google Ads suspensa em 08/10/2026 por "phishing" (problema listado: página de destino não funciona); contestação nº
+  6452280642 enviada em 08/10/2026 (ver memória project-google-ads-suspensao).
+- **Home (alna.sale, `home-cloudflare/index.html`):** rodapé agora mostra "ALNA COMMERCE · CNPJ 57.135.009/0001-27 · Brusque, SC" e o
+  link "Sobre"; o JSON-LD da organização ganhou `legalName` e `taxID`. Peso do HTML: 23.354 → 23.501 bytes (+147 B, +0,6%); 0 requisições
+  novas, 0 JavaScript novo. Atualiza pelo Cloudflare Pages (git) — conferir o deploy.
+- **/sobre (loja):** nova seção "Quem somos" (razão social, CNPJ, cidade, o que vende, atendimento, links para atacado e contato).
+- **Verificação a cada 5 minutos:** cron `keep-warm-atacado` (`*/5 * * * *`, job 7) faz um GET em https://store.alna.sale/atacado
+  (User-Agent "ALNA-keep-warm") para o servidor não ficar frio. Sem armazenamento (as respostas do pg_net são apagadas sozinhas).
+  Para desligar: `select cron.unschedule('keep-warm-atacado');`. Não garante 100% (só aquece o ponto de atendimento mais próximo).
+- Depois que a conta voltar: desligar a "expansão do URL final" da campanha para o Google usar só /atacado.
