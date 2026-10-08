@@ -176,9 +176,3 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   ~3 MB)" ao lado de "Capa do vídeo (imagem)". Trocar/remover apaga os arquivos antigos do armazenamento. Link antigo de YouTube
   já cadastrado continua tocando até o MP4 ser enviado (o formulário mostra "link externo antigo").
 - Loja: arquivo toca num `<video>` simples dentro da galeria (2ª miniatura = a capa), só baixado após o clique.
-
-## /atacado: entrada suave em blocos + desenho adiado (08/10/2026, só front-end)
-- `LegalSection` ganhou `order`: o bloco 0 aparece na hora (sem animação); os demais entram com fade curto (0,3 s, atraso de no
-  máximo 180 ms no total); a partir do bloco 2 o navegador só desenha o que está perto da tela (`content-visibility: auto`).
-  Nenhum dado novo, nenhuma chamada nova; o texto continua vindo pronto do servidor. Respeita "reduzir movimento".
-- Antes de publicar, medir o "antes" (PageSpeed celular) de /atacado, /loja, /produto, /carrinho, /checkout e da Home.

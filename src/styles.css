@@ -161,32 +161,8 @@
   animation-delay: var(--reveal-delay, 0ms);
 }
 
-/* Softer, shorter version for pages where the content must be readable immediately (ad landing page). */
-@keyframes reveal-soft {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.reveal-soft {
-  animation: reveal-soft 0.3s ease-out both;
-  animation-delay: var(--reveal-delay, 0ms);
-}
-
-/* The browser skips layout and painting of blocks far below the screen until they get close. */
-.defer-render {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 420px;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .reveal-soft {
+  .reveal {
     animation: none;
   }
 }
