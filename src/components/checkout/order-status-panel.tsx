@@ -35,7 +35,7 @@ function TrackingTimeline({ order }: { order: NonNullable<ReturnType<typeof useO
         {steps.map((step) => (
           <li key={step.label} className="flex items-center gap-2">
             {step.done ? (
-              <PackageCheck className="h-4 w-4 shrink-0 text-[#16a34a]" />
+              <PackageCheck className="h-4 w-4 shrink-0 text-[#15803d]" />
             ) : (
               <span className="h-4 w-4 shrink-0 rounded-full border border-muted-foreground/40" />
             )}
@@ -51,7 +51,7 @@ function TrackingTimeline({ order }: { order: NonNullable<ReturnType<typeof useO
           href={`https://www.melhorrastreio.com.br/app/jet/${encodeURIComponent(order.tracking_code)}`}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 inline-block text-xs text-[#16a34a] hover:underline"
+          className="mt-3 inline-block text-xs text-[#15803d] hover:underline"
         >
           Acompanhar a entrega
         </a>
@@ -76,7 +76,7 @@ export function OrderStatusPanel({ orderId }: { orderId: string | null }) {
     return (
       <div className="py-6 text-center">
         <h2 className="text-lg font-bold text-[#12294f]">Pedido não encontrado</h2>
-        <Link to="/loja" search={{ categoria: undefined }} className="mt-3 inline-block text-[#16a34a] hover:underline">
+        <Link to="/loja" search={{ categoria: undefined }} className="mt-3 inline-block text-[#15803d] hover:underline">
           Voltar para a loja
         </Link>
       </div>
@@ -88,7 +88,7 @@ export function OrderStatusPanel({ orderId }: { orderId: string | null }) {
   if (order.status === "paid" || order.status === "shipped" || order.status === "completed") {
     return (
       <div className="py-4 text-center">
-        <CheckCircle2 className="mx-auto h-14 w-14 text-[#16a34a]" />
+        <CheckCircle2 className="mx-auto h-14 w-14 text-[#15803d]" />
         <h2 className="mt-3 text-lg font-bold text-[#12294f]">Pagamento confirmado!</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Pedido #{order.id.slice(0, 8)} — {formatCentsToBRL(order.total_cents)}
@@ -113,7 +113,7 @@ export function OrderStatusPanel({ orderId }: { orderId: string | null }) {
         <p className="mt-1 text-sm text-muted-foreground">
           Verifique os dados e tente novamente, ou fale com a gente pelo WhatsApp.
         </p>
-        <Link to="/checkout" className="mt-6 inline-block text-[#16a34a] hover:underline">
+        <Link to="/checkout" className="mt-6 inline-block text-[#15803d] hover:underline">
           Tentar novamente
         </Link>
       </div>

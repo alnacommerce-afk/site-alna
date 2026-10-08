@@ -73,7 +73,7 @@ function CustomerLoginPage() {
             <Label htmlFor="password">Senha</Label>
             <Input id="password" name="password" type="password" required />
           </div>
-          <Button type="submit" className="w-full bg-[#16a34a] font-bold hover:bg-[#16a34a]/90" disabled={loading}>
+          <Button type="submit" className="w-full bg-[#15803d] font-bold hover:bg-[#15803d]/90" disabled={loading}>
             {loading ? "Entrando..." : "Entrar"}
           </Button>
         </form>
@@ -95,7 +95,7 @@ function CustomerLoginPage() {
           ) : (
             <button
               type="button"
-              className="text-sm font-semibold text-[#16a34a] hover:underline"
+              className="text-sm font-semibold text-[#15803d] hover:underline"
               onClick={() => setResetOpen(true)}
             >
               Esqueci minha senha

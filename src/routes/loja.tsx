@@ -139,7 +139,7 @@ function ProductGridCard({ product, priority }: { product: ProductCard; priority
     >
       <div className="relative aspect-square bg-[#fcfbf8]">
         {off ? (
-          <span className="absolute left-2 top-2 z-10 rounded-full bg-[#16a34a] px-2 py-0.5 text-[10px] font-bold text-white">
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-[#15803d] px-2 py-0.5 text-[10px] font-bold text-white">
             {off}% OFF
           </span>
         ) : null}
@@ -290,7 +290,7 @@ function Catalog({
                 onClick={() => setSelectedCategoryId(null)}
                 className={`transition-colors ${
                   selectedCategoryId === null
-                    ? "font-bold text-[#16a34a]"
+                    ? "font-bold text-[#15803d]"
                     : "text-muted-foreground hover:text-[#12294f]"
                 }`}
               >
@@ -304,7 +304,7 @@ function Catalog({
                   onClick={() => setSelectedCategoryId(category.id)}
                   className={`transition-colors ${
                     selectedCategoryId === category.id
-                      ? "font-bold text-[#16a34a]"
+                      ? "font-bold text-[#15803d]"
                       : "text-muted-foreground hover:text-[#12294f]"
                   }`}
                 >
@@ -319,10 +319,10 @@ function Catalog({
           <h2 className="text-sm font-bold text-[#12294f]">Filtrar por preço</h2>
           <div className="mt-6">
             <div className="relative mb-2 flex justify-between text-xs">
-              <span className="rounded-full bg-[#16a34a] px-2 py-0.5 font-semibold text-white">
+              <span className="rounded-full bg-[#15803d] px-2 py-0.5 font-semibold text-white">
                 {formatCentsToBRL(priceRange[0] * 100)}
               </span>
-              <span className="rounded-full bg-[#16a34a] px-2 py-0.5 font-semibold text-white">
+              <span className="rounded-full bg-[#15803d] px-2 py-0.5 font-semibold text-white">
                 {formatCentsToBRL(priceRange[1] * 100)}
               </span>
             </div>
@@ -334,7 +334,7 @@ function Catalog({
               onValueChange={(value) =>
                 setPriceRange([value[0] ?? priceRange[0], value[1] ?? priceRange[1]])
               }
-              className="[&_[data-orientation=horizontal]]:bg-[#16a34a]/20 [&_span[data-orientation=horizontal]:last-child]:bg-[#16a34a]"
+              className="[&_[data-orientation=horizontal]]:bg-[#15803d]/20 [&_span[data-orientation=horizontal]:last-child]:bg-[#15803d]"
             />
           </div>
         </div>
@@ -401,7 +401,7 @@ function LojaPage() {
       <section className="relative overflow-hidden bg-gradient-to-br from-[#fcfbf8] via-[#fcfbf8] to-[#f5e6bd]">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-2 px-4 py-8 sm:grid-cols-[1fr_320px] sm:gap-6 sm:py-10">
           <div className="reveal text-center sm:text-left">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#15803d] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Loja ALNA
             </span>
             <h1 className="mt-4 text-4xl font-black leading-[0.95] text-[#12294f] sm:text-5xl">

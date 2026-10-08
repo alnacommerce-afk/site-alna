@@ -87,7 +87,7 @@ function BigCta({ freeShipping }: { freeShipping: string }) {
       <Button
         asChild
         size="lg"
-        className="h-16 w-full rounded-xl bg-gradient-to-r from-[#16a34a] to-[#15803d] px-8 text-lg font-extrabold shadow-xl shadow-[#16a34a]/30 transition-transform hover:scale-[1.02] hover:from-[#15803d] hover:to-[#166534] sm:w-auto sm:min-w-[22rem]"
+        className="h-16 w-full rounded-xl bg-gradient-to-r from-[#15803d] to-[#166534] px-8 text-lg font-extrabold shadow-xl shadow-[#15803d]/30 transition-transform hover:scale-[1.02] hover:from-[#166534] hover:to-[#14532d] sm:w-auto sm:min-w-[22rem]"
       >
         <Link to="/loja" search={{ categoria: undefined }}>
           <ShoppingCart className="mr-3 h-6 w-6" />
@@ -153,7 +153,7 @@ function AtacadoPage() {
               <Link
                 to="/loja"
                 search={{ categoria: group.category }}
-                className="hover:text-[#16a34a] hover:underline"
+                className="hover:text-[#15803d] hover:underline"
               >
                 {group.heading}
               </Link>
@@ -164,7 +164,7 @@ function AtacadoPage() {
                   <Link
                     to="/produto/$slug"
                     params={{ slug: product.slug }}
-                    className="font-semibold text-[#16a34a] hover:underline"
+                    className="font-semibold text-[#15803d] hover:underline"
                   >
                     {product.name}
                   </Link>
@@ -177,7 +177,7 @@ function AtacadoPage() {
           <Link
             to="/loja"
             search={{ categoria: undefined }}
-            className="font-semibold text-[#16a34a] hover:underline"
+            className="font-semibold text-[#15803d] hover:underline"
           >
             Ver todos os produtos da loja
           </Link>
@@ -204,7 +204,7 @@ function AtacadoPage() {
             href={WHATSAPP_ATACADO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-[#16a34a] hover:underline"
+            className="font-semibold text-[#15803d] hover:underline"
           >
             WhatsApp
           </a>

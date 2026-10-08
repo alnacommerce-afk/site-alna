@@ -31,7 +31,7 @@ export function SiteHeader() {
 
   return (
     <header className="relative z-30 bg-white shadow-sm">
-      <div className="bg-[#16a34a] text-white">
+      <div className="bg-[#15803d] text-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 py-1.5 text-xs font-medium">
           {loadingSettings ? (
             <Skeleton className="h-3.5 w-52 bg-white/25" />
@@ -72,13 +72,13 @@ export function SiteHeader() {
         <nav className="ml-auto flex items-center gap-4 text-sm font-medium text-[#12294f]">
           <Link
             to="/conta"
-            className="hidden items-center gap-1.5 hover:text-[#16a34a] sm:flex"
+            className="hidden items-center gap-1.5 hover:text-[#15803d] sm:flex"
           >
             <User className="h-4 w-4" /> Minha Conta
           </Link>
           <Link
             to="/carrinho"
-            className="flex items-center gap-1.5 hover:text-[#16a34a]"
+            className="flex items-center gap-1.5 hover:text-[#15803d]"
           >
             <ShoppingCart className="h-4 w-4" />
             <span className="hidden sm:inline">Carrinho</span> {itemCount}
@@ -88,19 +88,19 @@ export function SiteHeader() {
 
       <nav className="border-t border-[#12294f]/10">
         <div className="mx-auto flex max-w-6xl items-center gap-6 overflow-x-auto px-4 py-2.5 text-sm font-semibold tracking-wide text-[#12294f]">
-          <a href={SITE_URL} className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+          <a href={SITE_URL} className="shrink-0 whitespace-nowrap hover:text-[#15803d]">
             HOME
           </a>
           <Link
             to="/loja"
             search={{ categoria: undefined }}
-            className="shrink-0 whitespace-nowrap hover:text-[#16a34a]"
+            className="shrink-0 whitespace-nowrap hover:text-[#15803d]"
           >
             LOJA
           </Link>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex shrink-0 items-center gap-1 whitespace-nowrap outline-none hover:text-[#16a34a]">
+            <DropdownMenuTrigger className="flex shrink-0 items-center gap-1 whitespace-nowrap outline-none hover:text-[#15803d]">
               CATEGORIAS
               <ChevronDown className="h-3.5 w-3.5" />
             </DropdownMenuTrigger>
@@ -127,10 +127,10 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link to="/sobre" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+          <Link to="/sobre" className="shrink-0 whitespace-nowrap hover:text-[#15803d]">
             SOBRE
           </Link>
-          <Link to="/contato" className="shrink-0 whitespace-nowrap hover:text-[#16a34a]">
+          <Link to="/contato" className="shrink-0 whitespace-nowrap hover:text-[#15803d]">
             CONTATO
           </Link>
         </div>

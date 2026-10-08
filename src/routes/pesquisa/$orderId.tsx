@@ -34,7 +34,7 @@ function BackToStoreButton() {
     <Button
       asChild
       size="lg"
-      className="h-14 w-full gap-2 bg-[#16a34a] text-base font-bold shadow-md hover:bg-[#15803d]"
+      className="h-14 w-full gap-2 bg-[#15803d] text-base font-bold shadow-md hover:bg-[#15803d]"
     >
       <a href={storeLink("/loja")}>
         <Store className="h-5 w-5" />
@@ -201,7 +201,7 @@ function PesquisaPage() {
                       onClick={() => setScore(n)}
                       className={`flex h-10 w-10 items-center justify-center rounded-md border text-sm font-semibold transition-colors disabled:cursor-not-allowed ${
                         score === n
-                          ? "border-[#16a34a] bg-[#16a34a] text-white"
+                          ? "border-[#15803d] bg-[#15803d] text-white"
                           : "border-[#12294f]/20 text-[#12294f] hover:bg-muted disabled:opacity-60 disabled:hover:bg-transparent"
                       }`}
                     >
@@ -238,7 +238,7 @@ function PesquisaPage() {
                   <div className="rounded-md bg-[#12294f]/5 p-4">
                     {feedbackSent ? (
                       <p className="flex items-start gap-2 text-sm text-[#12294f]">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#16a34a]" />
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#15803d]" />
                         Recebemos a sua mensagem. Vamos olhar com atenção — obrigado por ajudar a melhorar!
                       </p>
                     ) : (

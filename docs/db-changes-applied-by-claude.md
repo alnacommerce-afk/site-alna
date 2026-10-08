@@ -187,3 +187,14 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - PENDENTE de decisão do dono: contraste. O verde da marca #16a34a dá 3,3:1 (mínimo 4,5:1 para texto pequeno) no texto branco
   sobre verde (barra do topo, selos "OFF", "Loja ALNA") e no texto verde sobre branco (cupom, links). Opção: #15803d (≈5:1) só nos
   textos pequenos. Fotos dos cartões têm 1200 px mostradas a ~208 px (cópias menores usariam mais armazenamento; fica para depois).
+
+## contraste: verde da loja mais escuro (08/10/2026, só front-end; nenhum espaço no back end)
+- O verde da marca `#16a34a` dava 3,3:1 (mínimo 4,5:1 para texto pequeno). Em TODA a loja pública (fora do admin) passou para `#15803d`
+  (≈5:1), o mesmo tom em textos, selos e botões, para não ficar dois verdes na mesma tela. Atacado: degradê do botão grande
+  `#15803d → #166534`. A Home (alna.sale, pasta home-cloudflare) e os e-mails NÃO foram alterados (continuam `#16a34a`).
+- Conferido por varredura de contraste em /loja, /produto, /atacado e /carrinho: 0 textos abaixo do mínimo.
+
+## análise do JavaScript (08/10/2026)
+- Base do cliente (gzip): `index` 98 kB (React + TanStack Router/Start/Query), `client` 56 kB (supabase-js), `awaited` 14 kB,
+  `site-footer` 13 kB, `link` 13 kB… ≈ 240 kB em ~24 arquivos por página. Telas do admin (fluxo-email 66 kB, product-form 35 kB) são
+  carregadas só no admin. Não vale trocar o supabase-js por `fetch` agora (refator grande, risco no checkout, ganho pequeno).

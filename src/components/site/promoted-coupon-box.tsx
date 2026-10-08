@@ -55,7 +55,7 @@ export function PromotedCouponBox({ canApply = false }: { canApply?: boolean }) 
         <Ticket className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
         <p>
           Compras acima de <strong>{formatCentsToBRL(minOrder)}</strong>: use o cupom{" "}
-          <strong className="font-mono text-[#16a34a]">{coupon.code}</strong> e ganhe{" "}
+          <strong className="font-mono text-[#15803d]">{coupon.code}</strong> e ganhe{" "}
           <strong>{coupon.discountPercent}% de desconto</strong>
           {minOrder > 0 ? <span> além do frete grátis</span> : null}.
         </p>
@@ -82,7 +82,7 @@ export function PromotedCouponBox({ canApply = false }: { canApply?: boolean }) 
       {canApply ? (
         <div className="mt-3">
           {applied ? (
-            <p className="text-sm font-semibold text-[#16a34a]">Cupom aplicado neste pedido.</p>
+            <p className="text-sm font-semibold text-[#15803d]">Cupom aplicado neste pedido.</p>
           ) : limitReached ? (
             <p className="text-sm text-[#12294f]">
               Você já tem {MAX_COUPONS} cupons neste pedido. Remova um para usar este.
@@ -91,7 +91,7 @@ export function PromotedCouponBox({ canApply = false }: { canApply?: boolean }) 
             <Button
               type="button"
               size="sm"
-              className="bg-[#16a34a] font-bold hover:bg-[#16a34a]/90"
+              className="bg-[#15803d] font-bold hover:bg-[#15803d]/90"
               onClick={() => {
                 addCoupon({
                   code: coupon.code,

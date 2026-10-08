@@ -36,7 +36,7 @@ function ContatoPage() {
           href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center rounded-md bg-[#16a34a] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#16a34a]/90"
+          className="inline-flex items-center justify-center rounded-md bg-[#15803d] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#15803d]/90"
         >
           Falar no WhatsApp
         </a>

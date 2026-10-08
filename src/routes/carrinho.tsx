@@ -260,8 +260,8 @@ function CarrinhoPage() {
                     const eligible = subtotalCents >= (coupon.minOrderCents ?? 0);
                     return (
                       <div key={coupon.code} className="space-y-1">
-                        <div className="flex items-center justify-between rounded-md border border-[#16a34a]/30 bg-[#16a34a]/5 px-3 py-2 text-sm">
-                          <span className="font-semibold text-[#16a34a]">
+                        <div className="flex items-center justify-between rounded-md border border-[#15803d]/30 bg-[#15803d]/5 px-3 py-2 text-sm">
+                          <span className="font-semibold text-[#15803d]">
                             {coupon.code} {eligible ? "aplicado" : "adicionado"} (-{coupon.discountPercent}%)
                           </span>
                           <button
@@ -318,7 +318,7 @@ function CarrinhoPage() {
                       Desconto ({eligibleCoupons.map((c) => c.code).join(" + ")}
                       {eligibleCoupons.length > 1 ? ` = -${discountPercent}%` : ""})
                     </span>
-                    <span className="font-semibold text-[#16a34a]">
+                    <span className="font-semibold text-[#15803d]">
                       -{formatCentsToBRL(discountCents)}
                     </span>
                   </div>
@@ -361,7 +361,7 @@ function CarrinhoPage() {
                   </p>
                 ) : null}
 
-                <Button asChild className="w-full bg-[#16a34a] font-bold hover:bg-[#16a34a]/90">
+                <Button asChild className="w-full bg-[#15803d] font-bold hover:bg-[#15803d]/90">
                   <Link to="/checkout">Finalizar compra</Link>
                 </Button>
                 <p className="text-center text-xs text-muted-foreground">

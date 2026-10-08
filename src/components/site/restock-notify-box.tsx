@@ -48,7 +48,7 @@ export function RestockNotifyBox({ variantId }: { variantId: string }) {
 
   if (submitted) {
     return (
-      <p className="mt-3 rounded-md border border-[#16a34a]/30 bg-[#16a34a]/5 p-3 text-sm text-[#16a34a]">
+      <p className="mt-3 rounded-md border border-[#15803d]/30 bg-[#15803d]/5 p-3 text-sm text-[#15803d]">
         Você será avisado(a) por e-mail assim que este produto voltar ao estoque.
       </p>
     );

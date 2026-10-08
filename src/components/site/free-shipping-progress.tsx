@@ -20,7 +20,7 @@ export function FreeShippingProgress({
   return (
     <div className="rounded-lg border border-[#12294f]/10 bg-[#fcfbf8] p-4">
       <div className="flex items-center gap-2 text-sm font-semibold text-[#12294f]">
-        <Truck className="h-4 w-4 shrink-0 text-[#16a34a]" />
+        <Truck className="h-4 w-4 shrink-0 text-[#15803d]" />
         {reached ? (
           <span>Você garantiu frete grátis! 🎉</span>
         ) : (
@@ -32,7 +32,7 @@ export function FreeShippingProgress({
       </div>
       <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-[#12294f]/10">
         <div
-          className="h-full rounded-full bg-[#16a34a] transition-all duration-300"
+          className="h-full rounded-full bg-[#15803d] transition-all duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -54,8 +54,8 @@ export function FreeShippingBanner() {
   if (items.length === 0) {
     return (
       <div className="space-y-3">
-        <div className="flex items-center gap-3 rounded-lg border border-[#16a34a]/30 bg-[#16a34a]/5 p-4">
-          <Truck className="h-5 w-5 shrink-0 text-[#16a34a]" />
+        <div className="flex items-center gap-3 rounded-lg border border-[#15803d]/30 bg-[#15803d]/5 p-4">
+          <Truck className="h-5 w-5 shrink-0 text-[#15803d]" />
           <p className="text-sm text-[#12294f]">
             <strong>Frete grátis em compras acima de {formatCentsToBRL(thresholdCents)}.</strong>{" "}
             Junte vários itens no carrinho e não pague frete.
@@ -70,7 +70,7 @@ export function FreeShippingBanner() {
     <div className="space-y-3">
       <FreeShippingProgress subtotalCents={subtotalCents} thresholdCents={thresholdCents} />
       <div className="text-right">
-        <Link to="/carrinho" className="text-xs font-semibold text-[#16a34a] hover:underline">
+        <Link to="/carrinho" className="text-xs font-semibold text-[#15803d] hover:underline">
           Ver meu carrinho
         </Link>
       </div>

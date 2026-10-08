@@ -13,7 +13,7 @@ export function SiteFooter() {
 
   return (
     <footer className="bg-[#12294f] text-white">
-      <div className="border-b border-white/10 bg-[#16a34a]">
+      <div className="border-b border-white/10 bg-[#15803d]">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-4 text-center sm:flex-row sm:text-left">
           <p className="text-sm font-medium">
             Dúvidas ou precisa de ajuda? Fale com a nossa equipe!
@@ -22,7 +22,7 @@ export function SiteFooter() {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-[#16a34a] transition-colors hover:bg-white/90"
+            className="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-[#15803d] transition-colors hover:bg-white/90"
           >
             Falar no WhatsApp
           </a>

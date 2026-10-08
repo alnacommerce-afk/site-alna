@@ -72,7 +72,7 @@ function TrocarSenhaPage() {
             autoComplete="new-password"
           />
         </div>
-        <Button type="submit" disabled={loading} className="bg-[#16a34a] font-bold hover:bg-[#16a34a]/90">
+        <Button type="submit" disabled={loading} className="bg-[#15803d] font-bold hover:bg-[#15803d]/90">
           {loading ? "Salvando..." : "Salvar nova senha"}
         </Button>
       </form>

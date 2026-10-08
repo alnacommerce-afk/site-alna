@@ -129,14 +129,14 @@ export function OrderTimelineDialog({
                         <span
                           className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
                             done
-                              ? "border-[#16a34a] bg-[#16a34a] text-white"
+                              ? "border-[#15803d] bg-[#15803d] text-white"
                               : "border-muted-foreground/30 bg-white"
                           }`}
                         >
                           {done ? <Check className="h-3.5 w-3.5" /> : null}
                         </span>
                         {!isLast ? (
-                          <span className={`w-0.5 grow ${done ? "bg-[#16a34a]" : "bg-muted-foreground/20"}`} />
+                          <span className={`w-0.5 grow ${done ? "bg-[#15803d]" : "bg-muted-foreground/20"}`} />
                         ) : null}
                       </div>
                       <div className="pb-5">
@@ -174,7 +174,7 @@ export function OrderTimelineDialog({
               <Link
                 to="/pedido/$orderId"
                 params={{ orderId: order.id }}
-                className="inline-block text-sm font-semibold text-[#16a34a] hover:underline"
+                className="inline-block text-sm font-semibold text-[#15803d] hover:underline"
               >
                 Ver dados do pagamento
               </Link>

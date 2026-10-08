@@ -633,7 +633,7 @@ function ProdutoPage() {
         <div>
           <div className="relative aspect-square overflow-hidden rounded-xl border border-[#12294f]/10 bg-[#fcfbf8]">
             {off && !showingVideo ? (
-              <span className="absolute left-3 top-3 z-10 rounded-full bg-[#16a34a] px-2.5 py-1 text-xs font-bold text-white">
+              <span className="absolute left-3 top-3 z-10 rounded-full bg-[#15803d] px-2.5 py-1 text-xs font-bold text-white">
                 {off}% OFF
               </span>
             ) : null}
@@ -695,7 +695,7 @@ function ProdutoPage() {
                   onClick={() => setSelectedImageIndex(index)}
                   aria-label={item.kind === "video" ? "Ver vídeo do produto" : undefined}
                   className={`relative aspect-square overflow-hidden rounded-md border-2 bg-[#fcfbf8] ${
-                    index === selectedImageIndex ? "border-[#16a34a]" : "border-transparent"
+                    index === selectedImageIndex ? "border-[#15803d]" : "border-transparent"
                   }`}
                 >
                   {item.kind === "image" ? (
@@ -758,12 +758,12 @@ function ProdutoPage() {
               {formatCentsToBRL(unitPrice)}
             </span>
             {off ? (
-              <span className="rounded-full bg-[#16a34a] px-2 py-0.5 text-xs font-bold text-white">
+              <span className="rounded-full bg-[#15803d] px-2 py-0.5 text-xs font-bold text-white">
                 {off}% off
               </span>
             ) : null}
           </div>
-          <p className="mt-1 text-sm font-semibold text-[#16a34a]">
+          <p className="mt-1 text-sm font-semibold text-[#15803d]">
             {formatCentsToBRL(unitPixPrice)} no PIX (4% de desconto)
           </p>
           {singleSelected ? (
@@ -798,17 +798,17 @@ function ProdutoPage() {
               <label
                 className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
                   paymentMethod === "pix"
-                    ? "border-[#16a34a] bg-[#16a34a]/5"
+                    ? "border-[#15803d] bg-[#15803d]/5"
                     : "border-[#12294f]/15"
                 }`}
               >
                 <RadioGroupItem value="pix" /> PIX{" "}
-                <span className="text-xs text-[#16a34a]">(-4%)</span>
+                <span className="text-xs text-[#15803d]">(-4%)</span>
               </label>
               <label
                 className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
                   paymentMethod === "cartao"
-                    ? "border-[#16a34a] bg-[#16a34a]/5"
+                    ? "border-[#15803d] bg-[#15803d]/5"
                     : "border-[#12294f]/15"
                 }`}
               >
@@ -833,7 +833,7 @@ function ProdutoPage() {
                     <label
                       key={v.id}
                       className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
-                        checked ? "border-[#16a34a] bg-[#16a34a]/5" : "border-[#12294f]/15"
+                        checked ? "border-[#15803d] bg-[#15803d]/5" : "border-[#12294f]/15"
                       } ${outOfStock ? "opacity-50" : ""}`}
                     >
                       <Checkbox checked={checked} onCheckedChange={() => toggleVariant(v.id)} />
@@ -910,7 +910,7 @@ function ProdutoPage() {
           <Button
             type="button"
             size="lg"
-            className="mt-3 w-full bg-[#16a34a] text-base font-bold hover:bg-[#16a34a]/90"
+            className="mt-3 w-full bg-[#15803d] text-base font-bold hover:bg-[#15803d]/90"
             disabled={!hasSelection || !anyInStock}
             onClick={handleAddToCart}
           >
@@ -929,7 +929,7 @@ function ProdutoPage() {
               { icon: Undo2, label: "7 dias para devolução" },
             ].map((item) => (
               <div key={item.label} className="flex flex-col items-center gap-1.5 text-center">
-                <item.icon className="h-5 w-5 text-[#16a34a]" />
+                <item.icon className="h-5 w-5 text-[#15803d]" />
                 <span className="text-[11px] text-muted-foreground">{item.label}</span>
               </div>
             ))}

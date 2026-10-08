@@ -378,14 +378,14 @@ function CheckoutPage() {
               >
                 <label
                   className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
-                    paymentMethod === "pix" ? "border-[#16a34a] bg-[#16a34a]/5" : "border-[#12294f]/15"
+                    paymentMethod === "pix" ? "border-[#15803d] bg-[#15803d]/5" : "border-[#12294f]/15"
                   }`}
                 >
-                  <RadioGroupItem value="pix" /> PIX <span className="text-xs text-[#16a34a]">(-4%)</span>
+                  <RadioGroupItem value="pix" /> PIX <span className="text-xs text-[#15803d]">(-4%)</span>
                 </label>
                 <label
                   className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
-                    paymentMethod === "credit_card" ? "border-[#16a34a] bg-[#16a34a]/5" : "border-[#12294f]/15"
+                    paymentMethod === "credit_card" ? "border-[#15803d] bg-[#15803d]/5" : "border-[#12294f]/15"
                   }`}
                 >
                   <RadioGroupItem value="credit_card" /> Cartão de crédito
@@ -467,7 +467,7 @@ function CheckoutPage() {
                     Desconto ({eligibleCoupons.map((c) => c.code).join(" + ")}
                     {eligibleCoupons.length > 1 ? ` = -${discountPercent}%` : ""})
                   </span>
-                  <span className="text-[#16a34a]">-{formatCentsToBRL(discountCents)}</span>
+                  <span className="text-[#15803d]">-{formatCentsToBRL(discountCents)}</span>
                 </div>
               ) : null}
               <div className="flex items-center justify-between text-sm">
@@ -488,7 +488,7 @@ function CheckoutPage() {
               <Button
                 onClick={handleSubmit}
                 disabled={submitting || shippingCents == null}
-                className="mt-3 w-full bg-[#16a34a] text-base font-bold hover:bg-[#16a34a]/90"
+                className="mt-3 w-full bg-[#15803d] text-base font-bold hover:bg-[#15803d]/90"
               >
                 {submitting ? "Processando..." : "Finalizar pedido"}
               </Button>

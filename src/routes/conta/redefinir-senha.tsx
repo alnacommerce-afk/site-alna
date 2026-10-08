@@ -83,7 +83,7 @@ function RedefinirSenhaPage() {
             </p>
             <Link
               to="/conta/login"
-              className="text-sm font-semibold text-[#16a34a] hover:underline"
+              className="text-sm font-semibold text-[#15803d] hover:underline"
             >
               Voltar para entrar
             </Link>
@@ -118,7 +118,7 @@ function RedefinirSenhaPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-[#16a34a] font-bold hover:bg-[#16a34a]/90"
+                className="w-full bg-[#15803d] font-bold hover:bg-[#15803d]/90"
                 disabled={loading}
               >
                 {loading ? "Salvando..." : "Salvar nova senha"}
