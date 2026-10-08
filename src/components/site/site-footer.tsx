@@ -3,6 +3,7 @@ import { Clock, Instagram, Mail, MapPin, Phone } from "lucide-react";
 
 import { useCategories, useSiteSettings } from "@/lib/site-data";
 import { CONTACT_EMAIL, SITE_URL } from "@/lib/site-urls";
+import { COMPANY } from "@/lib/company";
 import logoAlnaTransparent from "@/assets/brand/logo-alna.png";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 
@@ -36,10 +37,11 @@ export function SiteFooter() {
             Utensílios de madeira para cozinha e itens de cama, mesa e banho que trazem
             praticidade e bem-estar para sua casa.
           </p>
-          <p className="mt-4 text-xs text-white/50">CNPJ: {settings?.cnpj ?? "57.135.009/0001-27"}</p>
+          <p className="mt-4 text-xs text-white/50">CNPJ: {settings?.cnpj ?? COMPANY.cnpj}</p>
           <p className="text-xs text-white/50">
-            Razão Social: {settings?.razao_social ?? "ALNA COMMERCE"}
+            Razão Social: {settings?.razao_social ?? COMPANY.legalName}
           </p>
+          <p className="text-xs text-white/50">{COMPANY.addressLine}</p>
         </div>
 
         <div>

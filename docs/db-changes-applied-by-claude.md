@@ -210,3 +210,13 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   (User-Agent "ALNA-keep-warm") para o servidor não ficar frio. Sem armazenamento (as respostas do pg_net são apagadas sozinhas).
   Para desligar: `select cron.unschedule('keep-warm-atacado');`. Não garante 100% (só aquece o ponto de atendimento mais próximo).
 - Depois que a conta voltar: desligar a "expansão do URL final" da campanha para o Google usar só /atacado.
+
+## identificação completa da empresa no site (08/10/2026, conforme o Cartão CNPJ)
+- Cartão CNPJ (emitido 10/03/2026): nome empresarial **ALNA COMMERCE LTDA**, CNPJ 57.135.009/0001-27, ME, aberta em 03/09/2024, sócio-
+  administrador Alexander dos Santos Machado, sede R. Luiz Rafael Flor, 450 (apto no complemento, NÃO publicado), Nova Brasília,
+  Brusque/SC, CEP 88.352-553. Decisão do dono (opção A): mostrar o endereço SEM o apartamento.
+- Novo `src/lib/company.ts` (constantes); rodapé da loja, /contato e /sobre mostram "ALNA COMMERCE LTDA · CNPJ · endereço" já no HTML
+  do servidor (antes a razão social "ALNA COMMERCE" aparecia sem LTDA até o banco carregar). Home (alna.sale): rodapé e dados
+  estruturados (JSON-LD com endereço e CEP) atualizados. Home: 23.354 → 23.636 bytes (+282 B, +1,2%), 0 requisições novas.
+- Google Ads: a conta é paga por pessoa física (ALEXANDER DOS SANTOS MACHADO), o site é da LTDA; mudar o tipo do perfil de pagamentos
+  exige falar com o suporte do Google Ads. Cloudflare: "Always Use HTTPS" ligado em alnacommerce.com (http agora 301 em 0,2 s).

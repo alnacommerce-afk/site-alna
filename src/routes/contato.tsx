@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 import { CONTACT_EMAIL, STORE_URL } from "@/lib/site-urls";
+import { COMPANY } from "@/lib/company";
 
 const PAGE_URL = `${STORE_URL}/contato`;
 const TITLE = "Fale com a ALNA";
@@ -56,7 +57,10 @@ function ContatoPage() {
               @store.alna.sale
             </a>
           </li>
-          <li>Brusque, Santa Catarina</li>
+          <li>
+            {COMPANY.legalName} · CNPJ {COMPANY.cnpj}
+          </li>
+          <li>{COMPANY.addressLine}</li>
         </ul>
       </LegalSection>
     </LegalPageLayout>
