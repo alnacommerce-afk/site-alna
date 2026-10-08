@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -31,7 +31,32 @@ export function LegalPageLayout({
   );
 }
 
-export function LegalSection({ heading, children }: { heading: string; children: ReactNode }) {
+// `order` (optional) turns on the gentle block-by-block entrance used by the ad landing page: block 0 is
+// visible at once (it is what the visitor came for), later blocks fade in with a very short stagger and
+// the browser skips drawing the ones far below the screen until they get close (content-visibility).
+export function LegalSection({
+  heading,
+  children,
+  order,
+}: {
+  heading: string;
+  children: ReactNode;
+  order?: number;
+}) {
+  if (order !== undefined) {
+    const style = { "--reveal-delay": `${Math.min(order, 3) * 60}ms` } as CSSProperties;
+    return (
+      <div
+        className={`${order > 0 ? "reveal-soft" : ""} ${order >= 2 ? "defer-render" : ""} mt-8 first:mt-0`}
+        style={style}
+      >
+        <section>
+          <h2 className="text-xl font-bold text-[#12294f]">{heading}</h2>
+          <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">{children}</div>
+        </section>
+      </div>
+    );
+  }
   return (
     <section className="mt-8 first:mt-0">
       <h2 className="text-xl font-bold text-[#12294f]">{heading}</h2>

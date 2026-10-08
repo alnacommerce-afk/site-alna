@@ -108,7 +108,7 @@ function AtacadoPage() {
 
   return (
     <LegalPageLayout title={TITLE}>
-      <LegalSection heading="Compre em quantidade para o seu negócio">
+      <LegalSection order={0} heading="Compre em quantidade para o seu negócio">
         <p>
           A ALNA vende para quem compra em volume: lojas, restaurantes, padarias, lanchonetes,
           buffets e revendedores. São utensílios de madeira para cozinha, toalhas de banho e rosto,
@@ -119,7 +119,7 @@ function AtacadoPage() {
         <BigCta freeShipping={freeShipping} />
       </LegalSection>
 
-      <LegalSection heading="Condições para compras em quantidade">
+      <LegalSection order={1} heading="Condições para compras em quantidade">
         <ul className="list-disc space-y-1 pl-5">
           <li>
             <strong>5% de desconto</strong> em compras acima de R$ 250,00: use o cupom{" "}
@@ -142,7 +142,7 @@ function AtacadoPage() {
         </p>
       </LegalSection>
 
-      <LegalSection heading="O que você encontra para revenda">
+      <LegalSection order={2} heading="O que você encontra para revenda">
         <p>
           Todo o catálogo vale para compra em quantidade. Veja alguns itens de cada categoria, as
           variações disponíveis e o estoque de cada um:
@@ -185,7 +185,7 @@ function AtacadoPage() {
         </p>
       </LegalSection>
 
-      <LegalSection heading="Como comprar em quantidade">
+      <LegalSection order={3} heading="Como comprar em quantidade">
         <ol className="list-decimal space-y-1 pl-5">
           <li>
             Escolha os produtos (de qualquer categoria) e as quantidades na loja e adicione ao
@@ -212,7 +212,7 @@ function AtacadoPage() {
         </p>
       </LegalSection>
 
-      <LegalSection heading="Perguntas frequentes">
+      <LegalSection order={4} heading="Perguntas frequentes">
         <div>
           <h3 className="font-semibold text-[#12294f]">Tem pedido mínimo?</h3>
           <p>
@@ -245,7 +245,7 @@ function AtacadoPage() {
           </p>
         </div>
       </LegalSection>
-      <div className="mt-10 rounded-2xl bg-[#f0fdf4] p-6">
+      <div className="defer-render mt-10 rounded-2xl bg-[#f0fdf4] p-6">
         <p className="text-lg font-bold text-[#12294f]">Pronto para montar o seu pedido?</p>
         <BigCta freeShipping={freeShipping} />
       </div>
