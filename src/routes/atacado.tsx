@@ -50,7 +50,7 @@ const FEATURED_GROUPS = [
       { slug: "toalha-paris-270g-68x140", name: "Toalha de banho Paris 100% algodão" },
       { slug: "toalha-rubi-400g-80x150", name: "Toalha Rubi 400g" },
       { slug: "toalha-luxo-banho-e-rosto", name: "Jogo de toalhas banho e rosto" },
-      { slug: "toalha-de-time", name: "Toalha branca para sublimação" },
+      { slug: "toalha-sublimar", name: "Toalha branca para sublimação" },
     ],
   },
   {

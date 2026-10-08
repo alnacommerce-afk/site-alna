@@ -151,3 +151,14 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   Cupons agora recusa).
 - Gatilho `count_coupon_use_on_paid` percorre a lista: cada cupom ganha 1 uso (e seus próprios avisos de 5/1/estourou) quando o
   pedido é pago. Relatórios (média de cupom, Precificação, sales-report) já leem `discount_cents`/`coupon_code`, sem mudança.
+
+## product_slug_redirects + endereço toalha-sublimar + vídeo Shorts (07/10/2026)
+- Tabela `product_slug_redirects` (old_slug → product_id; leitura pública, escrita só admin) e gatilho
+  `products_remember_old_slug`: toda troca de `products.slug` guarda o endereço antigo sozinha. A página do produto
+  (`src/routes/produto/$slug.tsx`) redireciona (301) o endereço antigo para o atual.
+- Produto "Toalha para Sublimação 70x140cm Branca": `toalha-de-time` → **`toalha-sublimar`** (o antigo redireciona).
+  `/atacado` atualizado. O mapa do site (sitemap) é regenerado a cada publicação. Não há campo de slug no admin (por ora a troca
+  é feita no banco).
+- Vídeo do produto: campo "Vídeo" em Admin > Catálogo > (produto); na loja aparece o link "▶ Assistir vídeo do produto" logo
+  abaixo das miniaturas das fotos e abre numa janela. Passou a aceitar links do YouTube Shorts (`youtube.com/shorts/ID`), /live e
+  /embed; Shorts abre em formato vertical (9:16).

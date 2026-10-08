@@ -144,14 +144,20 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://store.alna.sale/produto/toalha-de-time</loc>
-    <lastmod>2026-10-01</lastmod>
+    <loc>https://store.alna.sale/produto/toalha-de-capivara-70x130-200g</loc>
+    <lastmod>2026-10-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://store.alna.sale/produto/toalha-de-capivara-70x130-200g</loc>
-    <lastmod>2026-10-02</lastmod>
+    <loc>https://store.alna.sale/produto/toalha-floral</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://store.alna.sale/produto/toalha-sublimar</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

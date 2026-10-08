@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Await, createFileRoute, Link } from "@tanstack/react-router";
+import { Await, createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Maximize2, Minus, Plus, ShieldCheck, Star, Truck, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -86,18 +86,29 @@ async function fetchExtras(productId: string, categoryId: string | null): Promis
   }
 }
 
-function toEmbedUrl(url: string): string | null {
+type VideoEmbed = { url: string; /** YouTube Shorts are portrait (9:16), everything else is 16:9. */ vertical: boolean };
+
+function toEmbedUrl(url: string): VideoEmbed | null {
   try {
     const u = new URL(url);
-    if (u.hostname.includes("youtube.com") && u.searchParams.get("v")) {
-      return `https://www.youtube.com/embed/${u.searchParams.get("v")}`;
+    const isYoutube = u.hostname === "youtube.com" || u.hostname.endsWith(".youtube.com");
+    if (isYoutube) {
+      if (u.searchParams.get("v")) {
+        return { url: `https://www.youtube.com/embed/${u.searchParams.get("v")}`, vertical: false };
+      }
+      // youtube.com/shorts/ID (vertical video), /live/ID and /embed/ID
+      const [kind, id] = u.pathname.split("/").filter(Boolean);
+      if (id && (kind === "shorts" || kind === "live" || kind === "embed")) {
+        return { url: `https://www.youtube.com/embed/${id}`, vertical: kind === "shorts" };
+      }
+      return null;
     }
     if (u.hostname === "youtu.be") {
-      return `https://www.youtube.com/embed${u.pathname}`;
+      return { url: `https://www.youtube.com/embed${u.pathname}`, vertical: false };
     }
     if (u.hostname.includes("vimeo.com")) {
       const id = u.pathname.split("/").filter(Boolean).pop();
-      return id ? `https://player.vimeo.com/video/${id}` : null;
+      return id ? { url: `https://player.vimeo.com/video/${id}`, vertical: false } : null;
     }
     return null;
   } catch {
@@ -121,6 +132,16 @@ export const Route = createFileRoute("/produto/$slug")({
       .maybeSingle();
 
     if (!product) {
+      // An old address (the product's slug was changed): send visitors, Google and old links to the current one.
+      const { data: moved } = await supabase
+        .from("product_slug_redirects")
+        .select("products(slug, status)")
+        .eq("old_slug", params.slug)
+        .maybeSingle();
+      const target = Array.isArray(moved?.products) ? moved?.products[0] : moved?.products;
+      if (target?.slug && target.status === "published" && target.slug !== params.slug) {
+        throw redirect({ to: "/produto/$slug", params: { slug: target.slug }, statusCode: 301 });
+      }
       return {
         product: null,
         extras: Promise.resolve<ProductExtras>({ related: [], reviews: [] }),
@@ -467,7 +488,7 @@ function ProdutoPage() {
   const maxQuantity = selectedVariants.length
     ? Math.min(...selectedVariants.map((v) => v.stock_quantity))
     : 1;
-  const embedUrl = product.video_url ? toEmbedUrl(product.video_url) : null;
+  const video = product.video_url ? toEmbedUrl(product.video_url) : null;
 
   async function handleCheckShipping(options?: { silent?: boolean }) {
     const digits = onlyDigits(cep);
@@ -625,7 +646,7 @@ function ProdutoPage() {
             </div>
           ) : null}
 
-          {embedUrl ? (
+          {video ? (
             <button
               type="button"
               onClick={() => setVideoOpen(true)}
@@ -652,12 +673,12 @@ function ProdutoPage() {
           </Dialog>
 
           <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className={video?.vertical ? "max-w-sm" : "max-w-2xl"}>
               <DialogTitle className="sr-only">Vídeo do produto</DialogTitle>
-              {embedUrl ? (
-                <div className="aspect-video">
+              {video ? (
+                <div className={video.vertical ? "mx-auto aspect-[9/16] max-h-[75vh]" : "aspect-video"}>
                   <iframe
-                    src={embedUrl}
+                    src={video.url}
                     title="Vídeo do produto"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
