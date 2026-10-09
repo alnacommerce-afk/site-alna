@@ -3,11 +3,32 @@
 // remembers the row's token, so later cart changes can be sent without the e-mail. Everything here is a no-op
 // until the shopper has saved their cart.
 import type { CartItem } from "@/lib/cart/cart-context";
+import { getSavedCheckoutInfo } from "@/lib/checkout/saved-info";
 
 const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
 const STORAGE_KEY = "alna_saved_cart";
 // Set when the shopper says "não quero lembretes": the checkout then does not save the cart by itself again.
 const OPT_OUT_KEY = "alna_saved_cart_off";
+
+// Set when the shopper agreed to cart reminders: by saving the cart (cart box / checkout) or by getting the
+// welcome coupon in the pop-up (its text mentions the reminders). Only then the cart is saved by itself.
+const CONSENT_KEY = "alna_saved_cart_consent";
+
+export function hasReminderConsent(): boolean {
+  try {
+    return localStorage.getItem(CONSENT_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function setReminderConsent() {
+  try {
+    localStorage.setItem(CONSENT_KEY, "1");
+  } catch {
+    // ignore
+  }
+}
 
 export function remindersTurnedOff(): boolean {
   try {
@@ -80,10 +101,24 @@ export async function saveCartWithEmail(
     } catch {
       // ignore
     }
+    setReminderConsent();
     return { ok: true };
   } catch {
     return { ok: false, error: "Não foi possível salvar o carrinho agora." };
   }
+}
+
+/** True when the cart can be saved without asking again: e-mail known, reminders agreed to, not turned off. */
+export function canAutoSaveCart(): boolean {
+  if (getSavedCartState() || remindersTurnedOff() || !hasReminderConsent()) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((getSavedCheckoutInfo().email ?? "").trim());
+}
+
+/** Saves the cart by itself for a shopper who already left an e-mail and agreed to the reminders. */
+export async function autoSaveCart(items: CartItem[]) {
+  if (items.length === 0 || !canAutoSaveCart()) return;
+  const info = getSavedCheckoutInfo();
+  await saveCartWithEmail((info.email ?? "").trim(), info.phone ?? "", items);
 }
 
 /** Sends the current items of an already saved cart (called, debounced, whenever the cart changes). */

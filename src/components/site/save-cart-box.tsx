@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import {
+  canAutoSaveCart,
   getSavedCartState,
   saveCartWithEmail,
   stopSavedCart,
@@ -23,12 +24,15 @@ export function SaveCartBox({ restoredState }: { restoredState?: SavedCartState 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [showPhone, setShowPhone] = useState(false);
+  // E-mail already known and reminders agreed to: the cart is being saved by itself, nothing to ask.
+  const [autoSaving, setAutoSaving] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Read after mount so the server-rendered page and the first client render match.
   useEffect(() => {
     setSaved(getSavedCartState());
+    setAutoSaving(canAutoSaveCart());
     const info = getSavedCheckoutInfo();
     setEmail(info.email ?? "");
     setPhone(info.phone ?? "");
@@ -63,6 +67,8 @@ export function SaveCartBox({ restoredState }: { restoredState?: SavedCartState 
     setSaved(null);
     toast.success("Pronto, não enviaremos lembretes deste carrinho.");
   }
+
+  if (!saved && autoSaving) return null;
 
   if (saved) {
     return (

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Check, X } from "lucide-react";
 
 import { saveCheckoutInfo } from "@/lib/checkout/saved-info";
+import { useCart } from "@/lib/cart/cart-context";
+import { autoSaveCart, setReminderConsent } from "@/lib/cart/saved-cart";
 import { setPendingCoupon } from "@/lib/marketing/pending-coupon";
 import { markWelcomeClaimed, markWelcomeDismissed } from "@/lib/marketing/welcome-popup";
 import { Button } from "@/components/ui/button";
@@ -34,6 +36,7 @@ export default function WelcomePopup({ percent, onClose }: { percent: number; on
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const { items } = useCart();
 
   function dismiss() {
     if (!result) markWelcomeDismissed();
@@ -74,10 +77,14 @@ export default function WelcomePopup({ percent, onClose }: { percent: number; on
         if (typeof json.code === "string") setPendingCoupon(json.code);
         saveCheckoutInfo({ email: typed });
         markWelcomeClaimed();
+        setReminderConsent();
+        void autoSaveCart(items);
         setResult({ kind: "sent", percent: json.percent });
       } else if (json.state === "already" || json.state === "existing_customer") {
         saveCheckoutInfo({ email: typed });
         markWelcomeClaimed();
+        setReminderConsent();
+        void autoSaveCart(items);
         setResult({ kind: json.state });
       } else {
         setError("O cupom de boas-vindas não está disponível agora.");
@@ -133,7 +140,7 @@ export default function WelcomePopup({ percent, onClose }: { percent: number; on
             {sending ? "Enviando..." : "Quero meu cupom"}
           </Button>
           <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
-            Ao enviar, você aceita receber seu cupom e novidades da ALNA por e-mail. Cancele quando quiser. Veja a{" "}
+            Ao enviar, você aceita receber seu cupom, novidades e até 2 lembretes do seu carrinho por e-mail. Cancele quando quiser. Veja a{" "}
             <a href="/politica-de-privacidade" className="underline">
               política de privacidade
             </a>

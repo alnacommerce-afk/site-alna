@@ -326,3 +326,12 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   migração, e eu devo testar a leitura pública (REST com a chave anônima) antes de mandar publicar.
 - Teste ao vivo do pop-up: só aparece depois de carga + 8 s + interação; envio com e-mail que já tem cupom mostra "Seu cupom já foi enviado".
   Cupom e linha de lista de teste apagados.
+
+## 09/10/2026 (tarde) — "Salve seu carrinho" só para quem ainda não deixou e-mail
+
+- Sem mudança de banco. `saved-cart.ts`: flag de consentimento aos lembretes (`alna_saved_cart_consent`), definida ao salvar pela caixa/checkout e ao
+  pegar o cupom no pop-up (texto do pop-up agora diz "novidades e até 2 lembretes do seu carrinho"); `canAutoSaveCart/autoSaveCart` guardam o carrinho sozinhos
+  quando e-mail e consentimento já existem e o cliente não pediu para sair. `cart-context.tsx`: carrinho com itens + e-mail conhecido = salvo sozinho 3 s depois
+  da mudança. `SaveCartBox`: some enquanto o carrinho está sendo guardado sozinho; fica visível (com e-mail pré-preenchido) só para quem nunca deixou e-mail.
+  Quem clicou em "Não quero lembretes" não é salvo sozinho de novo.
+- Reavaliar em 7-10 dias (Admin > Carrinhos abandonados) se a caixa ainda faz falta.

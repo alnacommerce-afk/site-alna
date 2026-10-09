@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
 
-import { cartItemsKey, getSavedCartState, syncSavedCart } from "@/lib/cart/saved-cart";
+import { autoSaveCart, canAutoSaveCart, cartItemsKey, getSavedCartState, syncSavedCart } from "@/lib/cart/saved-cart";
 
 export type CartItem = {
   variantId: string;
@@ -139,13 +139,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const key = cartItemsKey(state.items);
     if (key === lastSyncedKeyRef.current) return;
-    if (!getSavedCartState()) {
+    const saved = !!getSavedCartState();
+    // Not saved yet: only a shopper who already left an e-mail and agreed to the reminders gets the cart saved by itself.
+    if (!saved && (state.items.length === 0 || !canAutoSaveCart())) {
       lastSyncedKeyRef.current = key;
       return;
     }
     const timer = window.setTimeout(() => {
       lastSyncedKeyRef.current = key;
-      void syncSavedCart(state.items);
+      if (saved) void syncSavedCart(state.items);
+      else void autoSaveCart(state.items);
     }, 3000);
     return () => window.clearTimeout(timer);
   }, [state.items]);
