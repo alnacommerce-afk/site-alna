@@ -66,3 +66,12 @@ afirmar no texto algo que não esteja FEITO e verificado. Só uma contestação 
 O arquivo **`docs/PENDENCIAS.md`** é o ponto de retomada do projeto: lista as prioridades (1. reativar o Google Ads; 2. velocidade e conversão), o que
 aguarda o dono, o que o Claude deve verificar/acompanhar e o estado do sistema (cron, cupons, funções). Ao começar uma sessão, leia-o junto com este arquivo e a
 memória; ao concluir algo ou receber novidade do dono, **atualize-o** (e o painel do Google Ads) no mesmo commit, e espelhe no Drive.
+
+## Memória do projeto: registrar e consultar (regra do dono, 09/10/2026)
+
+O dono percebeu que detalhes se perdem entre conversas e pediu que isso melhore. A conversa **não** é memória confiável (longas sessões são resumidas e novas sessões começam do zero);
+**o repositório é**. Portanto:
+- **Índice:** `docs/README.md` diz onde está cada coisa. **Pendências:** `docs/PENDENCIAS.md`. **Decisões e o que foi desfeito:** `docs/DECISOES.md`. **Origem de imagens:** `docs/ATIVOS-VISUAIS.md`.
+- **Ao decidir, aplicar ou desfazer algo, registrar em `docs/DECISOES.md` no MESMO commit** (data, decisão, motivo/palavras do dono, onde está no código), além de `docs/db-changes-applied-by-claude.md` se mexeu em código/banco.
+- **Quando o dono perguntar sobre algo passado:** procurar primeiro (docs/, `git log --grep`, memória, banco só leitura); se não achar, dizer "isso não está registrado", perguntar e registrar a resposta. Nunca inventar.
+- Fato novo que o dono informar (origem de uma imagem, conta, prazo, nome combinado) vai para o arquivo certo na hora, não "depois".
