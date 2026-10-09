@@ -253,3 +253,12 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   (com aviso), sincronização do carrinho a cada mudança (3 s de espera, só para quem salvou), restauração por `?c=`.
   Admin: nova tela Marketing > Carrinhos abandonados (carrinhos salvos + pedidos pendentes, botão WhatsApp com mensagem editável via wa.me,
   copiar link, números de recuperação); mapa de fluxos ganhou o Fluxo 9; política de privacidade atualizada.
+
+### 09/10/2026 (tarde) — CORREÇÃO: ajuste do horário de postagem DESFEITO
+
+- O commit fbab4f9 (ler `posted_at` da Melhor Envio como horário de Brasília) estava ERRADO e foi revertido. Prova: pedido 79a722c7 veio com
+  `posted_at = 2026-10-08 23:16:25` mas o sistema já o registrara às 01:10:02 UTC (22:10 de Brasília): se fosse horário de Brasília, o evento
+  estaria no futuro. Os dados só fazem sentido com o valor em **UTC** (como o código já tratava). A Melhor Rastreio parece exibir o mesmo número
+  sem converter (os "14:14" do pedido b75dbe6a são 14:14 UTC = 11:14 de Brasília).
+- Banco: evento `posted` do b75dbe6a voltado para 14:14:30 UTC (11:14 em Brasília), +3 h desfeitas.
+- Lição: não concluir fuso horário só pela coincidência de dígitos entre duas telas; conferir com a ordem cronológica dos fatos.

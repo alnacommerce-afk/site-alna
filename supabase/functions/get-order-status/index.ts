@@ -1,7 +1,6 @@
 // Public. The `orders` table is admin-only via RLS, so the order confirmation page uses this
 // function (service role) to read back just the safe, minimal fields for one order by id.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { postedAtToIso } from "../_shared/melhor-envio-time.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -77,7 +76,7 @@ Deno.serve(async (req) => {
           if (entry) {
             tracking = {
               status: entry.status,
-              postedAt: postedAtToIso(entry.posted_at),
+              postedAt: entry.posted_at ?? null,
               deliveredAt: entry.delivered_at ?? null,
             };
           }
