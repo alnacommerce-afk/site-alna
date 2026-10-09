@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import {
+  SAVED_CART_EVENT,
   canAutoSaveCart,
   getSavedCartState,
   saveCartWithEmail,
@@ -42,6 +43,16 @@ export function SaveCartBox({ restoredState }: { restoredState?: SavedCartState 
   useEffect(() => {
     if (restoredState) setSaved(restoredState);
   }, [restoredState]);
+
+  // The cart can be saved by itself while this page is open: follow it.
+  useEffect(() => {
+    function refresh() {
+      setSaved(getSavedCartState());
+      setAutoSaving(canAutoSaveCart());
+    }
+    window.addEventListener(SAVED_CART_EVENT, refresh);
+    return () => window.removeEventListener(SAVED_CART_EVENT, refresh);
+  }, []);
 
   async function handleSave() {
     setError(null);

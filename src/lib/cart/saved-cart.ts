@@ -51,12 +51,16 @@ export function getSavedCartState(): SavedCartState | null {
   }
 }
 
+// Lets the cart box show "Carrinho salvo" the moment the cart is saved by itself (pop-up, checkout, e-mail link).
+export const SAVED_CART_EVENT = "alna-saved-cart-changed";
+
 export function setSavedCartState(state: SavedCartState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {
     // ignore write failures (private browsing, quota, etc.)
   }
+  window.dispatchEvent(new Event(SAVED_CART_EVENT));
 }
 
 export function clearSavedCartState() {
@@ -65,6 +69,7 @@ export function clearSavedCartState() {
   } catch {
     // ignore
   }
+  window.dispatchEvent(new Event(SAVED_CART_EVENT));
 }
 
 export function maskEmail(email: string) {

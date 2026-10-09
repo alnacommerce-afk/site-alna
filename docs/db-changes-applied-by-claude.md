@@ -335,3 +335,11 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   da mudança. `SaveCartBox`: some enquanto o carrinho está sendo guardado sozinho; fica visível (com e-mail pré-preenchido) só para quem nunca deixou e-mail.
   Quem clicou em "Não quero lembretes" não é salvo sozinho de novo.
 - Reavaliar em 7-10 dias (Admin > Carrinhos abandonados) se a caixa ainda faz falta.
+
+## 09/10/2026 (tarde) — Pop-up de boas-vindas centralizado e só fecha no X
+
+- `welcome-popup.tsx`: cartão no centro da tela (celular e computador), fundo escurecido leve, texto "Seja bem-vindo ao nosso site! 💚 / Preparamos um mimo
+  para você que vem pela 1ª vez: um cupom de X% de desconto. É só deixar seu e-mail." (X lido do cupom BOAS_VINDAS), botão "Quero meu mimo". Fecha SOMENTE
+  pelo X (clique fora e Esc não fecham; link "Agora não" removido). Rolagem do fundo travada enquanto aberto. Continua só após carga + 8 s + interação humana.
+- `saved-cart.ts`: evento `alna-saved-cart-changed`; `SaveCartBox` acompanha o salvamento automático e mostra "Carrinho salvo para ...".
+- Teste ao vivo do salvamento automático (e-mail + consentimento + mudança no carrinho): linha criada em `abandoned_carts` em ~3 s; linha de teste apagada.

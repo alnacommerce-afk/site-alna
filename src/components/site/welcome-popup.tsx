@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Check, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Gift, X } from "lucide-react";
 
 import { saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { useCart } from "@/lib/cart/cart-context";
@@ -30,27 +30,32 @@ const MESSAGES: Record<Result["kind"], { title: string; text: (percent?: number)
   },
 };
 
-/** Small, non-blocking card (no dark overlay, nothing hidden behind it): welcome coupon in exchange for an e-mail. */
+/**
+ * Welcome pop-up in the middle of the screen (same on computer and phone). It closes ONLY with the X button: a click
+ * outside or the Esc key do nothing, so it is never dismissed by accident.
+ */
 export default function WelcomePopup({ percent, onClose }: { percent: number; onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const { items } = useCart();
+  const boxRef = useRef<HTMLDivElement>(null);
 
-  function dismiss() {
+  // Keeps the page behind from scrolling while the pop-up is open, and starts the keyboard flow inside the box.
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    boxRef.current?.focus();
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
+  function close() {
     if (!result) markWelcomeDismissed();
     onClose();
   }
-
-  useEffect(() => {
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") dismiss();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -97,60 +102,72 @@ export default function WelcomePopup({ percent, onClose }: { percent: number; on
   }
 
   return (
-    <div
-      role="dialog"
-      aria-label="Cupom de boas-vindas"
-      className="fixed bottom-4 left-4 right-4 z-50 rounded-xl border border-[#12294f]/15 bg-white p-4 shadow-xl sm:right-auto sm:w-[360px]"
-    >
-      <button
-        type="button"
-        onClick={dismiss}
-        aria-label="Fechar"
-        className="absolute right-2 top-2 rounded-md p-1.5 text-muted-foreground hover:bg-muted"
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+      <div
+        ref={boxRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="welcome-popup-title"
+        className="relative max-h-[92vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-white p-6 text-center shadow-2xl outline-none"
       >
-        <X className="h-4 w-4" />
-      </button>
+        <button
+          type="button"
+          onClick={close}
+          aria-label="Fechar"
+          className="absolute right-3 top-3 rounded-full p-2 text-muted-foreground hover:bg-muted"
+        >
+          <X className="h-5 w-5" />
+        </button>
 
-      {result ? (
-        <div className="pr-6">
-          <p className="flex items-center gap-2 text-base font-bold text-[#15803d]">
-            <Check className="h-5 w-5" /> {MESSAGES[result.kind].title}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">{MESSAGES[result.kind].text(result.percent)}</p>
-          <Button type="button" className="mt-3 w-full bg-[#15803d] hover:bg-[#15803d]/90" onClick={onClose}>
-            Continuar comprando
-          </Button>
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#15803d]/10 text-[#15803d]">
+          {result ? <Check className="h-7 w-7" /> : <Gift className="h-7 w-7" />}
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="pr-6">
-          <p className="text-base font-bold text-[#12294f]">Ganhe {percent}% na sua primeira compra</p>
-          <p className="mt-1 text-sm text-muted-foreground">Deixe seu e-mail e receba seu cupom de boas-vindas.</p>
-          <Input
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="seu@email.com"
-            aria-label="Seu e-mail"
-            className="mt-3"
-          />
-          {error ? <p className="mt-1 text-xs text-destructive">{error}</p> : null}
-          <Button type="submit" disabled={sending} className="mt-2 w-full bg-[#15803d] hover:bg-[#15803d]/90">
-            {sending ? "Enviando..." : "Quero meu cupom"}
-          </Button>
-          <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
-            Ao enviar, você aceita receber seu cupom, novidades e até 2 lembretes do seu carrinho por e-mail. Cancele quando quiser. Veja a{" "}
-            <a href="/politica-de-privacidade" className="underline">
-              política de privacidade
-            </a>
-            .
-          </p>
-          <button type="button" onClick={dismiss} className="mt-2 text-xs text-muted-foreground underline">
-            Agora não
-          </button>
-        </form>
-      )}
+
+        {result ? (
+          <>
+            <h2 id="welcome-popup-title" className="mt-4 text-xl font-bold text-[#12294f]">
+              {MESSAGES[result.kind].title}
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">{MESSAGES[result.kind].text(result.percent)}</p>
+            <Button type="button" className="mt-5 w-full bg-[#15803d] hover:bg-[#15803d]/90" onClick={onClose}>
+              Continuar comprando
+            </Button>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <h2 id="welcome-popup-title" className="mt-4 text-xl font-bold text-[#12294f]">
+              Seja bem-vindo ao nosso site! 💚
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Preparamos um mimo para você que vem pela 1ª vez: um cupom de{" "}
+              <strong className="text-[#15803d]">{percent}% de desconto</strong>. É só deixar seu e-mail.
+            </p>
+            <Input
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="seu@email.com"
+              aria-label="Seu e-mail"
+              className="mt-4 h-11 text-base"
+            />
+            {error ? <p className="mt-1 text-left text-xs text-destructive">{error}</p> : null}
+            <Button type="submit" disabled={sending} className="mt-3 h-11 w-full bg-[#15803d] text-base hover:bg-[#15803d]/90">
+              {sending ? "Enviando..." : "Quero meu mimo"}
+            </Button>
+            <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
+              Ao enviar, você aceita receber seu cupom, novidades e até 2 lembretes do seu carrinho por e-mail. Cancele
+              quando quiser. Veja a{" "}
+              <a href="/politica-de-privacidade" className="underline">
+                política de privacidade
+              </a>
+              .
+            </p>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
