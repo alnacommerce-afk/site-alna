@@ -5,6 +5,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate } from "../_shared/render-template.ts";
 import { notifyOrderPosted, notifyOrderPrepared } from "../_shared/notify-order-status.ts";
+import { postedAtToIso } from "../_shared/melhor-envio-time.ts";
 
 const ME_API = "https://melhorenvio.com.br/api/v2";
 const SITE_URL = "https://store.alna.sale";
@@ -70,7 +71,7 @@ Deno.serve(async (req) => {
               kind: "posted",
               title: "Deixado no ponto de coleta",
               detail: "Seu pedido foi deixado no ponto de coleta e está a caminho.",
-              occurred_at: entry.posted_at,
+              occurred_at: postedAtToIso(entry.posted_at),
             },
             { onConflict: "order_id,kind", ignoreDuplicates: true },
           );

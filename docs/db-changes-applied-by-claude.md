@@ -228,3 +228,11 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   CEP incompleto zera o frete (botão "Finalizar pedido" fica desabilitado até calcular); erro mostra "Tentar de novo".
   Nenhuma mudança de banco, nenhum arquivo/imagem novo; peso da página praticamente igual.
 - Teste de pagamento com a conta Asaas nova (ALNA COMMERCE LTDA): pedido 79a722c7 (Pix R$ 20,26) criado 18:25 UTC e marcado Pago em ~1 min pelo webhook.
+
+## 09/10/2026 — Horário de postagem em horário de Brasília
+
+- Melhor Envio devolve `posted_at` sem fuso e em horário de Brasília (as datas da etiqueta vêm em UTC). Novo `_shared/melhor-envio-time.ts`
+  (`postedAtToIso`, acrescenta -03:00); usado em `sync-delivery-status` (evento "posted" do histórico) e `get-order-status` (/pedido).
+  Horário de entrega NÃO alterado (formato ainda não verificado).
+- Banco (via execute_sql): evento `posted` do pedido b75dbe6a corrigido de 11:14 para 14:14 (Brasília), +3 h numa linha.
+- Publicar no Lovable para valer; conferir com o pedido 79a722c7 quando for postado.
