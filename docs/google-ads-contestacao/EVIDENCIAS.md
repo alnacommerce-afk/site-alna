@@ -20,3 +20,5 @@ Cada linha: o fato, quando, de onde veio e como reverificar. Prints do dono fica
 | Checkout coleta dados de cartão só para enviá-los à Asaas (não são gravados na tabela `orders`) | 09/10/2026 | Leitura de `supabase/functions/checkout-create` | Código |
 | Pop-up de boas-vindas só na `/loja`, só após carga + 8 s + interação humana; e-mail opcional, com consentimento explícito; não está na `/atacado` | 09/10/2026 | Código e teste ao vivo | `src/lib/marketing/welcome-popup.ts` |
 | Outra Conta do Google do dono (aleqs.santos@gmail.com) tem a conta de Google Ads **172-390-8582** com status **"Cancelado"** (lista de contas do Google Ads) | 09/10/2026 | Print do dono | ads.google.com no perfil dessa Conta do Google |
+| Conta do Google informacoes.asm@gmail.com ("Alna Store") lista só a conta de Google Ads 635-244-4697 | 09/10/2026 | Print do dono | ads.google.com nesse perfil |
+| Conta do Google asm.express.logistica@gmail.com ("Alna Commerce") lista a conta de Google Ads **962-967-1605** (status não aparece no print) | 09/10/2026 | Print do dono | ads.google.com nesse perfil |
