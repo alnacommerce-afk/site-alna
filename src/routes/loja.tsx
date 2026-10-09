@@ -1,9 +1,8 @@
 import { Await, createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
-import { cardImageUrl } from "@/lib/site-images";
 import heroAmbassador from "@/assets/brand/hero-ambassador-cutout.png";
 import { SiteHeader } from "@/components/site/site-header";
 import { FreeShippingBanner } from "@/components/site/free-shipping-progress";
@@ -29,9 +28,7 @@ type ProductCard = {
   title: string;
   slug: string;
   categoryId: string | null;
-  /** Resized copy for the card (see site-images.ts); `thumbnailFallbackUrl` is the original photo. */
   thumbnailUrl: string | null;
-  thumbnailFallbackUrl: string | null;
   thumbnailAlt: string;
   priceCents: number;
   compareAtPriceCents: number | null;
@@ -83,12 +80,8 @@ async function fetchCatalog(): Promise<{
         slug: p.slug,
         categoryId: p.category_id,
         thumbnailUrl: thumbnail
-          ? cardImageUrl(
-              supabase.storage.from("product-media").getPublicUrl(thumbnail.storage_path).data.publicUrl,
-            )
-          : null,
-        thumbnailFallbackUrl: thumbnail
-          ? supabase.storage.from("product-media").getPublicUrl(thumbnail.storage_path).data.publicUrl
+          ? supabase.storage.from("product-media").getPublicUrl(thumbnail.storage_path).data
+              .publicUrl
           : null,
         thumbnailAlt: thumbnail?.alt_text ?? p.title,
         priceCents: cheapest?.price_cents ?? 0,
@@ -136,25 +129,8 @@ function discountPercent(price: number, compareAt: number | null): number | null
   return Math.round(((compareAt - price) / compareAt) * 100);
 }
 
-function ProductGridCard({
-  product,
-  priority,
-  first,
-}: {
-  product: ProductCard;
-  priority: boolean;
-  first: boolean;
-}) {
+function ProductGridCard({ product, priority }: { product: ProductCard; priority: boolean }) {
   const off = discountPercent(product.priceCents, product.compareAtPriceCents);
-  // If the resized copy cannot be served for any reason, the original photo takes its place.
-  const [useOriginal, setUseOriginal] = useState(false);
-  const imageRef = useRef<HTMLImageElement>(null);
-  useEffect(() => {
-    // The error can happen before the page becomes interactive (server-rendered image): check once on mount.
-    const img = imageRef.current;
-    if (img && img.complete && img.naturalWidth === 0) setUseOriginal(true);
-  }, []);
-  const imageSrc = useOriginal ? (product.thumbnailFallbackUrl ?? product.thumbnailUrl) : product.thumbnailUrl;
 
   return (
     <Link
@@ -170,16 +146,10 @@ function ProductGridCard({
         ) : null}
         {product.thumbnailUrl ? (
           <img
-            ref={imageRef}
-            src={imageSrc ?? undefined}
+            src={product.thumbnailUrl}
             alt={product.thumbnailAlt}
-            width={480}
-            height={480}
             loading={priority ? "eager" : "lazy"}
             decoding="async"
-            // Only the very first card photo is fetched with top priority; the second one is eager but normal.
-            fetchPriority={first ? "high" : undefined}
-            onError={() => setUseOriginal(true)}
             className="h-full w-full object-cover"
           />
         ) : (
@@ -410,7 +380,7 @@ function Catalog({
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {filteredProducts.map((product, index) => (
               <Reveal key={product.id} index={index}>
-                <ProductGridCard product={product} priority={index < 2} first={index === 0} />
+                <ProductGridCard product={product} priority={index < 2} />
               </Reveal>
             ))}
           </div>

@@ -343,11 +343,3 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   pelo X (clique fora e Esc não fecham; link "Agora não" removido). Rolagem do fundo travada enquanto aberto. Continua só após carga + 8 s + interação humana.
 - `saved-cart.ts`: evento `alna-saved-cart-changed`; `SaveCartBox` acompanha o salvamento automático e mostra "Carrinho salvo para ...".
 - Teste ao vivo do salvamento automático (e-mail + consentimento + mudança no carrinho): linha criada em `abandoned_carts` em ~3 s; linha de teste apagada.
-
-## 09/10/2026 (noite) — Fotos de capa da /loja em tamanho de cartão
-
-- `src/lib/site-images.ts` (`cardImageUrl`): a foto de capa de cada cartão da `/loja` é pedida ao armazenamento já redimensionada
-  (`/storage/v1/render/image/public/...?width=480&quality=60`, WebP quando o navegador aceita; ~75% menor que os 1200 px originais). A foto original fica
-  como reserva: se a cópia pequena falhar, o cartão troca para ela. 1ª foto com `fetchpriority="high"`, 2ª eager normal, demais lazy; `width/height` 480 contra salto de layout.
-  Sem mudança de banco nem de espaço. Custo da Supabase: US$ 5 por 1.000 imagens diferentes redimensionadas (100 incluídas no Pro; temos 21 produtos); o plano Pro não foi confirmado.
-  Medir PageSpeed da `/loja` (celular, 3 vezes) antes/depois: antes ≈ 3 MB de fotos nos 21 cartões (2 primeiras 294 + 272 KB).
