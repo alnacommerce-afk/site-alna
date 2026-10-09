@@ -262,3 +262,15 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   sem converter (os "14:14" do pedido b75dbe6a são 14:14 UTC = 11:14 de Brasília).
 - Banco: evento `posted` do b75dbe6a voltado para 14:14:30 UTC (11:14 em Brasília), +3 h desfeitas.
 - Lição: não concluir fuso horário só pela coincidência de dígitos entre duas telas; conferir com a ordem cronológica dos fatos.
+
+## 09/10/2026 — Cupons aleatórios com modelo + novo Pix para pedido pendente
+
+- **Migração `random_coupon_models_and_pix_regeneration`**: `coupons.is_model`, `model_label`, `source_coupon_id` (cada código aleatório
+  guarda de qual modelo veio, para contar gerados/usados); `CARINHO_ABANDONADO` (5%) virou modelo e passou a ser o cupom dos DOIS e-mails de
+  24 h (`abandoned_cart_24h` e `cart_reminder_24h`; antes usavam o ALNA10%OFF, cupom normal). `orders.pix_regenerated_count/_at`.
+- **Código**: `resolveTemplateCoupon` devolve o `id`; `getPersonalCoupon` grava `source_coupon_id`; `validate-coupon` e `checkout-create`
+  recusam cupom-modelo (cliente nunca usa o modelo direto). Admin > Cupons: seção "Cupons aleatórios para clientes" (porcentagem editável,
+  gerados/usados no período) acima dos "Cupons normais"; a soma de até 3 cupons continua valendo para todos.
+- **Nova função `regenerate-pix`** (publicar no Lovable): pedido Pix pendente sem QR Code pagável ganha uma nova cobrança na conta Asaas atual
+  (cancela a antiga se ainda viva); máx. 3 por pedido, pedidos até 30 dias, uma geração por vez; falha da Asaas não consome tentativa.
+  `OrderStatusPanel` chama sozinho quando não há QR ("Gerando o seu Pix...") e mostra mensagem + WhatsApp + novo pedido se falhar.

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { CheckCircle2, Copy, PackageCheck, Truck, XCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -5,6 +6,18 @@ import { toast } from "sonner";
 import { formatCentsToBRL } from "@/lib/money";
 import { useOrderStatus } from "@/lib/checkout/use-order-status";
 import { Button } from "@/components/ui/button";
+
+const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
+const WHATSAPP_URL = "https://wa.me/5551994911125";
+
+type PixData = { encodedImage: string; payload: string; expirationDate: string };
+type RegenState = { status: "idle" | "working" | "failed"; pix: PixData | null; message: string | null; retry: boolean };
+
+const REGEN_MESSAGES: Record<string, string> = {
+  too_old: "Esse pedido é antigo e o Pix não pode mais ser gerado. Faça um novo pedido, é rapidinho.",
+  limit: "Já geramos novos Pix para esse pedido várias vezes. Fale com a gente pelo WhatsApp ou faça um novo pedido.",
+  cancelled: "Esse pedido foi cancelado. Faça um novo pedido quando quiser.",
+};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -61,7 +74,52 @@ function TrackingTimeline({ order }: { order: NonNullable<ReturnType<typeof useO
 }
 
 export function OrderStatusPanel({ orderId }: { orderId: string | null }) {
-  const { data, loading } = useOrderStatus(orderId);
+  const { data, loading, refresh } = useOrderStatus(orderId);
+  const [regen, setRegen] = useState<RegenState>({ status: "idle", pix: null, message: null, retry: true });
+  const attemptedFor = useRef<string | null>(null);
+
+  // A pending Pix order with no QR Code to show (its charge is gone, e.g. made in the previous payment account)
+  // gets a payable one automatically instead of an endless "Processando pagamento...".
+  async function regeneratePix(attempt = 1) {
+    if (!orderId) return;
+    setRegen((prev) => ({ ...prev, status: "working", message: null }));
+    try {
+      const resp = await fetch(`${FUNCTIONS_URL}/regenerate-pix`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      const json = await resp.json().catch(() => ({}));
+      if (json.state === "pix" && json.pix) {
+        setRegen({ status: "idle", pix: json.pix as PixData, message: null, retry: true });
+      } else if (json.state === "paid") {
+        setRegen({ status: "idle", pix: null, message: null, retry: true });
+        void refresh();
+      } else if (json.state === "busy" && attempt < 4) {
+        // Another tab is generating it right now: look again in a few seconds.
+        window.setTimeout(() => void regeneratePix(attempt + 1), 3000);
+      } else {
+        const known = REGEN_MESSAGES[json.state as string];
+        setRegen({
+          status: "failed",
+          pix: null,
+          message: known ?? json.error ?? "Não conseguimos gerar o seu Pix agora.",
+          retry: !known,
+        });
+      }
+    } catch {
+      setRegen({ status: "failed", pix: null, message: "Não conseguimos gerar o seu Pix agora.", retry: true });
+    }
+  }
+
+  useEffect(() => {
+    if (!data || !orderId) return;
+    if (data.order.status !== "pending" || data.order.payment_method !== "pix" || data.pix) return;
+    if (attemptedFor.current === orderId) return;
+    attemptedFor.current = orderId;
+    void regeneratePix();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, orderId]);
 
   function copyPixCode() {
     if (!data?.pix?.payload) return;
@@ -83,7 +141,8 @@ export function OrderStatusPanel({ orderId }: { orderId: string | null }) {
     );
   }
 
-  const { order, pix } = data;
+  const { order } = data;
+  const pix = data.pix ?? regen.pix;
 
   if (order.status === "paid" || order.status === "shipped" || order.status === "completed") {
     return (
@@ -134,6 +193,33 @@ export function OrderStatusPanel({ orderId }: { orderId: string | null }) {
         </p>
       </div>
     );
+  }
+
+  if (order.payment_method === "pix" && regen.status === "failed") {
+    return (
+      <div className="py-6 text-center">
+        <h2 className="text-lg font-bold text-[#12294f]">Não conseguimos mostrar o seu Pix agora</h2>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">{regen.message}</p>
+        <div className="mt-5 flex flex-col items-center gap-2">
+          {regen.retry ? (
+            <Button onClick={() => void regeneratePix()} className="bg-[#15803d] hover:bg-[#15803d]/90">
+              Tentar de novo
+            </Button>
+          ) : null}
+          <Button asChild variant="outline">
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+              Falar no WhatsApp
+            </a>
+          </Button>
+          <Link to="/loja" search={{ categoria: undefined }} className="text-sm text-[#15803d] hover:underline">
+            Fazer um novo pedido
+          </Link>
+        </div>
+      </div>
+    );
+  }
+  if (order.payment_method === "pix") {
+    return <p className="py-6 text-center text-sm text-muted-foreground">Gerando o seu Pix...</p>;
   }
 
   return <p className="py-6 text-center text-sm text-muted-foreground">Processando pagamento...</p>;

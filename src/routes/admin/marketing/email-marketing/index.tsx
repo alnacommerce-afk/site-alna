@@ -63,6 +63,7 @@ function EmailMarketingPage() {
           .from("coupons")
           .select("id, code, discount_percent, min_order_cents, active, personal_for_email")
           .is("personal_for_email", null)
+          .eq("is_model", false)
           .order("code"),
         supabase.from("products").select("id, title").eq("status", "published").order("title"),
         supabase

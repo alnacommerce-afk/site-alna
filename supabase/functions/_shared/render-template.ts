@@ -49,7 +49,7 @@ export function wrapBranded(innerHtml: string, options?: RenderOptions): string 
 export async function resolveTemplateCoupon(
   admin: SupabaseClient,
   templateId: string,
-): Promise<{ code: string; discountPercent: number; minOrderCents: number } | null> {
+): Promise<{ id: string; code: string; discountPercent: number; minOrderCents: number } | null> {
   const { data: template } = await admin
     .from("email_templates")
     .select("coupon_id")
@@ -59,7 +59,7 @@ export async function resolveTemplateCoupon(
 
   const { data: coupon } = await admin
     .from("coupons")
-    .select("code, discount_percent, valid_from, valid_until, active, min_order_cents")
+    .select("id, code, discount_percent, valid_from, valid_until, active, min_order_cents")
     .eq("id", template.coupon_id)
     .maybeSingle();
   if (!coupon) return null;
@@ -72,6 +72,7 @@ export async function resolveTemplateCoupon(
   if (!validNow) return null;
 
   return {
+    id: coupon.id as string,
     code: coupon.code,
     discountPercent: Number(coupon.discount_percent),
     minOrderCents: Number(coupon.min_order_cents ?? 0),

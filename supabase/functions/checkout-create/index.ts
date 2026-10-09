@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
       const { data: coupons } = await admin
         .from("coupons")
         .select(
-          "code, discount_percent, valid_from, valid_until, active, min_order_cents, personal_for_email, max_uses, uses_count",
+          "code, discount_percent, valid_from, valid_until, active, min_order_cents, personal_for_email, max_uses, uses_count, is_model",
         )
         .in("code", requestedCodes);
       const now = new Date();
@@ -213,6 +213,7 @@ Deno.serve(async (req) => {
         }
         const withinWindow =
           coupon?.active &&
+          !coupon.is_model &&
           (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
           (!coupon.valid_until || new Date(coupon.valid_until) >= now) &&
           subtotalCents >= (coupon.min_order_cents ?? 0);

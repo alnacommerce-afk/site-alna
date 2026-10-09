@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data: coupon } = await admin
       .from("coupons")
-      .select("code, discount_percent, valid_from, valid_until, active, min_order_cents, personal_for_email, max_uses, uses_count")
+      .select("code, discount_percent, valid_from, valid_until, active, min_order_cents, personal_for_email, max_uses, uses_count, is_model")
       .eq("code", code.trim().toUpperCase())
       .maybeSingle();
 
@@ -37,7 +37,8 @@ Deno.serve(async (req) => {
       (!coupon.valid_from || new Date(coupon.valid_from) <= now) &&
       (!coupon.valid_until || new Date(coupon.valid_until) >= now);
 
-    if (!withinWindow) {
+    // A "modelo" coupon only sets the percentage of the random codes sent by e-mail; customers never use it directly.
+    if (!withinWindow || coupon?.is_model) {
       return jsonResponse({ valid: false, error: "Cupom inválido ou expirado." });
     }
     if (coupon.personal_for_email && coupon.uses_count >= (coupon.max_uses ?? 1)) {

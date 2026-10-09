@@ -127,6 +127,9 @@ export type Database = {
           alerted_1_at: string | null
           alerted_5_at: string | null
           auto_generated: boolean
+          is_model: boolean
+          model_label: string | null
+          source_coupon_id: string | null
           code: string
           created_at: string
           discount_percent: number
@@ -144,6 +147,9 @@ export type Database = {
           alerted_1_at?: string | null
           alerted_5_at?: string | null
           auto_generated?: boolean
+          is_model?: boolean
+          model_label?: string | null
+          source_coupon_id?: string | null
           code: string
           created_at?: string
           discount_percent: number
@@ -161,6 +167,9 @@ export type Database = {
           alerted_1_at?: string | null
           alerted_5_at?: string | null
           auto_generated?: boolean
+          is_model?: boolean
+          model_label?: string | null
+          source_coupon_id?: string | null
           code?: string
           created_at?: string
           discount_percent?: number
@@ -546,6 +555,8 @@ export type Database = {
           payment_method: string | null
           payment_provider: string | null
           payment_status: string | null
+          pix_regenerated_at: string | null
+          pix_regenerated_count: number
           referrer_user_id: string | null
           reminder_10min_sent_at: string | null
           reminder_24h_sent_at: string | null
@@ -587,6 +598,8 @@ export type Database = {
           payment_method?: string | null
           payment_provider?: string | null
           payment_status?: string | null
+          pix_regenerated_at?: string | null
+          pix_regenerated_count?: number
           referrer_user_id?: string | null
           reminder_10min_sent_at?: string | null
           reminder_24h_sent_at?: string | null
@@ -628,6 +641,8 @@ export type Database = {
           payment_method?: string | null
           payment_provider?: string | null
           payment_status?: string | null
+          pix_regenerated_at?: string | null
+          pix_regenerated_count?: number
           referrer_user_id?: string | null
           reminder_10min_sent_at?: string | null
           reminder_24h_sent_at?: string | null

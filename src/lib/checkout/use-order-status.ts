@@ -47,5 +47,5 @@ export function useOrderStatus(orderId: string | null) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.order.status]);
 
-  return { data, loading };
+  return { data, loading, refresh: fetchStatus };
 }

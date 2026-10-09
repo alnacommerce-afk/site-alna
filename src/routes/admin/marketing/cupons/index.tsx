@@ -64,6 +64,17 @@ type Coupon = {
   active: boolean;
 };
 
+// "Modelo" coupons only set the percentage of the random codes sent to each customer (one code per customer,
+// single use, tied to their e-mail). Customers never type the model's own code.
+type ModelCoupon = {
+  id: string;
+  code: string;
+  discount_percent: number;
+  model_label: string | null;
+  generated: number;
+  used: number;
+};
+
 type FormState = {
   code: string;
   discountPercent: string;
@@ -102,7 +113,10 @@ function CuponsPage() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
-  const [personalCount, setPersonalCount] = useState({ total: 0, used: 0 });
+  const [models, setModels] = useState<ModelCoupon[]>([]);
+  const [modelToEdit, setModelToEdit] = useState<ModelCoupon | null>(null);
+  const [modelPercent, setModelPercent] = useState("");
+  const [savingModel, setSavingModel] = useState(false);
   const [avgDays, setAvgDays] = useState("90");
   const [averages, setAverages] = useState<SalesAverages | null>(null);
 
@@ -114,6 +128,7 @@ function CuponsPage() {
         "id, code, discount_percent, min_order_cents, max_uses, uses_count, show_on_site, valid_from, valid_until, active",
       )
       .eq("auto_generated", false)
+      .eq("is_model", false)
       .order("created_at", { ascending: false });
     if (error) {
       toast.error("Não foi possível carregar os cupons.");
@@ -121,18 +136,30 @@ function CuponsPage() {
       return;
     }
     setCoupons(data ?? []);
-    const [{ count: total }, { count: used }] = await Promise.all([
-      supabase
-        .from("coupons")
-        .select("id", { count: "exact", head: true })
-        .eq("auto_generated", true),
-      supabase
-        .from("coupons")
-        .select("id", { count: "exact", head: true })
-        .eq("auto_generated", true)
-        .gte("uses_count", 1),
-    ]);
-    setPersonalCount({ total: total ?? 0, used: used ?? 0 });
+    const { data: modelRows } = await supabase
+      .from("coupons")
+      .select("id, code, discount_percent, model_label")
+      .eq("is_model", true)
+      .order("created_at", { ascending: true });
+    const modelIds = (modelRows ?? []).map((m) => m.id);
+    const issued = modelIds.length
+      ? ((
+          await supabase
+            .from("coupons")
+            .select("source_coupon_id, uses_count")
+            .in("source_coupon_id", modelIds)
+        ).data ?? [])
+      : [];
+    setModels(
+      (modelRows ?? []).map((m) => {
+        const mine = issued.filter((c) => c.source_coupon_id === m.id);
+        return {
+          ...m,
+          generated: mine.length,
+          used: mine.filter((c) => c.uses_count >= 1).length,
+        };
+      }),
+    );
     setLoading(false);
   }
 
@@ -166,6 +193,35 @@ function CuponsPage() {
       active: coupon.active,
     });
     setDialogOpen(true);
+  }
+
+  function openModelDialog(model: ModelCoupon) {
+    setModelToEdit(model);
+    setModelPercent(String(model.discount_percent));
+  }
+
+  // Only the percentage of a model can be changed here; it applies to the codes generated from now on
+  // (codes already sent keep the percentage they were issued with).
+  async function handleSaveModel() {
+    if (!modelToEdit) return;
+    const percent = Number(modelPercent);
+    if (!percent || percent <= 0 || percent > 100) {
+      toast.error("Informe um desconto entre 1 e 100%.");
+      return;
+    }
+    setSavingModel(true);
+    const { error } = await supabase
+      .from("coupons")
+      .update({ discount_percent: percent })
+      .eq("id", modelToEdit.id);
+    setSavingModel(false);
+    if (error) {
+      toast.error("Não foi possível salvar a porcentagem.");
+      return;
+    }
+    toast.success(`Pronto: os próximos cupons serão de ${percent}%.`);
+    setModelToEdit(null);
+    load();
   }
 
   async function handleSave() {
@@ -268,12 +324,51 @@ function CuponsPage() {
         </Select>
       </div>
 
-      <p className="mb-4 text-sm text-muted-foreground">
-        <strong className="text-[#12294f]">{personalCount.total}</strong> cupons pessoais gerados
-        automaticamente (carrinho abandonado),{" "}
-        <strong className="text-[#12294f]">{personalCount.used}</strong> já usados. Cada um vale uma
-        vez, só para o e-mail do cliente, por 7 dias.
-      </p>
+      <section className="mb-8 space-y-3">
+        <div>
+          <h2 className="text-base font-semibold text-[#12294f]">Cupons aleatórios para clientes</h2>
+          <p className="text-sm text-muted-foreground">
+            Cada cliente recebe um código diferente (por exemplo VOLTA-AB12CD), de uso único, só para o e-mail dele e
+            válido por 7 dias. Aqui você define só a porcentagem: mudar vale para os cupons novos, os que já foram
+            enviados mantêm a porcentagem de quando foram criados.
+          </p>
+        </div>
+        {loading ? null : models.length === 0 ? (
+          <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+            Nenhum cupom aleatório configurado.
+          </p>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2">
+            {models.map((model) => (
+              <div key={model.id} className="flex items-start justify-between gap-3 rounded-lg border p-4">
+                <div className="min-w-0">
+                  <p className="font-mono text-sm font-semibold text-[#12294f]">{model.code}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{model.model_label ?? "Cupom aleatório"}</p>
+                  <p className="mt-3 text-3xl font-bold text-[#12294f]">{model.discount_percent}%</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    <strong className="text-[#12294f]">{model.generated}</strong> gerados ·{" "}
+                    <strong className="text-[#12294f]">{model.used}</strong> usados
+                    {model.generated > 0
+                      ? ` (${Math.round((model.used / model.generated) * 100)}%)`
+                      : ""}{" "}
+                    em todo o período
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => openModelDialog(model)}>
+                  Editar %
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <div className="mb-3">
+        <h2 className="text-base font-semibold text-[#12294f]">Cupons normais (o mesmo código para todos)</h2>
+        <p className="text-sm text-muted-foreground">
+          Os descontos de todos os cupons somam, até 3 por pedido: vale tanto para estes quanto para os aleatórios.
+        </p>
+      </div>
 
       {loading ? (
         <p className="text-sm text-muted-foreground">Carregando...</p>
@@ -485,6 +580,37 @@ function CuponsPage() {
             </Button>
             <Button onClick={handleSave} disabled={saving}>
               {saving ? "Salvando..." : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!modelToEdit} onOpenChange={(open) => !open && setModelToEdit(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Porcentagem do cupom aleatório</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              {modelToEdit?.model_label ?? modelToEdit?.code}. A nova porcentagem vale para os próximos cupons
+              enviados; os que já foram enviados não mudam.
+            </p>
+            <Label htmlFor="model-percent">Desconto (%)</Label>
+            <Input
+              id="model-percent"
+              type="number"
+              min={1}
+              max={100}
+              value={modelPercent}
+              onChange={(e) => setModelPercent(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setModelToEdit(null)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveModel} disabled={savingModel}>
+              {savingModel ? "Salvando..." : "Salvar"}
             </Button>
           </DialogFooter>
         </DialogContent>

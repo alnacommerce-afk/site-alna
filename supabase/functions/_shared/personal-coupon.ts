@@ -16,7 +16,9 @@ export type PersonalCoupon = {
   validUntil: Date;
 };
 
-type Model = { discountPercent: number; minOrderCents: number };
+// `id` is the model coupon the code was copied from: it is stored on the new coupon (source_coupon_id) so the
+// admin can count how many were generated and used per model.
+type Model = { id?: string; discountPercent: number; minOrderCents: number };
 
 // Rules (agreed with the owner):
 //   - latest personal coupon of this e-mail still valid and unused  -> send that same code again;
@@ -64,6 +66,7 @@ export async function getPersonalCoupon(
       valid_until: validUntil.toISOString(),
       personal_for_email: normalized,
       auto_generated: true,
+      source_coupon_id: model.id ?? null,
     });
     if (!error) {
       return { code, discountPercent: model.discountPercent, minOrderCents: model.minOrderCents, validUntil };
