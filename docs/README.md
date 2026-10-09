@@ -15,3 +15,6 @@
 1. **Procurar antes de responder:** `docs/DECISOES.md` e `docs/PENDENCIAS.md`, depois `git log --all --grep=<palavra>`, `docs/db-changes-applied-by-claude.md`, a memória (`MEMORY.md`) e, se for dado, o banco (só leitura).
 2. Se **não achar**, dizer "isso não está registrado" e perguntar — **nunca inventar** — e registrar a resposta aqui no mesmo commit.
 3. Ao aplicar, desfazer ou decidir algo: registrar em `DECISOES.md` (e, se mudou código/banco, em `db-changes-applied-by-claude.md`) **no mesmo commit**, mais push e espelho no Drive.
+
+## Abrindo uma conversa nova
+Diga **"retome"** (ou "atualize-se com o repositório"). O Claude executa o protocolo "retomar" do `AGENTS.md`: `git pull`, lê estes arquivos, olha o `git log` e responde com onde paramos, o que falta e o que mudou. Conte também o que aconteceu fora do sistema (Hostnet, Google, contador) — ele registra na hora.

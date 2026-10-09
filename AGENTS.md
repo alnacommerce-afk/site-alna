@@ -75,3 +75,13 @@ O dono percebeu que detalhes se perdem entre conversas e pediu que isso melhore.
 - **Ao decidir, aplicar ou desfazer algo, registrar em `docs/DECISOES.md` no MESMO commit** (data, decisão, motivo/palavras do dono, onde está no código), além de `docs/db-changes-applied-by-claude.md` se mexeu em código/banco.
 - **Quando o dono perguntar sobre algo passado:** procurar primeiro (docs/, `git log --grep`, memória, banco só leitura); se não achar, dizer "isso não está registrado", perguntar e registrar a resposta. Nunca inventar.
 - Fato novo que o dono informar (origem de uma imagem, conta, prazo, nome combinado) vai para o arquivo certo na hora, não "depois".
+
+## Protocolo "retomar" (quando o dono abrir uma conversa nova)
+
+Se o dono disser algo como **"retome", "atualize-se com o repositório", "onde paramos?"** (ou abrir a conversa já falando de um assunto do projeto), faça, nesta ordem, **antes de responder**:
+1. `git pull` no repositório (e, nesta máquina/na outra, a comparação só-leitura com a cópia do Drive, conforme a memória `project_drive_sync_workflow`).
+2. Ler `AGENTS.md`, `docs/README.md`, `docs/PENDENCIAS.md`, `docs/DECISOES.md` e, se o assunto for Google Ads, `docs/google-ads-contestacao/STATUS.md`; ler `MEMORY.md`.
+3. `git log --oneline -20` para ver o que mudou desde a última atualização do `PENDENCIAS.md`.
+4. Responder com um resumo curto: **onde paramos**, **o que depende do dono**, **o que eu devo acompanhar** e **o que mudou desde a última vez**; perguntar "aconteceu algo externo que eu não sei?" (Hostnet, Google, contador, publicações).
+O que o dono me conta de fora do sistema (respostas de terceiros, prints, ações dele) deve ser gravado nos arquivos acima **na hora**; assim a próxima conversa já começa sabendo.
+Ao o dono encerrar ("vou fazer outra tarefa", "até mais"), atualizar `docs/PENDENCIAS.md` antes de me despedir.
