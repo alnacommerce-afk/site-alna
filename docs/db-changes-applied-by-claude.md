@@ -347,3 +347,10 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 ## 09/10/2026 (noite) — DESFEITO: fotos de capa da /loja em 480 px
 
 - O dono não gostou do ajuste; commit 3fe288c revertido em d2a59bf (volta a usar a foto original nos cartões). `src/lib/site-images.ts` removido. Sem mudança de banco. Publicar no Lovable para valer, caso o ajuste já tenha sido publicado.
+
+## 09/10/2026 (noite) — Banner do topo da /loja compactado SEM perda (mesmo PNG, mesmas medidas)
+
+- `src/assets/brand/hero-ambassador-cutout.png`: 590.237 → 230.417 bytes (−61%), recodificado só com compressão melhor (Pillow, `optimize`, nível 9). Conferido: **mesmo formato (PNG RGBA),
+  mesmas dimensões (1344×752) e todos os pixels idênticos** (diferença zero) — posição, zoom e aparência não mudam, pois o código da página não foi tocado. Único item removido: o bloco
+  de metadados `caBX` (credencial de conteúdo do gerador de imagem), que não afeta a exibição. Reverter: `git revert` deste commit (o PNG antigo fica no histórico).
+- Dono pediu (09/10) "deixar as imagens como estava, só compactar a imagem de capa": os cartões dos produtos voltaram a usar a foto original (ajuste anterior desfeito em d2a59bf).
