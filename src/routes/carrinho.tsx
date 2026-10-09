@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, Tag, Trash2, Truck } from "lucide-react";
+import { toast } from "sonner";
 
 import { useSiteSettings } from "@/lib/site-data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +11,8 @@ import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-inf
 import { fetchShippingQuote, onlyDigits, type ShippingQuote } from "@/lib/shipping/quote";
 import { validateCoupon } from "@/lib/checkout/validate-coupon";
 import { capturePendingCouponFromUrl, clearPendingCoupon, getPendingCoupon } from "@/lib/marketing/pending-coupon";
+import { fetchSavedCart, setSavedCartState, type SavedCartState } from "@/lib/cart/saved-cart";
+import { SaveCartBox } from "@/components/site/save-cart-box";
 import { SiteHeader } from "@/components/site/site-header";
 import { FreeShippingProgress } from "@/components/site/free-shipping-progress";
 import { PromotedCouponBox } from "@/components/site/promoted-coupon-box";
@@ -33,8 +36,48 @@ export const Route = createFileRoute("/carrinho")({
 function CarrinhoPage() {
   const { data: siteSettings } = useSiteSettings();
   const freeShippingThresholdCents = siteSettings?.free_shipping_threshold_cents ?? null;
-  const { items, subtotalCents, coupons, eligibleCoupons, discountPercent, discountCents, setQuantity, remove, addCoupon, removeCoupon } =
+  const { items, subtotalCents, coupons, eligibleCoupons, discountPercent, discountCents, setQuantity, remove, addCoupon, removeCoupon, add } =
     useCart();
+
+  // "Voltar ao meu carrinho" in the reminder e-mails opens /carrinho?c=<token>: the saved items come back with
+  // today's prices and stock. Items already in this browser's cart keep their quantity (never doubled).
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+  const [restoredState, setRestoredState] = useState<SavedCartState | null>(null);
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get("c");
+    if (!token || !/^[0-9a-f]{32}$/i.test(token)) return;
+    let cancelled = false;
+    fetchSavedCart(token).then((saved) => {
+      if (cancelled) return;
+      const url = new URL(window.location.href);
+      url.searchParams.delete("c");
+      window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+      if (!saved) {
+        toast.error("Não encontramos esse carrinho. Escolha seus produtos de novo.");
+        return;
+      }
+      let restored = 0;
+      for (const { quantity, ...item } of saved.items) {
+        if (itemsRef.current.some((i) => i.variantId === item.variantId)) continue;
+        add(item, quantity);
+        restored++;
+      }
+      const state = { token, emailMasked: saved.emailMasked };
+      setSavedCartState(state);
+      setRestoredState(state);
+      if (saved.items.length === 0) {
+        toast.error("Os produtos desse carrinho não estão mais disponíveis.");
+      } else {
+        toast.success(restored > 0 ? "Seu carrinho foi recuperado!" : "Seu carrinho está aqui.");
+        if (saved.unavailable > 0) toast.error("Alguns itens não estão mais disponíveis e ficaram de fora.");
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [cep, setCep] = useState(() => getSavedCheckoutInfo().zip ?? "");
   const [quote, setQuote] = useState<ShippingQuote | null>(null);
@@ -370,6 +413,8 @@ function CarrinhoPage() {
                 <p className="text-center text-xs text-muted-foreground">
                   Emitimos nota fiscal para CPF e CNPJ.
                 </p>
+
+                <SaveCartBox restoredState={restoredState} />
               </div>
             </div>
           </>

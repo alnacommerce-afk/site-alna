@@ -41,6 +41,7 @@ import { Route as AdminMedidasIndexRouteImport } from './routes/admin/medidas/in
 import { Route as AdminPedidosIndexRouteImport } from './routes/admin/pedidos/index'
 import { Route as AdminCatalogoIdEditarRouteImport } from './routes/admin/catalogo/$id/editar'
 import { Route as AdminMarketingCampanhasIndexRouteImport } from './routes/admin/marketing/campanhas/index'
+import { Route as AdminMarketingCarrinhosIndexRouteImport } from './routes/admin/marketing/carrinhos/index'
 import { Route as AdminMarketingCuponsIndexRouteImport } from './routes/admin/marketing/cupons/index'
 import { Route as AdminMarketingEmailMarketingIndexRouteImport } from './routes/admin/marketing/email-marketing/index'
 import { Route as AdminMarketingFluxoEmailIndexRouteImport } from './routes/admin/marketing/fluxo-email/index'
@@ -211,6 +212,12 @@ const AdminMarketingCampanhasIndexRoute =
     path: '/admin/marketing/campanhas/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminMarketingCarrinhosIndexRoute =
+  AdminMarketingCarrinhosIndexRouteImport.update({
+    id: '/admin/marketing/carrinhos/',
+    path: '/admin/marketing/carrinhos/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminMarketingCuponsIndexRoute =
   AdminMarketingCuponsIndexRouteImport.update({
     id: '/admin/marketing/cupons/',
@@ -286,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/admin/pedidos/': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/campanhas/': typeof AdminMarketingCampanhasIndexRoute
+  '/admin/marketing/carrinhos/': typeof AdminMarketingCarrinhosIndexRoute
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/email-marketing/': typeof AdminMarketingEmailMarketingIndexRoute
   '/admin/marketing/fluxo-email/': typeof AdminMarketingFluxoEmailIndexRoute
@@ -327,6 +335,7 @@ export interface FileRoutesByTo {
   '/admin/pedidos': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/campanhas': typeof AdminMarketingCampanhasIndexRoute
+  '/admin/marketing/carrinhos': typeof AdminMarketingCarrinhosIndexRoute
   '/admin/marketing/cupons': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/email-marketing': typeof AdminMarketingEmailMarketingIndexRoute
   '/admin/marketing/fluxo-email': typeof AdminMarketingFluxoEmailIndexRoute
@@ -369,6 +378,7 @@ export interface FileRoutesById {
   '/admin/pedidos/': typeof AdminPedidosIndexRoute
   '/admin/catalogo/$id/editar': typeof AdminCatalogoIdEditarRoute
   '/admin/marketing/campanhas/': typeof AdminMarketingCampanhasIndexRoute
+  '/admin/marketing/carrinhos/': typeof AdminMarketingCarrinhosIndexRoute
   '/admin/marketing/cupons/': typeof AdminMarketingCuponsIndexRoute
   '/admin/marketing/email-marketing/': typeof AdminMarketingEmailMarketingIndexRoute
   '/admin/marketing/fluxo-email/': typeof AdminMarketingFluxoEmailIndexRoute
@@ -412,6 +422,7 @@ export interface FileRouteTypes {
     | '/admin/pedidos/'
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/campanhas/'
+    | '/admin/marketing/carrinhos/'
     | '/admin/marketing/cupons/'
     | '/admin/marketing/email-marketing/'
     | '/admin/marketing/fluxo-email/'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/admin/pedidos'
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/campanhas'
+    | '/admin/marketing/carrinhos'
     | '/admin/marketing/cupons'
     | '/admin/marketing/email-marketing'
     | '/admin/marketing/fluxo-email'
@@ -494,6 +506,7 @@ export interface FileRouteTypes {
     | '/admin/pedidos/'
     | '/admin/catalogo/$id/editar'
     | '/admin/marketing/campanhas/'
+    | '/admin/marketing/carrinhos/'
     | '/admin/marketing/cupons/'
     | '/admin/marketing/email-marketing/'
     | '/admin/marketing/fluxo-email/'
@@ -536,6 +549,7 @@ export interface RootRouteChildren {
   AdminPedidosIndexRoute: typeof AdminPedidosIndexRoute
   AdminCatalogoIdEditarRoute: typeof AdminCatalogoIdEditarRoute
   AdminMarketingCampanhasIndexRoute: typeof AdminMarketingCampanhasIndexRoute
+  AdminMarketingCarrinhosIndexRoute: typeof AdminMarketingCarrinhosIndexRoute
   AdminMarketingCuponsIndexRoute: typeof AdminMarketingCuponsIndexRoute
   AdminMarketingEmailMarketingIndexRoute: typeof AdminMarketingEmailMarketingIndexRoute
   AdminMarketingFluxoEmailIndexRoute: typeof AdminMarketingFluxoEmailIndexRoute
@@ -771,6 +785,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingCampanhasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/marketing/carrinhos/': {
+      id: '/admin/marketing/carrinhos/'
+      path: '/admin/marketing/carrinhos'
+      fullPath: '/admin/marketing/carrinhos/'
+      preLoaderRoute: typeof AdminMarketingCarrinhosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/marketing/cupons/': {
       id: '/admin/marketing/cupons/'
       path: '/admin/marketing/cupons'
@@ -856,6 +877,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPedidosIndexRoute: AdminPedidosIndexRoute,
   AdminCatalogoIdEditarRoute: AdminCatalogoIdEditarRoute,
   AdminMarketingCampanhasIndexRoute: AdminMarketingCampanhasIndexRoute,
+  AdminMarketingCarrinhosIndexRoute: AdminMarketingCarrinhosIndexRoute,
   AdminMarketingCuponsIndexRoute: AdminMarketingCuponsIndexRoute,
   AdminMarketingEmailMarketingIndexRoute:
     AdminMarketingEmailMarketingIndexRoute,

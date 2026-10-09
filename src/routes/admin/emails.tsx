@@ -58,6 +58,8 @@ const TEMPLATE_LABEL: Record<string, string> = {
   admin_new_sale: "Aviso de venda (admin)",
   cart_reminder_10min: "Carrinho (10 min)",
   cart_reminder_24h: "Carrinho (24 h)",
+  abandoned_cart_1h: "Carrinho salvo (1 h)",
+  abandoned_cart_24h: "Carrinho salvo (24 h + cupom)",
   delivery_confirmed: "Pedido entregue",
   nps_thank_you: "NPS — agradecimento",
   post_purchase_nps: "NPS — pesquisa",

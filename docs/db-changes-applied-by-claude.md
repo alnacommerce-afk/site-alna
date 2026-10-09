@@ -236,3 +236,20 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   Horário de entrega NÃO alterado (formato ainda não verificado).
 - Banco (via execute_sql): evento `posted` do pedido b75dbe6a corrigido de 11:14 para 14:14 (Brasília), +3 h numa linha.
 - Publicar no Lovable para valer; conferir com o pedido 79a722c7 quando for postado.
+
+## 09/10/2026 — Carrinho abandonado (carrinho salvo + lembretes 1 h e 24 h + WhatsApp no admin)
+
+- **Migração `abandoned_carts`** (apply_migration): tabela `abandoned_carts` (1 linha por e-mail em minúsculas; token do link; itens
+  [{variantId, quantity}]; resumo/valor calculados no servidor; datas dos lembretes, `stopped_at`, `recovered_at`, `recovered_order_id`),
+  RLS ligada, só o admin lê/atualiza/apaga (o público grava pela função com service role). Novos modelos de e-mail `abandoned_cart_1h`
+  (sem cupom) e `abandoned_cart_24h` (cupom: copiado do modelo ligado a `cart_reminder_24h`; cada cliente recebe código pessoal VOLTA-xxxx).
+- **Funções novas** (publicar no Lovable): `save-cart` (grava/atualiza/para; e-mail ou token), `get-saved-cart` (reabre o carrinho
+  pelo link `/carrinho?c=<token>` com preço e estoque de agora), `process-abandoned-carts` (cron a cada 5 min — **agendar só depois de publicar**;
+  1 h sem movimento → e-mail 1; 24 h → e-mail 2 com cupom; nada entre 22h e 8h de Brasília; apaga carrinhos com 90 dias sem movimento).
+  `_shared/cart-items.ts` (dados ao vivo dos itens). `checkout-create` marca o carrinho salvo como `recovered_at` quando o pedido é criado.
+- **Regras**: máx. 2 lembretes por ciclo; novo ciclo do mesmo e-mail só depois de 7 dias; quem comprou/criou pedido/pediu para sair não recebe;
+  descadastro usa `unsubscribe-email?email=` (existente) e a lista `email_suppressions`; cupom segue a regra de até 3 cupons que somam.
+- **Front**: `SaveCartBox` no carrinho (e-mail obrigatório, WhatsApp opcional, consentimento), captura no checkout ao confirmar o e-mail
+  (com aviso), sincronização do carrinho a cada mudança (3 s de espera, só para quem salvou), restauração por `?c=`.
+  Admin: nova tela Marketing > Carrinhos abandonados (carrinhos salvos + pedidos pendentes, botão WhatsApp com mensagem editável via wa.me,
+  copiar link, números de recuperação); mapa de fluxos ganhou o Fluxo 9; política de privacidade atualizada.

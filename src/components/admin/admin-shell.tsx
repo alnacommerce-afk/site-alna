@@ -20,6 +20,7 @@ const MARKETING_PATHS = [
   "/admin/marketing/gasto-frete",
   "/admin/marketing/fluxo-email",
   "/admin/marketing/email-marketing",
+  "/admin/marketing/carrinhos",
   "/admin/emails",
   "/admin/marketing/nps",
   "/admin/marketing/ideias-post",
@@ -216,6 +217,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
             activeProps={{ className: "bg-accent font-medium" }}
           >
             E-mail marketing
+          </Link>
+          <Link
+            to="/admin/marketing/carrinhos"
+            className="rounded-md px-3 py-2 hover:bg-accent"
+            activeProps={{ className: "bg-accent font-medium" }}
+          >
+            Carrinhos abandonados
           </Link>
           <Link
             to="/admin/emails"

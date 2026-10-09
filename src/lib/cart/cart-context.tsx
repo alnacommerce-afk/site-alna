@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
+
+import { cartItemsKey, getSavedCartState, syncSavedCart } from "@/lib/cart/saved-cart";
 
 export type CartItem = {
   variantId: string;
@@ -97,6 +99,8 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, { items: [], coupons: [] });
+  // Items last sent (or loaded from storage): lets the saved-cart sync skip the empty first render and page loads.
+  const lastSyncedKeyRef = useRef("");
 
   useEffect(() => {
     try {
@@ -104,6 +108,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
+          lastSyncedKeyRef.current = cartItemsKey(parsed);
           dispatch({ type: "hydrate", items: parsed, coupons: [] });
         } else {
           // Older carts stored a single "coupon"; newer ones store the "coupons" list.
@@ -112,6 +117,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : parsed.coupon
               ? [parsed.coupon]
               : [];
+          lastSyncedKeyRef.current = cartItemsKey(parsed.items ?? []);
           dispatch({ type: "hydrate", items: parsed.items ?? [], coupons: stored.slice(0, MAX_COUPONS) });
         }
       }
@@ -127,6 +133,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // ignore write failures (private browsing, quota, etc.)
     }
   }, [state.items, state.coupons]);
+
+  // Shoppers who saved their cart (e-mail left in the cart/checkout) get every change sent to the server, a few
+  // seconds after the last one, so the reminder always shows what is really in the cart. Does nothing otherwise.
+  useEffect(() => {
+    const key = cartItemsKey(state.items);
+    if (key === lastSyncedKeyRef.current) return;
+    if (!getSavedCartState()) {
+      lastSyncedKeyRef.current = key;
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      lastSyncedKeyRef.current = key;
+      void syncSavedCart(state.items);
+    }, 3000);
+    return () => window.clearTimeout(timer);
+  }, [state.items]);
 
   const value = useMemo<CartContextValue>(() => {
     const subtotalCents = state.items.reduce((sum, i) => sum + i.priceCents * i.quantity, 0);

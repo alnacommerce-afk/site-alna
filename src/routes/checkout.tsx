@@ -13,6 +13,7 @@ import {
 import { getReferralCode } from "@/lib/referral/referral-code";
 import { getCampaignCode } from "@/lib/marketing/campaign-tracking";
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
+import { getSavedCartState, remindersTurnedOff, saveCartWithEmail } from "@/lib/cart/saved-cart";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { OrderStatusPanel } from "@/components/checkout/order-status-panel";
@@ -85,6 +86,16 @@ function CheckoutPage() {
   const [cardCcv, setCardCcv] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
+
+  // Both e-mails typed and equal: keeps the cart for the "carrinho abandonado" reminders (the notice is right
+  // below the field). Skipped if the cart is already saved or the shopper said they don't want reminders.
+  function handleEmailConfirmBlur() {
+    const typed = email.trim().toLowerCase();
+    if (!typed || typed !== emailConfirm.trim().toLowerCase()) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(typed)) return;
+    if (items.length === 0 || getSavedCartState() || remindersTurnedOff()) return;
+    void saveCartWithEmail(typed, phone, items);
+  }
 
   // Id of the latest CEP lookup; answers from an older one (the shopper kept typing) are discarded.
   const cepRequestRef = useRef(0);
@@ -311,6 +322,7 @@ function CheckoutPage() {
                     value={emailConfirm}
                     onChange={(e) => setEmailConfirm(e.target.value)}
                     onPaste={(e) => e.preventDefault()}
+                    onBlur={handleEmailConfirmBlur}
                     aria-invalid={emailConfirm !== "" && email.trim().toLowerCase() !== emailConfirm.trim().toLowerCase()}
                   />
                   {emailConfirm !== "" && email.trim().toLowerCase() !== emailConfirm.trim().toLowerCase() ? (
@@ -320,6 +332,10 @@ function CheckoutPage() {
                       Digite de novo: enviamos a confirmação do pedido e o acesso à sua conta para este e-mail.
                     </p>
                   )}
+                  <p className="text-xs text-muted-foreground">
+                    Se você não concluir a compra, enviamos até 2 lembretes por e-mail sobre ela. Dá para cancelar em
+                    qualquer e-mail.
+                  </p>
                 </div>
               </div>
             </section>

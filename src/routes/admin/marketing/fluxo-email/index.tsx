@@ -185,6 +185,18 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f6-list", 2040, 440, "Entra na lista de espera desse SKU", "trigger"),
     plainNode("f6-restock-trigger", 2040, 550, "Admin repõe o estoque (de 0 para mais de 0)", "trigger"),
     emailNode("f6-email", 2040, 660, "Produto voltou! (para cada cliente da lista)", "restock_available"),
+
+    // Fluxo 9 — Carrinho abandonado (cliente que deixou o e-mail na caixa "Salve seu carrinho" ou no checkout).
+    // Diferente do Fluxo 2, que cuida de quem já criou o pedido (Pix/cartão) e não pagou.
+    plainNode("f9-trigger", 2800, 0, "Cliente deixa o e-mail em \"Salve seu carrinho\" (carrinho ou checkout)", "trigger"),
+    plainNode("f9-wait1", 2800, 110, "Espera 1 hora sem movimento no carrinho (nada é enviado das 22h às 8h)", "wait"),
+    plainNode("f9-cond1", 2800, 220, "Já comprou ou pediu para sair?", "condition"),
+    emailNode("f9-email1", 2800, 330, "Carrinho salvo, sem cupom (itens, total e botão para reabrir o carrinho)", "abandoned_cart_1h"),
+    plainNode("f9-wait2", 2800, 440, "Espera 24 horas (contadas do último movimento)", "wait"),
+    plainNode("f9-cond2", 2800, 550, "Já comprou ou pediu para sair?", "condition"),
+    emailNode("f9-email2", 2800, 660, "Última lembrança + cupom pessoal (uso único, 7 dias; soma até 3 cupons)", "abandoned_cart_24h"),
+    plainNode("f9-exit", 2800, 770, "Fim: no máximo 2 lembretes por e-mail a cada 7 dias", "exit"),
+    plainNode("f9-stop", 3060, 220, "Comprou, criou o pedido ou clicou em sair: para tudo (Fluxo 1 assume)", "exit"),
   ];
 
   const edges: Edge[] = [
@@ -258,6 +270,16 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f7-1", source: "f7-trigger1", target: "f7-email1" },
     { id: "e-f7-2", source: "f7-trigger2", target: "f7-email2" },
     { id: "e-f8-1", source: "f8-trigger", target: "f8-email" },
+
+    { id: "e-f9-1", source: "f9-trigger", target: "f9-wait1" },
+    { id: "e-f9-2", source: "f9-wait1", target: "f9-cond1" },
+    { id: "e-f9-3", source: "f9-cond1", target: "f9-email1", label: "Não" },
+    { id: "e-f9-4", source: "f9-cond1", sourceHandle: "right", target: "f9-stop", label: "Sim" },
+    { id: "e-f9-5", source: "f9-email1", target: "f9-wait2" },
+    { id: "e-f9-6", source: "f9-wait2", target: "f9-cond2" },
+    { id: "e-f9-7", source: "f9-cond2", target: "f9-email2", label: "Não" },
+    { id: "e-f9-8", source: "f9-cond2", sourceHandle: "right", target: "f9-stop", label: "Sim" },
+    { id: "e-f9-9", source: "f9-email2", target: "f9-exit" },
 
     { id: "e-f6-1", source: "f6-trigger", target: "f6-ui" },
     { id: "e-f6-2", source: "f6-ui", target: "f6-cond" },

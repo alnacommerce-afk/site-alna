@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_carts: {
+        Row: {
+          consented_at: string
+          created_at: string
+          email: string
+          id: string
+          item_count: number
+          items: Json
+          last_activity_at: string
+          phone: string | null
+          recovered_at: string | null
+          recovered_order_id: string | null
+          reminder_1_sent_at: string | null
+          reminder_2_sent_at: string | null
+          stopped_at: string | null
+          subtotal_cents: number
+          summary: string | null
+          token: string
+        }
+        Insert: {
+          consented_at?: string
+          created_at?: string
+          email: string
+          id?: string
+          item_count?: number
+          items?: Json
+          last_activity_at?: string
+          phone?: string | null
+          recovered_at?: string | null
+          recovered_order_id?: string | null
+          reminder_1_sent_at?: string | null
+          reminder_2_sent_at?: string | null
+          stopped_at?: string | null
+          subtotal_cents?: number
+          summary?: string | null
+          token?: string
+        }
+        Update: {
+          consented_at?: string
+          created_at?: string
+          email?: string
+          id?: string
+          item_count?: number
+          items?: Json
+          last_activity_at?: string
+          phone?: string | null
+          recovered_at?: string | null
+          recovered_order_id?: string | null
+          reminder_1_sent_at?: string | null
+          reminder_2_sent_at?: string | null
+          stopped_at?: string | null
+          subtotal_cents?: number
+          summary?: string | null
+          token?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string

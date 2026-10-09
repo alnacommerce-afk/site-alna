@@ -457,6 +457,15 @@ Deno.serve(async (req) => {
     if (orderError || !order) throw orderError ?? new Error("Falha ao criar o pedido.");
     orderId = order.id;
 
+    // The shopper who saved this cart for reminders is now buying: from here the order flow (pending-order
+    // reminders, payment e-mails) takes over, so no abandoned-cart reminder should go out for this e-mail.
+    const { error: cartError } = await admin
+      .from("abandoned_carts")
+      .update({ recovered_at: new Date().toISOString(), recovered_order_id: order.id })
+      .eq("email", String(body.customer.email).trim().toLowerCase())
+      .is("recovered_at", null);
+    if (cartError) console.error("[checkout-create] falha ao encerrar carrinho salvo", cartError);
+
     const { error: itemsError } = await admin
       .from("order_items")
       .insert(orderItemsPayload.map((item) => ({ ...item, order_id: orderId })));

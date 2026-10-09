@@ -25,7 +25,7 @@ export const Route = createFileRoute("/politica-de-privacidade")({
 
 function PoliticaDePrivacidadePage() {
   return (
-    <LegalPageLayout title="Política de Privacidade" updatedAt="setembro de 2026">
+    <LegalPageLayout title="Política de Privacidade" updatedAt="outubro de 2026">
       <p className="text-sm leading-relaxed text-muted-foreground">
         A ALNA COMMERCE (CNPJ 57.135.009/0001-27), com sede em Brusque, Santa Catarina, respeita a
         sua privacidade e está comprometida em proteger os dados pessoais dos usuários e clientes
@@ -67,6 +67,12 @@ function PoliticaDePrivacidadePage() {
           <li>
             Enviar comunicações sobre seu pedido e, mediante seu consentimento, ofertas e
             novidades por e-mail ou WhatsApp;
+          </li>
+          <li>
+            Guardar o seu carrinho e enviar até 2 lembretes por e-mail (e, se você quiser, chamar pelo
+            WhatsApp) quando você deixa seu e-mail na caixa "Salve seu carrinho" ou no checkout e não
+            conclui a compra. Você pode cancelar a qualquer momento pelo link de qualquer e-mail ou
+            pelo próprio carrinho; o carrinho salvo é apagado depois de 90 dias sem movimento;
           </li>
           <li>Prevenir fraudes e garantir a segurança das transações;</li>
           <li>Cumprir obrigações legais e regulatórias.</li>
