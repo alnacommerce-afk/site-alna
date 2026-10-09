@@ -23,7 +23,7 @@ O item R5 (alna.cc) é bloqueante **até o dono decidir**: se a Hostnet não res
 | R4 | `alnacommerce.com` sem erro (antes 522) | Sim | **FEITO** | Dono | `curl -I http://alnacommerce.com` → 301 → https → 301 → alna.sale |
 | R5 | `alna.cc`: `https://alna.cc` com certificado válido e `http://alna.cc` sem 403, redirecionando para `https://alna.sale/` | Sim (até decisão do dono) | **PENDENTE — Hostnet** | Hostnet / dono cobra | 09/10 ~13:40: `www.alna.cc` OK (301); `http://alna.cc` = 403; `https://alna.cc` = erro de certificado (SEC_E_WRONG_PRINCIPAL, cert `*.f1.k8.com.br`). Dono respondeu o chamado e aguarda. O dono diz que redireciona "corretamente" no navegador, mas `http://alna.cc` dá erro |
 | R6 | Conta antiga e duplicada do Merchant Center (5722404568) tratada | Sim | **FEITO** — encerrada pelo dono por volta das 19h de 08/10/2026 (horário aproximado, sem comprovante) | Dono | Perfil do Chrome dessa conta: "sem acesso"; ativa é "Alna" 5856969666 (store.alna.sale) |
-| R7 | Existe OUTRA conta de Google Ads na outra Conta do Google? (para responder o formulário com honestidade) | Não (mas responder certo) | **"a princípio não"** (dono, 09/10) — confirmação leve pendente | Dono | Abrir https://ads.google.com no perfil do Chrome da Conta do Google do Merchant Center antigo; o MC antigo mostrava aviso de Ads com ID vazio |
+| R7 | Outra conta de Google Ads na outra Conta do Google (para responder o formulário com honestidade) | **Sim: declarar no texto** | **EXISTE**: conta **172-390-8582**, status **"Cancelado"**, na Conta do Google aleqs.santos@gmail.com (mesmo dono; print de 09/10). Faltam detalhes: quando foi criada/cancelada, por quê, se gastou, se teve violação, qual site usou, se era a ligada ao Merchant Center antigo | Dono | No perfil do Chrome de aleqs.santos@gmail.com abrir a conta 172-390-8582: Admin > Configurações da conta / Notificações / Faturamento; mandar prints. NÃO reativar e NÃO usar "Criar nova conta do Google Ads" |
 | R8 | Site publicado no Lovable no estado descrito no texto | Sim | **FEITO** em 09/10 (pop-up, cupons, Pix); **repetir** a cada nova mudança | Dono publica / Claude confere | "publiquei, confere se subiu" |
 | R9 | Destino do anúncio `/atacado` responde 200 rápido, inclusive com AdsBot, sem formulário | Sim | **FEITO** em 09/10 (200, ~1,5 s); **reverificar no dia do envio** | Claude | Comandos no fim deste arquivo |
 | R10 | Search Console sem ação manual / Navegação segura limpa | Sim | **FEITO** em 08/10; **reverificar no dia** (dono manda print) | Dono | Search Console > Ações manuais e Problemas de segurança; transparencyreport.google.com/safe-browsing/search |
@@ -32,6 +32,9 @@ O item R5 (alna.cc) é bloqueante **até o dono decidir**: se a Hostnet não res
 | R13 | Perfil de pagamentos sem pendência de verificação após a troca do pagador | Não (observar) | **A observar** | Dono | Notificações do Google Ads / Pagamentos |
 
 ## Pontos de honestidade (não afirmar no texto)
+- **Outra conta de Google Ads:** existe a 172-390-8582 (cancelada) na Conta do Google aleqs.santos@gmail.com. Na 1ª contestação a resposta foi "Não" para
+  "várias contas do Google Ads para o mesmo site". Na 2ª, declarar a conta antiga cancelada (sem anúncios rodando) e corrigir a resposta, SE ela foi usada
+  para este negócio/site; se foi de outro propósito, dizer isso. Confirmar os detalhes com o dono antes (ver R7).
 - Não dizer que o pop-up é "necessário para finalizar a venda": é opcional (cupom de boas-vindas + novidades + lembrete de carrinho, com consentimento).
 - O encerramento do Merchant Center antigo foi **depois** da suspensão e da 1ª contestação (08/10 ~19h): não apresentar como limpeza anterior.
 - As causas listadas no texto (página inacessível, domínio antigo com erro, divergência empresa/site/pagador) são **hipóteses**, não algo que o Google confirmou.
@@ -49,6 +52,8 @@ O item R5 (alna.cc) é bloqueante **até o dono decidir**: se a Hostnet não res
 - 08/10/2026 — `alnacommerce.com` com 522 em http corrigido ("Always Use HTTPS" ligado no Cloudflare); identidade da empresa publicada no site.
 - 08/10/2026 — achado: site paralelo antigo `alna.cc` (WordPress, Hostnet) com erro de certificado/403; dono abriu chamado na Hostnet.
 - 08/10/2026 ~19h — dono encerrou o Merchant Center antigo 5722404568 (sem comprovante).
+- 09/10/2026 (fim da tarde) — o dono mostrou a outra Conta do Google (aleqs.santos@gmail.com): tem a conta de Google Ads **172-390-8582, "Cancelado"**.
+  Muda o item R7: ela precisa ser declarada no formulário/texto (a 1ª contestação respondeu "Não" para outras contas de Google Ads do mesmo site).
 - 09/10/2026 — Asaas trocada para a LTDA e verificada; Hostnet aplicou 301 de `www.alna.cc` (apex ainda com problema); pagador do Ads trocado para a LTDA;
   pop-up/cupons/Pix publicados; rascunho da 2ª contestação criado.
 
