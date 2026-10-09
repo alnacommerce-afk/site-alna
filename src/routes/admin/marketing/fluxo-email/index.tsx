@@ -149,11 +149,11 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f3-nomkt", 1090, 900, "Nota 0 a 3: fica fora do marketing", "exit"),
     plainNode("f3-back", 840, 1230, "Botão \"Voltar para a loja\" (store.alna.sale/loja)", "exit"),
 
-    // Fluxo 4 — Marketing: uma campanha a cada 20 dias para toda a lista (notas 4 a 10), com produtos novos + cupom RECOMPRA5%OFF.
+    // Fluxo 4 — Marketing: uma campanha a cada 20 dias para toda a lista (notas 4 a 10), com produtos novos + cupom aleatório (CUPOM_EMAIL_MKT).
     plainNode("f4-trigger", 1260, 0, "Cliente na lista de marketing (nota 4 a 10)", "trigger"),
     plainNode("f4-wait", 1260, 110, "Espera até o próximo ciclo (a cada 20 dias para todos da lista)", "wait"),
     plainNode("f4-pick", 1260, 220, "O sistema escolhe os produtos que entraram nos últimos 20 dias (até 6)", "wait"),
-    emailNode("f4-email", 1260, 330, "Novidades + cupom RECOMPRA5%OFF", "weekly_marketing"),
+    emailNode("f4-email", 1260, 330, "Novidades + cupom aleatório por cliente (CUPOM_EMAIL_MKT, uso único, 20 dias)", "weekly_marketing"),
     plainNode("f4-exit", 1260, 440, "Cliente clica em AQUI no rodapé: sai da lista", "exit"),
 
     // Fluxo 5 — Estoque baixo: a mesma baixa de estoque, seja por venda (débito automático) ou por

@@ -16,7 +16,13 @@ export type MarketingProduct = {
   compareAtPriceCents?: number | null;
 };
 
-export type MarketingCoupon = { code: string; discountPercent: number; minOrderCents: number };
+export type MarketingCoupon = {
+  code: string;
+  discountPercent: number;
+  minOrderCents: number;
+  /** Set for single-use personal codes: shown as "vale até ... e só pode ser usado uma vez". */
+  validUntil?: Date | null;
+};
 
 function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -55,7 +61,7 @@ export function buildCouponBlockHtml(coupon: MarketingCoupon | null) {
   return `<div style="text-align:center;margin:24px 0;padding:20px 16px;background:#f0fdf4;border:1px dashed ${GREEN};border-radius:12px;">
     <p style="margin:0 0 12px;font-size:15px;color:${NAVY};">E separamos um cupom para você usar:</p>
     <a href="${link}" style="display:inline-block;background:${GREEN};color:#ffffff;padding:14px 28px;border-radius:8px;font-size:17px;font-weight:bold;letter-spacing:0.5px;text-decoration:none;">${escapeHtml(coupon.code)}</a>
-    <p style="margin:12px 0 0;font-size:13px;color:#4b5563;">${condition}. Clique no cupom e ele já fica guardado para você aplicar no carrinho.</p>
+    <p style="margin:12px 0 0;font-size:13px;color:#4b5563;">${condition}.${coupon.validUntil ? ` Vale até ${coupon.validUntil.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })} e só pode ser usado uma vez, com o e-mail que recebeu esta mensagem.` : ""} Clique no cupom e ele já fica guardado para você aplicar no carrinho.</p>
   </div>`;
 }
 

@@ -3,10 +3,13 @@
 // (customers who gave a 4-10 note in the survey, minus anyone who opted out). Each campaign shows the
 // products that entered the store since the previous one (newest first, up to 6); if nothing new came
 // in, it falls back to the products the admin picked on the template, and if there are none it waits
-// (and tries again the next day). It always carries the coupon linked to the template (RECOMPRA5%OFF).
+// (and tries again the next day). It carries the coupon linked to the template (CUPOM_EMAIL_MKT): that coupon is a
+// "modelo", so every subscriber gets a random single-use code of their own (valid 20 days); a normal coupon linked
+// instead would be sent as the same fixed code to everyone.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/send-email.ts";
 import { renderEmailTemplate, resolveTemplateCoupon } from "../_shared/render-template.ts";
+import { issueCampaignCoupon } from "../_shared/personal-coupon.ts";
 import {
   buildCouponBlockHtml,
   buildProductsHtml,
@@ -134,7 +137,7 @@ Deno.serve(async (req) => {
       .from("marketing_email_campaigns")
       .insert({ subject: campaignSubject, recipients: recipients.length, product_count: products.length });
     const coupon = await resolveTemplateCoupon(admin, "weekly_marketing");
-    const cupomBlocoHtml = buildCouponBlockHtml(coupon);
+    const fixedCouponHtml = coupon && !coupon.isModel ? buildCouponBlockHtml(coupon) : "";
 
     const resendKey = await admin
       .rpc("get_integration_secret", { p_integration_id: "resend" })
@@ -142,6 +145,11 @@ Deno.serve(async (req) => {
 
     let sent = 0;
     for (const sub of recipients) {
+      let cupomBlocoHtml = fixedCouponHtml;
+      if (coupon?.isModel) {
+        const personal = await issueCampaignCoupon(admin, sub.email, coupon);
+        cupomBlocoHtml = personal ? buildCouponBlockHtml(personal) : "";
+      }
       const rendered = await renderEmailTemplate(
         admin,
         "weekly_marketing",

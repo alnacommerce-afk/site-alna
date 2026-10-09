@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { GOOGLE_REVIEW_URL, storeLink } from "@/lib/site-urls";
+import { useSiteSettings } from "@/lib/site-data";
 
 const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
 const SCORES = Array.from({ length: 11 }, (_, i) => i);
@@ -55,6 +56,9 @@ function PesquisaPage() {
   const [feedback, setFeedback] = useState("");
   const [sendingFeedback, setSendingFeedback] = useState(false);
   const [feedbackSent, setFeedbackSent] = useState(false);
+  // Same percentage as the RECOMPENSA_INDICACAO coupon.
+  const { data: siteSettings } = useSiteSettings();
+  const rewardPercent = siteSettings?.referral_reward_percent ? Number(siteSettings.referral_reward_percent) : null;
 
   useEffect(() => {
     async function load() {
@@ -285,7 +289,7 @@ function PesquisaPage() {
                 {result.promoter ? (
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Você pode ganhar <strong>5% de desconto</strong> na próxima compra automaticamente —
+                      Você pode ganhar <strong>{rewardPercent ? `${rewardPercent}% de desconto` : "um desconto"}</strong> na próxima compra automaticamente —
                       é só indicar nossa loja com o link abaixo. Você também pode ver esse link a
                       qualquer momento na aba <strong>Minha Conta</strong>.
                     </p>

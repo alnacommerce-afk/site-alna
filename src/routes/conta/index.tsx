@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
+import { useSiteSettings } from "@/lib/site-data";
 import { CustomerShell } from "@/components/customer/customer-shell";
 import { OrderTimelineDialog } from "@/components/customer/order-timeline-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -117,6 +118,9 @@ function MinhaContaPage() {
     loadReferralCode();
   }, []);
 
+  const { data: siteSettings } = useSiteSettings();
+  // Same percentage as the RECOMPENSA_INDICACAO coupon; nothing is shown until it is known, so a stale number never flashes.
+  const rewardPercent = siteSettings?.referral_reward_percent ? Number(siteSettings.referral_reward_percent) : null;
   const referralLink = referralCode ? `${SITE_URL}/loja?ref=${referralCode}` : null;
 
   function copyReferralLink() {
@@ -129,9 +133,9 @@ function MinhaContaPage() {
     <CustomerShell>
       {referralLink && (
         <div className="mb-6 rounded-lg border border-[#12294f]/10 bg-[#f0fdf4] p-4">
-          <p className="text-sm font-semibold text-[#12294f]">Indique e ganhe 5%</p>
+          <p className="text-sm font-semibold text-[#12294f]">Indique e ganhe{rewardPercent ? ` ${rewardPercent}%` : ""}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Compartilhe seu link pessoal — quando alguém comprar através dele, você ganha um cupom de 5% de desconto.
+            Compartilhe seu link pessoal — quando alguém comprar através dele, você ganha um cupom de{rewardPercent ? ` ${rewardPercent}%` : ""} desconto.
           </p>
           <div className="mt-3 flex items-center gap-2">
             <code className="flex-1 truncate rounded-md bg-white px-3 py-2 text-xs text-[#12294f]">

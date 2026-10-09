@@ -1003,6 +1003,7 @@ export type Database = {
           instagram_handle: string | null
           phone: string | null
           razao_social: string | null
+          referral_reward_percent: number
           shipping_carrier_preference: string | null
           shipping_origin_city: string | null
           shipping_origin_neighborhood: string | null
@@ -1030,6 +1031,7 @@ export type Database = {
           instagram_handle?: string | null
           phone?: string | null
           razao_social?: string | null
+          referral_reward_percent?: number
           shipping_carrier_preference?: string | null
           shipping_origin_city?: string | null
           shipping_origin_neighborhood?: string | null
@@ -1057,6 +1059,7 @@ export type Database = {
           instagram_handle?: string | null
           phone?: string | null
           razao_social?: string | null
+          referral_reward_percent?: number
           shipping_carrier_preference?: string | null
           shipping_origin_city?: string | null
           shipping_origin_neighborhood?: string | null

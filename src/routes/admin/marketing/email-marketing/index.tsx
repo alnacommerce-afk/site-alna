@@ -28,7 +28,14 @@ const CAMPAIGN_EVERY_DAYS = 20;
 
 type Subscriber = { email: string; name: string | null; source: string | null; subscribed_at: string };
 type Suppression = { email: string; unsubscribed_at: string };
-type Coupon = { id: string; code: string; discount_percent: number; min_order_cents: number; active: boolean };
+type Coupon = {
+  id: string;
+  code: string;
+  discount_percent: number;
+  min_order_cents: number;
+  active: boolean;
+  is_model: boolean;
+};
 type ProductOption = { id: string; title: string };
 type SentCampaign = { id: string; sent_at: string; subject: string; recipients: number };
 
@@ -61,9 +68,8 @@ function EmailMarketingPage() {
           .order("unsubscribed_at", { ascending: false }),
         supabase
           .from("coupons")
-          .select("id, code, discount_percent, min_order_cents, active, personal_for_email")
+          .select("id, code, discount_percent, min_order_cents, active, personal_for_email, is_model")
           .is("personal_for_email", null)
-          .eq("is_model", false)
           .order("code"),
         supabase.from("products").select("id, title").eq("status", "published").order("title"),
         supabase
@@ -170,7 +176,7 @@ function EmailMarketingPage() {
                   <SelectItem value={NO_COUPON}>Sem cupom</SelectItem>
                   {coupons.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
-                      {c.code} — {Number(c.discount_percent)}%{c.active ? "" : " (inativo)"}
+                      {c.code} — {Number(c.discount_percent)}%{c.is_model ? " (aleatório por cliente)" : ""}{c.active ? "" : " (inativo)"}
                     </SelectItem>
                   ))}
                 </SelectContent>

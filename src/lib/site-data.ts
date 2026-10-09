@@ -18,6 +18,8 @@ export type SiteSettings = {
   address_city: string | null;
   address_state: string | null;
   business_hours: string | null;
+  /** Same number as the RECOMPENSA_INDICACAO coupon (kept in sync by a database trigger). */
+  referral_reward_percent: number;
 };
 
 export function useCategories() {
@@ -43,7 +45,7 @@ export function useSiteSettings() {
       const { data, error } = await supabase
         .from("site_settings")
         .select(
-          "free_shipping_threshold_cents, cnpj, razao_social, phone, email, instagram_handle, address_city, address_state, business_hours",
+          "free_shipping_threshold_cents, cnpj, razao_social, phone, email, instagram_handle, address_city, address_state, business_hours, referral_reward_percent",
         )
         .eq("id", "default")
         .maybeSingle();

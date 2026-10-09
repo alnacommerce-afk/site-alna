@@ -9,6 +9,7 @@ import { randomPassword } from "./random-password.ts";
 const VALID_DAYS = 7;
 const COOLDOWN_DAYS = 30;
 const REWARD_VALID_DAYS = 30;
+const CAMPAIGN_VALID_DAYS = 20;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type PersonalCoupon = {
@@ -87,6 +88,12 @@ export async function getPersonalCoupon(
   }
 
   return createCoupon(admin, normalized, model, VALID_DAYS, "VOLTA");
+}
+
+// Marketing e-mail campaign (one every 20 days): every subscriber gets a new code of their own in each campaign, valid
+// until the next campaign.
+export function issueCampaignCoupon(admin: SupabaseClient, email: string, model: Model) {
+  return createCoupon(admin, email.trim().toLowerCase(), model, CAMPAIGN_VALID_DAYS, "NOVIDADE");
 }
 
 // Referral reward: EVERY paid purchase through someone's link earns that someone a new code of their own (no

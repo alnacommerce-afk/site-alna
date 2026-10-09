@@ -284,3 +284,13 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   de 30 dias nem reaproveitamento); `getPersonalCoupon` agora olha só os cupons do MESMO modelo; `creditReferralReward` usa o modelo ligado ao
   e-mail (se desligado, mantém o código de reserva de 5%). Admin > Cupons: caixa própria "Recompensa de indicação" com gerados/usados.
 - Pendente: textos "ganhe 5%" de Minha Conta (`src/routes/conta/index.tsx`) e da pesquisa (`src/routes/pesquisa/$orderId.tsx`) são fixos.
+
+## 09/10/2026 (tarde) — Cupom aleatório do e-mail de marketing + % da indicação espelhada
+
+- Banco (apply_migration `marketing_random_coupon_and_referral_percent_mirror`): `RECOMPRA5%OFF` renomeado para o modelo `CUPOM_EMAIL_MKT`
+  (a pedido do dono: "CUPOM_EMAIL_MKT"); `site_settings.referral_reward_percent` + trigger `coupons_sync_referral_reward_percent` (copia a % do
+  modelo `RECOMPENSA_INDICACAO` para site_settings sempre que ela muda); aviso `model_note` da indicação removido.
+- Código: `send-weekly-marketing` gera, a cada campanha, um código `NOVIDADE-xxxxxx` por assinante (uso único, só para o e-mail, 20 dias);
+  se o cupom ligado ao e-mail NÃO for modelo, continua enviando o mesmo código fixo para todos. `resolveTemplateCoupon` devolve `isModel`.
+  Minha Conta e a pesquisa passam a mostrar a % de `site_settings.referral_reward_percent` (via `useSiteSettings`, sem requisição nova).
+  Admin > E-mail marketing lista também os cupons-modelo ("aleatório por cliente").
