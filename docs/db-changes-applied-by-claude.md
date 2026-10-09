@@ -315,3 +315,14 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   carrinho e o e-mail vai para o checkout. Mesma página para todos (sem identificar robô do Google).
 - **Admin**: Carrinhos abandonados: botão WhatsApp marca `whatsapp_contacted_at` (1 mensagem manual por carrinho; depois mostra "Enviado dd/mm hh:mm");
   contador "WhatsApp enviados". Fluxo 10 no mapa de e-mails.
+
+## 09/10/2026 (tarde) — CORREÇÃO: colunas novas de site_settings sem permissão de leitura pública
+
+- Ao publicar `referral_reward_percent` (commit 2812bd5) e depois `welcome_coupon_percent`, o `useSiteSettings` passou a pedir colunas SEM `GRANT SELECT`
+  para `anon`/`authenticated` (a tabela usa permissão por coluna). Resultado: a consulta de configurações falhava na loja inteira (frete grátis a partir de,
+  rodapé, % da indicação, pop-up) até a correção. Corrigido com `grant select (referral_reward_percent, welcome_coupon_percent) on public.site_settings
+  to anon, authenticated;` e conferido ao vivo (REST devolve as 3 colunas; o pop-up aparece).
+- REGRA daqui para frente: toda coluna nova de `site_settings` lida pela loja precisa de `GRANT SELECT (coluna) ... TO anon, authenticated` na MESMA
+  migração, e eu devo testar a leitura pública (REST com a chave anônima) antes de mandar publicar.
+- Teste ao vivo do pop-up: só aparece depois de carga + 8 s + interação; envio com e-mail que já tem cupom mostra "Seu cupom já foi enviado".
+  Cupom e linha de lista de teste apagados.
