@@ -50,3 +50,13 @@ deve, ANTES de ser aplicada, ser avaliada e apresentada ao dono assim:
 - Notas de referência (PageSpeed celular, 08/10/2026): Home 99, Atacado 97, Checkout 96, Produto 94, Carrinho 91, Loja 81.
 
 Objetivo: a loja rodar de forma fluida para receber muitos clientes sem quebra de expectativa.
+
+## Google Ads — contestação da suspensão (em andamento)
+
+A conta do Google Ads está **suspensa** desde 08/10/2026 e a 2ª contestação está sendo preparada **por partes**, enquanto o dono espera
+respostas (Hostnet, Google). **Tudo está em `docs/google-ads-contestacao/`** (`README.md` = protocolo, `STATUS.md` = painel do que falta,
+`RASCUNHO-2a-contestacao.md` = texto, `EVIDENCIAS.md` = fatos verificados).
+
+Sempre que o dono informar QUALQUER novidade sobre esse assunto: ler `STATUS.md`, atualizar o painel, reverificar o que for possível e responder
+"ainda falta A, B e C" **ou** "temos tudo: pode abrir a contestação". Nunca enviar a contestação, nunca criar conta nova de Google Ads e nunca
+afirmar no texto algo que não esteja FEITO e verificado. Só uma contestação por vez.
