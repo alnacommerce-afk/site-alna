@@ -60,3 +60,9 @@ respostas (Hostnet, Google). **Tudo está em `docs/google-ads-contestacao/`** (`
 Sempre que o dono informar QUALQUER novidade sobre esse assunto: ler `STATUS.md`, atualizar o painel, reverificar o que for possível e responder
 "ainda falta A, B e C" **ou** "temos tudo: pode abrir a contestação". Nunca enviar a contestação, nunca criar conta nova de Google Ads e nunca
 afirmar no texto algo que não esteja FEITO e verificado. Só uma contestação por vez.
+
+## Retomada de trabalho (ler primeiro)
+
+O arquivo **`docs/PENDENCIAS.md`** é o ponto de retomada do projeto: lista as prioridades (1. reativar o Google Ads; 2. velocidade e conversão), o que
+aguarda o dono, o que o Claude deve verificar/acompanhar e o estado do sistema (cron, cupons, funções). Ao começar uma sessão, leia-o junto com este arquivo e a
+memória; ao concluir algo ou receber novidade do dono, **atualize-o** (e o painel do Google Ads) no mesmo commit, e espelhe no Drive.
