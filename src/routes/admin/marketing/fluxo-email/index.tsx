@@ -118,7 +118,7 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     emailNode("f1-email1", 0, 120, "Pedido recebido", "order_received"),
     plainNode("f1-event", 230, 120, "Evento: pagamento confirmado (webhook Asaas ou cartão aprovado)", "wait"),
     emailNode("f1-email2", 230, 240, "Pagamento confirmado (+ acesso à conta, se novo cliente)", "payment_confirmed"),
-    emailNode("f1-referral", 0, 350, "Recompensa de indicação (se o pedido veio de um link)", "referral_reward"),
+    emailNode("f1-referral", 0, 350, "Recompensa de indicação (se o pedido veio de um link): cupom aleatório do indicador, 1 por indicação, válido 30 dias", "referral_reward"),
     emailNode("f1-admin", 0, 240, "Aviso de venda (para o admin)", "admin_new_sale"),
     plainNode("f1-label", 230, 350, "Admin gera a etiqueta no sistema (Admin > Pedidos)", "wait"),
     emailNode("f1-email3", 230, 460, "Pedido preparado (será deixado no ponto de coleta)", "order_prepared"),

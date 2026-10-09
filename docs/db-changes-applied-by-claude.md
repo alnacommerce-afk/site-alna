@@ -274,3 +274,13 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - **Nova função `regenerate-pix`** (publicar no Lovable): pedido Pix pendente sem QR Code pagável ganha uma nova cobrança na conta Asaas atual
   (cancela a antiga se ainda viva); máx. 3 por pedido, pedidos até 30 dias, uma geração por vez; falha da Asaas não consome tentativa.
   `OrderStatusPanel` chama sozinho quando não há QR ("Gerando o seu Pix...") e mostra mensagem + WhatsApp + novo pedido se falhar.
+
+## 09/10/2026 (tarde) — Recompensa de indicação com cupom aleatório
+
+- Banco (apply_migration `referral_reward_random_coupon_model`): `CARINHO_ABANDONADO` renomeado para `CARRINHO_ABANDONADO` (execute_sql);
+  `INDICA5%OFF` virou o modelo `RECOMPENSA_INDICACAO` (sem acento de propósito: código de cupom); coluna `coupons.model_note` (aviso mostrado
+  no admin); e-mail `referral_reward` passou a usar `{{cupom_desconto}}` e `{{cupom_validade}}` (antes "5% OFF" fixo).
+- Código: `issueRewardCoupon` (código `INDIQUE-xxxxxx` novo a cada indicação paga, uso único, só para o e-mail do indicador, 30 dias, sem espera
+  de 30 dias nem reaproveitamento); `getPersonalCoupon` agora olha só os cupons do MESMO modelo; `creditReferralReward` usa o modelo ligado ao
+  e-mail (se desligado, mantém o código de reserva de 5%). Admin > Cupons: caixa própria "Recompensa de indicação" com gerados/usados.
+- Pendente: textos "ganhe 5%" de Minha Conta (`src/routes/conta/index.tsx`) e da pesquisa (`src/routes/pesquisa/$orderId.tsx`) são fixos.

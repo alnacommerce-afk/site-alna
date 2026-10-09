@@ -71,6 +71,7 @@ type ModelCoupon = {
   code: string;
   discount_percent: number;
   model_label: string | null;
+  model_note: string | null;
   generated: number;
   used: number;
 };
@@ -138,7 +139,7 @@ function CuponsPage() {
     setCoupons(data ?? []);
     const { data: modelRows } = await supabase
       .from("coupons")
-      .select("id, code, discount_percent, model_label")
+      .select("id, code, discount_percent, model_label, model_note")
       .eq("is_model", true)
       .order("created_at", { ascending: true });
     const modelIds = (modelRows ?? []).map((m) => m.id);
@@ -328,9 +329,9 @@ function CuponsPage() {
         <div>
           <h2 className="text-base font-semibold text-[#12294f]">Cupons aleatórios para clientes</h2>
           <p className="text-sm text-muted-foreground">
-            Cada cliente recebe um código diferente (por exemplo VOLTA-AB12CD), de uso único, só para o e-mail dele e
-            válido por 7 dias. Aqui você define só a porcentagem: mudar vale para os cupons novos, os que já foram
-            enviados mantêm a porcentagem de quando foram criados.
+            Cada cliente recebe um código diferente (por exemplo VOLTA-AB12CD), de uso único e só para o e-mail dele. A
+            validade de cada tipo está na caixa. Aqui você define só a porcentagem: mudar vale para os cupons novos, os
+            que já foram enviados mantêm a porcentagem de quando foram criados.
           </p>
         </div>
         {loading ? null : models.length === 0 ? (
@@ -344,6 +345,7 @@ function CuponsPage() {
                 <div className="min-w-0">
                   <p className="font-mono text-sm font-semibold text-[#12294f]">{model.code}</p>
                   <p className="mt-0.5 text-xs text-muted-foreground">{model.model_label ?? "Cupom aleatório"}</p>
+                  {model.model_note ? <p className="mt-1 text-xs text-amber-700">Atenção: {model.model_note}</p> : null}
                   <p className="mt-3 text-3xl font-bold text-[#12294f]">{model.discount_percent}%</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     <strong className="text-[#12294f]">{model.generated}</strong> gerados ·{" "}
@@ -595,6 +597,7 @@ function CuponsPage() {
               {modelToEdit?.model_label ?? modelToEdit?.code}. A nova porcentagem vale para os próximos cupons
               enviados; os que já foram enviados não mudam.
             </p>
+            {modelToEdit?.model_note ? <p className="text-xs text-amber-700">Atenção: {modelToEdit.model_note}</p> : null}
             <Label htmlFor="model-percent">Desconto (%)</Label>
             <Input
               id="model-percent"

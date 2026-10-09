@@ -129,6 +129,7 @@ export type Database = {
           auto_generated: boolean
           is_model: boolean
           model_label: string | null
+          model_note: string | null
           source_coupon_id: string | null
           code: string
           created_at: string
@@ -149,6 +150,7 @@ export type Database = {
           auto_generated?: boolean
           is_model?: boolean
           model_label?: string | null
+          model_note?: string | null
           source_coupon_id?: string | null
           code: string
           created_at?: string
@@ -169,6 +171,7 @@ export type Database = {
           auto_generated?: boolean
           is_model?: boolean
           model_label?: string | null
+          model_note?: string | null
           source_coupon_id?: string | null
           code?: string
           created_at?: string

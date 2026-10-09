@@ -6,6 +6,7 @@ import type { SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { randomPassword } from "./random-password.ts";
 import { sendEmail } from "./send-email.ts";
 import { renderEmailTemplate, resolveTemplateCoupon } from "./render-template.ts";
+import { issueRewardCoupon } from "./personal-coupon.ts";
 
 const SITE_URL = "https://store.alna.sale";
 
@@ -110,11 +111,23 @@ async function creditReferralReward(admin: SupabaseClient, referrerUserId: strin
     return;
   }
 
-  // The coupon linked to the "referral_reward" template (Admin > Marketing > Fluxo de E-mail) is the one
-  // sent; only if none is linked do we fall back to minting a one-off 5% code per reward.
-  const linked = await resolveTemplateCoupon(admin, "referral_reward");
-  let code = linked?.code ?? "";
-  if (!code) {
+  // The coupon linked to the "referral_reward" template (Admin > Marketing > Fluxo de E-mail) is a MODEL: it only
+  // sets the percentage, and every reward is a new random single-use code of the indicator's own (valid 30 days).
+  // Only if no model is linked do we fall back to minting a one-off 5% code per reward.
+  const model = await resolveTemplateCoupon(admin, "referral_reward");
+  let code = "";
+  let percent = 5;
+  let validUntil: Date | null = null;
+  if (model) {
+    const reward = await issueRewardCoupon(admin, referrer.email, model);
+    if (!reward) {
+      console.error("[notify-payment-confirmed] falha ao gerar cupom de indicação", referrerUserId);
+      return;
+    }
+    code = reward.code;
+    percent = reward.discountPercent;
+    validUntil = reward.validUntil;
+  } else {
     code = `INDIQUE-${randomPassword(6).toUpperCase()}`;
     const { error: couponError } = await admin.from("coupons").insert({
       code,
@@ -130,6 +143,10 @@ async function creditReferralReward(admin: SupabaseClient, referrerUserId: strin
   const rendered = await renderEmailTemplate(admin, "referral_reward", {
     nome: (referrer.user_metadata as { name?: string } | null)?.name ?? "cliente",
     cupom_codigo: code,
+    cupom_desconto: `${percent}%`,
+    cupom_validade: validUntil
+      ? validUntil.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })
+      : "sem data de vencimento",
   });
   if (rendered) {
     await sendEmail(resendKey, { to: referrer.email, subject: rendered.subject, html: rendered.html, template: rendered.templateId });
