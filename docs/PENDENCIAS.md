@@ -41,7 +41,7 @@ Conta **635-244-4697** (informacoes.asm@gmail.com) suspensa por "phishing"; 1ª 
 Regra do dono: **toda mudança** traz antes "Espaço no back end" + "Efeito no carregamento"; Home ≤ 0,5 s. Notas PageSpeed celular de 08/10/2026: Home 99, Atacado 97,
 Checkout 96, Produto 94, Carrinho 91, **Loja 70–81**.
 
-1. **Imagens da `/loja` — AGUARDANDO "ok, aplique as imagens da loja".** Medido ao vivo: 21 fotos de capa de 1200×1200 px, 46–316 KB cada (≈3 MB no total; as 2 primeiras 294 + 272 KB),
+1. **Imagens da `/loja` — APLICADO e DESFEITO em 09/10/2026 (commits 3fe288c e d2a59bf): o dono não gostou do ajuste. Perguntar o que não agradou (qualidade da foto? aparência?) antes de propor outra alternativa; NÃO reaplicar sem novo ok.** Proposta original (arquivada): Medido ao vivo: 21 fotos de capa de 1200×1200 px, 46–316 KB cada (≈3 MB no total; as 2 primeiras 294 + 272 KB),
    exibidas com ~250 px. Proposta: servir a foto dos cartões em **400 px WebP** pela transformação da Supabase (`/storage/v1/render/image/public/...?width=400&quality=60`;
    testado: 301 KB → ~64 KB), `fetchpriority="high"` na primeira linha e **fallback para a foto original** se falhar. Espaço no back end: 0. Custo da função: US$ 5/1.000 imagens
    diferentes (100 incluídas no Pro; temos 21 produtos); **o plano Pro não foi confirmado** (funcionou nos testes). Banner do topo (`hero-ambassador-cutout`, 576 KB PNG): **dono pediu para NÃO converter**.
@@ -51,7 +51,7 @@ Checkout 96, Produto 94, Carrinho 91, **Loja 70–81**.
 ---
 
 ## AGUARDANDO O DONO (decisões e ações)
-- [ ] **Ok para as imagens da loja** (item acima).
+- [x] Imagens da loja: ok dado e depois desfeito (ver item acima).
 - [ ] **Pedido de teste 8433b1a9** (Pix de 15/09, conta Asaas antiga, sem CPF gravado): cancelar? (`regenerate-pix` recusa por falta de CPF.)
 - [ ] **Pix de teste sem pagar** (para provar o `regenerate-pix` ponta a ponta: QR existente → simular cobrança ausente → cobrança nova; limite 3, 30 dias).
 - [ ] Respostas R7 (3) e (4), e acompanhar a Hostnet (R5).

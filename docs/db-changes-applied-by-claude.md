@@ -343,3 +343,7 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   pelo X (clique fora e Esc não fecham; link "Agora não" removido). Rolagem do fundo travada enquanto aberto. Continua só após carga + 8 s + interação humana.
 - `saved-cart.ts`: evento `alna-saved-cart-changed`; `SaveCartBox` acompanha o salvamento automático e mostra "Carrinho salvo para ...".
 - Teste ao vivo do salvamento automático (e-mail + consentimento + mudança no carrinho): linha criada em `abandoned_carts` em ~3 s; linha de teste apagada.
+
+## 09/10/2026 (noite) — DESFEITO: fotos de capa da /loja em 480 px
+
+- O dono não gostou do ajuste; commit 3fe288c revertido em d2a59bf (volta a usar a foto original nos cartões). `src/lib/site-images.ts` removido. Sem mudança de banco. Publicar no Lovable para valer, caso o ajuste já tenha sido publicado.
