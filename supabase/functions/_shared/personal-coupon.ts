@@ -10,6 +10,7 @@ const VALID_DAYS = 7;
 const COOLDOWN_DAYS = 30;
 const REWARD_VALID_DAYS = 30;
 const CAMPAIGN_VALID_DAYS = 20;
+const WELCOME_VALID_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type PersonalCoupon = {
@@ -94,6 +95,12 @@ export async function getPersonalCoupon(
 // until the next campaign.
 export function issueCampaignCoupon(admin: SupabaseClient, email: string, model: Model) {
   return createCoupon(admin, email.trim().toLowerCase(), model, CAMPAIGN_VALID_DAYS, "NOVIDADE");
+}
+
+// Welcome coupon (pop-up of the store): one code per new e-mail, valid 30 days. The caller makes sure the e-mail
+// did not get one before.
+export function issueWelcomeCoupon(admin: SupabaseClient, email: string, model: Model) {
+  return createCoupon(admin, email.trim().toLowerCase(), model, WELCOME_VALID_DAYS, "BEMVINDO");
 }
 
 // Referral reward: EVERY paid purchase through someone's link earns that someone a new code of their own (no

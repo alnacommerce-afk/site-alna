@@ -32,6 +32,7 @@ export type Database = {
           subtotal_cents: number
           summary: string | null
           token: string
+          whatsapp_contacted_at: string | null
         }
         Insert: {
           consented_at?: string
@@ -50,6 +51,7 @@ export type Database = {
           subtotal_cents?: number
           summary?: string | null
           token?: string
+          whatsapp_contacted_at?: string | null
         }
         Update: {
           consented_at?: string
@@ -68,6 +70,7 @@ export type Database = {
           subtotal_cents?: number
           summary?: string | null
           token?: string
+          whatsapp_contacted_at?: string | null
         }
         Relationships: []
       }
@@ -1013,6 +1016,7 @@ export type Database = {
           shipping_origin_zip: string | null
           store_name: string
           updated_at: string
+          welcome_coupon_percent: number | null
           whatsapp: string | null
         }
         Insert: {
@@ -1041,6 +1045,7 @@ export type Database = {
           shipping_origin_zip?: string | null
           store_name?: string
           updated_at?: string
+          welcome_coupon_percent?: number | null
           whatsapp?: string | null
         }
         Update: {
@@ -1069,6 +1074,7 @@ export type Database = {
           shipping_origin_zip?: string | null
           store_name?: string
           updated_at?: string
+          welcome_coupon_percent?: number | null
           whatsapp?: string | null
         }
         Relationships: []

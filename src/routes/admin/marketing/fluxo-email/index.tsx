@@ -196,6 +196,13 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     plainNode("f9-cond2", 2800, 550, "Já comprou ou pediu para sair?", "condition"),
     emailNode("f9-email2", 2800, 660, "Última lembrança + cupom pessoal (uso único, 7 dias; soma até 3 cupons)", "abandoned_cart_24h"),
     plainNode("f9-exit", 2800, 770, "Fim: no máximo 2 lembretes por e-mail a cada 7 dias", "exit"),
+    // Fluxo 10 — Pop-up de boas-vindas da /loja (cupom BOAS_VINDAS).
+    plainNode("f10-trigger", 3340, 0, "Visitante novo da /loja (sem e-mail guardado) rola ou clica, depois de a página carregar e 8 s", "trigger"),
+    plainNode("f10-popup", 3340, 110, "Pop-up pequeno: \"Ganhe X% na primeira compra\" (só pede o e-mail)", "wait"),
+    plainNode("f10-cond", 3340, 220, "Já comprou ou já recebeu o cupom com esse e-mail?", "condition"),
+    emailNode("f10-email", 3340, 330, "Boas-vindas: cupom aleatório de uso único (30 dias) + botão para a loja", "welcome_coupon"),
+    plainNode("f10-list", 3340, 440, "E-mail entra na lista de novidades; cupom já fica no carrinho; e-mail pré-preenchido no checkout", "wait"),
+    plainNode("f10-no", 3600, 220, "Sem cupom (só entra na lista de novidades)", "exit"),
     plainNode("f9-stop", 3060, 220, "Comprou, criou o pedido ou clicou em sair: para tudo (Fluxo 1 assume)", "exit"),
   ];
 
@@ -280,6 +287,12 @@ function buildFlowGraph(onOpenTemplate: (templateId: string, label: string) => v
     { id: "e-f9-7", source: "f9-cond2", target: "f9-email2", label: "Não" },
     { id: "e-f9-8", source: "f9-cond2", sourceHandle: "right", target: "f9-stop", label: "Sim" },
     { id: "e-f9-9", source: "f9-email2", target: "f9-exit" },
+
+    { id: "e-f10-1", source: "f10-trigger", target: "f10-popup" },
+    { id: "e-f10-2", source: "f10-popup", target: "f10-cond" },
+    { id: "e-f10-3", source: "f10-cond", target: "f10-email", label: "Não" },
+    { id: "e-f10-4", source: "f10-cond", sourceHandle: "right", target: "f10-no", label: "Sim" },
+    { id: "e-f10-5", source: "f10-email", target: "f10-list" },
 
     { id: "e-f6-1", source: "f6-trigger", target: "f6-ui" },
     { id: "e-f6-2", source: "f6-ui", target: "f6-cond" },

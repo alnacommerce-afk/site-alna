@@ -300,3 +300,18 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - `save-cart-box.tsx`: WhatsApp fica escondido atrás de "Adicionar WhatsApp (opcional)" (aparece aberto se o cliente já tem telefone salvo);
   ao salvar, e-mail (e WhatsApp, se informado) vão para `saveCheckoutInfo`, então o checkout abre com e-mail e WhatsApp preenchidos; o campo
   "Confirme o e-mail" continua vazio de propósito. Sem mudança de banco.
+
+## 09/10/2026 — Pop-up de boas-vindas na /loja (cupom BOAS_VINDAS) + WhatsApp "enviado" no admin
+
+- **Migração `welcome_coupon_popup`** (+ execute_sql do gatilho): cupom-modelo `BOAS_VINDAS` (2%, uso único por e-mail, 30 dias, só quem nunca comprou),
+  `site_settings.welcome_coupon_percent` (espelho da %, `null` se o modelo for desativado = pop-up some; gatilho
+  `coupons_sync_referral_reward_percent` agora também reage a `active`), e-mail editável `welcome_coupon` (ligado ao modelo),
+  `abandoned_carts.whatsapp_contacted_at`.
+- **Função nova `welcome-coupon`** (publicar): valida o e-mail, tira da lista de bloqueados, entra em `marketing_subscribers` (source `popup_loja`),
+  recusa o cupom se o e-mail já comprou ou já recebeu o de boas-vindas, gera `BEMVINDO-xxxxxx`, envia o e-mail e devolve o código.
+- **Front**: `/loja` monta `WelcomePopupLoader` (só a lógica leve, ~0,6 KB gzip, entra na 1ª carga); o cartão do pop-up (`welcome-popup.tsx`, ~2,2 KB gzip)
+  só é baixado quando vai aparecer: página carregada + navegador ocioso + 8 s + interação humana (rolagem/clique/toque/tecla). Cartão pequeno,
+  sem fundo escuro, só pede e-mail (WhatsApp só no checkout), fechar = 14 dias sem aparecer, pegar o cupom = nunca mais. Cupom fica pendente no
+  carrinho e o e-mail vai para o checkout. Mesma página para todos (sem identificar robô do Google).
+- **Admin**: Carrinhos abandonados: botão WhatsApp marca `whatsapp_contacted_at` (1 mensagem manual por carrinho; depois mostra "Enviado dd/mm hh:mm");
+  contador "WhatsApp enviados". Fluxo 10 no mapa de e-mails.

@@ -14,6 +14,15 @@ export function capturePendingCouponFromUrl(): string | null {
   }
 }
 
+/** Keeps a coupon (e.g. the welcome coupon) typed and waiting in the cart's coupon field. */
+export function setPendingCoupon(code: string) {
+  try {
+    localStorage.setItem(STORAGE_KEY, code.trim().toUpperCase().slice(0, 40));
+  } catch {
+    // ignore
+  }
+}
+
 export function getPendingCoupon(): string | null {
   try {
     return localStorage.getItem(STORAGE_KEY);

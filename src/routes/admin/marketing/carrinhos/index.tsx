@@ -34,6 +34,7 @@ type SavedCart = {
   stopped_at: string | null;
   recovered_at: string | null;
   recovered_order_id: string | null;
+  whatsapp_contacted_at: string | null;
 };
 
 type PendingOrder = {
@@ -149,7 +150,7 @@ function AbandonedCartsPage() {
       supabase
         .from("abandoned_carts")
         .select(
-          "id, token, email, phone, summary, item_count, subtotal_cents, last_activity_at, reminder_1_sent_at, reminder_2_sent_at, stopped_at, recovered_at, recovered_order_id",
+          "id, token, email, phone, summary, item_count, subtotal_cents, last_activity_at, reminder_1_sent_at, reminder_2_sent_at, stopped_at, recovered_at, recovered_order_id, whatsapp_contacted_at",
         )
         .order("last_activity_at", { ascending: false })
         .limit(500),
@@ -190,6 +191,7 @@ function AbandonedCartsPage() {
       saved: carts.length,
       reminder1: carts.filter((c) => c.reminder_1_sent_at).length,
       reminder2: carts.filter((c) => c.reminder_2_sent_at).length,
+      whatsapp: carts.filter((c) => c.whatsapp_contacted_at).length,
       recovered: recovered.length,
       recoveredCents: recovered.reduce((sum, o) => sum + o.total_cents, 0),
     };
@@ -227,6 +229,22 @@ function AbandonedCartsPage() {
     );
   }
 
+  // One manual WhatsApp message per cart: opening it marks the cart as contacted, and from then on the button shows the
+  // date instead. The reminder e-mails keep running by themselves; the seller finishes the sale in the chat.
+  async function markWhatsappSent(cart: SavedCart) {
+    const sentAt = new Date().toISOString();
+    const { error } = await supabase
+      .from("abandoned_carts")
+      .update({ whatsapp_contacted_at: sentAt })
+      .eq("id", cart.id)
+      .is("whatsapp_contacted_at", null);
+    if (error) {
+      toast.error("Não foi possível marcar o WhatsApp como enviado.");
+      return;
+    }
+    setCarts((prev) => prev.map((c) => (c.id === cart.id ? { ...c, whatsapp_contacted_at: sentAt } : c)));
+  }
+
   async function copy(text: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -258,11 +276,12 @@ function AbandonedCartsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-6">
           {[
             { label: "Carrinhos salvos", value: String(stats.saved) },
             { label: "Lembrete 1 enviado", value: String(stats.reminder1) },
             { label: "Lembrete 2 enviado", value: String(stats.reminder2) },
+            { label: "WhatsApp enviados", value: String(stats.whatsapp) },
             { label: "Recuperados (pagos)", value: String(stats.recovered) },
             { label: "Valor recuperado", value: formatCentsToBRL(stats.recoveredCents) },
           ].map((stat) => (
@@ -338,11 +357,22 @@ function AbandonedCartsPage() {
                           <TableCell>
                             <div className="flex justify-end gap-1">
                               {wa ? (
-                                <Button asChild size="sm" className="gap-1 bg-[#15803d] hover:bg-[#15803d]/90">
-                                  <a href={wa} target="_blank" rel="noopener noreferrer">
-                                    <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
-                                  </a>
-                                </Button>
+                                cart.whatsapp_contacted_at ? (
+                                  <Button size="sm" variant="outline" disabled className="gap-1">
+                                    <MessageCircle className="h-3.5 w-3.5" /> Enviado {formatDateTime(cart.whatsapp_contacted_at)}
+                                  </Button>
+                                ) : (
+                                  <Button asChild size="sm" className="gap-1 bg-[#15803d] hover:bg-[#15803d]/90">
+                                    <a
+                                      href={wa}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={() => void markWhatsappSent(cart)}
+                                    >
+                                      <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
+                                    </a>
+                                  </Button>
+                                )
                               ) : null}
                               <Button
                                 type="button"
