@@ -14,7 +14,7 @@ O que mudamos desde a primeira contestação:
 2. O recebimento dos pagamentos da loja passou para uma conta de pagamentos (Asaas) no CNPJ da própria empresa.
 3. A razão social, o CNPJ e o endereço aparecem agora no rodapé de todas as páginas da loja, na página inicial e na página "Sobre". Contato: WhatsApp (51) 99491-1125 e contato@alna.sale.
 4. Corrigimos um domínio antigo da marca (alnacommerce.com), que apresentava falha de acesso e hoje redireciona corretamente para alna.sale. [CONFIRMAR: incluir esta linha sobre o domínio alna.cc somente se a Hostnet já tiver corrigido https://alna.cc — "Um segundo domínio antigo (alna.cc) foi redirecionado para alna.sale."]
-5. Atualizamos os dados da conta antiga do Merchant Center para ficarem iguais aos da empresa. [CONFIRMAR: só escrever depois de fazer.]
+5. Encerramos uma conta antiga e duplicada do Google Merchant Center (criada para o domínio antigo da marca), mantendo apenas a conta ativa da loja, que usa o endereço store.alna.sale. [CONFIRMAR: o dono encerrou a conta 5722404568 em 09/10/2026; conferir a data e se o encerramento concluiu.]
 
 Sobre o site: a página de destino do anúncio é https://store.alna.sale/atacado, uma página informativa de atacado, sem formulário e sem pedido de senha ou dados pessoais. O site usa HTTPS válido, e o Search Console não aponta ações manuais nem problemas de segurança. Os dados de pagamento são digitados somente no checkout, em HTTPS, e enviados à processadora de pagamentos; não os armazenamos. Pedimos o e-mail do cliente apenas para a compra (confirmação e acompanhamento do pedido) e, quando o próprio cliente aceita, para enviar cupom, novidades e lembrete de carrinho, sempre com link para cancelar. Políticas de privacidade, termos de uso e de troca e devolução estão publicadas e linkadas no rodapé.
 
@@ -24,6 +24,7 @@ Pedimos a reanálise da conta, pois somos uma loja real e identificável, e corr
 - [ ] Contrato/CNPJ: cartão CNPJ à mão caso o Google peça (arquivo que você me enviou).
 - [ ] Conferir a data/horário do aviso na conta: a conta ainda aparece "suspensa" e a contestação de 8/10 como "recusada".
 - [ ] Hostnet: https://alna.cc (sem www) com certificado válido e redirecionando; hoje http://alna.cc responde 403 e https falha.
-- [ ] Merchant Center antigo (5722404568): dados corrigidos; verificar em Ads > Ferramentas > Data manager > Connected products se a campanha usa essa conta.
+- [ ] Merchant Center antigo (5722404568): foi ENCERRADO pelo dono (permanente). Conferir, no perfil do Chrome dessa conta, que o encerramento concluiu e anotar a data. Confirmar que a conta ativa "Alna" (5856969666) continua normal.
+- [ ] Responder com honestidade às perguntas do formulário sobre outras contas: existe alguma conta de Google Ads na OUTRA Conta do Google (a do Merchant Center antigo)? O aviso "Problema com sua conta do Google Ads ()" na conta antiga indicava ligação com algum Google Ads. Se existir, declarar no texto.
 - [ ] Publicar no Lovable as últimas mudanças (pop-up, cupons, imagens) antes de enviar, para o site estar no estado que descrevemos.
 - [ ] Enviar UMA vez, pela conta do dono, em "Contestar a suspensão"; não criar outra conta Google Ads.
