@@ -3,7 +3,7 @@ import { BellRing, Check } from "lucide-react";
 import { toast } from "sonner";
 
 import { useCart } from "@/lib/cart/cart-context";
-import { getSavedCheckoutInfo } from "@/lib/checkout/saved-info";
+import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import {
   getSavedCartState,
   saveCartWithEmail,
@@ -22,6 +22,7 @@ export function SaveCartBox({ restoredState }: { restoredState?: SavedCartState 
   const [saved, setSaved] = useState<SavedCartState | null>(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [showPhone, setShowPhone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,6 +32,7 @@ export function SaveCartBox({ restoredState }: { restoredState?: SavedCartState 
     const info = getSavedCheckoutInfo();
     setEmail(info.email ?? "");
     setPhone(info.phone ?? "");
+    setShowPhone(!!info.phone);
   }, []);
 
   useEffect(() => {
@@ -51,6 +53,8 @@ export function SaveCartBox({ restoredState }: { restoredState?: SavedCartState 
       return;
     }
     setSaved(getSavedCartState());
+    // The checkout opens with these already filled in (the shopper only repeats the e-mail in the confirmation field).
+    saveCheckoutInfo({ email: email.trim(), ...(phone.trim() ? { phone: phone.trim() } : {}) });
     toast.success("Carrinho salvo! Se você não finalizar, avisamos por e-mail.");
   }
 
@@ -99,20 +103,26 @@ export function SaveCartBox({ restoredState }: { restoredState?: SavedCartState 
           placeholder="seu@email.com"
         />
       </div>
-      <div className="space-y-1">
-        <Label htmlFor="save-cart-phone" className="text-xs">
-          WhatsApp (opcional)
-        </Label>
-        <Input
-          id="save-cart-phone"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="(47) 90000-0000"
-        />
-      </div>
+      {showPhone ? (
+        <div className="space-y-1">
+          <Label htmlFor="save-cart-phone" className="text-xs">
+            WhatsApp (opcional)
+          </Label>
+          <Input
+            id="save-cart-phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="(47) 90000-0000"
+          />
+        </div>
+      ) : (
+        <button type="button" onClick={() => setShowPhone(true)} className="text-xs text-muted-foreground underline">
+          Adicionar WhatsApp (opcional)
+        </button>
+      )}
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
       <Button type="button" variant="outline" className="w-full" onClick={handleSave} disabled={saving}>
         {saving ? "Salvando..." : "Salvar carrinho"}

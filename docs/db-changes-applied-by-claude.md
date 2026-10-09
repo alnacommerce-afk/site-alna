@@ -294,3 +294,9 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   se o cupom ligado ao e-mail NÃO for modelo, continua enviando o mesmo código fixo para todos. `resolveTemplateCoupon` devolve `isModel`.
   Minha Conta e a pesquisa passam a mostrar a % de `site_settings.referral_reward_percent` (via `useSiteSettings`, sem requisição nova).
   Admin > E-mail marketing lista também os cupons-modelo ("aleatório por cliente").
+
+## 09/10/2026 — Caixa "Salve seu carrinho" mais leve e e-mail levado ao checkout
+
+- `save-cart-box.tsx`: WhatsApp fica escondido atrás de "Adicionar WhatsApp (opcional)" (aparece aberto se o cliente já tem telefone salvo);
+  ao salvar, e-mail (e WhatsApp, se informado) vão para `saveCheckoutInfo`, então o checkout abre com e-mail e WhatsApp preenchidos; o campo
+  "Confirme o e-mail" continua vazio de propósito. Sem mudança de banco.
