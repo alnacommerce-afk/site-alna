@@ -354,3 +354,12 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
   mesmas dimensões (1344×752) e todos os pixels idênticos** (diferença zero) — posição, zoom e aparência não mudam, pois o código da página não foi tocado. Único item removido: o bloco
   de metadados `caBX` (credencial de conteúdo do gerador de imagem), que não afeta a exibição. Reverter: `git revert` deste commit (o PNG antigo fica no histórico).
 - Dono pediu (09/10) "deixar as imagens como estava, só compactar a imagem de capa": os cartões dos produtos voltaram a usar a foto original (ajuste anterior desfeito em d2a59bf).
+
+### CORREÇÃO (09/10/2026, noite) sobre o banner do topo
+- Eu disse que o PNG "estava mal comprimido": **estava errado**. O arquivo original (590 KB) continha um bloco `caBX` de **356 KB** = "credenciais de conteúdo" (C2PA) assinadas pelo gerador de imagem
+  (Eleven Labs / fal.ai), declarando que a imagem foi criada/editada com IA (`trainedAlgorithmicMedia` / `compositeWithTrainedAlgorithmicMedia`). A economia veio quase toda da retirada desse bloco.
+- Esse bloco NÃO é fator de indexação/ranking (nenhuma fonte do Google diz isso); serve para transparência/rotulagem de IA ("About this image"; a política do Merchant Center pede o campo IPTC
+  DigitalSourceType em imagens geradas por IA — vale para imagens de PRODUTO do feed, o banner não é). Regravar o bloco antigo no arquivo novo o deixaria "adulterado" (a assinatura guarda o hash dos pixels/bytes).
+- Solução adotada a pedido do dono ("se influencia, deve manter"): o PNG novo (230.857 bytes, pixels idênticos, 1344×752) leva um bloco XMP leve (+440 bytes) com
+  `Iptc4xmpExt:DigitalSourceType = compositeWithTrainedAlgorithmicMedia`, o rótulo padrão de IA. Perde-se só a assinatura criptográfica C2PA. O original com a credencial completa continua no git:
+  `git show 9b7cb01^:src/assets/brand/hero-ambassador-cutout.png > hero-original.png`.
