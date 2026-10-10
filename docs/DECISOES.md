@@ -53,3 +53,6 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 ## Regras técnicas aprendidas
 - **09/10** — Coluna nova de `site_settings` lida pela loja precisa de `GRANT SELECT` por coluna a `anon, authenticated` na mesma migração + teste com a chave anônima (a falta derrubou as configurações da loja por ~1,5 h).
 - **09/10** — Mudanças de banco feitas pelo Claude ficam em `docs/db-changes-applied-by-claude.md` (não em `supabase/migrations/`). Funções de servidor só valem depois do dono publicar no Lovable.
+
+## Ferramentas internas
+- **10/10** — **Organizador de Etiquetas PDF** (`/admin/etiquetas`): dono envia PDF com etiquetas de envio (ex.: Mercado Livre Full, 3 por A4 paisagem) e recebe PDF 100 × 150 mm, 1 etiqueta por página, mesma ordem. Só recorte (pdf-lib `embedPage`, vetorial; QR/texto intactos), nada redesenhado. Bordas achadas por varredura de pixels (pdf.js, só para "enxergar"), com validações; na dúvida, interrompe. Roda no navegador do dono; carrega só na página do admin (loja não ganha KB). Mensagem final fixa: "Segue aqui, pode baixar." → `src/lib/admin/label-organizer*.ts`, `src/routes/admin/etiquetas.tsx`, testes `tests/label-organizer.test.ts` (`bun test`). Conhecimento espelhado em github.com/alnacommerce-afk/etiqueta100x150.
