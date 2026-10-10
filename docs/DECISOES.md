@@ -53,3 +53,6 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 ## Regras técnicas aprendidas
 - **09/10** — Coluna nova de `site_settings` lida pela loja precisa de `GRANT SELECT` por coluna a `anon, authenticated` na mesma migração + teste com a chave anônima (a falta derrubou as configurações da loja por ~1,5 h).
 - **09/10** — Mudanças de banco feitas pelo Claude ficam em `docs/db-changes-applied-by-claude.md` (não em `supabase/migrations/`). Funções de servidor só valem depois do dono publicar no Lovable.
+
+## Ferramentas internas
+- **10/10** — Organizador de Etiquetas PDF **não pertence ao site-alna** (dono: "é um projeto totalmente novo à parte"). Chegou a ser publicado aqui (505cb99) e foi **DESFEITO** em seguida (reversão). Vive em github.com/alnacommerce-afk/etiqueta100x150. Não recolocar neste repositório.
