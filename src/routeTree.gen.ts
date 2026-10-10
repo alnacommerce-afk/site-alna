@@ -24,7 +24,6 @@ import { Route as AdminClientesRouteImport } from './routes/admin/clientes'
 import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminEmailsRouteImport } from './routes/admin/emails'
-import { Route as AdminEtiquetasRouteImport } from './routes/admin/etiquetas'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
 import { Route as ContaIndexRouteImport } from './routes/conta/index'
@@ -125,11 +124,6 @@ const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
 const AdminEmailsRoute = AdminEmailsRouteImport.update({
   id: '/admin/emails',
   path: '/admin/emails',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminEtiquetasRoute = AdminEtiquetasRouteImport.update({
-  id: '/admin/etiquetas',
-  path: '/admin/etiquetas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -281,7 +275,6 @@ export interface FileRoutesByFullPath {
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
-  '/admin/etiquetas': typeof AdminEtiquetasRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
@@ -324,7 +317,6 @@ export interface FileRoutesByTo {
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
-  '/admin/etiquetas': typeof AdminEtiquetasRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
@@ -368,7 +360,6 @@ export interface FileRoutesById {
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
-  '/admin/etiquetas': typeof AdminEtiquetasRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/login': typeof ContaLoginRoute
@@ -413,7 +404,6 @@ export interface FileRouteTypes {
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
-    | '/admin/etiquetas'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
@@ -456,7 +446,6 @@ export interface FileRouteTypes {
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
-    | '/admin/etiquetas'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
@@ -499,7 +488,6 @@ export interface FileRouteTypes {
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
-    | '/admin/etiquetas'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/login'
@@ -543,7 +531,6 @@ export interface RootRouteChildren {
   AdminConexoesRoute: typeof AdminConexoesRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
-  AdminEtiquetasRoute: typeof AdminEtiquetasRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
   ContaLoginRoute: typeof ContaLoginRoute
@@ -677,13 +664,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/emails'
       fullPath: '/admin/emails'
       preLoaderRoute: typeof AdminEmailsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/etiquetas': {
-      id: '/admin/etiquetas'
-      path: '/admin/etiquetas'
-      fullPath: '/admin/etiquetas'
-      preLoaderRoute: typeof AdminEtiquetasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -879,7 +859,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConexoesRoute: AdminConexoesRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminEmailsRoute: AdminEmailsRoute,
-  AdminEtiquetasRoute: AdminEtiquetasRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
   ContaLoginRoute: ContaLoginRoute,
