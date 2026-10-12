@@ -1,6 +1,6 @@
 # Pendências e ponto de retomada — loja ALNA
 
-**Última atualização: 09/10/2026 (fim da tarde).** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
+**Última atualização: 12/10/2026 (manhã) — retomada em conversa nova ("se atualize com o repositório").** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
 Ao começar uma conversa: ler este arquivo, `AGENTS.md`, a memória (`MEMORY.md`) e, se o assunto for Google Ads, `docs/google-ads-contestacao/STATUS.md`.
 Ao terminar algo ou receber novidade do dono: atualizar aqui (e no STATUS.md do Google Ads), commit + push + espelho no Drive.
 
@@ -14,8 +14,8 @@ Painel completo: `docs/google-ads-contestacao/STATUS.md` (protocolo no `README.m
 Conta **635-244-4697** (informacoes.asm@gmail.com) suspensa por "phishing"; 1ª contestação recusada em 08/10; **2ª AINDA NÃO ENVIADA**.
 
 **Para poder abrir a 2ª contestação falta:**
-1. **R5 — Hostnet / `alna.cc`:** `www.alna.cc` OK, mas `http://alna.cc` dá 403 e `https://alna.cc` erro de certificado. Chamado respondido pelo dono, aguardando.
-   Depois de **12/10/2026** a decisão passa a ser do dono (enviar sem essa linha, aceitando o ponto frágil).
+1. **R5 — Hostnet / `alna.cc`:** `www.alna.cc` OK, mas `http://alna.cc` dá 403 e `https://alna.cc` erro de certificado (**reverificado em 12/10 09:50: igual**; sem resposta da Hostnet registrada). Chamado respondido pelo dono, aguardando.
+   **Hoje (12/10/2026) a decisão passa a ser do dono:** cobrar a Hostnet de novo ou enviar a contestação sem essa linha, aceitando o ponto frágil.
 2. **R7 — outras contas de Google Ads:** além da 635 existem **172-390-8582** ("Cancelado", aleqs.santos@gmail.com) e **962-967-1605**
    (asm.express.logistica@gmail.com, não ativa/sem gasto segundo o dono). Dono: nunca anunciaram os domínios da ALNA. **Faltam:** (3) conferir se usam o mesmo
    perfil de pagamentos (ID "Conta do Google Payments" em Faturamento > Configurações vs **2160-7426-3129-2039** da 635) e (4) se há faixa vermelha/violação em cada uma.
@@ -33,7 +33,7 @@ Conta **635-244-4697** (informacoes.asm@gmail.com) suspensa por "phishing"; 1ª 
 - Medir resultado: pedidos pagos por `utm_campaign = google-ads-atacado` (Supabase), custo de cupom e frete; pedir prints (Visão geral, termos de pesquisa, páginas de destino).
 - Anúncios: nunca palavra TODA em maiúsculas (ALNA, OFF) — memória `feedback_google_ads_editorial_policy`.
 
-**Lembretes agendados (se o app estiver aberto):** 10/10 09:00 e 13/10 09:00 — ambos já apontam para este painel.
+**Lembretes agendados (se o app estiver aberto):** o de 10/10 09:00 já rodou (14:14 UTC; não há registro do que ele disse); falta o de **13/10 09:00** — aponta para este painel.
 
 ---
 
@@ -97,3 +97,10 @@ Cupons normais: ALNA10%OFF, ALNA5%OFF (atacado), NOVIDADE5%OFF.
 Sócio: antes de aplicar, trazer benefícios/riscos em linguagem simples; nunca aplicar sem "ok, aplique"; olhar de cliente novo; nunca adivinhar (confirmar na documentação oficial,
 dizer o que é confirmado e o que é inferência); toda mudança com "Espaço no back end" + "Efeito no carregamento"; sincronizar status/textos em todas as telas; após cada commit: push + espelho no Drive;
 dono publica no Lovable e pede "publiquei, confere se subiu"; nunca pedir/aceitar chaves ou tokens no chat; não reescrever histórico do git (usar reversão).
+
+## O que mudou entre 09/10 (noite) e 12/10 (retomada)
+- **10/10 11:39–11:40 (outra conversa):** o "Organizador de Etiquetas PDF" foi criado no site-alna (505cb99) e **desfeito logo em seguida** (cac931d); o dono decidiu que é um **projeto totalmente à parte** (github.com/alnacommerce-afk/etiqueta100x150). Registrado em `DECISOES.md`. Líquido no repositório: só 3 linhas em `DECISOES.md`.
+- **12/10 09:50 — verificação feita pelo Claude (sem mudar nada):** `/atacado` 200 em 0,3–1,8 s (inclusive AdsBot); `/loja`, `/sobre`, `/contato`, política 200; `alnacommerce.com` 301 ok; **`alna.cc` igual (403 / certificado)**.
+  Cron: todos os jobs rodaram nas últimas 24 h sem falha (inclusive `process-abandoned-carts` e `keep-warm-atacado`); saúde do pagamento (Asaas chave/webhook) ok; 0 e-mails com falha desde 09/10.
+- **Uso real desde 09/10 18:00 UTC:** **0 pedidos novos**, **0 carrinhos salvos**, **0 inscritos pelo pop-up**, **0 cupons de boas-vindas** (a campanha de Ads está parada e o tráfego é baixo; ainda não dá para avaliar o pop-up/carrinho abandonado). 1 pedido pendente: o de teste 8433b1a9.
+- Cópia do Drive atualizada em 12/10 (só `DECISOES.md` mudou de fato; os outros 4 arquivos listados na comparação eram só diferença de data após o vai-e-volta das etiquetas).

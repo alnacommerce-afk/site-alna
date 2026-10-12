@@ -1,6 +1,6 @@
 # Painel de situação — 2ª contestação do Google Ads
 
-**Última atualização:** 09/10/2026 (tarde)
+**Última atualização:** 12/10/2026 (manhã)
 
 ## Situação atual
 - Conta **suspensa** (phishing / "página de destino não está funcionando"), desde 08/10/2026 03:27.
@@ -71,3 +71,9 @@ curl -s -o /dev/null -m 25 -A "AdsBot-Google (+http://www.google.com/adsbot.html
 curl -s -o /dev/null -m 25 -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" -w "Googlebot atacado -> %{http_code} (%{time_total}s)\n" https://store.alna.sale/atacado
 echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | openssl x509 -noout -subject -dates
 ```
+
+## Atualização 12/10/2026 (manhã) — retomada
+- Reverificado às 09:50: `/atacado` 200 (0,3–1,8 s, inclusive AdsBot); `alnacommerce.com` 301 ok; `www.alna.cc` 301 ok; **`http://alna.cc` = 403 e `https://alna.cc` = certificado errado (`*.f1.k8.com.br`) — SEM mudança**; sem resposta da Hostnet registrada.
+- **Hoje (12/10) vence o prazo que combinamos para o R5:** a decisão é do dono — (a) cobrar a Hostnet de novo, ou (b) enviar sem a linha do alna.cc (remover do texto e registrar aqui).
+- Continuam pendentes: R7 itens 3 e 4 (ID do perfil de pagamentos e faixa de violação das contas 172-390-8582 e 962-967-1605) e R11 (texto final). Nada novo informado pelo dono desde 09/10 (noite).
+- Quando o dono responder, recontar: ainda falta = R5 (decisão), R7 (3 e 4), reverificação no dia, texto final.
