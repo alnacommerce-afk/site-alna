@@ -330,6 +330,13 @@ function CarrinhoPage() {
                         id="cart-coupon"
                         value={couponInput}
                         onChange={(e) => setCouponInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          // Enter does the same as the "Aplicar" button (blocked while one is already running).
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (!applyingCoupon) void handleApplyCoupon();
+                          }
+                        }}
                         placeholder="Código do cupom"
                       />
                       <Button
