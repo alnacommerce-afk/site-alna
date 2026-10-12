@@ -84,6 +84,48 @@ function formatBRL(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+// Copies, at the moment of the sale, the numbers the price was built with (cost, tax, margin...) and the payment rule used.
+// Lives in order_item_pricing / order_payment_snapshot (admin-only: no policies, no grants for customers).
+// deno-lint-ignore no-explicit-any
+async function savePricingSnapshot(admin: any, input: {
+  orderId: string;
+  items: { id: string; product_variant_id: string | null }[];
+  variants: Record<string, unknown>[];
+  paymentMethod: string;
+  installmentCount: number;
+}) {
+  const n = (value: unknown) => (value == null ? null : Number(value));
+  const rows = input.items.map((item) => {
+    const v = input.variants.find((x) => x.id === item.product_variant_id) ?? {};
+    const cost = n(v.cost_cents);
+    return {
+      order_item_id: item.id,
+      order_id: input.orderId,
+      cost_total_cents: cost == null ? null : cost + (n(v.extra_cost_cents) ?? 0) + (n(v.freight_cost_cents) ?? 0),
+      tax_rate_pct: n(v.tax_rate_pct),
+      card_fee_pct: n(v.card_fee_pct),
+      margin_pct: n(v.margin_pct),
+      coupon_avg_pct: n(v.coupon_avg_pct),
+      shipping_cost_pct: n(v.shipping_cost_pct),
+      discount_pct: n(v.discount_pct),
+      compare_at_price_cents: n(v.compare_at_price_cents),
+      pricing_estimated: false,
+    };
+  });
+  if (rows.length) {
+    const { error } = await admin.from("order_item_pricing").upsert(rows, { onConflict: "order_item_id" });
+    if (error) console.error("[checkout-create] snapshot dos itens", error);
+  }
+  const isPix = input.paymentMethod === "pix";
+  const { error: payError } = await admin.from("order_payment_snapshot").upsert({
+    order_id: input.orderId,
+    pix_discount_pct: isPix ? Math.round(PIX_DISCOUNT * 10000) / 100 : null,
+    card_fee_pct: isPix ? null : Math.round(cardFeePercentFor(input.installmentCount) * 10000) / 100,
+    card_fee_fixed_cents: isPix ? null : CARD_FIXED_FEE_CENTS,
+  }, { onConflict: "order_id" });
+  if (payError) console.error("[checkout-create] snapshot do pagamento", payError);
+}
+
 function cardFeePercentFor(installmentCount: number) {
   const tier = CARD_FEE_TIERS.find((t) => installmentCount <= t.max);
   return (tier ?? CARD_FEE_TIERS[CARD_FEE_TIERS.length - 1]).pct;
@@ -129,7 +171,7 @@ Deno.serve(async (req) => {
     const { data: variants, error: variantsError } = await admin
       .from("product_variants")
       .select(
-        "id, name, sku, price_cents, stock_quantity, product_id, products(title), package_height_cm, package_length_cm, package_weight_kg, package_width_cm",
+        "id, name, sku, price_cents, stock_quantity, product_id, products(title), package_height_cm, package_length_cm, package_weight_kg, package_width_cm, cost_cents, extra_cost_cents, freight_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, coupon_avg_pct, shipping_cost_pct, discount_pct, compare_at_price_cents",
       )
       .in("id", body.items.map((i) => i.variantId));
     if (variantsError) throw variantsError;
@@ -468,10 +510,23 @@ Deno.serve(async (req) => {
       .is("recovered_at", null);
     if (cartError) console.error("[checkout-create] falha ao encerrar carrinho salvo", cartError);
 
-    const { error: itemsError } = await admin
+    const { data: insertedItems, error: itemsError } = await admin
       .from("order_items")
-      .insert(orderItemsPayload.map((item) => ({ ...item, order_id: orderId })));
+      .insert(orderItemsPayload.map((item) => ({ ...item, order_id: orderId })))
+      .select("id, product_variant_id");
     if (itemsError) throw itemsError;
+
+    // Pricing snapshot for the finance report (sales-report / FinMarket HUB). Saved in admin-only tables, and
+    // NEVER allowed to delay or break the order: it runs in the background and any error is only logged.
+    const snapshotJob = savePricingSnapshot(admin, {
+      orderId,
+      items: insertedItems ?? [],
+      variants,
+      paymentMethod: body.paymentMethod,
+      installmentCount,
+    }).catch((error) => console.error("[checkout-create] falha ao salvar snapshot de preços", error));
+    const edgeRuntime = (globalThis as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime;
+    edgeRuntime?.waitUntil?.(snapshotJob);
 
     const remoteIp =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||

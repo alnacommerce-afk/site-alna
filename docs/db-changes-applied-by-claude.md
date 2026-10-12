@@ -374,3 +374,8 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 
 - `src/lib/free-shipping-setting.ts` (novo) + `src/routes/atacado.tsx`: `loader` busca `site_settings.free_shipping_threshold_cents` no servidor (cache em memória de 60 s, sem valor embutido) e a meta description/og:description e os textos da página usam esse valor; sem valor → "acima do valor mínimo da loja". Sem mudança de banco. Publicar no Lovable; conferir o HTML ao vivo com `curl` (descrição e "Frete grátis acima de R$ …").
   Custo: 1 consulta leve ao banco no servidor (no máximo 1 por minuto por instância) na página que recebe os anúncios; medir o PageSpeed do `/atacado` (referência 97) depois.
+
+## 12/10/2026 — Relatório do FinMarket: tabelas de preço/pagamento por pedido
+
+- Migração `order_pricing_and_payment_snapshots` (aplicada via MCP): `order_item_pricing` (por item: cost_total_cents, tax_rate_pct, card_fee_pct, margin_pct, coupon_avg_pct, shipping_cost_pct, discount_pct, compare_at_price_cents, pricing_estimated) e `order_payment_snapshot` (por pedido: pix_discount_pct, card_fee_pct, card_fee_fixed_cents, gateway_fee_cents, net_received_cents, gateway_synced_at). RLS ligada **sem políticas** e `revoke all` de anon/authenticated (só a chave de serviço lê). Preenchimento retroativo dos 8 pedidos existentes (pagamento exato; itens com `pricing_estimated = true`).
+- Código (publicar no Lovable para valer): `sales-report` (reescrito), `checkout-create` (grava a "foto" em segundo plano, sem atrasar/impedir o pedido), `asaas-webhook` (trava `pending → paid` + grava taxa/líquido de cobrança única). Doc: `docs/sales-report-finmarket.md`.

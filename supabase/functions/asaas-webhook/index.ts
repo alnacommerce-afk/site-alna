@@ -44,7 +44,9 @@ Deno.serve(async (req) => {
 
     const event = await req.json();
     const eventType = event?.event as string | undefined;
-    const payment = event?.payment as { id?: string; status?: string } | undefined;
+    const payment = event?.payment as
+      | { id?: string; status?: string; value?: number; netValue?: number | null; installment?: string | null }
+      | undefined;
 
     // API-key lifecycle events (docs.asaas.com/docs/eventos-para-chaves-de-api): the key is about to
     // expire from inactivity, or was disabled / expired / deleted. Warn the admin before checkout breaks.
@@ -74,13 +76,17 @@ Deno.serve(async (req) => {
       .eq("payment_id", payment.id)
       .maybeSingle();
 
+    // A late "paid" event (Asaas sends CONFIRMED and then RECEIVED, and retries) must never drag an order that already
+    // moved on (shipped, completed, refunded, cancelled) back to "paid": it only moves pending -> paid.
+    // The payment_status text is still updated; refund, cancellation and the other transitions work as before.
+    const blockedPaidRegression = orderStatus === "paid" && !!existingOrder && existingOrder.status !== "pending";
     const update: Record<string, unknown> = { payment_status: payment.status ?? eventType };
-    if (orderStatus) update.status = orderStatus;
+    if (orderStatus && !blockedPaidRegression) update.status = orderStatus;
 
     const { error } = await admin.from("orders").update(update).eq("payment_id", payment.id);
     if (error) throw error;
 
-    if (orderStatus === "paid" && existingOrder && existingOrder.status !== "paid") {
+    if (orderStatus === "paid" && existingOrder && existingOrder.status === "pending") {
       await notifyPaymentConfirmed(admin, {
         id: existingOrder.id,
         user_id: existingOrder.user_id,
@@ -90,6 +96,25 @@ Deno.serve(async (req) => {
         is_new_account: existingOrder.is_new_account,
         referrer_user_id: existingOrder.referrer_user_id,
       });
+    }
+
+    // Real Asaas fee/net, saved for the finance report when the charge is a single payment (Pix or card in 1x).
+    // Installment sales need every installment summed, so those keep being read live (sales-report?include_gateway=1).
+    // Best effort: a failure here is only logged and never changes the webhook answer.
+    if (orderStatus === "paid" && existingOrder && !payment.installment && payment.netValue != null && payment.value != null) {
+      try {
+        const grossCents = Math.round(Number(payment.value) * 100);
+        const netCents = Math.round(Number(payment.netValue) * 100);
+        const { error: snapError } = await admin.from("order_payment_snapshot").upsert({
+          order_id: existingOrder.id,
+          gateway_fee_cents: grossCents - netCents,
+          net_received_cents: netCents,
+          gateway_synced_at: new Date().toISOString(),
+        }, { onConflict: "order_id" });
+        if (snapError) console.error("[asaas-webhook] snapshot do gateway", snapError);
+      } catch (snapError) {
+        console.error("[asaas-webhook] snapshot do gateway", snapError);
+      }
     }
 
     // Customer e-mails for the sad paths, once per order (Asaas retries webhooks, and sends several

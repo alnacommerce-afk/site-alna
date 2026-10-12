@@ -70,6 +70,7 @@ Checkout 96, Produto 94, Carrinho 91, **Loja 70–81**.
 - [ ] Horário de postagem da Melhor Envio: a correção de fuso foi **revertida** (o valor vem em UTC). Horário de **entrega** ainda não verificado — conferir no primeiro pedido entregue.
 - [ ] Monitorar se o pop-up central da `/loja` reduz visitas orgânicas pelo Google (risco apontado; ele só aparece após interação humana). Se cair, reduzir para cartão no canto.
 - [ ] Pedidos Pix pendentes antigos: `regenerate-pix` não refaz pedido sem CPF, com +30 dias, de cartão ou já pago.
+- [ ] **FinMarket / sales-report** (12/10): código pronto, aguardando o dono publicar no Lovable. Depois: conferir ao vivo, fazer 1 pedido de teste no Pix e checar `?status=all` (ver `docs/sales-report-finmarket.md`); confirmar se o aviso da Asaas traz `netValue` e que a trava do webhook segura um evento atrasado.
 - [ ] Hostnet: quando responderem, testar `http://alna.cc`, `https://alna.cc`, `www.alna.cc`, `/wp-admin` e MX/SPF.
 
 ---
