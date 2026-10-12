@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
-import { cardFeePercentFor, grossUpForCardFee, PIX_DISCOUNT } from "@/lib/payment-fees";
+import { cardFeePercentFor, grossUpForCardFee, pixTotalCents } from "@/lib/payment-fees";
 import { useCart } from "@/lib/cart/cart-context";
 import {
   getSavedCheckoutInfo,
@@ -197,7 +197,7 @@ function CheckoutPage() {
     baseTotalCents == null
       ? null
       : paymentMethod === "pix"
-        ? Math.round(baseTotalCents * (1 - PIX_DISCOUNT))
+        ? pixTotalCents(subtotalCents - discountCents, shippingCents ?? 0)
         : grossUpForCardFee(baseTotalCents, installmentCount);
 
   async function handleSubmit() {
@@ -428,7 +428,7 @@ function CheckoutPage() {
                     paymentMethod === "pix" ? "border-[#15803d] bg-[#15803d]/5" : "border-[#12294f]/15"
                   }`}
                 >
-                  <RadioGroupItem value="pix" /> PIX <span className="text-xs text-[#15803d]">(-4%)</span>
+                  <RadioGroupItem value="pix" /> PIX <span className="text-xs text-[#15803d]">(-4% nos produtos)</span>
                 </label>
                 <label
                   className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${

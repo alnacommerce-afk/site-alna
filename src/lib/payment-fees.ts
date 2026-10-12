@@ -5,6 +5,11 @@
 // Taxas). TODO revisar antes de 14/12/2026: padrão vira 2,99/3,49/3,99% (mesma taxa fixa).
 export const PIX_DISCOUNT = 0.04;
 
+/** Pix total: the 4% discount applies ONLY to the products (after coupons); shipping is charged in full. */
+export function pixTotalCents(productsAfterCouponCents: number, shippingCents: number): number {
+  return Math.round(productsAfterCouponCents * (1 - PIX_DISCOUNT)) + shippingCents;
+}
+
 const CARD_FEE_TIERS: { max: number; pct: number }[] = [
   { max: 1, pct: 0.0199 },
   { max: 6, pct: 0.0249 },

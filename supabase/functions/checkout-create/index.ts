@@ -350,7 +350,8 @@ Deno.serve(async (req) => {
     const baseTotalCents = subtotalCents - discountCents + shippingCostCents;
     const totalCents =
       body.paymentMethod === "pix"
-        ? Math.round(baseTotalCents * (1 - PIX_DISCOUNT))
+        ? // The Pix discount applies only to the products (after coupons); shipping is charged in full.
+          Math.round((subtotalCents - discountCents) * (1 - PIX_DISCOUNT)) + shippingCostCents
         : grossUpForCardFee(baseTotalCents, installmentCount);
 
     // 3. Find or create a Supabase Auth account for this customer (by e-mail), so they can log in

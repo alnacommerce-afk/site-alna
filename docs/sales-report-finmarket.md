@@ -51,3 +51,5 @@ Código: `supabase/functions/sales-report/index.ts`. Combinado com o dono em 12/
 1. Fazer um pedido pequeno no Pix em store.alna.sale e pagar. Conferir que o pedido vai para "Pago".
 2. Consultar `?status=all` (sem `include_gateway`): o pedido novo deve vir com `pricing_estimated = false` em todos os itens, `pix_discount_pct = 4`, e `gateway_fee_cents`/`net_received_cents` preenchidos se a Asaas mandou `netValue` no aviso (senão `null` — e então `?include_gateway=1`).
 3. Conferir `label_price_cents` depois de gerar a etiqueta e os nomes de cupom (sem códigos pessoais).
+
+> Desde 12/10/2026 o desconto do Pix (4%) incide só sobre os produtos (após cupom); o frete é cobrado inteiro. `pix_discount_pct` continua 4 e `pix_discount_cents` = 4% de (produtos − cupom). Pedidos anteriores seguem a regra antiga (4% sobre produtos + frete).
