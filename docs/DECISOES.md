@@ -56,3 +56,9 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 
 ## Ferramentas internas
 - **10/10** — Organizador de Etiquetas PDF **não pertence ao site-alna** (dono: "é um projeto totalmente novo à parte"). Chegou a ser publicado aqui (505cb99) e foi **DESFEITO** em seguida (reversão). Vive em github.com/alnacommerce-afk/etiqueta100x150. Não recolocar neste repositório.
+
+## Frete grátis
+- **12/10** — O valor do frete grátis tem **uma única fonte**: Admin > Configurações > "Frete grátis a partir de (R$)" (hoje **R$ 150,00**; `site_settings.free_shipping_threshold_cents`). Dono: "nesses campos deve acompanhar o valor preenchido em Admin > Configurações".
+  O cálculo do frete (`calculate-shipping`) e o checkout (`checkout-create`) usavam **R$ 100** como valor de reserva (herdado de 15/09, quando a função foi criada); agora leem o valor das Configurações pelo helper `_shared/free-shipping.ts`,
+  **sem valor embutido**: se a configuração não puder ser lida, o frete grátis fica desligado naquela chamada (e o erro é registrado), nunca um valor "chutado". Padrão da coluna no banco passou de 10000 para 15000. Admin: campo vazio não salva (evita gravar R$ 0 = frete grátis em tudo).
+- **12/10** — Home (alna.sale): o selo dizia "Frete grátis para todo o Brasil" sem condição; passou a dizer "Frete grátis acima do valor mínimo" (sem número fixo, para não ficar desatualizado se o valor mudar). Pendência: texto da meta description de `/atacado` ("frete grátis acima de R$ 150") e valor de exibição enquanto carrega (`?? 15000`) ainda são fixos.

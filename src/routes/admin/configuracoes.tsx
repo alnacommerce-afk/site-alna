@@ -63,7 +63,7 @@ const emptyForm: SettingsForm = {
   shippingOriginCity: "",
   shippingOriginState: "",
   shippingCarrierPreference: "",
-  freeShippingThreshold: "100,00",
+  freeShippingThreshold: "",
   ga4MeasurementId: "",
   ga4PropertyId: "",
 };
@@ -119,6 +119,11 @@ function ConfiguracoesPage() {
   }
 
   async function handleSave() {
+    // An empty field would be saved as R$ 0,00 = free shipping on every order: never allow that by accident.
+    if (!form.freeShippingThreshold.trim()) {
+      toast.error("Informe o valor do frete grátis (campo \"Frete grátis a partir de\").");
+      return;
+    }
     setSaving(true);
     const { error } = await supabase
       .from("site_settings")
@@ -363,11 +368,12 @@ function ConfiguracoesPage() {
                   id="free-shipping-threshold"
                   value={form.freeShippingThreshold}
                   onChange={(e) => setField("freeShippingThreshold", e.target.value)}
-                  placeholder="100,00"
+                  placeholder="Valor mínimo em reais"
                   inputMode="decimal"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Exibido na barra verde no topo do site.
+                  Este é o valor que o site usa: barra verde do topo, carrinho, página de atacado, cálculo do frete e
+                  checkout (o servidor não tem valor próprio).
                 </p>
               </div>
             </div>

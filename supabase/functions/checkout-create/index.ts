@@ -13,6 +13,7 @@ import { renderEmailTemplate } from "../_shared/render-template.ts";
 import { notifyPaymentConfirmed } from "../_shared/notify-payment-confirmed.ts";
 import { packOrder } from "../_shared/package-dimensions.ts";
 import { reportPaymentProblem } from "../_shared/payment-alert.ts";
+import { qualifiesForFreeShipping, readFreeShippingThresholdCents } from "../_shared/free-shipping.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -235,9 +236,9 @@ Deno.serve(async (req) => {
       .select("shipping_origin_zip, free_shipping_threshold_cents")
       .eq("id", "default")
       .maybeSingle();
-    // Default here must match the one in src/routes/index.tsx (used when site_settings has no row).
-    const freeShippingThresholdCents = settings?.free_shipping_threshold_cents ?? 10000;
-    const freeShipping = subtotalCents >= freeShippingThresholdCents;
+    // The threshold comes ONLY from Admin > Configurações (no built-in default; see _shared/free-shipping.ts).
+    const freeShippingThresholdCents = readFreeShippingThresholdCents(settings, "checkout-create");
+    const freeShipping = qualifiesForFreeShipping(subtotalCents, freeShippingThresholdCents);
     const { data: meToken } = await admin.rpc("get_integration_secret", {
       p_integration_id: "melhor_envio",
     });

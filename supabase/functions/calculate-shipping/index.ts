@@ -4,6 +4,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 import { packOrder } from "../_shared/package-dimensions.ts";
+import { qualifiesForFreeShipping, readFreeShippingThresholdCents } from "../_shared/free-shipping.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -64,13 +65,13 @@ Deno.serve(async (req) => {
 
     if (variantsError) throw variantsError;
 
-    // Default here must match the one in src/routes/index.tsx (used when site_settings has no row).
-    const freeShippingThresholdCents = settings?.free_shipping_threshold_cents ?? 10000;
+    // The threshold comes ONLY from Admin > Configurações (no built-in default; see _shared/free-shipping.ts).
+    const freeShippingThresholdCents = readFreeShippingThresholdCents(settings, "calculate-shipping");
     const subtotalCents = body.items.reduce((sum, item) => {
       const variant = (variants ?? []).find((v) => v.id === item.variantId);
       return sum + (variant?.price_cents ?? 0) * item.quantity;
     }, 0);
-    const freeShipping = subtotalCents >= freeShippingThresholdCents;
+    const freeShipping = qualifiesForFreeShipping(subtotalCents, freeShippingThresholdCents);
 
     const originZip = onlyDigits(settings?.shipping_origin_zip ?? "");
     if (originZip.length !== 8) {

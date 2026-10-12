@@ -363,3 +363,9 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Solução adotada a pedido do dono ("se influencia, deve manter"): o PNG novo (230.857 bytes, pixels idênticos, 1344×752) leva um bloco XMP leve (+440 bytes) com
   `Iptc4xmpExt:DigitalSourceType = compositeWithTrainedAlgorithmicMedia`, o rótulo padrão de IA. Perde-se só a assinatura criptográfica C2PA. O original com a credencial completa continua no git:
   `git show 9b7cb01^:src/assets/brand/hero-ambassador-cutout.png > hero-original.png`.
+
+## 12/10/2026 — Frete grátis acompanha as Configurações (sem valor de R$ 100 embutido)
+
+- Migração `free_shipping_default_150`: padrão da coluna `site_settings.free_shipping_threshold_cents` 10000 → 15000.
+- `supabase/functions/_shared/free-shipping.ts` (novo) usado por `calculate-shipping` e `checkout-create` (publicar no Lovable para valer). `src/routes/admin/configuracoes.tsx`: sem "100,00" embutido, campo vazio não salva, texto de ajuda.
+- `home-cloudflare/index.html`: selo "Frete grátis acima do valor mínimo" (23.636 bytes antes; ver tamanho depois no commit). A Home é estática: o dono precisa publicar a pasta no Cloudflare (ver `home-cloudflare/README.md`).
