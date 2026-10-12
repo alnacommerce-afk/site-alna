@@ -369,3 +369,8 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Migração `free_shipping_default_150`: padrão da coluna `site_settings.free_shipping_threshold_cents` 10000 → 15000.
 - `supabase/functions/_shared/free-shipping.ts` (novo) usado por `calculate-shipping` e `checkout-create` (publicar no Lovable para valer). `src/routes/admin/configuracoes.tsx`: sem "100,00" embutido, campo vazio não salva, texto de ajuda.
 - `home-cloudflare/index.html`: selo "Frete grátis acima do valor mínimo" (23.636 bytes antes; ver tamanho depois no commit). A Home é estática: o dono precisa publicar a pasta no Cloudflare (ver `home-cloudflare/README.md`).
+
+## 12/10/2026 — /atacado lê o frete grátis das Configurações (no servidor)
+
+- `src/lib/free-shipping-setting.ts` (novo) + `src/routes/atacado.tsx`: `loader` busca `site_settings.free_shipping_threshold_cents` no servidor (cache em memória de 60 s, sem valor embutido) e a meta description/og:description e os textos da página usam esse valor; sem valor → "acima do valor mínimo da loja". Sem mudança de banco. Publicar no Lovable; conferir o HTML ao vivo com `curl` (descrição e "Frete grátis acima de R$ …").
+  Custo: 1 consulta leve ao banco no servidor (no máximo 1 por minuto por instância) na página que recebe os anúncios; medir o PageSpeed do `/atacado` (referência 97) depois.

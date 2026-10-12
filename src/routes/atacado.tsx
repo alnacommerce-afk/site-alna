@@ -4,14 +4,14 @@ import { ArrowRight, ShoppingCart } from "lucide-react";
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 import { Button } from "@/components/ui/button";
-import { formatCentsToBRL } from "@/lib/money";
-import { useSiteSettings } from "@/lib/site-data";
+import { fetchFreeShippingThresholdCents, freeShippingAbove, freeShippingFrom } from "@/lib/free-shipping-setting";
 import { STORE_URL } from "@/lib/site-urls";
 
 const PAGE_URL = `${STORE_URL}/atacado`;
 const TITLE = "Atacado de Utilidades Domésticas, Toalhas e Cozinha";
-const DESCRIPTION =
-  "Compre em quantidade para revenda: utensílios de madeira, toalhas e mais. 5% de desconto acima de R$ 250, frete grátis acima de R$ 150 e nota fiscal.";
+// The free-shipping value comes from Admin > Configurações (never typed here), so the text Google reads is always the current one.
+const buildDescription = (freeShippingCents: number | null) =>
+  `Compre em quantidade para revenda: utensílios de madeira, toalhas e mais. 5% de desconto acima de R$ 250, frete grátis ${freeShippingAbove(freeShippingCents)} e nota fiscal.`;
 
 const WHATSAPP_ATACADO_URL = `${WHATSAPP_URL}?text=${encodeURIComponent(
   "Olá! Quero comprar em quantidade na ALNA (atacado).",
@@ -65,12 +65,14 @@ const FEATURED_GROUPS = [
 ] as const;
 
 export const Route = createFileRoute("/atacado")({
-  head: () => ({
+  // Runs on the server for the first request, so the HTML the crawlers receive already has the real value.
+  loader: async () => ({ freeShippingCents: await fetchFreeShippingThresholdCents() }),
+  head: ({ loaderData }) => ({
     meta: [
       { title: `${TITLE} | Alna` },
-      { name: "description", content: DESCRIPTION },
+      { name: "description", content: buildDescription(loaderData?.freeShippingCents ?? null) },
       { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { property: "og:description", content: buildDescription(loaderData?.freeShippingCents ?? null) },
       { property: "og:type", content: "website" },
       { property: "og:url", content: PAGE_URL },
     ],
@@ -81,7 +83,7 @@ export const Route = createFileRoute("/atacado")({
 
 // Botão principal da página: grande, cor de destaque e com a vantagem logo abaixo, para quem chega
 // de um anúncio saber exatamente o que fazer.
-function BigCta({ freeShipping }: { freeShipping: string }) {
+function BigCta({ freeShippingText }: { freeShippingText: string }) {
   return (
     <div className="pt-4">
       <Button
@@ -96,15 +98,16 @@ function BigCta({ freeShipping }: { freeShipping: string }) {
         </Link>
       </Button>
       <p className="mt-3 text-sm font-semibold text-[#12294f]">
-        5% de desconto acima de R$ 250 · Frete grátis acima de {freeShipping} · Nota fiscal
+        5% de desconto acima de R$ 250 · Frete grátis {freeShippingText} · Nota fiscal
       </p>
     </div>
   );
 }
 
 function AtacadoPage() {
-  const { data: siteSettings } = useSiteSettings();
-  const freeShipping = formatCentsToBRL(siteSettings?.free_shipping_threshold_cents ?? 15000);
+  const { freeShippingCents } = Route.useLoaderData();
+  const freeShippingText = freeShippingAbove(freeShippingCents);
+  const freeShippingFromText = freeShippingFrom(freeShippingCents);
 
   return (
     <LegalPageLayout title={TITLE}>
@@ -116,7 +119,7 @@ function AtacadoPage() {
           <strong>todos os produtos do site</strong>. Monte o pedido direto no site ou fale com a
           gente para quantidades maiores.
         </p>
-        <BigCta freeShipping={freeShipping} />
+        <BigCta freeShippingText={freeShippingText} />
       </LegalSection>
 
       <LegalSection heading="Condições para compras em quantidade">
@@ -126,7 +129,7 @@ function AtacadoPage() {
             <strong>ALNA5%OFF</strong> no carrinho.
           </li>
           <li>
-            <strong>Frete grátis</strong> em compras acima de {freeShipping}, para todo o Brasil.
+            <strong>Frete grátis</strong> em compras {freeShippingText}, para todo o Brasil.
           </li>
           <li>
             <strong>4% de desconto</strong> pagando no Pix.
@@ -138,7 +141,7 @@ function AtacadoPage() {
         </ul>
         <p>
           Sem pedido mínimo: o desconto de 5% vale a partir de R$ 250,00 em produtos, e o frete
-          grátis a partir de {freeShipping}.
+          grátis {freeShippingFromText}.
         </p>
       </LegalSection>
 
@@ -217,7 +220,7 @@ function AtacadoPage() {
           <h3 className="font-semibold text-[#12294f]">Tem pedido mínimo?</h3>
           <p>
             Não. O desconto de 5% é para compras acima de R$ 250,00 e o frete grátis para compras
-            acima de {freeShipping}.
+            {freeShippingText}.
           </p>
         </div>
         <div>
@@ -247,7 +250,7 @@ function AtacadoPage() {
       </LegalSection>
       <div className="mt-10 rounded-2xl bg-[#f0fdf4] p-6">
         <p className="text-lg font-bold text-[#12294f]">Pronto para montar o seu pedido?</p>
-        <BigCta freeShipping={freeShipping} />
+        <BigCta freeShippingText={freeShippingText} />
       </div>
     </LegalPageLayout>
   );
