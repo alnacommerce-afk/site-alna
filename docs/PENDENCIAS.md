@@ -1,6 +1,6 @@
 # Pendências e ponto de retomada — loja ALNA
 
-**Última atualização: 13/10/2026 (manhã) — retomada em conversa nova ("se atualize com o repositório").** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
+**Última atualização: 13/10/2026 (tarde/noite) — Google Ads: 3ª contestação enviada e em análise.** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
 Ao começar uma conversa: ler este arquivo, `AGENTS.md`, a memória (`MEMORY.md`) e, se o assunto for Google Ads, `docs/google-ads-contestacao/STATUS.md`.
 Ao terminar algo ou receber novidade do dono: atualizar aqui (e no STATUS.md do Google Ads), commit + push + espelho no Drive.
 
@@ -116,3 +116,11 @@ dono publica no Lovable e pede "publiquei, confere se subiu"; nunca pedir/aceita
 - Outra máquina registrou em 12/10 (já no repositório): assuntos dos e-mails (boas-vindas, carrinho 24 h e 1 h), pagamento/segurança de 06/10 e o achado do `/atacado` 404 em `alna.sale`.
 - Saúde: 0 falhas de cron em 24 h; Asaas (chave, fila, webhook, endpoint) ok; 1 pedido novo, 1 carrinho salvo, desde 09/10.
 - `https://alna.sale/atacado` **continua 404** (ajuste de 1 linha em `home-cloudflare/_redirects` aguardando o "ok, aplique" do dono).
+
+## O que mudou durante 13/10 (resumo para a próxima conversa)
+- **Google Ads (ver `docs/google-ads-contestacao/STATUS.md`, `AVALIACAO-2026-10-13.md`, `RASCUNHO-3a-contestacao.md`, `ENVIADA-2a-contestacao-2026-10-13.md`):** `alna.cc` resolvido (Hostnet); **verificação do anunciante concluída** (sem ela o formulário de contestação não abre); **2ª contestação (6452545358) recusada em ~45 min**; descoberta de que a conta **962-967-1605 teve 3 campanhas PMax desde 09/02/2026 (R$ 89,93)** com "Destino que não funciona" (provável loja anterior `alnacommerce.com`, não confirmado) — o dono **removeu as 3 campanhas** (~11:40) e **a 3ª contestação (6452570506, ~12:19) declarou as 3 contas e corrigiu as respostas anteriores**; suporte (IA) não dá motivo enquanto suspensa. **Aguardando o resultado** (1–3 dias úteis; lembrete 16/10 09:00).
+- **Domínios (RDAP):** alnacommerce.com 17/12/2025; alna.cc 19/08/2026; alna.sale 20/09/2026 — todos jovens (hipótese de peso para a classificação automática; não confirmada).
+- **Site (publicado e conferido):** `/atacado` com bloco "Quem somos"; cabeçalho "Parcele em até 12x no cartão" (sem "sem juros"); correção "comprasacima"; Enter no cupom do carrinho; **Pix: 4% só sobre os produtos** (frete cheio) em checkout e `checkout-create`.
+- **FinMarket/sales-report:** publicado e conferido; pedido de teste do dono confirmou foto de preços real e taxa/líquido gravados pelo webhook. Falta: Pix de teste com frete pago para provar a regra nova do Pix; gerar etiqueta (ver `label_price_cents`).
+- **Search Console / Navegação segura (13/10):** sem ações manuais, sem problemas de segurança, "nenhum conteúdo não seguro" (alna.sale e store.alna.sale).
+- **Pendente do dono:** aguardar o Google; `alna.sale/atacado` (404 na Home; aguarda "ok"); decisões de pedidos de teste; assunto "para fechar hoje" no e-mail de carrinho (não aprovado).
