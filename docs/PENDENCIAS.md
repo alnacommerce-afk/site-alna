@@ -1,6 +1,6 @@
 # Pendências e ponto de retomada — loja ALNA
 
-**Última atualização: 12/10/2026 (manhã) — retomada em conversa nova ("se atualize com o repositório").** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
+**Última atualização: 13/10/2026 (manhã) — retomada em conversa nova ("se atualize com o repositório").** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
 Ao começar uma conversa: ler este arquivo, `AGENTS.md`, a memória (`MEMORY.md`) e, se o assunto for Google Ads, `docs/google-ads-contestacao/STATUS.md`.
 Ao terminar algo ou receber novidade do dono: atualizar aqui (e no STATUS.md do Google Ads), commit + push + espelho no Drive.
 
@@ -14,8 +14,7 @@ Painel completo: `docs/google-ads-contestacao/STATUS.md` (protocolo no `README.m
 Conta **635-244-4697** (informacoes.asm@gmail.com) suspensa por "phishing"; 1ª contestação recusada em 08/10; **2ª AINDA NÃO ENVIADA**.
 
 **Para poder abrir a 2ª contestação falta:**
-1. **R5 — Hostnet / `alna.cc`:** `www.alna.cc` OK, mas `http://alna.cc` dá 403 e `https://alna.cc` erro de certificado (**reverificado em 12/10 09:50: igual**; sem resposta da Hostnet registrada). Chamado respondido pelo dono, aguardando.
-   **Hoje (12/10/2026) a decisão passa a ser do dono:** cobrar a Hostnet de novo ou enviar a contestação sem essa linha, aceitando o ponto frágil.
+1. **R5 — Hostnet / `alna.cc`: RESOLVIDO (verificado pelo Claude em 13/10 09:15).** `http://alna.cc` e `https://alna.cc` → 301 → `https://www.alna.cc` → 301 → `https://alna.sale/`; certificado válido (CN=alna.cc, 19/08 a 17/11/2026); `/wp-admin` também redireciona. Falta só o dono confirmar (se quiser) que foi a Hostnet que corrigiu e registrar a data/horário aproximado; **no dia do envio, reverificar**. (Atenção: o certificado vence em 17/11/2026; renova sozinho se for Let's Encrypt/AutoSSL.)
 2. **R7 — outras contas de Google Ads:** além da 635 existem **172-390-8582** ("Cancelado", aleqs.santos@gmail.com) e **962-967-1605**
    (asm.express.logistica@gmail.com, não ativa/sem gasto segundo o dono). Dono: nunca anunciaram os domínios da ALNA. **Faltam:** (3) conferir se usam o mesmo
    perfil de pagamentos (ID "Conta do Google Payments" em Faturamento > Configurações vs **2160-7426-3129-2039** da 635) e (4) se há faixa vermelha/violação em cada uma.
@@ -71,7 +70,7 @@ Checkout 96, Produto 94, Carrinho 91, **Loja 70–81**.
 - [ ] Horário de postagem da Melhor Envio: a correção de fuso foi **revertida** (o valor vem em UTC). Horário de **entrega** ainda não verificado — conferir no primeiro pedido entregue.
 - [ ] Monitorar se o pop-up central da `/loja` reduz visitas orgânicas pelo Google (risco apontado; ele só aparece após interação humana). Se cair, reduzir para cartão no canto.
 - [ ] Pedidos Pix pendentes antigos: `regenerate-pix` não refaz pedido sem CPF, com +30 dias, de cartão ou já pago.
-- [ ] **FinMarket / sales-report** (12/10): **publicado e conferido ao vivo em 12/10** (sales-report: 200/400/401 corretos, 7 pedidos não pendentes, sem dado pessoal, cupons ok, gateway `null` sem `include_gateway`). Falta: 1 pedido de teste no Pix e checar `?status=all` (ver `docs/sales-report-finmarket.md`); confirmar se o aviso da Asaas traz `netValue` e que a trava do webhook segura um evento atrasado.
+- [ ] **FinMarket / sales-report** (12/10): **publicado e conferido ao vivo em 12/10** (sales-report: 200/400/401 corretos, 7 pedidos não pendentes, sem dado pessoal, cupons ok, gateway `null` sem `include_gateway`). **Pedido de teste do dono feito em 12/10 15:55 UTC (Pix, pago): conferido em 13/10 — fotos de preço reais (`pricing_estimated=false`), `pix_discount_pct=4`, e a Asaas MANDA o líquido no aviso (taxa R$ 0,99 e líquido gravados às 15:56 UTC, sem consultar a Asaas).** Esse pedido foi feito ANTES da publicação do Pix novo (usou a regra antiga: 4% sobre produtos+frete). Falta: (a) 1 Pix pequeno com frete pago para provar a regra nova (valor cobrado no Asaas = checkout); (b) gerar a etiqueta desse pedido e ver `label_price_cents`; (c) a trava do webhook ainda não foi exercitada por um evento atrasado de verdade.
 - [ ] Hostnet: quando responderem, testar `http://alna.cc`, `https://alna.cc`, `www.alna.cc`, `/wp-admin` e MX/SPF.
 
 ---
@@ -106,3 +105,12 @@ dono publica no Lovable e pede "publiquei, confere se subiu"; nunca pedir/aceita
   Cron: todos os jobs rodaram nas últimas 24 h sem falha (inclusive `process-abandoned-carts` e `keep-warm-atacado`); saúde do pagamento (Asaas chave/webhook) ok; 0 e-mails com falha desde 09/10.
 - **Uso real desde 09/10 18:00 UTC:** **0 pedidos novos**, **0 carrinhos salvos**, **0 inscritos pelo pop-up**, **0 cupons de boas-vindas** (a campanha de Ads está parada e o tráfego é baixo; ainda não dá para avaliar o pop-up/carrinho abandonado). 1 pedido pendente: o de teste 8433b1a9.
 - Cópia do Drive atualizada em 12/10 (só `DECISOES.md` mudou de fato; os outros 4 arquivos listados na comparação eram só diferença de data após o vai-e-volta das etiquetas).
+
+## O que mudou entre 12/10 e 13/10 (retomada)
+- **`alna.cc` corrigido** (ver R5): http e https redirecionam e o certificado é válido. Era o bloqueio mais antigo da contestação.
+- **Publicados e conferidos ao vivo em 12/10:** FinMarket/sales-report (+ trava do webhook + foto de preços no checkout), Enter no cupom do carrinho (conferido no código ao vivo), **Pix: 4% só sobre os produtos, frete inteiro** (checkout e `checkout-create`; versão 89 da função).
+- **Pedido de teste do dono (12/10 15:55 UTC, Pix, R$ 31,50, cupom ALNA10%OFF)**: pago em ~1 min pelo webhook, fotos reais gravadas, taxa/líquido gravados pelo webhook. Ainda não gerou etiqueta (`label_price_cents` vazio).
+- **Carrinho salvo (1) do próprio dono:** a 1ª foto do carrinho foi às 15:55 UTC (15 s antes do pedido); às 19:10 UTC ele montou outro carrinho e às 20:15 UTC saiu o lembrete de 1 h (o sistema trata como carrinho novo, porque a atividade é posterior ao pedido). Funcionou como desenhado.
+- Outra máquina registrou em 12/10 (já no repositório): assuntos dos e-mails (boas-vindas, carrinho 24 h e 1 h), pagamento/segurança de 06/10 e o achado do `/atacado` 404 em `alna.sale`.
+- Saúde: 0 falhas de cron em 24 h; Asaas (chave, fila, webhook, endpoint) ok; 1 pedido novo, 1 carrinho salvo, desde 09/10.
+- `https://alna.sale/atacado` **continua 404** (ajuste de 1 linha em `home-cloudflare/_redirects` aguardando o "ok, aplique" do dono).
