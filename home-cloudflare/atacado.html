@@ -47,6 +47,19 @@ h2{font-size:1.375rem;font-weight:800;margin-bottom:.75rem}
 h3{font-size:1rem;font-weight:700;margin-top:1rem}
 ul{padding-left:1.25rem}li{margin:.35rem 0}
 .card{border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;background:#fff}
+.car-wrap{position:relative}
+.car{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:.25rem 1rem 1rem;scrollbar-width:thin}
+.slide{flex:0 0 86%;scroll-snap-align:center;border:1px solid #e2e8f0;border-radius:.75rem;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.slide img{width:100%;height:auto;aspect-ratio:800/600;background:#f8fafc}
+.slide div{padding:.9rem 1rem 1.1rem;display:flex;flex-direction:column;gap:.35rem;flex:1}
+.slide h3{margin:0;font-size:1.125rem;font-weight:800}
+.slide p{font-size:.9rem;color:#334155;flex:1}
+.slide .btn{font-size:.9rem;padding:.65rem 1rem;margin-top:.35rem}
+.cbtn{display:none;position:absolute;top:35%;width:2.5rem;height:2.5rem;border:0;border-radius:9999px;background:#12294f;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;opacity:.9;z-index:2}
+.cbtn.prev{left:.25rem}.cbtn.next{right:.25rem}
+.niches{margin:.5rem 0 1rem;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.5rem}
+.niches li{margin:0;background:#fff;border:1px solid #bbf7d0;border-radius:9999px;padding:.25rem .75rem;font-size:.8125rem;font-weight:600}
+@media(min-width:768px){.slide{flex-basis:calc(33.333% - .75rem)}.cbtn{display:block}.cbtn[hidden]{display:none}}
 .foot{background:#12294f;color:rgba(255,255,255,.8);font-size:.8125rem;padding:1.25rem 0;margin-top:1rem}
 .foot nav{margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem 1rem}
 .foot a:hover{color:#fff;text-decoration:underline}
@@ -80,6 +93,38 @@ ul{padding-left:1.25rem}li{margin:.35rem 0}
   </div>
  </div>
 
+ <section class="alt" aria-labelledby="enc">
+  <div class="wrap">
+   <h2 id="enc">O que você encontra para revenda</h2>
+   <p>Atendemos lojas, restaurantes, padarias, lanchonetes, buffets, revendedores e quem trabalha com sublimação. Todo o catálogo vale para compra em quantidade. Deslize para ver cada categoria:</p>
+   <ul class="niches" aria-label="Quem compra no atacado">
+    <li>Lojas e revendedores</li><li>Restaurantes e buffets</li><li>Padarias e lanchonetes</li><li>Sublimação</li><li>Enxoval e casa</li>
+   </ul>
+  </div>
+  <div class="wrap car-wrap">
+   <button class="cbtn prev" type="button" aria-label="Categoria anterior" hidden>&#8249;</button>
+   <button class="cbtn next" type="button" aria-label="Próxima categoria" hidden>&#8250;</button>
+   <div class="car" id="car" role="region" aria-label="Categorias do atacado" tabindex="0">
+    <article class="slide">
+     <img src="/assets/cat-cozinha.webp" width="800" height="600" loading="lazy" decoding="async" alt="Utensílios de madeira para cozinha: tábua de corte, pilão, rolo de massa e prato de madeira">
+     <div><h3>Cozinha: utensílios de madeira</h3><p>Tábuas de corte, pilão com socador, rolo de massa, colheres, pratos e bandejas de madeira.</p><a class="btn btn-green" href="https://store.alna.sale/loja?categoria=cozinha">Ver cozinha</a></div>
+    </article>
+    <article class="slide">
+     <img src="/assets/cat-toalhas.webp" width="800" height="600" loading="lazy" decoding="async" alt="Toalhas de banho e rosto em algodão, em várias cores">
+     <div><h3>Toalhas: banho e rosto</h3><p>Toalhas de banho e rosto em algodão, jogos de toalhas, modelos bordados e toalhas para sublimação, em vários tamanhos.</p><a class="btn btn-green" href="https://store.alna.sale/loja?categoria=toalhas">Ver toalhas</a></div>
+    </article>
+    <article class="slide">
+     <img src="/assets/cat-roupas.webp" width="800" height="600" loading="lazy" decoding="async" alt="Roupas: camiseta com proteção UV, short, top e meia térmica">
+     <div><h3>Roupas: conforto e proteção</h3><p>Camisetas com proteção UV, shorts, tops e meias térmicas em tecidos confortáveis e de secagem rápida.</p><a class="btn btn-green" href="https://store.alna.sale/loja?categoria=roupas">Ver roupas</a></div>
+    </article>
+   </div>
+  </div>
+  <div class="wrap" style="margin-top:.5rem">
+   <p><a class="btn btn-green" href="https://store.alna.sale/loja">Ver todos os produtos</a></p>
+   <p style="margin-top:1rem">Precisa de uma quantidade maior do que a disponível no site, ou quer uma compra recorrente? <a href="https://wa.me/5551994911125?text=Ol%C3%A1!%20Quero%20comprar%20em%20quantidade%20na%20ALNA%20(atacado)." target="_blank" rel="noopener noreferrer" style="font-weight:700;color:#15803d;text-decoration:underline">Chame a gente no WhatsApp</a>.</p>
+  </div>
+ </section>
+
  <section>
   <div class="wrap">
    <h2>Condições para compras em quantidade</h2>
@@ -94,14 +139,6 @@ ul{padding-left:1.25rem}li{margin:.35rem 0}
   </div>
  </section>
 
- <section class="alt">
-  <div class="wrap">
-   <h2>O que você encontra para revenda</h2>
-   <p>Utensílios de madeira para cozinha (tábuas de corte, pilão, rolo de massa, colheres, pratos), toalhas de banho e rosto, roupas e utilidades domésticas. Todo o catálogo vale para compra em quantidade.</p>
-   <p style="margin-top:1rem"><a class="btn btn-green" href="https://store.alna.sale/loja">Ver todos os produtos</a></p>
-   <p style="margin-top:1rem">Precisa de uma quantidade maior do que a disponível no site, ou quer uma compra recorrente? <a href="https://wa.me/5551994911125?text=Ol%C3%A1!%20Quero%20comprar%20em%20quantidade%20na%20ALNA%20(atacado)." target="_blank" rel="noopener noreferrer" style="font-weight:700;color:#15803d;text-decoration:underline">Chame a gente no WhatsApp</a>.</p>
-  </div>
- </section>
 
  <section>
   <div class="wrap">
@@ -141,6 +178,12 @@ ul{padding-left:1.25rem}li{margin:.35rem 0}
   </nav>
  </div>
 </footer>
+<script>
+(function(){var c=document.getElementById('car');if(!c)return;var b=document.querySelectorAll('.cbtn');
+function sync(){var more=c.scrollWidth>c.clientWidth+4;for(var i=0;i<b.length;i++)b[i].hidden=!more;}
+for(var i=0;i<b.length;i++){b[i].addEventListener('click',function(){var d=this.className.indexOf('next')>-1?1:-1;c.scrollBy({left:d*(c.firstElementChild.offsetWidth+16),behavior:'smooth'});});}
+sync();addEventListener('resize',sync);})();
+</script>
 <script>
 /* GA4 (same property as the store). Loaded only after the page finished loading and the browser is idle,
    so it never competes with first paint. Same pattern as the Home (index.html). */
