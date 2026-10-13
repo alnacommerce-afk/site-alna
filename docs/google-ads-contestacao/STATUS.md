@@ -200,3 +200,7 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 - **Riscos assumidos:** o formulário avisa que várias contestações em 7 dias "sem corrigir o problema" são marcadas como infundadas e limitam novos envios; houve correções reais (conta 962, textos, domínios), mas o efeito é imprevisível.
 - **Durante a análise:** não criar conta/campanha, não reenviar, não mexer nas contas 962 e 172, manter `/atacado` estável. Lembrete agendado 16/10 09:00 (`avaliar-resultado-2a-contestacao-google-ads`) — usar para a 3ª.
 - **Se recusada de novo:** só uma 4ª com informação nova; considerar nova rodada de investigação (URL final da 962, motivos por Merchant Center/Policy manager) e, se houver, apoio de especialista externo/agência certificada Google. **Se aprovada:** lista "depois que a conta voltar" (UE "No", PMax sem expansão de URL final, negativas, etc.).
+
+## Confirmação do Google (13/10/2026) — 3ª contestação em análise
+- Painel da conta: **"Sua contestação está em análise. Em 13 de out. de 2026, você enviou uma contestação de suspensão (nº 6452570506) relacionada a: Práticas comerciais inaceitáveis: phishing. Não é possível veicular campanhas, criar contas nem enviar outras contestações durante a revisão. A análise geralmente leva de 1 a 3 dias úteis, mas pode demorar mais."**
+- **Nº da 3ª contestação: 6452570506** (1ª: 6452280642; 2ª: 6452545358).

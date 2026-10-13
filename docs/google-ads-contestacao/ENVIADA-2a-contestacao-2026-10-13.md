@@ -41,3 +41,5 @@ O dono confirmou que enviou **os textos recomendados** (campo 1 e campo 2 como e
 
 ## 3ª contestação (13/10/2026 ~12:19)
 Enviada pelo dono com o texto final de `RASCUNHO-3a-contestacao.md` (versão "para colar"), no mesmo dia da recusa da 2ª. Aguardando resposta (1–3 dias úteis; pode demorar).
+
+**3ª contestação: nº 6452570506**, "em análise" (confirmado no painel em 13/10/2026).
