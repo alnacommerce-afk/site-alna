@@ -26,6 +26,7 @@ Conta **635-244-4697** (informacoes.asm@gmail.com) suspensa por "phishing"; 1ª 
 **Só uma contestação** e honesta; nunca criar conta nova de Google Ads; nunca anunciar a ALNA por outra conta enquanto a 635 estiver suspensa.
 
 **Depois que a conta voltar** (já planejado, não aplicar antes):
+- Responder **"No"** à pergunta de anúncios políticos da UE (Faturamento > Verificação do anunciante; não dá para salvar com a conta suspensa).
 - Desligar "expansão do URL final" no Performance Max (para o anúncio não levar a páginas fora do `/atacado`).
 - Negativar, uma a uma: fitness, academia, legging, treino, receita, grátis, usado.
 - 2 títulos curtos (até 15 caracteres), 4 imagens, vídeo, sinais de público.
