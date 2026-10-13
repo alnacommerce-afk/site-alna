@@ -83,3 +83,10 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 - Verificado também: `alnacommerce.com` 301 → alna.sale; `/atacado` (loja) 200, AdsBot 200 em 0,45 s; `/loja` e `/sobre` 200.
 - **Ainda falta para "pode abrir":** R7 itens 3 e 4 (ID do perfil de pagamentos e faixa de violação das contas 172-390-8582 e 962-967-1605 — resposta do dono), R11 (texto final, Claude fecha: tirar a linha do alna.cc como pendência e transformá-la em fato FEITO) e a reverificação no dia do envio (incluindo Search Console/Navegação segura, prints do dono).
 - Novidades do Site para citar (todas publicadas): pop-up de boas-vindas, carrinho salvo, Pix/cartão pela Asaas da LTDA, frete grátis único em Configurações, Pix 4% só sobre produtos (irrelevante para o Google).
+
+## Levantamento 13/10/2026 (pedido do dono: "faça o levantamento e me ajude a criar a contestação")
+- Dono: "o link https://alna.cc já está funcionando" — confirmado por `curl` (R5 FEITO). Hostnet corrigiu; data não informada.
+- Reverificado agora (13/10): domínios (alna.cc, www, alnacommerce.com, alna.sale) ok; `/atacado` 200 para AdsBot, AdsBot-Mobile e Googlebot (9/9, 0,4–1,0 s), sem `<form>`/senha; `/sobre`, `/loja` e `alna.sale` com razão social + CNPJ + endereço; privacidade, termos e troca/devolução 200 e no rodapé; cron `keep-warm-atacado` ativo (288 execuções/24 h).
+- **Fonte oficial lida hoje** (support.google.com/google-ads/answer/9841640 e /15936970): o envio é pelo link "Fale conosco" do aviso de suspensão; 1 contestação por vez; recusada pode ser refeita; **"antes de contestar, garanta que todas as contas vinculadas (atuais ou antigas) e relacionadas cumprem as políticas"** — por isso R7 (3 e 4) deixa de ser "boa prática" e passa a ser o que falta de verdade.
+- **Ainda falta (bloqueia o envio):** R7 (3) e (4), com o dono (2 conferências de ~5 min nas contas 172-390-8582 e 962-967-1605). **Depois:** reverificação no dia + prints do Search Console/Navegação segura (só verificado em 08/10).
+- Texto final v2 em `RASCUNHO-2a-contestacao.md` (sem `[CONFIRMAR]`, só o bloco R7 a escolher).
