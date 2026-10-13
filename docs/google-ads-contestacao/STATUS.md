@@ -148,3 +148,7 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 - **Honestidade a acompanhar:** a 1ª contestação disse "outras Contas do Google = sim, SEM Google Ads". O print da 962 mostra que ela **teve anúncios** (PMax "Vendas", fev/2026, R$ 35,81). Se o parágrafo opcional das outras contas **não** entrou no texto, considerar corrigir isso em uma eventual 3ª contestação ou ao responder ao Google. **Registrar com o dono se entrou ou não.**
 - **Se APROVADA:** responder "No" à pergunta da UE; desligar "expansão do URL final" no PMax, negativar termos (fitness, academia, legging, treino, receita, grátis, usado) e demais itens do PENDENCIAS; conferir o e-mail de reativação.
 - **Se RECUSADA:** só nova contestação com informação realmente nova; ler o motivo no e-mail/conta; não contestar às pressas.
+
+## Confirmação do Google (13/10/2026) — contestação em análise
+- Painel da conta (Ajuda rápida): **"Sua contestação está em análise. Em 13 de out. de 2026, você enviou uma contestação de suspensão (nº 6452545358) relacionada a: Práticas comerciais inaceitáveis: phishing. Não é possível veicular campanhas, criar contas nem enviar outras contestações durante a revisão. A análise geralmente leva de 1 a 3 dias úteis, mas pode demorar mais."**
+- **Nº da 2ª contestação: 6452545358** (a 1ª foi 6452280642). Ver o resultado por e-mail (informacoes.asm@gmail.com) e na conta.
