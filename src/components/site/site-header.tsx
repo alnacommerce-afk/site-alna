@@ -45,7 +45,7 @@ export function SiteHeader() {
             <Truck className="h-3.5 w-3.5" /> Frete para todo o Brasil
           </span>
           <span className="hidden items-center gap-1.5 sm:flex">
-            <CreditCard className="h-3.5 w-3.5" /> Parcele em até 12x sem juros
+            <CreditCard className="h-3.5 w-3.5" /> Parcele em até 12x no cartão
           </span>
           <span className="hidden items-center gap-1.5 sm:flex">
             <ShieldCheck className="h-3.5 w-3.5" /> Compra 100% segura

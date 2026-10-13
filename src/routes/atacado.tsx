@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
+import { COMPANY } from "@/lib/company";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
 import { Button } from "@/components/ui/button";
 import { fetchFreeShippingThresholdCents, freeShippingAbove, freeShippingFrom } from "@/lib/free-shipping-setting";
@@ -215,11 +216,35 @@ function AtacadoPage() {
         </p>
       </LegalSection>
 
+      <LegalSection heading="Quem somos">
+        <p>
+          A loja é operada pela <strong>{COMPANY.legalName}</strong>, CNPJ {COMPANY.cnpj}, com sede
+          em {COMPANY.addressLine}. Vendemos com nota fiscal e entregamos em todo o Brasil.
+        </p>
+        <p>
+          Contato: WhatsApp{" "}
+          <a
+            href={WHATSAPP_ATACADO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-[#15803d] hover:underline"
+          >
+            (51) 99491-1125
+          </a>{" "}
+          · <a href="mailto:contato@alna.sale" className="font-semibold text-[#15803d] hover:underline">contato@alna.sale</a>.
+          Veja também <Link to="/sobre" className="font-semibold text-[#15803d] hover:underline">Sobre</Link>,{" "}
+          <Link to="/contato" className="font-semibold text-[#15803d] hover:underline">Contato</Link>,{" "}
+          <Link to="/politica-de-privacidade" className="font-semibold text-[#15803d] hover:underline">Política de Privacidade</Link>,{" "}
+          <Link to="/termos-de-uso" className="font-semibold text-[#15803d] hover:underline">Termos de Uso</Link> e{" "}
+          <Link to="/politica-de-troca-e-devolucao" className="font-semibold text-[#15803d] hover:underline">Troca e Devolução</Link>.
+        </p>
+      </LegalSection>
+
       <LegalSection heading="Perguntas frequentes">
         <div>
           <h3 className="font-semibold text-[#12294f]">Tem pedido mínimo?</h3>
           <p>
-            Não. O desconto de 5% é para compras acima de R$ 250,00 e o frete grátis para compras
+            Não. O desconto de 5% é para compras acima de R$ 250,00 e o frete grátis para compras{" "}
             {freeShippingText}.
           </p>
         </div>

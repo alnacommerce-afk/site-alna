@@ -20,6 +20,8 @@ Pedimos desculpas por não termos informado a conta 962-967-1605 antes: o sócio
 - 962-967-1605 (outra Conta do Google, perfil de pagamentos distinto): teve 3 campanhas Performance Max em 2026, removidas em 13/10/2026; hoje está pausada por prazo da verificação do anunciante e não será usada.
 - 172-390-8582 (outra Conta do Google): projeto antigo de 2022 (simulado de certificação, via hotmart), cancelado, sem relação com a ALNA e sem violação.
 
+Histórico dos nossos domínios: começamos com o domínio alnacommerce.com (entre outros projetos paralelos do sócio). Depois quisemos um domínio mais próximo do nome Alna e adquirimos alna.cc, que estava sendo construído em WordPress. Em paralelo construímos a loja atual e, para começar a indexá-la, adquirimos alna.sale. Nossa intenção é manter somente alna.sale; alnacommerce.com e alna.cc serão descontinuados com o tempo e, enquanto ativos, apenas apontam (redirecionam) para alna.sale.
+
 O motivo apontado na conta 635 foi "Página de destino não está funcionando" (verificação de 8/10, 03:27). A página https://store.alna.sale/atacado é informativa, sem formulário de login ou de pagamento (apenas busca de produtos) e responde normalmente aos robôs do Google. A empresa é real e identificável: ALNA COMMERCE LTDA, CNPJ 57.135.009/0001-27, R. Luiz Rafael Flor, 450, Nova Brasília, Brusque/SC, ativa desde 03/09/2024, com razão social, CNPJ, endereço e contatos no rodapé de todas as páginas, incluindo login e checkout. Os dados de cartão são digitados somente no checkout, em HTTPS, e enviados à processadora de pagamentos; não os armazenamos.
 
 Pedimos a reanálise, informando tudo com transparência. Ficamos à disposição para enviar documentos, como o cartão do CNPJ, e para responder a qualquer pergunta.
@@ -27,6 +29,7 @@ Pedimos a reanálise, informando tudo com transparência. Ficamos à disposiçã
 ## Antes de enviar (marcar)
 - [x] Confirmado pelo dono (13/10): na 2ª contestação ele enviou **exatamente os 2 textos recomendados pelo Claude, sem o parágrafo das outras contas** (o parágrafo existia só no rascunho do repositório).
 - [ ] **Dono confirma por escrito** cada afirmação — em especial: (a) "não se lembrava das campanhas" (se não for exatamente assim, ajustar a frase); (b) o destino era alnacommerce.com (ou "não sabemos qual era" se não achar); (c) o que escreveu na 1ª e na 2ª contestação sobre outras contas (a 2ª incluiu ou não o parágrafo das outras contas?).
+- [x] Dono (13/10): não conseguiu ver o URL final das campanhas removidas; relatou a história dos domínios (incluída no Campo 2).
 - [ ] Tentar ver o **URL final** das campanhas removidas (filtro de status "Removida" / Histórico de alterações). Se aparecer outro site, ajustar o texto.
 - [ ] Resposta do **suporte** (chat/caso): se disserem o motivo, incluir/ajustar.
 - [ ] Prints de hoje do Search Console e da Navegação segura (opcional: trocar "Em 8 de outubro…" por "hoje").
