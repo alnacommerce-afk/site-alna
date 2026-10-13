@@ -136,3 +136,8 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 
 ## Atualização 13/10/2026 (noite, 3) — pergunta da UE não pode ser salva com a conta suspensa
 - Ao enviar "No" na pergunta de anúncios políticos da UE, o Google respondeu **"Não foi possível realizar a ação — Sua conta foi suspensa. Por isso, não é possível realizar determinadas ações."** Não é erro do dono: a declaração só pode ser feita com a conta ativa. **Não bloqueia a contestação** (as demais tarefas já constam concluídas). **Depois que a conta voltar: responder "No, I don't plan…"** (também listado em "Depois que a conta voltar" no PENDENCIAS).
+
+## Atualização 13/10/2026 (noite, 4) — FORMULÁRIO DA CONTESTAÇÃO ABERTO
+- O botão "Corrigir" do banner só abre a Ajuda rápida (e o cartão "Inicie a verificação" lá estava desatualizado/não clicava). **O que funcionou: o link do e-mail do Google** → painel com "Começar" → "Conferir problemas relacionados à política" (mostra o erro: "Página de destino não está funcionando", Campanha Alna | Utilidades Domésticas, Grupo de recursos 1; verificação de 8/10 03:27) → **"Contestar a suspensão"** → **Formulário de contestação** (etapa 1 "Detalhes da conta": 2 campos; etapa 2 "Confirmação").
+- **Todos os bloqueantes estão FEITO**, exceto: (a) esclarecer a 962 (URL final; é o único ponto aberto de honestidade — o parágrafo é opcional no texto) e (b) o dono ler/aprovar. Texto pronto: `RASCUNHO-2a-contestacao.md` v3 (campo 1 e campo 2).
+- Aviso do formulário: várias contestações em 7 dias sem corrigir = sinalizadas como infundadas. **Enviar UMA vez.**
