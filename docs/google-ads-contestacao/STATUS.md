@@ -1,12 +1,12 @@
 # Painel de situação — 2ª contestação do Google Ads
 
-**Última atualização:** 13/10/2026 (manhã)
+**Última atualização:** 13/10/2026 (por volta das 10:30, horário de Brasília) — **2ª CONTESTAÇÃO ENVIADA**
 
 ## Situação atual
 - Conta **suspensa** (phishing / "página de destino não está funcionando"), desde 08/10/2026 03:27.
 - **1ª contestação** (nº 6452280642, enviada em 08/10/2026): **RECUSADA** em 08/10/2026 11:57. O e-mail do Google diz que pode-se enviar outra com
   **informações novas**. O banner do Ads confirma ("Se você tiver novas informações para apoiar a contestação original, envie uma nova").
-- **2ª contestação: NÃO enviada.** Texto em `RASCUNHO-2a-contestacao.md`.
+- **2ª contestação: ENVIADA em 13/10/2026 por volta das 10:30 (horário de Brasília, aproximado; tela "Contestação enviada — a análise geralmente leva de 1 a 3 dias úteis, mas pode demorar mais").** Texto em `RASCUNHO-2a-contestacao.md` (v3; o dono confirmou o que colou nos 2 campos — **pendente registrar se o parágrafo opcional das outras contas entrou**).
 - Não criar outra conta de Google Ads (contas ligadas/novas são suspensas na hora). Não cancelar a conta.
 
 ## Regra "pode abrir"
@@ -141,3 +141,10 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 - O botão "Corrigir" do banner só abre a Ajuda rápida (e o cartão "Inicie a verificação" lá estava desatualizado/não clicava). **O que funcionou: o link do e-mail do Google** → painel com "Começar" → "Conferir problemas relacionados à política" (mostra o erro: "Página de destino não está funcionando", Campanha Alna | Utilidades Domésticas, Grupo de recursos 1; verificação de 8/10 03:27) → **"Contestar a suspensão"** → **Formulário de contestação** (etapa 1 "Detalhes da conta": 2 campos; etapa 2 "Confirmação").
 - **Todos os bloqueantes estão FEITO**, exceto: (a) esclarecer a 962 (URL final; é o único ponto aberto de honestidade — o parágrafo é opcional no texto) e (b) o dono ler/aprovar. Texto pronto: `RASCUNHO-2a-contestacao.md` v3 (campo 1 e campo 2).
 - Aviso do formulário: várias contestações em 7 dias sem corrigir = sinalizadas como infundadas. **Enviar UMA vez.**
+
+## Atualização 13/10/2026 (~10:30) — 2ª CONTESTAÇÃO ENVIADA
+- O dono enviou pelo formulário (campo 1: mudanças desde a última contestação; campo 2: outras informações; etapa 2: 3 confirmações + reCAPTCHA). Print: **"Contestação enviada — a análise geralmente leva de 1 a 3 dias úteis, mas pode demorar mais."** Resposta esperada **por e-mail (informacoes.asm@gmail.com) e na conta**; janela provável: **até 16/10/2026 (sexta)**, podendo passar disso.
+- **Durante a análise:** não criar conta/campanha de Google Ads, não anunciar a ALNA por outra conta, não enviar outra contestação (várias em 7 dias sem correção = infundadas), não mexer na 962/172, **não alterar o site de forma que afete `/atacado`** (manter 200 rápido). A pergunta da UE só pode ser respondida com a conta ativa.
+- **Honestidade a acompanhar:** a 1ª contestação disse "outras Contas do Google = sim, SEM Google Ads". O print da 962 mostra que ela **teve anúncios** (PMax "Vendas", fev/2026, R$ 35,81). Se o parágrafo opcional das outras contas **não** entrou no texto, considerar corrigir isso em uma eventual 3ª contestação ou ao responder ao Google. **Registrar com o dono se entrou ou não.**
+- **Se APROVADA:** responder "No" à pergunta da UE; desligar "expansão do URL final" no PMax, negativar termos (fitness, academia, legging, treino, receita, grátis, usado) e demais itens do PENDENCIAS; conferir o e-mail de reativação.
+- **Se RECUSADA:** só nova contestação com informação realmente nova; ler o motivo no e-mail/conta; não contestar às pressas.
