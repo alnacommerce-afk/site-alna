@@ -1,6 +1,6 @@
 # Painel de situação — 2ª contestação do Google Ads
 
-**Última atualização:** 13/10/2026 (por volta das 10:30, horário de Brasília) — **2ª CONTESTAÇÃO ENVIADA**
+**Última atualização:** 13/10/2026 (~11:15, Brasília) — **2ª CONTESTAÇÃO (6452545358) RECUSADA**
 
 ## Situação atual
 - Conta **suspensa** (phishing / "página de destino não está funcionando"), desde 08/10/2026 03:27.
@@ -152,3 +152,9 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 ## Confirmação do Google (13/10/2026) — contestação em análise
 - Painel da conta (Ajuda rápida): **"Sua contestação está em análise. Em 13 de out. de 2026, você enviou uma contestação de suspensão (nº 6452545358) relacionada a: Práticas comerciais inaceitáveis: phishing. Não é possível veicular campanhas, criar contas nem enviar outras contestações durante a revisão. A análise geralmente leva de 1 a 3 dias úteis, mas pode demorar mais."**
 - **Nº da 2ª contestação: 6452545358** (a 1ª foi 6452280642). Ver o resultado por e-mail (informacoes.asm@gmail.com) e na conta.
+
+## 13/10/2026 (~11:15) — 2ª CONTESTAÇÃO RECUSADA
+- **E-mail do Google Ads:** "Depois de considerar os detalhes do caso e seu feedback, infelizmente sua conta (635-244-4697) ainda viola as políticas… Essa medida afeta o proprietário da conta e **qualquer conta vinculada atual ou futura**… Práticas comerciais inaceitáveis: phishing — Não concluído. Opções: enviar outra contestação (mais detalhes e **informações adicionais que não estavam na anterior**), cancelar a conta (permanente) ou pedir reembolso." **Nenhum motivo específico** foi dado. A resposta veio **cerca de 45 min depois do envio** (enviada ~10:30) — **inferência (não confirmada): análise automática ou superficial**.
+- **Não fazer:** cancelar a conta; criar conta nova; reenviar às pressas (o formulário avisa que várias contestações em 7 dias sem corrigir o problema são sinalizadas como infundadas). Considerar esperar e **só reenviar com informação realmente nova**.
+- **Pistas a investigar (hipóteses, nada confirmado):** (1) **contas vinculadas 962 e 172**: a 962 teve anúncios (PMax "Vendas", fev/2026) e o destino/URL final é desconhecido — se foi um site parecido com phishing, a suspensão pode vir dali; (2) o checkout recebe número de cartão no próprio domínio `store.alna.sale` (.sale novo) — padrão que classificadores automáticos podem confundir; (3) texto "12x sem juros" com taxa embutida no preço (risco de afirmação enganosa); (4) o erro original "página de destino não funciona" (8/10 03:27).
+- **Próximos passos:** prints das contas 962 e 172 (Campanhas, todo o período, e URL final); falar com o suporte do Google Ads pedindo o motivo/revisão manual; prints do Search Console/Navegação segura; só então decidir a 3ª contestação.

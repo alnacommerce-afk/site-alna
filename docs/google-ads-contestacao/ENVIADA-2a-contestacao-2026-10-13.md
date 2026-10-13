@@ -32,3 +32,6 @@ Ficamos à disposição para enviar qualquer documento, como o cartão do CNPJ.
 3. **Se recusada:** ler o motivo; só reenviar com informação realmente nova (várias em 7 dias sem correção = infundadas). Candidatos a "novo": esclarecer as contas 962/172 (a 962 teve anúncios em fev/2026 — a 1ª contestação disse "sem Google Ads"); outros pontos que o Google citar.
 4. **Se ainda em análise:** não reenviar; reverificar `/atacado` (200 rápido), alna.cc e alnacommerce.com; aguardar.
 5. Em qualquer caso: nunca criar conta nova; nunca anunciar a ALNA por outra conta; atualizar `STATUS.md` e `PENDENCIAS.md`.
+
+## RESULTADO (13/10/2026 ~11:15): RECUSADA
+E-mail do Google: "ainda viola as políticas… afeta… qualquer conta vinculada atual ou futura". Sem motivo detalhado. Opções oferecidas: nova contestação com informações adicionais, cancelar a conta, pedir reembolso. Ver STATUS.md ("2ª CONTESTAÇÃO RECUSADA") para as hipóteses e os próximos passos.
