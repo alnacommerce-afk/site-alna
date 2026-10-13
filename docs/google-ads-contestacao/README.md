@@ -11,6 +11,7 @@ no repositório, para qualquer sessão (em qualquer máquina) continuar de onde 
 |---|---|
 | `STATUS.md` | **Painel de situação**: o que já está feito, o que falta, quem faz, como verificar e a regra de "pode abrir". Atualizar SEMPRE. |
 | `RASCUNHO-2a-contestacao.md` | Texto da 2ª contestação (com `[CONFIRMAR]` onde falta fato) e checklist de envio. |
+| `ENVIADA-2a-contestacao-2026-10-13.md` | **Texto exato enviado em 13/10/2026** (nº 6452545358) e roteiro para avaliar o resultado (sexta 16/10). |
 | `EVIDENCIAS.md` | Fatos verificados, com data, de onde veio (print do dono, comando, API) e como reverificar. |
 
 ## Protocolo para o Claude — quando o dono informar QUALQUER coisa sobre a contestação
