@@ -105,3 +105,9 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 - **Inferência (não confirmada):** o Google lista como motivo de nova verificação "mudança no perfil de pagamentos / nome legal"; a troca do pagador para a LTDA (09/10) pode ter gerado essa exigência. O botão cinza do D&B pode estar bloqueado por permissão/estado; **não confirmado** — pedir print do que aparece ao passar o mouse/clicar.
 - Mesmo programa na 962-967-1605: "Conta pausada — prazo de verificação passou" (ver acima). Nada a fazer nela sem decisão do dono.
 - **Nova ordem do trabalho:** 1) concluir a verificação da 635 (provável: D&B/documentos + código de vínculo) e esperar a análise; 2) fechar R7 (outras contas); 3) reverificar no dia; 4) só então abrir a contestação.
+
+## Atualização 13/10/2026 (tarde) — R7: conta 172 conferida
+- **172-390-8582:** perfil de pagamentos **3224-1745-1519-1013** (≠ 635 e ≠ 962), pré-pagamento, saldo R$ 0,00, pagador pessoa física (o sócio); banner **só "conta cancelada"** — **sem violação nem suspensão**.
+- **Quadro dos 3 perfis:** 635 = 2160-7426-3129-2039 (LTDA) · 962 = 3738-1352-6056-2414 (pessoa física; pausada por verificação do anunciante) · 172 = 3224-1745-1519-1013 (pessoa física; cancelada). **Nenhum perfil de pagamentos é compartilhado.** Em comum: 172 e 962 têm o sócio como pagador pessoa física (a 635 também tinha até 09/10).
+- **R7 (3): respondido (perfis distintos). R7 (4): 172 sem violação visível; 962 só verificação** — falta ver os outros 2 avisos da 962 (banner "1/3").
+- **Ainda falta no R7:** o dono dizer se a **962** e a **172** alguma vez veicularam anúncios (de qualquer coisa) e para qual negócio existiram (a 172 tem apelido "AdWords", parece antiga); e os outros 2 avisos da 962. Texto: opção (a) para a 172 já é verdadeira (cancelada, sem anúncios em veiculação, sem violação visível).
