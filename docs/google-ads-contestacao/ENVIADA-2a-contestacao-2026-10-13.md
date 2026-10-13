@@ -38,3 +38,6 @@ E-mail do Google: "ainda viola as políticas… afeta… qualquer conta vinculad
 
 ## Confirmação (13/10/2026)
 O dono confirmou que enviou **os textos recomendados** (campo 1 e campo 2 como entregues no chat), **sem o parágrafo opcional das outras contas (172 e 962)**. Portanto a 2ª contestação **não mencionou** as outras contas; a 1ª (8/10) havia dito que elas não tinham Google Ads.
+
+## 3ª contestação (13/10/2026 ~12:19)
+Enviada pelo dono com o texto final de `RASCUNHO-3a-contestacao.md` (versão "para colar"), no mesmo dia da recusa da 2ª. Aguardando resposta (1–3 dias úteis; pode demorar).
