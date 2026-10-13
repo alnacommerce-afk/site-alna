@@ -388,3 +388,6 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 
 ## 12/10/2026 — assuntos de e-mail (execute_sql, só dados)
 - `update email_templates set subject = ...` em 3 modelos: `welcome_coupon` ("Seu mimo de boas-vindas chegou"), `abandoned_cart_24h` ("Guardamos o seu carrinho na Alna"), `abandoned_cart_1h` ("Você deixou itens no carrinho"). Textos antigos e motivo em `DECISOES.md` ("Assuntos dos e-mails"). Nenhum código e nenhuma função alterados.
+
+## 13/10/2026 — textos dos e-mails de carrinho (urgência falsa)
+- `update email_templates` (sem migração): `abandoned_cart_24h` ("ainda hoje" → "quando quiser"); `cart_reminder_24h` (assunto "Seu pedido ainda está pendente na Alna" e corpo "ainda está aguardando o pagamento"). SQL de reversão em `docs/DECISOES.md` (seção "13/10 — pendências decididas pelo dono"). Sem código nem publicação.
