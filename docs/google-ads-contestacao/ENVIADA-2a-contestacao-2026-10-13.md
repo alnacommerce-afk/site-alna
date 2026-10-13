@@ -35,3 +35,6 @@ Ficamos à disposição para enviar qualquer documento, como o cartão do CNPJ.
 
 ## RESULTADO (13/10/2026 ~11:15): RECUSADA
 E-mail do Google: "ainda viola as políticas… afeta… qualquer conta vinculada atual ou futura". Sem motivo detalhado. Opções oferecidas: nova contestação com informações adicionais, cancelar a conta, pedir reembolso. Ver STATUS.md ("2ª CONTESTAÇÃO RECUSADA") para as hipóteses e os próximos passos.
+
+## Confirmação (13/10/2026)
+O dono confirmou que enviou **os textos recomendados** (campo 1 e campo 2 como entregues no chat), **sem o parágrafo opcional das outras contas (172 e 962)**. Portanto a 2ª contestação **não mencionou** as outras contas; a 1ª (8/10) havia dito que elas não tinham Google Ads.

@@ -10,7 +10,7 @@ Preparado em 13/10/2026, depois da recusa da 2ª (nº 6452545358, ~11:15). **NÃ
 
 ## CAMPO 1 — Quais mudanças você fez na sua conta ou nos pagamentos desde a última contestação?
 Desde a última contestação (13 de outubro de 2026) fizemos esta correção importante:
-1) Revisamos todas as contas de Google Ads do sócio e encontramos uma conta que não havíamos informado antes: 962-967-1605, em outra Conta do Google (perfil de pagamentos distinto), que teve 3 campanhas Performance Max em 2026 (custo total R$ 89,93). Pelo que o sócio lembra, anunciavam a loja anterior da marca (alnacommerce.com), cujo destino tinha falha de acesso e que o Google marcou como "Destino que não funciona". Removemos essas 3 campanhas em 13 de outubro de 2026, e a conta não será usada. Corrigimos, assim, a informação das contestações anteriores, que dizia que as outras contas não tinham anúncios.
+1) Revisamos todas as contas de Google Ads do sócio e encontramos uma conta que não havíamos informado antes: 962-967-1605, em outra Conta do Google (perfil de pagamentos distinto), que teve 3 campanhas Performance Max em 2026 (custo total R$ 89,93). Pelo que o sócio lembra, anunciavam a loja anterior da marca (alnacommerce.com), cujo destino tinha falha de acesso e que o Google marcou como "Destino que não funciona". Removemos essas 3 campanhas em 13 de outubro de 2026, e a conta não será usada. Corrigimos, assim, a 1ª contestação (8 de outubro), que informou que as outras contas do sócio não tinham Google Ads, e a 2ª (13 de outubro), que não mencionou essas contas.
 2) O domínio antigo (alnacommerce.com) e o alna.cc, que tinham falha de acesso ou de certificado, hoje redirecionam para alna.sale com HTTPS válido. A conta antiga e duplicada do Merchant Center foi encerrada em 8 de outubro de 2026.
 3) Já informado: o perfil de pagamentos desta conta está no nome da empresa (ALNA COMMERCE LTDA) e a verificação do anunciante foi concluída em 13 de outubro de 2026.
 
@@ -25,6 +25,7 @@ O motivo apontado na conta 635 foi "Página de destino não está funcionando" (
 Pedimos a reanálise, informando tudo com transparência. Ficamos à disposição para enviar documentos, como o cartão do CNPJ, e para responder a qualquer pergunta.
 
 ## Antes de enviar (marcar)
+- [x] Confirmado pelo dono (13/10): na 2ª contestação ele enviou **exatamente os 2 textos recomendados pelo Claude, sem o parágrafo das outras contas** (o parágrafo existia só no rascunho do repositório).
 - [ ] **Dono confirma por escrito** cada afirmação — em especial: (a) "não se lembrava das campanhas" (se não for exatamente assim, ajustar a frase); (b) o destino era alnacommerce.com (ou "não sabemos qual era" se não achar); (c) o que escreveu na 1ª e na 2ª contestação sobre outras contas (a 2ª incluiu ou não o parágrafo das outras contas?).
 - [ ] Tentar ver o **URL final** das campanhas removidas (filtro de status "Removida" / Histórico de alterações). Se aparecer outro site, ajustar o texto.
 - [ ] Resposta do **suporte** (chat/caso): se disserem o motivo, incluir/ajustar.
