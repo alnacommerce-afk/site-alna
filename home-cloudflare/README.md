@@ -97,3 +97,5 @@ ajuste.
 
 ## Página `/atacado` (13/10/2026)
 `alna.sale/atacado` é uma **página estática própria** (`atacado/index.html`), não um redirecionamento: serve como "segunda home" de atacado/captura de leads (por WhatsApp) e **deve abrir rápido**. 9,6 KB de HTML com CSS inline; reaproveita o logo (já em cache); GA4 carregado só depois do `load` + navegador ocioso (mesmo padrão da Home); `sitemap.xml` e `_headers` atualizados; **não** adicionar linha de `/atacado` em `_redirects`. A página equivalente da loja (`store.alna.sale/atacado`) continua existindo. Sem formulário de dados enquanto o caso do Google Ads estiver aberto (ver `docs/DECISOES.md`). Números fixos no texto: "R$ 250" (cupom ALNA5%OFF) e "4% no Pix" — frete grátis **sem número** (segue Admin > Configurações).
+
+**Carrossel de categorias (13/10/2026):** `atacado.html` tem 3 banners (`assets/cat-cozinha.webp`, `cat-toalhas.webp`, `cat-roupas.webp`; grade 2×2 de fotos reais, 800×600, 13/35/19 KB), `loading="lazy"`, rolagem com `scroll-snap` e setas em JS puro. Para trocar um banner: gerar nova grade 2×2 e manter ≤ ~40 KB (WebP qualidade ~60); evitar fotos com logotipo de terceiros.

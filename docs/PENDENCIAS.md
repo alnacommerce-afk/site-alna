@@ -124,3 +124,5 @@ dono publica no Lovable e pede "publiquei, confere se subiu"; nunca pedir/aceita
 - **FinMarket/sales-report:** publicado e conferido; pedido de teste do dono confirmou foto de preços real e taxa/líquido gravados pelo webhook. Falta: Pix de teste com frete pago para provar a regra nova do Pix; gerar etiqueta (ver `label_price_cents`).
 - **Search Console / Navegação segura (13/10):** sem ações manuais, sem problemas de segurança, "nenhum conteúdo não seguro" (alna.sale e store.alna.sale).
 - **Pendente do dono:** aguardar o Google; `alna.sale/atacado` (404 na Home; aguarda "ok"); decisões de pedidos de teste; assunto "para fechar hoje" no e-mail de carrinho (não aprovado).
+
+- **Regra nova (13/10):** antes de enviar qualquer contestação ao Google, rodar a varredura do site (`docs/VARREDURA-2026-10-13.md`) e conferir `alna.sale/atacado`, `store.alna.sale/atacado`, domínios antigos e rodapé/identidade.
