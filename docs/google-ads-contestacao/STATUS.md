@@ -190,3 +190,7 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 - **2ª resposta da IA do suporte:** enquanto a conta está suspensa **não é possível** transferir para humano nem gerar número de caso; chat/telefone ficam indisponíveis até o processo de contestação ser resolvido na plataforma; o formulário pode ter campos de anexo "dinâmicos"; pediu garantir que a verificação do anunciante foi processada. **Sem motivo específico** (diz que "a avaliação pode estar incorreta"). Conclusão: **o suporte não vai dar o motivo**; seguir só com a contestação.
 - Dono não conseguiu ver o URL final das campanhas removidas.
 - Dono aprovou ("ok aplique") o bloco "Quem somos" em `/atacado` e a troca de "12x sem juros" (ver DECISOES).
+
+## 13/10/2026 (tarde) — confirmações do dono + prints do Search Console/Navegação segura
+- Search Console (alna.sale e store.alna.sale): **Ações manuais e Problemas de segurança = "Nenhum problema foi detectado"**. Navegação segura (os dois): **"Nenhum conteúdo não seguro foi encontrado"** (atualizado pelo Google em 9/10). Dono confirmou os 7 itens (ver EVIDENCIAS.md). Site publicado e conferido ao vivo (Quem somos; "12x no cartão").
+- **Texto final da 3ª contestação pronto** (`RASCUNHO-3a-contestacao.md`, "VERSÃO FINAL PARA COLAR"). Falta apenas: dono decidir **quando enviar** (recomendado: não hoje; 14/10 ou, o mais seguro, 20/10) e a reverificação do dia.

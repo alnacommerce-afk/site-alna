@@ -35,3 +35,27 @@ Pedimos a reanálise, informando tudo com transparência. Ficamos à disposiçã
 - [ ] Prints de hoje do Search Console e da Navegação segura (opcional: trocar "Em 8 de outubro…" por "hoje").
 - [ ] Esperar pelo menos até o retorno do suporte ou 1–2 dias úteis; **enviar uma única vez**.
 - [ ] Não cancelar 962/172, não criar conta nova, não criar campanhas.
+
+## VERSÃO FINAL PARA COLAR (13/10/2026) — depois das confirmações do dono e dos prints do Search Console/Navegação segura
+**Quando enviar:** não no mesmo dia da 2ª (o formulário avisa que várias contestações em 7 dias "sem corrigir o problema" são marcadas como infundadas; aqui há correções reais, mas é prudente esperar ao menos até 14/10; a opção mais segura é 20/10). **Reverificar no dia do envio:** `/atacado` 200, alna.cc / alnacommerce.com redirecionando, texto do site publicado.
+
+### Campo 1 — Quais mudanças você fez na sua conta ou nos pagamentos desde a última contestação?
+Desde a última contestação (13 de outubro de 2026) fizemos estas correções:
+1) Revisamos todas as contas de Google Ads do sócio e encontramos uma que não havíamos informado: 962-967-1605, em outra Conta do Google (perfil de pagamentos distinto), com 3 campanhas Performance Max em 2026 (custo total R$ 89,93). Pelo que o sócio lembra, anunciavam a loja anterior da marca (alnacommerce.com), cujo destino tinha falha de acesso e que o Google marcou como "Destino que não funciona". Removemos as 3 campanhas em 13 de outubro de 2026 e não vamos usar essa conta. Com isso corrigimos a 1ª contestação (8 de outubro), que informou que as outras contas do sócio não tinham Google Ads, e a 2ª (13 de outubro), que não mencionou essas contas.
+2) Os domínios antigos da marca (alnacommerce.com e alna.cc), que tinham falha de acesso ou de certificado, hoje apenas redirecionam para alna.sale, com HTTPS válido. A conta antiga e duplicada do Merchant Center foi encerrada em 8 de outubro de 2026.
+3) Na página de destino (store.alna.sale/atacado) acrescentamos uma seção "Quem somos" com razão social, CNPJ, endereço e contatos, e retiramos do site o texto "12x sem juros", para não haver nenhuma afirmação imprecisa.
+4) Já informado antes: o perfil de pagamentos desta conta está no nome da empresa (ALNA COMMERCE LTDA) e a verificação do anunciante foi concluída em 13 de outubro de 2026.
+
+### Campo 2 — Você quer incluir outras informações que não estavam na contestação anterior?
+Pedimos desculpas por não termos informado a conta 962-967-1605 antes: o sócio não se lembrava das campanhas e só as encontrou ao revisar todas as contas. Agora declaramos todas as contas de Google Ads do sócio:
+- 635-244-4697 (esta conta, ALNA COMMERCE LTDA, suspensa).
+- 962-967-1605 (outra Conta do Google, perfil de pagamentos distinto): teve 3 campanhas Performance Max em 2026, removidas em 13/10/2026; hoje está pausada por prazo da verificação do anunciante e não será usada.
+- 172-390-8582 (outra Conta do Google): projeto antigo de 2022 (simulado de certificação, via hotmart), cancelado, sem relação com a ALNA e sem violação.
+
+Histórico dos nossos domínios: começamos com o domínio alnacommerce.com (entre outros projetos paralelos do sócio). Depois quisemos um domínio mais próximo do nome Alna e adquirimos alna.cc, que estava sendo construído em WordPress. Em paralelo construímos a loja atual e, para começar a indexá-la, adquirimos alna.sale em setembro de 2026. Nossa intenção é manter somente alna.sale; alnacommerce.com e alna.cc serão descontinuados com o tempo e, enquanto ativos, apenas apontam (redirecionam) para alna.sale.
+
+O motivo apontado na conta 635 foi "Página de destino não está funcionando" (verificação de 8 de outubro, 03:27). A página https://store.alna.sale/atacado é informativa, sem formulário de login ou de pagamento (apenas busca de produtos) e responde normalmente aos robôs do Google. A empresa é real e identificável: ALNA COMMERCE LTDA, CNPJ 57.135.009/0001-27, R. Luiz Rafael Flor, 450, Nova Brasília, Brusque/SC, ativa desde 03/09/2024, com razão social, CNPJ, endereço e contatos no rodapé de todas as páginas, incluindo login e checkout. Os dados de cartão são digitados somente no checkout, em HTTPS, e enviados à processadora de pagamentos; não os armazenamos.
+
+Em 13 de outubro de 2026, o Search Console de alna.sale e de store.alna.sale não indica ações manuais nem problemas de segurança, e o relatório de Navegação segura do Google informa "nenhum conteúdo não seguro foi encontrado" para os dois endereços (última atualização do Google: 9 de outubro de 2026).
+
+Pedimos a reanálise, informando tudo com transparência. Se houver outro motivo específico para a suspensão (uma página, um anúncio ou uma conta), pedimos que nos informem para corrigirmos. Ficamos à disposição para enviar documentos, como o cartão do CNPJ.
