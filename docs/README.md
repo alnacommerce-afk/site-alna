@@ -7,6 +7,8 @@
 | Google Ads suspenso: painel "o que falta", texto da contestação, fatos verificados | [`google-ads-contestacao/`](google-ads-contestacao/) (`STATUS.md`, `RASCUNHO-2a-contestacao.md`, `EVIDENCIAS.md`, `README.md`) |
 | De onde veio uma imagem/banner e cuidados (IA, formato, posição) | [`ATIVOS-VISUAIS.md`](ATIVOS-VISUAIS.md) |
 | Cada mudança feita no banco/código pelo Claude (data, o que, por quê, como reverter) | [`db-changes-applied-by-claude.md`](db-changes-applied-by-claude.md) |
+| Modelos de mensagem para atacado (WhatsApp, Instagram, e-mail, ligação) + política do WhatsApp | [`WHATSAPP-ATACADO-MODELOS.md`](WHATSAPP-ATACADO-MODELOS.md) |
+| Meta Ads do zero (passo a passo: portfólio, Página, Instagram, WhatsApp, anúncio de conversa) | [`META-ADS-PASSO-A-PASSO.md`](META-ADS-PASSO-A-PASSO.md) |
 | Plano B de tráfego (sem Google Ads): canais, passos, orçamento sugerido e calendário | [`PLANO-B-TRAFEGO.md`](PLANO-B-TRAFEGO.md) |
 | Relatório de vendas do FinMarket HUB (campos, parâmetros, como testar) | [`sales-report-finmarket.md`](sales-report-finmarket.md) |
 | Integrações de marketing (Meta, Google, feeds) | [`marketing-integrations.md`](marketing-integrations.md) |

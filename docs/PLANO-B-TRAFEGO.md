@@ -11,7 +11,7 @@ Contexto: a conta Google Ads 635-244-4697 está suspensa (3 contestações recus
 ## 2. Canais, por ordem de prioridade (impacto × esforço × risco)
 | # | Canal | Custo | Rapidez | Para quê | Quem faz |
 |---|---|---|---|---|---|
-| 1 | **Atacado B2B ativo por WhatsApp** (prospecção direta) | R$ 0 | dias | atacado (lojas, restaurantes, padarias, lanchonetes, buffets, sublimação) | dono + Claude (scripts, listas, mensagens) |
+| 1 | **Atacado B2B ativo (atendimento a quem chega + contato 1 a 1 consentido; ligação, e-mail e Instagram antes do WhatsApp)** | R$ 0 | dias | atacado (lojas, restaurantes, padarias, lanchonetes, buffets, sublimação) | dono + Claude (scripts, listas, mensagens) |
 | 2 | **Instagram/Facebook orgânico + WhatsApp Business** | R$ 0 | 2–4 semanas | marca + leads | dono (posts) + Claude (ideias/legendas) |
 | 3 | **Google Merchant Center — listagens gratuitas** | R$ 0 | semanas | varejo (Aba Shopping/Pesquisa) | Claude (feed) + dono (painel) |
 | 4 | **SEO / Search Console** | R$ 0 | 1–3 meses | tráfego orgânico | Claude + dono |
@@ -22,8 +22,8 @@ Contexto: a conta Google Ads 635-244-4697 está suspensa (3 contestações recus
 
 ## 3. O que fazer em cada canal
 
-### 3.1 Atacado B2B por WhatsApp (começa já)
-- Meta inicial (sugestão): **15 contatos qualificados/dia úteis**, mensagem curta + link `alna.sale/atacado`.
+### 3.1 Atacado B2B (começa já) — **CORRIGIDO em 13/10 depois de ler a política do WhatsApp**
+- **Correção importante:** a Política de Mensagens do WhatsApp Business só permite contatar quem **deu o número e permissão (opt-in)**; spam/mensagem não solicitada leva a **limitação ou suspensão** do número. Então a meta original de "15 contatos frios por dia por WhatsApp" **foi retirada**. Nova meta: **responder rápido a quem chega** (anúncio, site, Instagram) e fazer **5–10 contatos 1 a 1 por dia**, de preferência por **ligação, e-mail ou Instagram**, e por WhatsApp **só para empresas que publicam esse número para pedidos**. Detalhes e modelos: `docs/WHATSAPP-ATACADO-MODELOS.md`.
 - Públicos: restaurantes, padarias, lanchonetes e buffets (utensílios de madeira); lojas de casa/enxoval e revendedores (toalhas); quem trabalha com sublimação (toalhas brancas para sublimar). Onde achar: Google Maps (busca manual na região de Brusque/Itajaí/Blumenau/Florianópolis), Instagram, grupos de revenda.
 - **Claude entrega:** 3 modelos de mensagem (frio, retorno, fechamento), planilha de acompanhamento e regra de cupom ALNA5%OFF (5% acima de R$ 250).
 - **Atribuição:** a mensagem pré-preenchida do WhatsApp pode levar um código da origem (ex.: "Origem: Insta"); mudança pequena em `alna.sale/atacado` — avaliar antes.
@@ -60,7 +60,7 @@ Contexto: a conta Google Ads 635-244-4697 está suspensa (3 contestações recus
 | Semana | Foco | Entregáveis |
 |---|---|---|
 | 1 (13–20/10) | base | links rastreados; scripts de WhatsApp; WhatsApp Business; sitemap/indexação; feed do Google completo; prints do Merchant Center e do Search Console |
-| 2 (20–27/10) | atacado ativo | 15 contatos/dia; 3–4 posts; ajuste de `alna.sale/atacado` para origem da mensagem (se aprovado); 4ª contestação do Google só se houver fato novo |
+| 2 (20–27/10) | atacado ativo | 5–10 contatos 1 a 1/dia (ver política do WhatsApp); 3–4 posts; ajuste de `alna.sale/atacado` para origem da mensagem (se aprovado); 4ª contestação do Google só se houver fato novo |
 | 3 (27/10–3/11) | pago pequeno | Pixel (se aprovado); conta e página Meta; 1 campanha WhatsApp com R$ 15–20/dia; campanha de e-mail de 27/10 |
 | 4 (3–10/11) | decidir | leitura de custo por conversa e pedidos por canal (utm_campaign + GA4); escalar o que deu resultado, cortar o resto; avaliar marketplace |
 

@@ -129,3 +129,5 @@ dono publica no Lovable e pede "publiquei, confere se subiu"; nunca pedir/aceita
 
 ## PLANO B DE TRÁFEGO (criado em 13/10/2026) — ver `docs/PLANO-B-TRAFEGO.md`
 Sem depender do Google Ads: (1) atacado B2B por WhatsApp; (2) Instagram/Facebook + WhatsApp Business; (3) Merchant Center (listagens gratuitas; feed sem `gender`/`age_group`/categoria); (4) SEO/Search Console; (5) Meta Ads (WhatsApp + catálogo; exige Meta Pixel, avaliar peso); (6) e-mail/indicação; (7) marketplaces depois. **Aguardando decisões do dono:** orçamento Meta, quem atende o WhatsApp, "ok, aplique" para feed do Google / código de origem no WhatsApp / Meta Pixel, e prints do Merchant Center e do Search Console.
+
+- **Entregues em 13/10 (plano B):** modelos de mensagem e política do WhatsApp (`docs/WHATSAPP-ATACADO-MODELOS.md`), planilha de leads (`docs/modelos/leads-atacado.csv`) e passo a passo do Meta Ads do zero (`docs/META-ADS-PASSO-A-PASSO.md`). **Correção:** prospecção "fria" em massa por WhatsApp foi retirada (política do WhatsApp exige opt-in). Próximo passo do dono: Etapa 1–2 do guia do Meta (preparar dados e criar o portfólio) e mandar prints.
