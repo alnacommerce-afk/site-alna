@@ -181,3 +181,6 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 - Os 2 CSVs baixados (`Downloads\Gráfico_de_série_temporal(2026.02.09-2026.10.13)*.csv`) são **só a série diária de "Valor conv." (tudo 0,00)** — **não contêm URLs nem impressões**; não servem de prova do destino.
 - **O URL final ainda é desconhecido.** Tentativas possíveis (inferência: campanhas removidas ficam visíveis ao filtrar por status "Removida"/"Todas"; não confirmado na documentação): filtro de status na lista de campanhas; Histórico de alterações da conta; Merchant Center vinculado.
 - A remoção pode ser citada na 3ª contestação (com data) como correção, **sem afirmar o motivo/URL até conhecê-los**.
+
+## 13/10/2026 — dono: o destino das campanhas da 962 "acho que foi alnacommerce.com"
+- Dono: "acho que foi alnacommerce.com… porque alnacommerce.com é o domínio mais antigo". **É memória/dedução do dono, não confirmada** (URL final não visto). Coerente com: Merchant Center antigo "Alnacommerce" 5722404568 (loja alnacommerce.com, encerrado 8/10), conta Google "Alna Commerce" (962), e `http://alnacommerce.com` com 522 em 8/10 (corrigido). Texto da 3ª contestação em `RASCUNHO-3a-contestacao.md` usa "segundo a lembrança do sócio". Ainda vale tentar ver o URL final (filtro de campanhas removidas / Histórico de alterações).
