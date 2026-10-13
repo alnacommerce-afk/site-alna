@@ -7,6 +7,7 @@
 | Google Ads suspenso: painel "o que falta", texto da contestação, fatos verificados | [`google-ads-contestacao/`](google-ads-contestacao/) (`STATUS.md`, `RASCUNHO-2a-contestacao.md`, `EVIDENCIAS.md`, `README.md`) |
 | De onde veio uma imagem/banner e cuidados (IA, formato, posição) | [`ATIVOS-VISUAIS.md`](ATIVOS-VISUAIS.md) |
 | Cada mudança feita no banco/código pelo Claude (data, o que, por quê, como reverter) | [`db-changes-applied-by-claude.md`](db-changes-applied-by-claude.md) |
+| Plano B de tráfego (sem Google Ads): canais, passos, orçamento sugerido e calendário | [`PLANO-B-TRAFEGO.md`](PLANO-B-TRAFEGO.md) |
 | Relatório de vendas do FinMarket HUB (campos, parâmetros, como testar) | [`sales-report-finmarket.md`](sales-report-finmarket.md) |
 | Integrações de marketing (Meta, Google, feeds) | [`marketing-integrations.md`](marketing-integrations.md) |
 | Regras permanentes de trabalho (sócio, velocidade, Lovable) | [`../AGENTS.md`](../AGENTS.md) |

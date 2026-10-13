@@ -126,3 +126,6 @@ dono publica no Lovable e pede "publiquei, confere se subiu"; nunca pedir/aceita
 - **Pendente do dono:** aguardar o Google; `alna.sale/atacado` (404 na Home; aguarda "ok"); decisões de pedidos de teste; assunto "para fechar hoje" no e-mail de carrinho (não aprovado).
 
 - **Regra nova (13/10):** antes de enviar qualquer contestação ao Google, rodar a varredura do site (`docs/VARREDURA-2026-10-13.md`) e conferir `alna.sale/atacado`, `store.alna.sale/atacado`, domínios antigos e rodapé/identidade.
+
+## PLANO B DE TRÁFEGO (criado em 13/10/2026) — ver `docs/PLANO-B-TRAFEGO.md`
+Sem depender do Google Ads: (1) atacado B2B por WhatsApp; (2) Instagram/Facebook + WhatsApp Business; (3) Merchant Center (listagens gratuitas; feed sem `gender`/`age_group`/categoria); (4) SEO/Search Console; (5) Meta Ads (WhatsApp + catálogo; exige Meta Pixel, avaliar peso); (6) e-mail/indicação; (7) marketplaces depois. **Aguardando decisões do dono:** orçamento Meta, quem atende o WhatsApp, "ok, aplique" para feed do Google / código de origem no WhatsApp / Meta Pixel, e prints do Merchant Center e do Search Console.
