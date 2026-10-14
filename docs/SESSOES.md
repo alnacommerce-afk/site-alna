@@ -67,3 +67,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito:** gatilhos propostos (3) em `.claude/settings.json` (projeto) e `.claude/hooks/gatilhos.ps1`; gerente atualizado para ficar travado até o "ok" (inclusive verificações). Testado com entradas simuladas: os três gatilhos disparam nos casos certos e a saída está em ASCII.
 - **Ainda não confirmado:** se o campo do pedido se chama `prompt` no Claude Code real. O hook grava os nomes dos campos recebidos em `%USERPROFILE%\.claude\hooks\gatilhos.log`; conferir na primeira mensagem de uma conversa nova.
 - **Pendente:** abrir conversa nova (para carregar gerente, Auditor e os gatilhos) e fazer o teste "publiquei a mudança do atacado, confere".
+
+## 2026-10-14 — Computador HOME — gatilhos movidos para as configurações do usuário
+- **Feito:** gatilhos saíram de `.claude/settings.json` do repositório (removido) e foram ligados em `%USERPROFILE%\.claude\settings.json` (backup feito). O instalador também liga os gatilhos.
+- **Motivo:** o gatilho do projeto não rodou nesta conversa, enquanto o hook do usuário roda ao vivo.
+- **Teste a fazer NESTA conversa:** a próxima mensagem deve gerar uma linha nova no log `%USERPROFILE%\.claude\hooks\gatilhos.log` com `campos=prompt` e horário real. Depois: mensagem com "publiquei, confere" para ver o lembrete do Auditor.
+- **Pendente no Computador TRABALHO:** rodar de novo o instalador (com "Computador TRABALHO") e fazer o mesmo teste na conversa de lá.
