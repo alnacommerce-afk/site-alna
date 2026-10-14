@@ -34,3 +34,8 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
 ### 14/10/2026 — Computador HOME — alna.sale/atacado no ar?
 - Verificado ao vivo (curl, só leitura): HTTP 200, sem redirecionamento, 13,8 KB, título "Atacado de Utilidades Domésticas, Toalhas e Cozinha | ALNA", bloco "Quem somos" presente, nenhum formulário. AdsBot-Google também recebe 200 (0,19 s).
 - Veredito: **FEITO** (página no ar). Não verificado: navegador real (console/celular) e preço/frete.
+
+### 14/10/2026 — Computador TRABALHO — alna.sale/atacado no ar?
+- Verificado ao vivo (curl, só leitura): `alna.sale/atacado` HTTP 200, sem redirecionamento, 13,8 KB, 0,10–0,29 s; título "Atacado de Utilidades Domésticas, Toalhas e Cozinha | ALNA"; "Quem somos" presente; sem `<form>`. AdsBot-Google recebe 200.
+- `store.alna.sale/atacado` também HTTP 200, 28 KB; 1ª medida 3,2 s (frio), depois 1,4 s, 0,9 s e 0,5 s.
+- Veredito: **FEITO** (no ar). Não verificado: navegador real (console/celular), preço e frete.
