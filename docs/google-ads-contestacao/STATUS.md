@@ -1,6 +1,6 @@
-# Painel de situação — 2ª contestação do Google Ads
+# Painel de situação — contestações do Google Ads
 
-**Última atualização:** 13/10/2026 (~11:15, Brasília) — **2ª CONTESTAÇÃO (6452545358) RECUSADA**
+**Última atualização:** 14/10/2026 — **3ª CONTESTAÇÃO (6452570506) RECUSADA em 13/10 (~13:53, Brasília); confirmado pelo dono em 14/10**
 
 ## Situação atual
 - Conta **suspensa** (phishing / "página de destino não está funcionando"), desde 08/10/2026 03:27.
@@ -198,7 +198,7 @@ echo | openssl s_client -connect alna.cc:443 -servername alna.cc 2>/dev/null | o
 ## 13/10/2026 (~12:19, Brasília) — 3ª CONTESTAÇÃO ENVIADA
 - O dono enviou a **3ª contestação** (mesma conta 635-244-4697) **exatamente com o texto da "VERSÃO FINAL PARA COLAR"** de `RASCUNHO-3a-contestacao.md` (Campo 1 e Campo 2), **no mesmo dia da 2ª** (que foi recusada ~11:15) — decisão dele, contra a recomendação do Claude de esperar até 14/10 (ou 20/10). **Número da contestação e print de confirmação: ainda não informados.**
 - **Riscos assumidos:** o formulário avisa que várias contestações em 7 dias "sem corrigir o problema" são marcadas como infundadas e limitam novos envios; houve correções reais (conta 962, textos, domínios), mas o efeito é imprevisível.
-- **Durante a análise:** não criar conta/campanha, não reenviar, não mexer nas contas 962 e 172, manter `/atacado` estável. Lembrete agendado 16/10 09:00 (`avaliar-resultado-2a-contestacao-google-ads`) — usar para a 3ª.
+- **Durante a análise:** não criar conta/campanha, não reenviar, não mexer nas contas 962 e 172, manter `/atacado` estável. Lembrete reprogramado para 20/10/2026 09:00 (ver abaixo).
 - **Se recusada de novo:** só uma 4ª com informação nova; considerar nova rodada de investigação (URL final da 962, motivos por Merchant Center/Policy manager) e, se houver, apoio de especialista externo/agência certificada Google. **Se aprovada:** lista "depois que a conta voltar" (UE "No", PMax sem expansão de URL final, negativas, etc.).
 
 ## Confirmação do Google (13/10/2026) — 3ª contestação em análise

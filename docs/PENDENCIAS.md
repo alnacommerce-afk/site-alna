@@ -1,6 +1,6 @@
 # Pendências e ponto de retomada — loja ALNA
 
-**Última atualização: 13/10/2026 (tarde/noite) — Google Ads: 3ª contestação enviada e em análise.** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
+**Última atualização: 14/10/2026 — Google Ads: 3ª contestação (6452570506) recusada em 13/10, confirmada pelo dono. Próxima avaliação em 20/10, só com fato novo.** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
 Ao começar uma conversa: ler este arquivo, `AGENTS.md`, a memória (`MEMORY.md`) e, se o assunto for Google Ads, `docs/google-ads-contestacao/STATUS.md`.
 Ao terminar algo ou receber novidade do dono: atualizar aqui (e no STATUS.md do Google Ads), commit + push + espelho no Drive.
 
@@ -11,7 +11,7 @@ convertendo**. Prioridade 1 e 2 abaixo.
 
 ## PRIORIDADE 1 — Google Ads suspenso (campanha de atacado parada)
 Painel completo: `docs/google-ads-contestacao/STATUS.md` (protocolo no `README.md`, texto em `RASCUNHO-2a-contestacao.md`, fatos em `EVIDENCIAS.md`).
-Conta **635-244-4697** (informacoes.asm@gmail.com) suspensa por "phishing"; 1ª contestação recusada em 08/10; **2ª enviada em 13/10/2026 (~10:30) e RECUSADA no mesmo dia (~11:15; e-mail sem motivo; "afeta contas vinculadas"). 3ª ENVIADA (nº 6452570506) em 13/10/2026 e **RECUSADA no mesmo dia**; decisão: parar de reenviar, 4ª só com informação nova e após ≥ 20/10 (~12:19) com o texto final (conta 962 declarada e campanhas removidas, história dos domínios, Search Console/Navegação segura limpos) — aguardando.** Não cancelar a conta, não criar conta nova, não reenviar às pressas (3ª só com informação nova). Plano em `STATUS.md` ("2ª CONTESTAÇÃO RECUSADA"): investigar as contas 962/172, pedir o motivo ao suporte do Google, revisar o texto "12x sem juros".
+Conta **635-244-4697** (informacoes.asm@gmail.com) suspensa por "phishing"; 1ª contestação recusada em 08/10; **2ª enviada em 13/10/2026 (~10:30) e RECUSADA no mesmo dia (~11:15; e-mail sem motivo; "afeta contas vinculadas"). 3ª ENVIADA (nº 6452570506) em 13/10/2026 e **RECUSADA no mesmo dia**; decisão: parar de reenviar, 4ª só com informação nova e após ≥ 20/10 (~12:19) com o texto final (conta 962 declarada e campanhas removidas, história dos domínios, Search Console/Navegação segura limpos) — recusada, confirmado pelo dono em 14/10.** Não cancelar a conta, não criar conta nova, não reenviar às pressas (3ª só com informação nova). Plano em `STATUS.md` ("2ª CONTESTAÇÃO RECUSADA"): investigar as contas 962/172, pedir o motivo ao suporte do Google, revisar o texto "12x sem juros".
 
 **Para poder abrir a 2ª contestação falta:**
 1. **R5 — Hostnet / `alna.cc`: RESOLVIDO (verificado pelo Claude em 13/10 09:15).** `http://alna.cc` e `https://alna.cc` → 301 → `https://www.alna.cc` → 301 → `https://alna.sale/`; certificado válido (CN=alna.cc, 19/08 a 17/11/2026); `/wp-admin` também redireciona. Falta só o dono confirmar (se quiser) que foi a Hostnet que corrigiu e registrar a data/horário aproximado; **no dia do envio, reverificar**. (Atenção: o certificado vence em 17/11/2026; renova sozinho se for Let's Encrypt/AutoSSL.)
@@ -33,7 +33,7 @@ Conta **635-244-4697** (informacoes.asm@gmail.com) suspensa por "phishing"; 1ª 
 - Medir resultado: pedidos pagos por `utm_campaign = google-ads-atacado` (Supabase), custo de cupom e frete; pedir prints (Visão geral, termos de pesquisa, páginas de destino).
 - Anúncios: nunca palavra TODA em maiúsculas (ALNA, OFF) — memória `feedback_google_ads_editorial_policy`.
 
-**Lembretes agendados (se o app estiver aberto):** o de 10/10 09:00 já rodou (14:14 UTC; não há registro do que ele disse); falta o de **13/10 09:00** — aponta para este painel.
+**Lembretes agendados (se o app estiver aberto):** o de 10/10 09:00 já rodou (14:14 UTC; não há registro do que ele disse); o de **13/10 09:00** já passou (sem registro do que disse); o de **20/10 09:00** está reprogramado para o check-in do Google Ads — aponta para este painel.
 
 ---
 
@@ -72,7 +72,7 @@ Checkout 96, Produto 94, Carrinho 91, **Loja 70–81**.
 - [ ] Monitorar se o pop-up central da `/loja` reduz visitas orgânicas pelo Google (risco apontado; ele só aparece após interação humana). Se cair, reduzir para cartão no canto.
 - [ ] Pedidos Pix pendentes antigos: `regenerate-pix` não refaz pedido sem CPF, com +30 dias, de cartão ou já pago.
 - [ ] **FinMarket / sales-report** (12/10): **publicado e conferido ao vivo em 12/10** (sales-report: 200/400/401 corretos, 7 pedidos não pendentes, sem dado pessoal, cupons ok, gateway `null` sem `include_gateway`). **Pedido de teste do dono feito em 12/10 15:55 UTC (Pix, pago): conferido em 13/10 — fotos de preço reais (`pricing_estimated=false`), `pix_discount_pct=4`, e a Asaas MANDA o líquido no aviso (taxa R$ 0,99 e líquido gravados às 15:56 UTC, sem consultar a Asaas).** Esse pedido foi feito ANTES da publicação do Pix novo (usou a regra antiga: 4% sobre produtos+frete). Falta: (a) 1 Pix pequeno com frete pago para provar a regra nova (valor cobrado no Asaas = checkout); (b) gerar a etiqueta desse pedido e ver `label_price_cents`; (c) a trava do webhook ainda não foi exercitada por um evento atrasado de verdade.
-- [ ] **Google Ads — avaliar a 2ª contestação (nº 6452545358) em 16/10/2026** (3 dias úteis): lembrete agendado `avaliar-resultado-2a-contestacao-google-ads` (16/10 09:00, se o app estiver aberto). Texto enviado e roteiro em `docs/google-ads-contestacao/ENVIADA-2a-contestacao-2026-10-13.md`. Perguntar ao dono: resultado (print do e-mail/conta), se o parágrafo das outras contas entrou e o URL final da campanha da 962.
+- [ ] **Google Ads — check-in em 20/10/2026 09:00** (lembrete reprogramado). A 2ª (6452545358) e a 3ª (6452570506) contestações foram recusadas em 13/10, confirmado pelo dono. Sem fato novo, não reenviar. Perguntar ao dono: se chegou alguma resposta nova do Google e qual era o URL final da campanha da conta 962 (ainda não confirmado).
 - [ ] Hostnet: quando responderem, testar `http://alna.cc`, `https://alna.cc`, `www.alna.cc`, `/wp-admin` e MX/SPF.
 
 ---
@@ -118,7 +118,7 @@ dono publica no Lovable e pede "publiquei, confere se subiu"; nunca pedir/aceita
 - `https://alna.sale/atacado`: achado de 12/10 (404), **já resolvido em 13/10** (página própria); conferido ao vivo em 14/10 (200). Ver o item FEITO acima.
 
 ## O que mudou durante 13/10 (resumo para a próxima conversa)
-- **Google Ads (ver `docs/google-ads-contestacao/STATUS.md`, `AVALIACAO-2026-10-13.md`, `RASCUNHO-3a-contestacao.md`, `ENVIADA-2a-contestacao-2026-10-13.md`):** `alna.cc` resolvido (Hostnet); **verificação do anunciante concluída** (sem ela o formulário de contestação não abre); **2ª contestação (6452545358) recusada em ~45 min**; descoberta de que a conta **962-967-1605 teve 3 campanhas PMax desde 09/02/2026 (R$ 89,93)** com "Destino que não funciona" (provável loja anterior `alnacommerce.com`, não confirmado) — o dono **removeu as 3 campanhas** (~11:40) e **a 3ª contestação (6452570506, ~12:19) declarou as 3 contas e corrigiu as respostas anteriores**; suporte (IA) não dá motivo enquanto suspensa. **Aguardando o resultado** (1–3 dias úteis; lembrete 16/10 09:00).
+- **Google Ads (ver `docs/google-ads-contestacao/STATUS.md`, `AVALIACAO-2026-10-13.md`, `RASCUNHO-3a-contestacao.md`, `ENVIADA-2a-contestacao-2026-10-13.md`):** `alna.cc` resolvido (Hostnet); **verificação do anunciante concluída** (sem ela o formulário de contestação não abre); **2ª contestação (6452545358) recusada em ~45 min**; descoberta de que a conta **962-967-1605 teve 3 campanhas PMax desde 09/02/2026 (R$ 89,93)** com "Destino que não funciona" (provável loja anterior `alnacommerce.com`, não confirmado) — o dono **removeu as 3 campanhas** (~11:40) e **a 3ª contestação (6452570506, ~12:19) declarou as 3 contas e corrigiu as respostas anteriores**; suporte (IA) não dá motivo enquanto suspensa. **Resultado:** 3ª recusada em 13/10 (confirmado em 14/10).
 - **Domínios (RDAP):** alnacommerce.com 17/12/2025; alna.cc 19/08/2026; alna.sale 20/09/2026 — todos jovens (hipótese de peso para a classificação automática; não confirmada).
 - **Site (publicado e conferido):** `/atacado` com bloco "Quem somos"; cabeçalho "Parcele em até 12x no cartão" (sem "sem juros"); correção "comprasacima"; Enter no cupom do carrinho; **Pix: 4% só sobre os produtos** (frete cheio) em checkout e `checkout-create`.
 - **FinMarket/sales-report:** publicado e conferido; pedido de teste do dono confirmou foto de preços real e taxa/líquido gravados pelo webhook. Falta: Pix de teste com frete pago para provar a regra nova do Pix; gerar etiqueta (ver `label_price_cents`).
