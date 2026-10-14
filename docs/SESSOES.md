@@ -92,3 +92,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 ## 2026-10-14 — Computador HOME — pasta de sessão e stash da cópia do Drive
 - Testes 2 e 4 ainda não rodaram: skills e subagentes do projeto só carregam numa sessão aberta dentro da pasta do repositório. Abrir a nova sessão em `C:\Users\Pichau\dev\site-alna` e mandar "retome".
 - Stash da cópia do Drive: não aplicado (ver DECISOES de 14/10).
+
+## 2026-10-14 19:35 — Computador HOME — testes 2 e 4 da Onda 1 (substitutos) e diários
+- **Feito:** teste 2 (Auditor): subagente `auditor` e skill `auditor` não reconhecidos nesta conversa; verificação de `alna.sale/atacado` feita com a ferramenta do Auditor (Playwright em `%USERPROFILE%\pw-eval`, celular, só leitura): FEITO nos 6 itens (200, título, "Quem somos", sem formulário, AdsBot 200, console limpo). Teste 4 (gerente): skill `gerente` não reconhecida; plano para "trocar o texto do botão Finalizar pedido e avisar clientes por e-mail" montado sem executar nada (ok do dono não recebido).
+- **Commits:** `2361ed7` (diários `docs/agentes/auditor.md` e `docs/agentes/gerente.md`), enviado ao GitHub (`aa70fdf..2361ed7`). Esta entrada sai em commit separado.
+- **Em andamento:** testes oficiais 2 e 4 da Onda 1 pendentes de sessão nova dentro de `C:\Users\Pichau\dev\site-alna`.
+- **Próximo passo:** o dono decide o texto do botão e para quem é o aviso por e-mail (perguntas no diário do gerente); repetir os testes 2 e 4 em sessão nova; Computador TRABALHO rodar o instalador de novo.
