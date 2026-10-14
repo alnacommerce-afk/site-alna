@@ -12,3 +12,16 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
 
 ## 2026-10-14 — teste 2 (tentativa na mesma conversa)
 - Tipo `auditor` NÃO encontrado ("Agent type 'auditor' not found"): a pedido de "retome" a conversa continuou a mesma sessão; funcionário novo não carregou. Teste 2 real pendente de uma sessão nova de fato.
+
+## 2026-10-14 — Computador HOME — teste 2 da Onda 1 (substituto; o teste oficial segue pendente)
+- **Tentativa oficial:** subagente `auditor` NÃO encontrado ("Agent type 'auditor' not found") e skill `auditor` NÃO reconhecida ("Unknown skill") nesta mesma conversa. Por isso o teste oficial (Auditor como subagente, contexto novo) NÃO foi concluído; precisa de sessão nova dentro de `C:\Users\Pichau\dev\site-alna`.
+- **Verificação feita pelo Claude com a ferramenta do Auditor** (Playwright 0.1.22 em `%USERPROFILE%\pw-eval`, Chrome instalado, celular 390 px, só leitura; script de apoio fora do repositório):
+  - Abre e tempo: HTTP 200; carga da página 377 ms (navegador) e 0,62 s (curl, celular); FEITO.
+  - Título "Atacado de Utilidades Domésticas, Toalhas e Cozinha | ALNA" e H1 correto; bloco "Quem somos" com CNPJ presente; FEITO.
+  - Sem formulário de dados: 0 `<form>`, 0 campos de e-mail/telefone; 4 links de WhatsApp; FEITO.
+  - Robô do Google: HTTP 200 com user-agent do AdsBot em 0,19 s; FEITO.
+  - Console: 0 erros e 0 avisos; 0 requisições com falha; FEITO.
+  - Textos antigos: "sem juros" ausente; "comprasacima" ausente; FEITO.
+  - Print: `%USERPROFILE%\pw-eval\prints\atacado-celular-2026-10-14.png` (fora do repositório).
+- **Não verificado nesta rodada:** preço e frete da página (não estavam nos itens do teste); carga em rede lenta; user-agent do AdsBot pelo navegador (só pelo curl).
+- **Veredito (substituto):** FEITO nos 6 itens acima. Não vale como teste do Auditor funcionário: repetir o teste oficial em sessão nova.
