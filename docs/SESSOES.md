@@ -73,3 +73,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Motivo:** o gatilho do projeto não rodou nesta conversa, enquanto o hook do usuário roda ao vivo.
 - **Teste a fazer NESTA conversa:** a próxima mensagem deve gerar uma linha nova no log `%USERPROFILE%\.claude\hooks\gatilhos.log` com `campos=prompt` e horário real. Depois: mensagem com "publiquei, confere" para ver o lembrete do Auditor.
 - **Pendente no Computador TRABALHO:** rodar de novo o instalador (com "Computador TRABALHO") e fazer o mesmo teste na conversa de lá.
+
+## 2026-10-14 — Computador HOME — conferência do Lovable e próximos passos
+- **Feito:** dono publicou no Lovable; conferido ao vivo (`store.alna.sale/atacado` com as mudanças de 13/10; loja, carrinho e checkout 200). Gatilho de mensagem confirmado ao vivo: o campo `prompt` existe e os lembretes do gerente apareceram nesta conversa.
+- **Decisões:** orçamento Meta cerca de R$ 15/dia; Google Ads aguarda 20/10; Onda 2 começa ao final da Onda 1.
+- **Pendente:** testes 2 (Auditor como subagente), 3 (Advogado, só leitura) e 4 (gerente de ponta a ponta); repetir os testes no Computador TRABALHO; Pix de teste com frete pago (dono).
