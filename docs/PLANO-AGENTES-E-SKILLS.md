@@ -1,6 +1,6 @@
 # Plano — agentes e skills por responsabilidade (PROPOSTA de 14/10/2026)
 
-**Status: PROPOSTA. Nada foi criado além deste arquivo. Só aplicar com o "ok, aplique" do dono.**
+**Status: Onda 1 aprovada e implantada em 14/10/2026 (ver docs/agentes/README.md). Ondas 2 e 3 aguardam o teste da Onda 1.**
 
 ## 1. O que o dono pediu (14/10/2026)
 - "Não posso perder nenhuma informação de coisas que já tenha feito."

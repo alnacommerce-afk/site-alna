@@ -50,3 +50,10 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito:** hook v3 no Drive (`.claude\instalar\atualizar-alna.ps1`) e instalador atualizado (grava `alna-drive-path.txt`). Instalado e testado no HOME, com o chat fora do Drive.
 - **Pendente no Computador TRABALHO:** rodar de novo o instalador (mesmo comando do LEIA-ME, com o nome "Computador TRABALHO"). Só então o bilhete dele passa a aparecer no Drive a partir de chats abertos fora da pasta.
 - **Próximo passo:** plano de skills (com nomes por função) para o dono aprovar.
+
+## 2026-10-14 — Computador HOME — Onda 1 de funcionários implantada
+- **Feito:** skills `escrivao`, `auditor` e `advogado-google-ads` em `.claude/skills/`; diários em `docs/agentes/`; índice em `docs/agentes/README.md`; decisão em `DECISOES.md`.
+- **Como chegam ao outro computador:** pelo `git pull` (estão no repositório). Mas o Claude só carrega skills novas ao abrir uma conversa nova. No Computador TRABALHO, abrir conversa nova depois do pull.
+- **Pendente no Computador TRABALHO:** rodar de novo o instalador do hook (ver entrada de 14/10 acima), e instalar o Playwright CLI se for usar o Auditor lá.
+- **Pendência aberta para o Escrivão:** contradição sobre `/atacado` em `PENDENCIAS.md` (linhas 118 e 126 dizem 404; linha 58 diz feito). Aguarda o dono.
+- **Próximo passo:** testar cada funcionário em um caso real (o Escrivão no registro de hoje; o Auditor verificando `alna.sale/atacado`; o Advogado com o status atual, sem enviar nada).
