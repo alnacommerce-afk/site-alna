@@ -57,3 +57,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Pendente no Computador TRABALHO:** rodar de novo o instalador do hook (ver entrada de 14/10 acima), e instalar o Playwright CLI se for usar o Auditor lá.
 - **Pendência aberta para o Escrivão:** contradição sobre `/atacado` em `PENDENCIAS.md` (linhas 118 e 126 dizem 404; linha 58 diz feito). Aguarda o dono.
 - **Próximo passo:** testar cada funcionário em um caso real (o Escrivão no registro de hoje; o Auditor verificando `alna.sale/atacado`; o Advogado com o status atual, sem enviar nada).
+
+## 2026-10-14 — Computador HOME — gerente e Auditor como subagente
+- **Feito:** skill `gerente` e subagente `auditor` (`.claude/agents/`), aprovados pelo dono; índice e decisão registrados.
+- **Pendente de teste:** o Auditor como subagente ainda não foi acionado de verdade; o teste é o próximo passo, com um pedido simples (verificar `alna.sale/atacado`).
+- **Pendente de decisão do dono:** quais gatilhos do hook entram (lista da proposta anterior). Por enquanto o gerente trabalha só pela tabela de roteamento, sem hook novo.

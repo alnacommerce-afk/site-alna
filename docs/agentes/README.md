@@ -14,3 +14,8 @@
 **Onda 2** (só quando a Onda 1 estiver estável e tiver pego um erro real): Detetive, Cofre, Caixa, Estoquista, Carteiro, Vitrine.
 **Onda 3:** Vendedor, Arquiteto, Revisor.
 **Limite:** no máximo oito ativos ao mesmo tempo. Os demais ficam guardados até alguém pedir.
+
+## Atualização 14/10/2026 — gerente e Auditor como subagente
+- **Gerente** (`gerente`): único ponto de contato com o dono. Segue a tabela de roteamento fixa, apresenta o plano e só executa depois do "ok". Coordena os funcionários e entrega relatório por funcionário. Diário: `docs/agentes/gerente.md`.
+- **Auditor** também existe como subagente (`.claude/agents/auditor.md`), com contexto novo, para uma segunda verificação independente. Continua disponível como skill.
+- Regra de ouro: nenhum funcionário ou gerente altera, publica, envia ou cobra sem o "ok" do dono.
