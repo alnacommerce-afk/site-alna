@@ -9,3 +9,6 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
 
 ## 2026-10-14 — teste 2 (substituto)
 - Subagente `auditor` NÃO reconhecido nesta conversa. Verificação de `alna.sale/atacado` feita por subagente genérico com as regras do Auditor: FEITO (200 em 0,65 s; título; "Quem somos"; AdsBot 200; 0 erros de console em viewport 390 px). Limitação: user-agent móvel não aplicado. Repetir com o Auditor real em sessão nova.
+
+## 2026-10-14 — teste 2 (tentativa na mesma conversa)
+- Tipo `auditor` NÃO encontrado ("Agent type 'auditor' not found"): a pedido de "retome" a conversa continuou a mesma sessão; funcionário novo não carregou. Teste 2 real pendente de uma sessão nova de fato.

@@ -84,3 +84,7 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Teste 2 (Auditor como subagente):** o tipo `auditor` NÃO foi reconhecido nesta conversa (pasta de subagentes criada depois do início da sessão). Substituto (subagente genérico com as regras do Auditor): `alna.sale/atacado` FEITO: HTTP 200 em 0,65 s, título correto, "Quem somos" presente, 200 com AdsBot, 0 erros de console (viewport 390 px; o user-agent móvel não foi aplicado).
 - **Teste 4 (gerente):** a skill NÃO foi acionada ("Unknown skill"). Nem a skill do Vigia (criada antes nas configurações do usuário) foi reconhecida nesta conversa. Conclusão: skills e subagentes novos só são carregados numa sessão nova.
 - **Pendente:** corrigir o cabeçalho e o lembrete do `STATUS.md` (Escrivão, com o seu ok); repetir os testes 2 e 4 em sessão nova.
+
+## 2026-10-14 — Computador HOME — tentativa dos testes 2 e 4 após "retome"
+- A mensagem "Retome o projeto…" chegou na mesma conversa; o gerente e o auditor continuam não reconhecidos ("Unknown skill" / "Agent type not found"). Teste 2 e teste 4 seguem pendentes de uma sessão nova de fato (conversa separada, não a continuação desta).
+- Teste 4 feito manualmente (sem executar), registrado em `docs/agentes/gerente.md`.
