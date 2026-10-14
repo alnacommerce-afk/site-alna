@@ -25,3 +25,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Em andamento:** Plano B de tráfego (aguarda o dono criar o portfólio da Meta — `docs/META-ADS-COMANDOS.md`); resposta do Google Ads é 4ª contestação só com fato novo e ≥ 20/10.
 - **Próximo passo:** o dono confirma se a atribuição acima está certa; testar a continuidade entre computadores (Passo 3 de `PASSO-A-PASSO-OUTRO-COMPUTADOR.md`).
 - **Commits:** ver `git log` de 12/10 a 14/10 (ex.: `533be84`, `da68e47`, `38dc070`, `e4b2f8a`, `d571e6b`, `ecdcc59`).
+
+## 2026-10-14 19:30 — Computador HOME — confirmação da atribuição e instalação verificada
+- **Verificado:** o hook do Computador TRABALHO está ativo (bilhete de presença com HEAD 279d44b, sem trabalho pendente; nome registrado em `computadores.json`). O commit 84a7dd2 foi puxado sem conflito.
+- **Atribuição de 12–13/10:** o Computador HOME **confirma** que não executou neste chat os itens listados como de TRABALHO (relatório do FinMarket, Enter no cupom, Pix com 4% sobre os produtos, frete grátis em Configurações, 2ª e 3ª contestações do Google Ads, página `alna.sale/atacado`, e-mails de carrinho, Plano B de tráfego). Neste chat só os leu pelo Git. A origem exata continua sendo o histórico da máquina TRABALHO; o dono ainda precisa confirmar.
+- **Do HOME (desde 14/10 e antes):** o que está descrito na entrada de registro retroativo acima.
+- **Próximo passo:** o dono confirma a atribuição; em seguida o teste de continuidade (Passo 3 de `PASSO-A-PASSO-OUTRO-COMPUTADOR.md`).
