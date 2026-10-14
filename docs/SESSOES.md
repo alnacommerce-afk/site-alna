@@ -78,3 +78,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito:** dono publicou no Lovable; conferido ao vivo (`store.alna.sale/atacado` com as mudanças de 13/10; loja, carrinho e checkout 200). Gatilho de mensagem confirmado ao vivo: o campo `prompt` existe e os lembretes do gerente apareceram nesta conversa.
 - **Decisões:** orçamento Meta cerca de R$ 15/dia; Google Ads aguarda 20/10; Onda 2 começa ao final da Onda 1.
 - **Pendente:** testes 2 (Auditor como subagente), 3 (Advogado, só leitura) e 4 (gerente de ponta a ponta); repetir os testes no Computador TRABALHO; Pix de teste com frete pago (dono).
+
+## 2026-10-14 — Computador HOME — testes 2, 3 e 4 da Onda 1 (resultado)
+- **Teste 3 (Advogado do Google, leitura):** o conteúdo de `STATUS.md` foi lido. Estado real: 3ª contestação (6452570506) recusada em 13/10; próxima decisão só a partir de 20/10 e só com fato novo. Achado para o Escrivão: o cabeçalho do `STATUS.md` ainda diz "2ª recusada", e o lembrete aparece como 16/10 em uma linha e 20/10 em outra. A skill em si NÃO foi acionada: "Unknown skill".
+- **Teste 2 (Auditor como subagente):** o tipo `auditor` NÃO foi reconhecido nesta conversa (pasta de subagentes criada depois do início da sessão). Substituto (subagente genérico com as regras do Auditor): `alna.sale/atacado` FEITO: HTTP 200 em 0,65 s, título correto, "Quem somos" presente, 200 com AdsBot, 0 erros de console (viewport 390 px; o user-agent móvel não foi aplicado).
+- **Teste 4 (gerente):** a skill NÃO foi acionada ("Unknown skill"). Nem a skill do Vigia (criada antes nas configurações do usuário) foi reconhecida nesta conversa. Conclusão: skills e subagentes novos só são carregados numa sessão nova.
+- **Pendente:** corrigir o cabeçalho e o lembrete do `STATUS.md` (Escrivão, com o seu ok); repetir os testes 2 e 4 em sessão nova.
