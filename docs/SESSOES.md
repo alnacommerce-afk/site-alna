@@ -62,3 +62,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito:** skill `gerente` e subagente `auditor` (`.claude/agents/`), aprovados pelo dono; índice e decisão registrados.
 - **Pendente de teste:** o Auditor como subagente ainda não foi acionado de verdade; o teste é o próximo passo, com um pedido simples (verificar `alna.sale/atacado`).
 - **Pendente de decisão do dono:** quais gatilhos do hook entram (lista da proposta anterior). Por enquanto o gerente trabalha só pela tabela de roteamento, sem hook novo.
+
+## 2026-10-14 — Computador HOME — gatilhos do gerente implantados
+- **Feito:** gatilhos propostos (3) em `.claude/settings.json` (projeto) e `.claude/hooks/gatilhos.ps1`; gerente atualizado para ficar travado até o "ok" (inclusive verificações). Testado com entradas simuladas: os três gatilhos disparam nos casos certos e a saída está em ASCII.
+- **Ainda não confirmado:** se o campo do pedido se chama `prompt` no Claude Code real. O hook grava os nomes dos campos recebidos em `%USERPROFILE%\.claude\hooks\gatilhos.log`; conferir na primeira mensagem de uma conversa nova.
+- **Pendente:** abrir conversa nova (para carregar gerente, Auditor e os gatilhos) e fazer o teste "publiquei a mudança do atacado, confere".
