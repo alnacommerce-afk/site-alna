@@ -25,3 +25,8 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
   - Print: `%USERPROFILE%\pw-eval\prints\atacado-celular-2026-10-14.png` (fora do repositório).
 - **Não verificado nesta rodada:** preço e frete da página (não estavam nos itens do teste); carga em rede lenta; user-agent do AdsBot pelo navegador (só pelo curl).
 - **Veredito (substituto):** FEITO nos 6 itens acima. Não vale como teste do Auditor funcionário: repetir o teste oficial em sessão nova.
+
+## 2026-10-14 — Computador HOME — teste 2 repetido (nesta conversa; substituto)
+- Subagente `auditor` continua NÃO encontrado ("Agent type 'auditor' not found"). Teste oficial ainda pendente de sessão nova.
+- Nova verificação ao vivo, mesmo roteiro (celular 390 px, Chrome, só leitura): HTTP 200; carga 701 ms; título e H1 corretos; "Quem somos" e CNPJ presentes; 0 formulários; 0 campos de e-mail/telefone; 4 links de WhatsApp; console sem erros nem avisos; 0 requisições com falha; AdsBot (curl) HTTP 200 em 0,64 s.
+- Veredito (substituto): FEITO nos mesmos itens. Não vale como teste do Auditor funcionário.
