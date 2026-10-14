@@ -88,3 +88,7 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 ## 2026-10-14 — Computador HOME — tentativa dos testes 2 e 4 após "retome"
 - A mensagem "Retome o projeto…" chegou na mesma conversa; o gerente e o auditor continuam não reconhecidos ("Unknown skill" / "Agent type not found"). Teste 2 e teste 4 seguem pendentes de uma sessão nova de fato (conversa separada, não a continuação desta).
 - Teste 4 feito manualmente (sem executar), registrado em `docs/agentes/gerente.md`.
+
+## 2026-10-14 — Computador HOME — pasta de sessão e stash da cópia do Drive
+- Testes 2 e 4 ainda não rodaram: skills e subagentes do projeto só carregam numa sessão aberta dentro da pasta do repositório. Abrir a nova sessão em `C:\Users\Pichau\dev\site-alna` e mandar "retome".
+- Stash da cópia do Drive: não aplicado (ver DECISOES de 14/10).
