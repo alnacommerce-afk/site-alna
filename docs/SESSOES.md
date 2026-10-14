@@ -45,3 +45,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
   3. **Presença entre computadores:** o chat do TRABALHO está em `C:\Users\Pichau\dev\site-alna`, fora da pasta do Drive; por isso os bilhetes de presença ficam locais. Correção proposta: o instalador grava o caminho da pasta do Drive num arquivo local e o hook passa a usá-lo, sem depender de onde o chat foi aberto (muda o hook nos dois computadores; precisa de "ok, aplique").
 - **Ajustes de texto (menores):** a resposta cita "A.2" do guia; o item está em "A) Preparar", passo 2. A citação "Dono: 'continue o que estávamos fazendo'" em `DECISOES.md` (489ffce) não pôde ser confirmada aqui; o dono deve confirmar ou o registro deve ser corrigido.
 - **Próximo passo:** o dono decide os itens 1 e 2 (desconto no anúncio e limite do cupom) e autoriza ou não o item 3.
+
+## 2026-10-14 — Computador HOME — ajuste do hook aplicado (caminho do Drive)
+- **Feito:** hook v3 no Drive (`.claude\instalar\atualizar-alna.ps1`) e instalador atualizado (grava `alna-drive-path.txt`). Instalado e testado no HOME, com o chat fora do Drive.
+- **Pendente no Computador TRABALHO:** rodar de novo o instalador (mesmo comando do LEIA-ME, com o nome "Computador TRABALHO"). Só então o bilhete dele passa a aparecer no Drive a partir de chats abertos fora da pasta.
+- **Próximo passo:** plano de skills (com nomes por função) para o dono aprovar.
