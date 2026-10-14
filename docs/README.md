@@ -11,6 +11,7 @@
 | Meta Ads do zero (passo a passo: portfólio, Página, Instagram, WhatsApp, anúncio de conversa) | [`META-ADS-PASSO-A-PASSO.md`](META-ADS-PASSO-A-PASSO.md) |
 | Plano B de tráfego (sem Google Ads): canais, passos, orçamento sugerido e calendário | [`PLANO-B-TRAFEGO.md`](PLANO-B-TRAFEGO.md) |
 | **PROPOSTA** de agentes e skills por responsabilidade, com garantia de não perder informação (aguarda "ok, aplique") | [`PLANO-AGENTES-E-SKILLS.md`](PLANO-AGENTES-E-SKILLS.md) |
+| Hook + skill que atualizam o repositório a cada comando (como funciona, testes, cópia do script, como ligar em outra máquina) | [`HOOK-ATUALIZAR-REPOSITORIO.md`](HOOK-ATUALIZAR-REPOSITORIO.md) |
 | Relatório de vendas do FinMarket HUB (campos, parâmetros, como testar) | [`sales-report-finmarket.md`](sales-report-finmarket.md) |
 | Integrações de marketing (Meta, Google, feeds) | [`marketing-integrations.md`](marketing-integrations.md) |
 | Regras permanentes de trabalho (sócio, velocidade, Lovable) | [`../AGENTS.md`](../AGENTS.md) |
