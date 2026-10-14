@@ -21,7 +21,7 @@ Nomes de botões da Meta mudam: se algum não existir, tire print e mande ao Cla
    - **Local: Brasil** (ou SC, PR, RS, SP). **Idade: 25 a 60.** Público amplo. **Posicionamentos: automáticos.**
 5. **Anúncio**:
    - Identidade: Página **ALNA** + Instagram **@store.alna.sale**.
-   - Formato: **Carrossel** (3 cartões: Cozinha, Toalhas, Roupas) ou **imagem única**.
+   - Formato: **Carrossel** (3 cartões: Cozinha, Toalhas, Roupas) ou **imagem única**. **Imagens prontas:** `docs/modelos/meta-anuncios/` (`atacado-cozinha|toalhas|roupas` em **1080×1080** para carrossel e **1080×1350 (4:5)** para imagem única; fotos reais dos produtos, faixa azul com o nome da categoria e `alna.sale/atacado`, pouco texto).
    - Texto principal: *Compra em quantidade para o seu negócio 💚 Utensílios de madeira para cozinha, toalhas e roupas, com nota fiscal e entrega para todo o Brasil. 5% de desconto acima de R$ 250 e 4% no Pix. Chame no WhatsApp e monte seu pedido.*
    - Título: *Atacado ALNA*.
    - Botão: **Enviar mensagem** (WhatsApp).
