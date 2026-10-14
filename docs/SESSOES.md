@@ -98,3 +98,12 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Commits:** `2361ed7` (diários `docs/agentes/auditor.md` e `docs/agentes/gerente.md`), enviado ao GitHub (`aa70fdf..2361ed7`). Esta entrada sai em commit separado.
 - **Em andamento:** testes oficiais 2 e 4 da Onda 1 pendentes de sessão nova dentro de `C:\Users\Pichau\dev\site-alna`.
 - **Próximo passo:** o dono decide o texto do botão e para quem é o aviso por e-mail (perguntas no diário do gerente); repetir os testes 2 e 4 em sessão nova; Computador TRABALHO rodar o instalador de novo.
+
+## 2026-10-14 — Computador HOME — testes 2, 3 e 4 confirmados em sessão nova
+- **Sessão:** conversa nova dentro de `C:\Users\Pichau\dev\site-alna` (login refeito no próprio terminal do app).
+- **Teste 2 (Auditor):** skill do Auditor acionada na tela; `alna.sale/atacado` conferido ao vivo e respondido como FEITO (página no ar, título, "Quem somos", sem formulário, robô do Google abre). Preço e frete e navegador de celular não conferidos nesta rodada.
+- **Teste 3 (Advogado do Google):** `Skill(advogado-google-ads)` carregada; leu `STATUS.md`, não reenviou nada, pediu para registrar qualquer novidade e perguntou o endereço que as campanhas antigas da conta 962 anunciavam.
+- **Teste 4 (gerente):** `Skill(gerente)` carregada; plano para "trocar o texto do botão Finalizar pedido e avisar clientes por e-mail" sem executar nada; pediu o texto novo do botão, o público e o assunto do e-mail, e se o e-mail sai separado da campanha de 27/10.
+- **Teste 1:** nenhum registro nos diários sobre o que era; o dono não lembra. Fica para definir.
+- **Pendente:** repetir os testes 1 a 4 no Computador TRABALHO (com a ferramenta do Auditor instalada lá); corrigir o cabeçalho e o lembrete do `STATUS.md` (com o ok do dono); Pix de teste (dono); Google Ads só após 20/10 e com fato novo.
+- **Próximo passo:** amanhã, orientar o dono nos testes da Onda 1.

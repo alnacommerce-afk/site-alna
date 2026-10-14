@@ -30,3 +30,7 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
 - Subagente `auditor` continua NÃO encontrado ("Agent type 'auditor' not found"). Teste oficial ainda pendente de sessão nova.
 - Nova verificação ao vivo, mesmo roteiro (celular 390 px, Chrome, só leitura): HTTP 200; carga 701 ms; título e H1 corretos; "Quem somos" e CNPJ presentes; 0 formulários; 0 campos de e-mail/telefone; 4 links de WhatsApp; console sem erros nem avisos; 0 requisições com falha; AdsBot (curl) HTTP 200 em 0,64 s.
 - Veredito (substituto): FEITO nos mesmos itens. Não vale como teste do Auditor funcionário.
+
+### 14/10/2026 — Computador HOME — alna.sale/atacado no ar?
+- Verificado ao vivo (curl, só leitura): HTTP 200, sem redirecionamento, 13,8 KB, título "Atacado de Utilidades Domésticas, Toalhas e Cozinha | ALNA", bloco "Quem somos" presente, nenhum formulário. AdsBot-Google também recebe 200 (0,19 s).
+- Veredito: **FEITO** (página no ar). Não verificado: navegador real (console/celular) e preço/frete.
