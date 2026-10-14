@@ -12,6 +12,8 @@
 | Plano B de tráfego (sem Google Ads): canais, passos, orçamento sugerido e calendário | [`PLANO-B-TRAFEGO.md`](PLANO-B-TRAFEGO.md) |
 | **PROPOSTA** de agentes e skills por responsabilidade, com garantia de não perder informação (aguarda "ok, aplique") | [`PLANO-AGENTES-E-SKILLS.md`](PLANO-AGENTES-E-SKILLS.md) |
 | Hook + skill que atualizam o repositório a cada comando (como funciona, testes, cópia do script, como ligar em outra máquina) | [`HOOK-ATUALIZAR-REPOSITORIO.md`](HOOK-ATUALIZAR-REPOSITORIO.md) |
+| **Passo a passo para ligar o outro computador** (instalador, teste de continuidade, regras do dia a dia) | [`PASSO-A-PASSO-OUTRO-COMPUTADOR.md`](PASSO-A-PASSO-OUTRO-COMPUTADOR.md) |
+| **Diário das sessões**: quem fez o quê em qual computador (Computador HOME e o outro) | [`SESSOES.md`](SESSOES.md) |
 | Relatório de vendas do FinMarket HUB (campos, parâmetros, como testar) | [`sales-report-finmarket.md`](sales-report-finmarket.md) |
 | Integrações de marketing (Meta, Google, feeds) | [`marketing-integrations.md`](marketing-integrations.md) |
 | Regras permanentes de trabalho (sócio, velocidade, Lovable) | [`../AGENTS.md`](../AGENTS.md) |
