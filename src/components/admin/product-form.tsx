@@ -289,7 +289,6 @@ export function ProductForm({ productId }: { productId?: string }) {
           sku: v.sku,
           gtinEan: v.gtin_ean ?? "",
           stockQuantity: String(v.stock_quantity),
-          price: "",
         }));
       const loadedSecondaries = (variants ?? [])
         .filter((v) => v.parent_variant_id)
@@ -302,7 +301,6 @@ export function ProductForm({ productId }: { productId?: string }) {
           sku: v.sku,
           gtinEan: v.gtin_ean ?? "",
           stockQuantity: String(v.stock_quantity),
-          price: "",
         }));
       setHasSecondary(loadedSecondaries.length > 0);
       form.reset({
@@ -417,11 +415,6 @@ export function ProductForm({ productId }: { productId?: string }) {
   }
 
   async function saveProduct(values: ProductFormValues, chosenStatus: "draft" | "published") {
-    const newRows = [...values.variants, ...(values.secondaryVariants ?? [])].filter((v) => !v.id);
-    if (newRows.some((v) => parseCentsFromInput(v.price ?? "") <= 0)) {
-      toast.error("Informe o preço de cada variação nova (maior que zero).");
-      return;
-    }
     if (images.length === 0) {
       toast.error("Adicione pelo menos uma foto do produto.");
       return;
@@ -527,7 +520,7 @@ export function ProductForm({ productId }: { productId?: string }) {
             .from("product_variants")
             .insert({
               ...commonFields,
-              price_cents: parseCentsFromInput(variant.price ?? ""),
+              price_cents: 0,
               stock_quantity: 0,
               compare_at_price_cents: null,
             })
@@ -601,7 +594,7 @@ export function ProductForm({ productId }: { productId?: string }) {
         } else {
           const { error } = await supabase.from("product_variants").insert({
             ...commonFields,
-            price_cents: parseCentsFromInput(sec.price ?? ""),
+            price_cents: 0,
             stock_quantity: 0,
             compare_at_price_cents: null,
           });
@@ -1128,21 +1121,6 @@ export function ProductForm({ productId }: { productId?: string }) {
                           </FormItem>
                         )}
                       />
-                      {!variantValues[index]?.id && (
-                        <FormField
-                          control={form.control}
-                          name={`variants.${index}.price`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Preço (R$)</FormLabel>
-                              <FormControl>
-                                <Input {...field} inputMode="decimal" placeholder="0,00" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
                     </div>
                     <Button
                       type="button"
@@ -1250,21 +1228,6 @@ export function ProductForm({ productId }: { productId?: string }) {
                                 </FormItem>
                               )}
                             />
-                            {!secondaryValues[index]?.id && (
-                              <FormField
-                                control={form.control}
-                                name={`secondaryVariants.${index}.price`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Preço (R$)</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} inputMode="decimal" placeholder="0,00" />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            )}
                             <FormField
                               control={form.control}
                               name={`secondaryVariants.${index}.coverKey`}

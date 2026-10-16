@@ -8,8 +8,6 @@ export const variantFormSchema = z.object({
   sku: z.string().min(1, "Informe o SKU"),
   gtinEan: z.string().optional(),
   stockQuantity: z.string().optional(),
-  // Preço só é informado ao criar a variação; depois o ajuste fica em Admin > Precificação.
-  price: z.string().optional(),
 });
 
 // Variação secundária: liga-se a uma primária (parentKey = localKey dela) e pode ter foto de capa (coverKey = chave da foto).
@@ -53,7 +51,6 @@ export const emptyVariant: VariantFormValues = {
   sku: "",
   gtinEan: "",
   stockQuantity: "0",
-  price: "",
 };
 
 export const emptySecondaryVariant: SecondaryVariantFormValues = {
