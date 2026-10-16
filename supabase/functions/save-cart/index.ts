@@ -7,6 +7,8 @@
 //                                 single row of that e-mail and returns its `token`;
 //   - { token, items }           later changes of the same cart (the browser remembers the token);
 //   - { token, action: "stop" }  "I don't want reminders": nothing is sent for this cart anymore.
+// Optional `source`: "caixa" (save-cart box) or "automatico" (automatic save). Anything else is ignored, and an
+// existing origin is never overwritten by a call without it.
 // Prices and stock are always read from the database here — nothing the browser sends about money is trusted.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import {
@@ -94,11 +96,12 @@ Deno.serve(async (req) => {
       last_activity_at: now.toISOString(),
     };
     const phone = cleanPhone(body.phone);
+    const source = body.source === "caixa" || body.source === "automatico" ? body.source : null;
 
     if (!row) {
       const { data: created, error } = await admin
         .from("abandoned_carts")
-        .insert({ email: emailRaw, phone, ...cartFields })
+        .insert({ email: emailRaw, phone, source, ...cartFields })
         .select("token")
         .single();
       if (error || !created) throw error ?? new Error("Falha ao salvar o carrinho.");
@@ -112,6 +115,7 @@ Deno.serve(async (req) => {
       !lastReminderAt || now.getTime() - new Date(lastReminderAt).getTime() >= NEW_CYCLE_AFTER_DAYS * DAY_MS;
     const update: Record<string, unknown> = { ...cartFields };
     if (phone) update.phone = phone;
+    if (source) update.source = source;
     if (token === "" && emailRaw) {
       // The shopper typed the e-mail again and consented again: reminders are welcome again.
       update.stopped_at = null;
