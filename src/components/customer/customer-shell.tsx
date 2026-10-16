@@ -49,6 +49,13 @@ export function CustomerShell({ children }: { children: ReactNode }) {
             Meus pedidos
           </Link>
           <Link
+            to="/conta/carrinho"
+            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-[#12294f]"
+            activeProps={{ className: "border-b-2 border-[#15803d] text-[#12294f]" }}
+          >
+            Meu carrinho salvo
+          </Link>
+          <Link
             to="/conta/senha"
             className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-[#12294f]"
             activeProps={{ className: "border-b-2 border-[#15803d] text-[#12294f]" }}

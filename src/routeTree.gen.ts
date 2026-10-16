@@ -27,6 +27,7 @@ import { Route as AdminEmailsRouteImport } from './routes/admin/emails'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
 import { Route as ContaIndexRouteImport } from './routes/conta/index'
+import { Route as ContaCarrinhoRouteImport } from './routes/conta/carrinho'
 import { Route as ContaLoginRouteImport } from './routes/conta/login'
 import { Route as ContaRedefinirSenhaRouteImport } from './routes/conta/redefinir-senha'
 import { Route as ContaSenhaRouteImport } from './routes/conta/senha'
@@ -139,6 +140,11 @@ const AdminMetricasRoute = AdminMetricasRouteImport.update({
 const ContaIndexRoute = ContaIndexRouteImport.update({
   id: '/conta/',
   path: '/conta/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaCarrinhoRoute = ContaCarrinhoRouteImport.update({
+  id: '/conta/carrinho',
+  path: '/conta/carrinho',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContaLoginRoute = ContaLoginRouteImport.update({
@@ -277,6 +283,7 @@ export interface FileRoutesByFullPath {
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/conta/carrinho': typeof ContaCarrinhoRoute
   '/conta/login': typeof ContaLoginRoute
   '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/conta/carrinho': typeof ContaCarrinhoRoute
   '/conta/login': typeof ContaLoginRoute
   '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
+  '/conta/carrinho': typeof ContaCarrinhoRoute
   '/conta/login': typeof ContaLoginRoute
   '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
@@ -406,6 +415,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/admin/login'
     | '/admin/metricas'
+    | '/conta/carrinho'
     | '/conta/login'
     | '/conta/redefinir-senha'
     | '/conta/senha'
@@ -448,6 +458,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/admin/login'
     | '/admin/metricas'
+    | '/conta/carrinho'
     | '/conta/login'
     | '/conta/redefinir-senha'
     | '/conta/senha'
@@ -490,6 +501,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/admin/login'
     | '/admin/metricas'
+    | '/conta/carrinho'
     | '/conta/login'
     | '/conta/redefinir-senha'
     | '/conta/senha'
@@ -533,6 +545,7 @@ export interface RootRouteChildren {
   AdminEmailsRoute: typeof AdminEmailsRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
+  ContaCarrinhoRoute: typeof ContaCarrinhoRoute
   ContaLoginRoute: typeof ContaLoginRoute
   ContaRedefinirSenhaRoute: typeof ContaRedefinirSenhaRoute
   ContaSenhaRoute: typeof ContaSenhaRoute
@@ -685,6 +698,13 @@ declare module '@tanstack/react-router' {
       path: '/conta'
       fullPath: '/conta/'
       preLoaderRoute: typeof ContaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta/carrinho': {
+      id: '/conta/carrinho'
+      path: '/conta/carrinho'
+      fullPath: '/conta/carrinho'
+      preLoaderRoute: typeof ContaCarrinhoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conta/login': {
@@ -861,6 +881,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminEmailsRoute: AdminEmailsRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
+  ContaCarrinhoRoute: ContaCarrinhoRoute,
   ContaLoginRoute: ContaLoginRoute,
   ContaRedefinirSenhaRoute: ContaRedefinirSenhaRoute,
   ContaSenhaRoute: ContaSenhaRoute,
