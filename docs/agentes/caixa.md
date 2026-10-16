@@ -28,3 +28,4 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, período lido, c
 - **Carrinhos de teste:** os do e-mail do dono (`aleqs.santos`, `informacoes.asm`, `alnaexpedicao`) contam como clientes reais, como decidido.
 - **Decisão do dono sobre a caixa "Salve seu carrinho": manter.**
 - **Data da próxima leitura para decisão de ajuste ou retirada:** entre 30/10 e 06/11/2026, com pelo menos algumas dezenas de carrinhos.
+- **Correção aplicada (ok do dono em 16/10):** a origem do carrinho de `informacoes.asm@gmail.com` foi corrigida de `automatico` para `caixa`, que é como o carrinho entrou primeiro. Contagem depois da correção: `caixa` 2, `automatico` 1, sem origem 3.
