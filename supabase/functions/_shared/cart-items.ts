@@ -37,11 +37,19 @@ export async function loadLiveCartLines(admin: SupabaseClient, lines: CartLine[]
   if (lines.length === 0) return [];
   const { data: variants, error } = await admin
     .from("product_variants")
-    .select("id, name, price_cents, stock_quantity, product_id, products(title, slug, status)")
+    .select("id, name, parent_variant_id, price_cents, stock_quantity, product_id, products(title, slug, status)")
     .in("id", lines.map((l) => l.variantId));
   if (error || !variants) {
     console.error("[cart-items] falha ao ler variações", error);
     return [];
+  }
+
+  // Secundária sai com a primária na frente (ex.: "G - Cinza"), igual ao carrinho do site.
+  const parentIds = [...new Set(variants.map((v) => v.parent_variant_id as string | null).filter((x): x is string => Boolean(x)))];
+  const parentNames = new Map<string, string>();
+  if (parentIds.length > 0) {
+    const { data: parents } = await admin.from("product_variants").select("id, name").in("id", parentIds);
+    for (const p of parents ?? []) parentNames.set(p.id as string, p.name as string);
   }
 
   const productIds = [...new Set(variants.map((v) => v.product_id as string))];
@@ -71,7 +79,10 @@ export async function loadLiveCartLines(admin: SupabaseClient, lines: CartLine[]
       quantity: Math.min(line.quantity, stock),
       productSlug: productRow.slug as string,
       productTitle: productRow.title as string,
-      variantName: variant.name as string,
+      variantName: (() => {
+        const parent = variant.parent_variant_id ? parentNames.get(variant.parent_variant_id as string) : undefined;
+        return parent ? `${parent} - ${variant.name}` : (variant.name as string);
+      })(),
       priceCents: Number(variant.price_cents),
       maxQuantity: stock,
       thumbnailUrl: path ? `${storageBase}${path}` : null,

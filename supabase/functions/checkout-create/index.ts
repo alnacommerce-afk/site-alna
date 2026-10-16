@@ -171,7 +171,7 @@ Deno.serve(async (req) => {
     const { data: variants, error: variantsError } = await admin
       .from("product_variants")
       .select(
-        "id, name, sku, price_cents, stock_quantity, product_id, products(title), package_height_cm, package_length_cm, package_weight_kg, package_width_cm, cost_cents, extra_cost_cents, freight_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, coupon_avg_pct, shipping_cost_pct, discount_pct, compare_at_price_cents",
+        "id, name, sku, parent_variant_id, price_cents, stock_quantity, product_id, products(title), package_height_cm, package_length_cm, package_weight_kg, package_width_cm, cost_cents, extra_cost_cents, freight_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, coupon_avg_pct, shipping_cost_pct, discount_pct, compare_at_price_cents",
       )
       .in("id", body.items.map((i) => i.variantId));
     if (variantsError) throw variantsError;
@@ -211,12 +211,26 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Secundária leva o nome da primária na frente (ex.: "G - Cinza"), igual ao carrinho.
+    const parentIds = [
+      ...new Set(variants.map((v) => v.parent_variant_id as string | null).filter((x): x is string => Boolean(x))),
+    ];
+    const parentNames = new Map<string, string>();
+    if (parentIds.length > 0) {
+      const { data: parents } = await admin.from("product_variants").select("id, name").in("id", parentIds);
+      for (const p of parents ?? []) parentNames.set(p.id as string, p.name as string);
+    }
+    const displayName = (variant: { name: string; parent_variant_id?: string | null }) => {
+      const parent = variant.parent_variant_id ? parentNames.get(variant.parent_variant_id) : undefined;
+      return parent ? `${parent} - ${variant.name}` : variant.name;
+    };
+
     const orderItemsPayload = body.items.map((item) => {
       const variant = variants.find((v) => v.id === item.variantId)!;
       return {
         product_variant_id: variant.id,
         product_title: (variant.products as { title: string } | null)?.title ?? "Produto",
-        variant_name: variant.name,
+        variant_name: displayName(variant),
         sku: variant.sku,
         unit_price_cents: variant.price_cents,
         quantity: item.quantity,
