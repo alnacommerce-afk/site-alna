@@ -921,6 +921,7 @@ export type Database = {
           cost_cents: number | null
           cost_synced_at: string | null
           coupon_avg_pct: number
+          cover_image_path: string | null
           created_at: string
           discount_pct: number
           extra_cost_cents: number | null
@@ -934,6 +935,7 @@ export type Database = {
           package_length_cm: number | null
           package_weight_kg: number | null
           package_width_cm: number | null
+          parent_variant_id: string | null
           price_cents: number
           product_id: string
           shipping_cost_pct: number
@@ -948,6 +950,7 @@ export type Database = {
           cost_cents?: number | null
           cost_synced_at?: string | null
           coupon_avg_pct?: number
+          cover_image_path?: string | null
           created_at?: string
           discount_pct?: number
           extra_cost_cents?: number | null
@@ -961,6 +964,7 @@ export type Database = {
           package_length_cm?: number | null
           package_weight_kg?: number | null
           package_width_cm?: number | null
+          parent_variant_id?: string | null
           price_cents: number
           product_id: string
           shipping_cost_pct?: number
@@ -975,6 +979,7 @@ export type Database = {
           cost_cents?: number | null
           cost_synced_at?: string | null
           coupon_avg_pct?: number
+          cover_image_path?: string | null
           created_at?: string
           discount_pct?: number
           extra_cost_cents?: number | null
@@ -988,6 +993,7 @@ export type Database = {
           package_length_cm?: number | null
           package_weight_kg?: number | null
           package_width_cm?: number | null
+          parent_variant_id?: string | null
           price_cents?: number
           product_id?: string
           shipping_cost_pct?: number
@@ -997,6 +1003,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "product_variants_parent_variant_id_fkey"
+            columns: ["parent_variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "product_variants_product_id_fkey"
             columns: ["product_id"]
