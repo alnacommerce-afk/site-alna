@@ -843,16 +843,6 @@ function ProdutoPage() {
               <div className="flex flex-wrap gap-2">
                 {primaryGroups.map(({ primary, children }) => {
                   const active = activePrimaryId === primary.id;
-                  const coverPath =
-                    primary.cover_image_path ??
-                    children.find((c) => c.cover_image_path)?.cover_image_path ??
-                    null;
-                  const coverUrl = coverPath
-                    ? supabase.storage.from("product-media").getPublicUrl(coverPath).data.publicUrl
-                    : images[0]
-                      ? supabase.storage.from("product-media").getPublicUrl(images[0].storage_path).data
-                          .publicUrl
-                      : null;
                   return (
                     <button
                       key={primary.id}
@@ -862,9 +852,6 @@ function ProdutoPage() {
                         active ? "border-[#15803d] bg-[#15803d]/5" : "border-[#12294f]/15"
                       }`}
                     >
-                      {coverUrl ? (
-                        <img src={coverUrl} alt="" className="h-10 w-10 rounded object-cover" loading="lazy" />
-                      ) : null}
                       <span className="font-medium">{primary.name}</span>
                     </button>
                   );
@@ -875,6 +862,10 @@ function ProdutoPage() {
                   {(primaryGroups.find((g) => g.primary.id === activePrimaryId)?.children ?? []).map((v) => {
                     const checked = selectedVariantIds.includes(v.id);
                     const outOfStock = v.stock_quantity <= 0;
+                    const secondaryPhoto = v.cover_image_path
+                      ? supabase.storage.from("product-media").getPublicUrl(v.cover_image_path).data
+                          .publicUrl
+                      : null;
                     return (
                       <label
                         key={v.id}
@@ -883,6 +874,14 @@ function ProdutoPage() {
                         } ${outOfStock ? "opacity-50" : ""}`}
                       >
                         <Checkbox checked={checked} onCheckedChange={() => toggleVariant(v.id)} />
+                        {secondaryPhoto ? (
+                          <img
+                            src={secondaryPhoto}
+                            alt=""
+                            className="h-10 w-10 flex-none rounded object-cover"
+                            loading="lazy"
+                          />
+                        ) : null}
                         <span className="flex-1">{v.name}</span>
                         <span className="text-xs text-muted-foreground">
                           {outOfStock ? "sem estoque" : formatCentsToBRL(v.price_cents)}
