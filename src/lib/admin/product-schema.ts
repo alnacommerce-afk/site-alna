@@ -2,10 +2,20 @@ import { z } from "zod";
 
 export const variantFormSchema = z.object({
   id: z.string().optional(),
+  // Chave só do formulário (identifica a primária antes de ser salva, para a secundária apontar para ela).
+  localKey: z.string().optional(),
   name: z.string().min(1, "Informe o nome da variação"),
   sku: z.string().min(1, "Informe o SKU"),
   gtinEan: z.string().optional(),
   stockQuantity: z.string().optional(),
+  // Preço só é informado ao criar a variação; depois o ajuste fica em Admin > Precificação.
+  price: z.string().optional(),
+});
+
+// Variação secundária: liga-se a uma primária (parentKey = localKey dela) e pode ter foto de capa (coverKey = chave da foto).
+export const secondaryVariantFormSchema = variantFormSchema.extend({
+  parentKey: z.string().min(1, "Relacione a variação com uma primária"),
+  coverKey: z.string().optional(),
 });
 
 export const productFormSchema = z.object({
@@ -18,6 +28,7 @@ export const productFormSchema = z.object({
   description: z.string().optional(),
   status: z.enum(["draft", "published"]),
   variants: z.array(variantFormSchema).min(1, "Adicione pelo menos uma variação"),
+  secondaryVariants: z.array(secondaryVariantFormSchema).optional(),
   // Fiscal — um único conjunto de dados para o produto, aplicado a todas as variações.
   ncm: z.string().optional(),
   origem: z.string().optional(),
@@ -34,6 +45,7 @@ export const productFormSchema = z.object({
 });
 
 export type VariantFormValues = z.infer<typeof variantFormSchema>;
+export type SecondaryVariantFormValues = z.infer<typeof secondaryVariantFormSchema>;
 export type ProductFormValues = z.infer<typeof productFormSchema>;
 
 export const emptyVariant: VariantFormValues = {
@@ -41,6 +53,13 @@ export const emptyVariant: VariantFormValues = {
   sku: "",
   gtinEan: "",
   stockQuantity: "0",
+  price: "",
+};
+
+export const emptySecondaryVariant: SecondaryVariantFormValues = {
+  ...emptyVariant,
+  parentKey: "",
+  coverKey: "",
 };
 
 export const defaultProductFormValues: ProductFormValues = {
@@ -49,6 +68,7 @@ export const defaultProductFormValues: ProductFormValues = {
   description: "",
   status: "draft",
   variants: [emptyVariant],
+  secondaryVariants: [],
   // Defaults usuais da ALNA — a maioria dos produtos usa exatamente estes códigos;
   // o admin ajusta manualmente só quando um produto específico for diferente.
   ncm: "",

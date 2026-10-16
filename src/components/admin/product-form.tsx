@@ -7,9 +7,10 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { prepareProductImage } from "@/lib/admin/optimize-image";
-import { slugify } from "@/lib/money";
+import { parseCentsFromInput, slugify } from "@/lib/money";
 import {
   defaultProductFormValues,
+  emptySecondaryVariant,
   emptyVariant,
   productFormSchema,
   type ProductFormValues,
@@ -81,6 +82,14 @@ function newKey() {
   return crypto.randomUUID();
 }
 
+// Garante uma chave local em cada variação primária (a secundária aponta para ela por essa chave).
+function withLocalKeys(values: ProductFormValues): ProductFormValues {
+  return {
+    ...values,
+    variants: values.variants.map((v) => ({ ...v, localKey: v.localKey || newKey() })),
+  };
+}
+
 async function generateUniqueSlug(title: string) {
   const base = slugify(title) || "produto";
   let slug = base;
@@ -121,10 +130,41 @@ export function ProductForm({ productId }: { productId?: string }) {
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: initialDraft?.values ?? defaultProductFormValues,
+    defaultValues: withLocalKeys(initialDraft?.values ?? defaultProductFormValues),
   });
 
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "variants" });
+  const {
+    fields: secondaryFields,
+    append: appendSecondary,
+    remove: removeSecondary,
+  } = useFieldArray({ control: form.control, name: "secondaryVariants" });
+  const [hasSecondary, setHasSecondary] = useState(false);
+  const variantValues = form.watch("variants") ?? [];
+  const secondaryValues = form.watch("secondaryVariants") ?? [];
+  const primaryOptions = variantValues.filter((v) => v.localKey);
+
+  function appendPrimary() {
+    append({ ...emptyVariant, localKey: newKey() });
+  }
+
+  // Remover uma primária também remove as secundárias ligadas a ela (senão ficariam sem primária).
+  function removePrimary(index: number) {
+    const key = form.getValues(`variants.${index}.localKey`);
+    remove(index);
+    const sec = form.getValues("secondaryVariants") ?? [];
+    for (let i = sec.length - 1; i >= 0; i--) {
+      if (key && sec[i]?.parentKey === key) removeSecondary(i);
+    }
+  }
+
+  function disableSecondary() {
+    if (secondaryFields.length > 0 && !window.confirm("Remover todas as variações secundárias deste produto?")) {
+      return;
+    }
+    for (let i = secondaryFields.length - 1; i >= 0; i--) removeSecondary(i);
+    setHasSecondary(false);
+  }
 
   const imagesRef = useRef(images);
   useEffect(() => {
@@ -240,18 +280,38 @@ export function ProductForm({ productId }: { productId?: string }) {
         .eq("product_id", editingProductId)
         .order("position");
 
+      const loadedPrimaries = (variants ?? [])
+        .filter((v) => !v.parent_variant_id)
+        .map((v) => ({
+          id: v.id,
+          localKey: v.id,
+          name: v.name,
+          sku: v.sku,
+          gtinEan: v.gtin_ean ?? "",
+          stockQuantity: String(v.stock_quantity),
+          price: "",
+        }));
+      const loadedSecondaries = (variants ?? [])
+        .filter((v) => v.parent_variant_id)
+        .map((v) => ({
+          id: v.id,
+          localKey: v.id,
+          parentKey: v.parent_variant_id ?? "",
+          coverKey: (productImages ?? []).find((img) => img.storage_path === v.cover_image_path)?.id ?? "",
+          name: v.name,
+          sku: v.sku,
+          gtinEan: v.gtin_ean ?? "",
+          stockQuantity: String(v.stock_quantity),
+          price: "",
+        }));
+      setHasSecondary(loadedSecondaries.length > 0);
       form.reset({
         title: product.title,
         categoryId: product.category_id ?? "",
         description: product.description ?? "",
         status: product.status,
-        variants: (variants ?? []).map((v) => ({
-          id: v.id,
-          name: v.name,
-          sku: v.sku,
-          gtinEan: v.gtin_ean ?? "",
-          stockQuantity: String(v.stock_quantity),
-        })),
+        variants: loadedPrimaries,
+        secondaryVariants: loadedSecondaries,
         ncm: product.ncm ?? "",
         origem: product.origem ?? "",
         cfopVendaMesmoEstado: product.cfop_venda_mesmo_estado ?? "",
@@ -357,6 +417,11 @@ export function ProductForm({ productId }: { productId?: string }) {
   }
 
   async function saveProduct(values: ProductFormValues, chosenStatus: "draft" | "published") {
+    const newRows = [...values.variants, ...(values.secondaryVariants ?? [])].filter((v) => !v.id);
+    if (newRows.some((v) => parseCentsFromInput(v.price ?? "") <= 0)) {
+      toast.error("Informe o preço de cada variação nova (maior que zero).");
+      return;
+    }
     if (images.length === 0) {
       toast.error("Adicione pelo menos uma foto do produto.");
       return;
@@ -419,16 +484,27 @@ export function ProductForm({ productId }: { productId?: string }) {
         if (error) throw error;
       }
 
-      const currentVariantIds = new Set(values.variants.filter((v) => v.id).map((v) => v.id!));
+      const currentVariantIds = new Set(
+        [...values.variants, ...(values.secondaryVariants ?? [])].filter((v) => v.id).map((v) => v.id!),
+      );
       const variantIdsToDelete = originalVariantIds.filter((id) => !currentVariantIds.has(id));
       if (variantIdsToDelete.length > 0) {
+        // Secundárias primeiro: a primária não pode ser apagada enquanto tiver secundária ligada a ela.
+        const { error: secError } = await supabase
+          .from("product_variants")
+          .delete()
+          .in("id", variantIdsToDelete)
+          .not("parent_variant_id", "is", null);
+        if (secError) throw secError;
         const { error } = await supabase
           .from("product_variants")
           .delete()
-          .in("id", variantIdsToDelete);
+          .in("id", variantIdsToDelete)
+          .is("parent_variant_id", null);
         if (error) throw error;
       }
 
+      const primaryDbIds = new Map<string, string>(); // localKey da primária -> id no banco
       for (const variant of values.variants) {
         const commonFields = {
           product_id: currentProductId,
@@ -438,19 +514,27 @@ export function ProductForm({ productId }: { productId?: string }) {
         };
 
         if (variant.id) {
-          // Price lives in Admin > Anúncio > Precificação and stock in Admin > Anúncio > Estoque —
-          // never touch either here, or an edit to name/frete would silently wipe out a value set
-          // on those screens (stock is also debited automatically on every sale).
+          // Preço fica em Admin > Precificação e estoque em Admin > Estoque (nunca tocados aqui na edição).
           const { error } = await supabase
             .from("product_variants")
             .update(commonFields)
             .eq("id", variant.id);
           if (error) throw error;
+          if (variant.localKey) primaryDbIds.set(variant.localKey, variant.id);
         } else {
-          const { error } = await supabase
+          // Variação nova: o preço informado no cadastro é gravado uma única vez.
+          const { data, error } = await supabase
             .from("product_variants")
-            .insert({ ...commonFields, price_cents: 0, stock_quantity: 0, compare_at_price_cents: null });
+            .insert({
+              ...commonFields,
+              price_cents: parseCentsFromInput(variant.price ?? ""),
+              stock_quantity: 0,
+              compare_at_price_cents: null,
+            })
+            .select("id")
+            .single();
           if (error) throw error;
+          if (variant.localKey && data) primaryDbIds.set(variant.localKey, data.id);
         }
       }
 
@@ -463,11 +547,13 @@ export function ProductForm({ productId }: { productId?: string }) {
         await supabase.from("product_images").delete().eq("id", img.id);
       }
 
+      const imagePathByKey = new Map<string, string>();
       for (const [i, img] of images.entries()) {
         // Sem IA complementa, o alt cai pro título — nunca fica vazio, e a IA complementa
         // continua podendo melhorar isso depois (ver aviso de "faltando IA" no catálogo).
         const altText = img.altText.trim() || values.title;
         if (img.existingId) {
+          if (img.storagePath) imagePathByKey.set(img.key, img.storagePath);
           const { error } = await supabase
             .from("product_images")
             .update({ alt_text: altText, position: i })
@@ -477,6 +563,7 @@ export function ProductForm({ productId }: { productId?: string }) {
           // Shrink and convert to WebP first; the file name is a fresh UUID, so it can be cached for a year.
           const prepared = await prepareProductImage(img.file);
           const path = `${currentProductId}/${crypto.randomUUID()}.${prepared.extension}`;
+          imagePathByKey.set(img.key, path);
           const { error: uploadError } = await supabase.storage
             .from("product-media")
             .upload(path, prepared.body, {
@@ -492,6 +579,33 @@ export function ProductForm({ productId }: { productId?: string }) {
             position: i,
           });
           if (insertError) throw insertError;
+        }
+      }
+
+      // Variações secundárias: ligadas à primária, com preço (só na criação), SKU e foto de capa opcional.
+      for (const sec of values.secondaryVariants ?? []) {
+        const parentId = sec.parentKey ? primaryDbIds.get(sec.parentKey) : undefined;
+        if (!parentId) throw new Error(`A variação "${sec.name}" não está ligada a uma primária válida.`);
+        const coverPath = sec.coverKey ? imagePathByKey.get(sec.coverKey) ?? null : null;
+        const commonFields = {
+          product_id: currentProductId,
+          name: sec.name,
+          sku: sec.sku,
+          gtin_ean: sec.gtinEan || null,
+          parent_variant_id: parentId,
+          cover_image_path: coverPath,
+        };
+        if (sec.id) {
+          const { error } = await supabase.from("product_variants").update(commonFields).eq("id", sec.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.from("product_variants").insert({
+            ...commonFields,
+            price_cents: parseCentsFromInput(sec.price ?? ""),
+            stock_quantity: 0,
+            compare_at_price_cents: null,
+          });
+          if (error) throw error;
         }
       }
 
@@ -1014,13 +1128,28 @@ export function ProductForm({ productId }: { productId?: string }) {
                           </FormItem>
                         )}
                       />
+                      {!variantValues[index]?.id && (
+                        <FormField
+                          control={form.control}
+                          name={`variants.${index}.price`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Preço (R$)</FormLabel>
+                              <FormControl>
+                                <Input {...field} inputMode="decimal" placeholder="0,00" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                     </div>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       disabled={fields.length === 1}
-                      onClick={() => remove(index)}
+                      onClick={() => removePrimary(index)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -1029,9 +1158,169 @@ export function ProductForm({ productId }: { productId?: string }) {
               </Card>
             ))}
 
-            <Button type="button" variant="outline" onClick={() => append(emptyVariant)}>
+            <Button type="button" variant="outline" onClick={appendPrimary}>
               + Adicionar variação
             </Button>
+            <div className="space-y-3 border-t pt-4">
+              <div>
+                <p className="text-sm font-medium text-[#12294f]">Este produto tem variação secundária?</p>
+                <p className="text-xs text-muted-foreground">
+                  Ex.: primária = cor, secundária = tamanho. Cada secundária é ligada a uma primária.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button type="button" variant={hasSecondary ? "default" : "outline"} onClick={() => setHasSecondary(true)}>
+                  Sim
+                </Button>
+                <Button type="button" variant={hasSecondary ? "outline" : "default"} onClick={disableSecondary}>
+                  Não
+                </Button>
+              </div>
+
+              {hasSecondary && (
+                <div className="space-y-4">
+                  {primaryOptions.length === 0 && (
+                    <p className="text-xs text-muted-foreground">Crie primeiro uma variação primária acima.</p>
+                  )}
+                  {secondaryFields.map((field, index) => (
+                    <Card key={field.id}>
+                      <CardContent className="space-y-4 p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3">
+                            <FormField
+                              control={form.control}
+                              name={`secondaryVariants.${index}.parentKey`}
+                              render={({ field }) => (
+                                <FormItem className="col-span-2">
+                                  <FormLabel>Relacionar com a primária</FormLabel>
+                                  <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Escolha a primária" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {primaryOptions.map((p) => (
+                                        <SelectItem key={p.localKey} value={p.localKey ?? ""}>
+                                          {p.name || "Variação sem nome"}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`secondaryVariants.${index}.name`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Nome da variação</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} placeholder="Ex: P" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`secondaryVariants.${index}.sku`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>SKU</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} placeholder="ALNA-0001" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`secondaryVariants.${index}.gtinEan`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>GTIN / EAN</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} placeholder="7891234567890" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            {!secondaryValues[index]?.id && (
+                              <FormField
+                                control={form.control}
+                                name={`secondaryVariants.${index}.price`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Preço (R$)</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} inputMode="decimal" placeholder="0,00" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )}
+                            <FormField
+                              control={form.control}
+                              name={`secondaryVariants.${index}.coverKey`}
+                              render={({ field }) => (
+                                <FormItem className="col-span-2 sm:col-span-3">
+                                  <FormLabel>Foto de capa (opcional)</FormLabel>
+                                  <div className="flex items-center gap-3">
+                                    {images.find((img) => img.key === field.value)?.previewUrl && (
+                                      <img
+                                        src={images.find((img) => img.key === field.value)?.previewUrl}
+                                        alt=""
+                                        className="h-12 w-12 rounded object-cover"
+                                      />
+                                    )}
+                                    <Select
+                                      value={field.value || "__none__"}
+                                      onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
+                                    >
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="__none__">Sem foto de capa</SelectItem>
+                                        {images.map((img, i) => (
+                                          <SelectItem key={img.key} value={img.key}>
+                                            Foto {i + 1}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <Button type="button" variant="ghost" size="icon" onClick={() => removeSecondary(index)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={primaryOptions.length === 0}
+                    onClick={() => appendSecondary({ ...emptySecondaryVariant, localKey: newKey() })}
+                  >
+                    + Adicionar variação secundária
+                  </Button>
+                </div>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
 

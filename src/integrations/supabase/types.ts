@@ -943,6 +943,8 @@ export type Database = {
           stock_quantity: number
           tax_rate_pct: number
           updated_at: string
+          cover_image_path: string | null
+          parent_variant_id: string | null
         }
         Insert: {
           card_fee_pct?: number
@@ -972,6 +974,8 @@ export type Database = {
           stock_quantity?: number
           tax_rate_pct?: number
           updated_at?: string
+          cover_image_path?: string | null
+          parent_variant_id?: string | null
         }
         Update: {
           card_fee_pct?: number
@@ -1001,6 +1005,8 @@ export type Database = {
           stock_quantity?: number
           tax_rate_pct?: number
           updated_at?: string
+          cover_image_path?: string | null
+          parent_variant_id?: string | null
         }
         Relationships: [
           {

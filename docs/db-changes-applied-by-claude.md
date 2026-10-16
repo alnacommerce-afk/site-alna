@@ -391,3 +391,9 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 
 ## 13/10/2026 — textos dos e-mails de carrinho (urgência falsa)
 - `update email_templates` (sem migração): `abandoned_cart_24h` ("ainda hoje" → "quando quiser"); `cart_reminder_24h` (assunto "Seu pedido ainda está pendente na Alna" e corpo "ainda está aguardando o pagamento"). SQL de reversão em `docs/DECISOES.md` (seção "13/10 — pendências decididas pelo dono"). Sem código nem publicação.
+
+## 16/10/2026 — Variações primária e secundária (fase 1: banco)
+- Migração `variant_primary_secondary_fase1` (apply_migration, projeto ogxsdptftgxrujkfscvi): `product_variants.parent_variant_id uuid` (FK para a primária, `on delete restrict`), `product_variants.cover_image_path text` (foto de capa da secundária), índice em `parent_variant_id`; função + trigger `check_variant_parent` (a primária precisa ser do mesmo produto e não pode ter outra primária: só dois níveis); permissões de coluna: `select` para anon/authenticated e `insert`/`update` para authenticated nas duas colunas.
+- Efeito imediato: nenhum na loja (a página do cliente ainda não lê as colunas novas). Dados existentes: nenhuma linha com primária (0 de todas as variações).
+- Reverter (se preciso): `drop trigger trg_check_variant_parent on public.product_variants; drop function public.check_variant_parent(); alter table public.product_variants drop column parent_variant_id, drop column cover_image_path;`
+- Código da fase 1 (mesmo commit): `src/components/admin/product-form.tsx`, `src/lib/admin/product-schema.ts`, `src/integrations/supabase/types.ts`.
