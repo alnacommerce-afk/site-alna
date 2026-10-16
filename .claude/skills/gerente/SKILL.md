@@ -46,7 +46,7 @@ Os setores acima ainda estão sendo criados. Até lá, cada um é atendido pelo 
 | Backoffice (frete e entregas, antes Carteiro) | `backoffice` | Ativo como função, sem teste real ainda |
 | Auditoria (com Detetive e Cofre) | `auditoria`, `detetive`, `cofre` | Ativos |
 | Financeiro (antes Caixa) | `financeiro` | Ativo: medição da caixa. Pagamentos e cobrança sem teste real ainda |
-| Vendas (Vendedor, Estoquista, Vitrine) | — | Falta: nenhum criado. Precisa do desenho aprovado |
+| Vendas (Vendedor, Estoquista, Vitrine) | `vendedor`, `estoquista`, `vitrine` | Ativos (criados em 16/10, sem teste real ainda) |
 | Jurídico (antes Advogado do Google) | `juridico` | Ativo |
 | Arquiteto | `arquiteto` | Ativo |
 

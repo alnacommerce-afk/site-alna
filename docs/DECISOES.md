@@ -147,3 +147,7 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **16/10** — Dono: aprovou o desenho do **Arquiteto** (independente: planeja, confere e salva o conhecimento; não executa; execução é do Backoffice). Skill em `.claude/skills/arquiteto/`; diário em `docs/agentes/arquiteto.md`.
 - **16/10** — Dono: aprovou a **comunicação de duas vias** (todo agente fala com o gerente; o Backoffice conta ao agente responsável o que foi feito; o conhecimento fica com o responsável). O texto do gerente está em `docs/agentes/plano-gerente.md`, e só substitui a skill atual no passo 1 da migração.
 - **16/10** — Dono: **aprovou** o plano do Arquiteto e o novo texto do Gerente, e pediu que a skill do gerente fosse atualizada agora. Como os setores novos ainda não existem como skills, a tabela de roteamento tem um "mapa de transição" que aponta cada setor para o funcionário atual até a migração.
+- **16/10** — Dono: aprovou o desenho do setor **Vendas** (Vendedor, Estoquista e Vitrine). Skills em `.claude/skills/vendedor`, `estoquista` e `vitrine`; diários em `docs/agentes/`.
+- **16/10** — Dono: os **lembretes de carrinho abandonado** (conteúdo) ficam com **Vendas**; as medições ficam com **Financeiro**.
+- **16/10** — Dono: os **cupons de marketing** são do **Vendas**. O **Financeiro** registra o valor da venda e sabe que ela usou cupom.
+- **16/10** — Dono: a **primeira tarefa do Vendedor** é acompanhar a campanha de 27/10: se deu efeito, gerou engajamento, e com os dados planejar ajuste ou manter como está.
