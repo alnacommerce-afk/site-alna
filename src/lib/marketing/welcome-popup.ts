@@ -4,7 +4,7 @@
 //
 // The pop-up shows up only when ALL of these are true:
 //   1. the page has finished loading and the browser went idle (nothing competes with the page itself);
-//   2. 8 more seconds passed;
+//   2. 3 more seconds passed;
 //   3. a real person interacted with the page (scrolled, clicked, touched or typed).
 // Crawlers and speed-test robots don't interact, so they never see it — everybody gets the same page, nothing is
 // hidden by "who is asking". A person who closed it does not see it for 14 days; a person who asked for the coupon
@@ -14,7 +14,7 @@ import { getSavedCartState } from "@/lib/cart/saved-cart";
 
 const STORAGE_KEY = "alna_welcome";
 const DISMISS_DAYS = 14;
-const WAIT_AFTER_LOAD_MS = 8000;
+const WAIT_AFTER_LOAD_MS = 3000;
 
 type WelcomeState = { claimed?: boolean; dismissedUntil?: number };
 
