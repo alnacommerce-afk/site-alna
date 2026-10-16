@@ -18,3 +18,7 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, sintoma, hipóte
 - **Causa:** a pendência foi causada pela falta de decisão do dono sobre cancelar, não por defeito de código.
 - **Pendência:** o dono decide cancelar (ou não) antes de 15/10 14:26 UTC, quando o `regenerate-pix` deixa de atender este pedido.
 - **Decisão do dono:** (em aberto)
+
+## 2026-10-15 — Computador HOME — decisão do dono sobre o pedido 8433b1a9
+- **Decisão do dono:** manter o pedido como está (pendente). Não cancelar.
+- Situação após a decisão: o prazo de regeneração do Pix venceu em 15/10 às 11:26 (Brasília). Não há conserto automático para este pedido; a pendência fica registrada para decidir depois, com a cobrança na Asaas antiga ainda não conferida.
