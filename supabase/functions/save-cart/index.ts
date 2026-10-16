@@ -7,8 +7,8 @@
 //                                 single row of that e-mail and returns its `token`;
 //   - { token, items }           later changes of the same cart (the browser remembers the token);
 //   - { token, action: "stop" }  "I don't want reminders": nothing is sent for this cart anymore.
-// Optional `source`: "caixa" (save-cart box) or "automatico" (automatic save). Anything else is ignored, and an
-// existing origin is never overwritten by a call without it.
+// Optional `source`: "caixa" (save-cart box) or "automatico" (automatic save). It is the cart's FIRST origin: once
+// a cart has one, later calls never change it. Anything else is ignored.
 // Prices and stock are always read from the database here — nothing the browser sends about money is trusted.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import {
@@ -64,8 +64,9 @@ Deno.serve(async (req) => {
       reminder_1_sent_at: string | null;
       reminder_2_sent_at: string | null;
       stopped_at: string | null;
+      source: string | null;
     } | null = null;
-    const columns = "id, token, email, recovered_at, reminder_1_sent_at, reminder_2_sent_at, stopped_at";
+    const columns = "id, token, email, recovered_at, reminder_1_sent_at, reminder_2_sent_at, stopped_at, source";
     if (token) {
       const { data } = await admin.from("abandoned_carts").select(columns).eq("token", token).maybeSingle();
       row = data;
@@ -115,7 +116,8 @@ Deno.serve(async (req) => {
       !lastReminderAt || now.getTime() - new Date(lastReminderAt).getTime() >= NEW_CYCLE_AFTER_DAYS * DAY_MS;
     const update: Record<string, unknown> = { ...cartFields };
     if (phone) update.phone = phone;
-    if (source) update.source = source;
+    // The origin is the first one: a later save (box or automatic) does not change how the cart came in.
+    if (source && !row.source) update.source = source;
     if (token === "" && emailRaw) {
       // The shopper typed the e-mail again and consented again: reminders are welcome again.
       update.stopped_at = null;

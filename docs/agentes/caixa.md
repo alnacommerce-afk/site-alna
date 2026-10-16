@@ -18,3 +18,13 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, período lido, c
 - O carrinho salvo pelo e-mail do próprio dono (atualizado em 16/10 às 16:43 Brasília, origem `caixa`) conta como **cliente real** na análise. Não é para apagar.
 - Contagem atual (banco, só leitura): 1 carrinho com origem `caixa` (e-mail do dono, criado em 12/10) e 3 sem origem (anteriores à publicação).
 - Para a decisão sobre a caixa, o dono quer acompanhar o fluxo a cada teste: o Caixa consulta o banco quando o dono avisar.
+
+## 2026-10-16 — Computador HOME — testes de origem e regra da origem
+- **Origem `caixa` confirmada:** o carrinho salvo pela caixa "Salve seu carrinho" na página do carrinho chegou com origem `caixa` (e-mail de teste do dono).
+- **Origem `automatico` confirmada:** pelo pop-up, com produto no carrinho, o carrinho do e-mail `alnaexpedicao@gmail.com` chegou com origem `automatico` (1 item, R$ 20,80 base), 3 segundos depois de adicionar o produto.
+- **Cupom:** apareceu preenchido no carrinho; o cliente deve clicar em "Aplicar"; ao reabrir a aba, o cupom não aparece mais e deve ser copiado do e-mail.
+- **Regra da origem (aprovada pelo dono):** a origem é a **primeira** (como o carrinho entrou). Salvamentos seguintes não mudam a origem. A função `save-cart` foi publicada nessa versão (versão 15, `verify_jwt` mantido).
+- **Pendência de dado:** o carrinho de `informacoes.asm@gmail.com` entrou primeiro pela caixa (`caixa`), mas o registro mostra `automatico`, porque o valor foi gravado antes da regra. Não foi corrigido ainda: aguarda ok do dono.
+- **Carrinhos de teste:** os do e-mail do dono (`aleqs.santos`, `informacoes.asm`, `alnaexpedicao`) contam como clientes reais, como decidido.
+- **Decisão do dono sobre a caixa "Salve seu carrinho": manter.**
+- **Data da próxima leitura para decisão de ajuste ou retirada:** entre 30/10 e 06/11/2026, com pelo menos algumas dezenas de carrinhos.
