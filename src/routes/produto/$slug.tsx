@@ -594,7 +594,10 @@ function ProdutoPage() {
           variantId: variant.id,
           productSlug: product.slug,
           productTitle: product.title,
-          variantName: variant.name,
+          // Secundária sai com a primária na frente (ex.: "G - Cinza"), para o carrinho mostrar as duas.
+          variantName: variant.parent_variant_id
+            ? `${variants.find((p) => p.id === variant.parent_variant_id)?.name ?? ""} - ${variant.name}`.replace(/^ - /, "")
+            : variant.name,
           thumbnailUrl,
           priceCents: variant.price_cents,
           maxQuantity: variant.stock_quantity,
