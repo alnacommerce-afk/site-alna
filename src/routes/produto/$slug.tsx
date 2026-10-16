@@ -869,20 +869,26 @@ function ProdutoPage() {
                     return (
                       <label
                         key={v.id}
-                        className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
+                        className={`flex min-w-0 cursor-pointer flex-col gap-2 rounded-md border p-2 text-sm ${
                           checked ? "border-[#15803d] bg-[#15803d]/5" : "border-[#12294f]/15"
                         } ${outOfStock ? "opacity-50" : ""}`}
                       >
-                        <Checkbox checked={checked} onCheckedChange={() => toggleVariant(v.id)} />
                         {secondaryPhoto ? (
                           <img
                             src={secondaryPhoto}
                             alt=""
-                            className="h-10 w-10 flex-none rounded object-cover"
+                            className="aspect-square w-full rounded object-cover"
                             loading="lazy"
                           />
                         ) : null}
-                        <span className="flex-1">{v.name}</span>
+                        <span className="flex min-w-0 items-start gap-2">
+                          <Checkbox
+                            className="mt-0.5 flex-none"
+                            checked={checked}
+                            onCheckedChange={() => toggleVariant(v.id)}
+                          />
+                          <span className="min-w-0 break-words font-medium leading-tight">{v.name}</span>
+                        </span>
                         <span className="text-xs text-muted-foreground">
                           {outOfStock ? "sem estoque" : formatCentsToBRL(v.price_cents)}
                         </span>
