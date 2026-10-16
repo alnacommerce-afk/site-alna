@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
       `id, title, slug, description,
        product_images(storage_path, position),
        categories(name),
-       product_variants(sku, name, price_cents, compare_at_price_cents, stock_quantity, gtin_ean)`,
+       product_variants(id, parent_variant_id, sku, name, price_cents, compare_at_price_cents, stock_quantity, gtin_ean)`,
     )
     .eq("status", "published")
     .order("created_at", { ascending: true });

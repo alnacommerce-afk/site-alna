@@ -179,6 +179,15 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "Um ou mais produtos não foram encontrados." }, 400);
     }
 
+    // Uma primária que tem secundárias não se vende sozinha: o cliente precisa escolher a secundária.
+    const { data: childRows } = await admin
+      .from("product_variants")
+      .select("parent_variant_id")
+      .in("parent_variant_id", body.items.map((i) => i.variantId));
+    if (childRows && childRows.length > 0) {
+      return jsonResponse({ error: "Escolha a variação (tamanho ou cor) antes de comprar." }, 400);
+    }
+
     // 1a. Block the purchase outright if any item now exceeds what's in stock — this is the only
     // server-side check in the whole flow (the product page's "sem estoque" gating is client-side
     // only), and it runs before anything is charged or an order row is even created.

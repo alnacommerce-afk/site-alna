@@ -6,6 +6,8 @@
 // share `item_group_id`. Products without a photo or a price are skipped, because Meta rejects them.
 
 export type FeedVariant = {
+  id?: string;
+  parent_variant_id?: string | null;
   sku: string | null;
   gtin_ean?: string | null;
   name: string | null;
@@ -99,7 +101,12 @@ export function buildFeedCsv(products: FeedProduct[], options: Options): string 
 
   for (const product of products) {
     const images = [...(product.product_images ?? [])].sort((a, b) => a.position - b.position);
-    const variants = (product.product_variants ?? []).filter((v) => v.price_cents > 0);
+    // Primária que tem secundárias não é item vendável: entram só as secundárias (e produtos sem secundárias).
+    const allVariants = product.product_variants ?? [];
+    const parentIds = new Set(
+      allVariants.map((v) => v.parent_variant_id).filter((x): x is string => Boolean(x)),
+    );
+    const variants = allVariants.filter((v) => v.price_cents > 0 && !(v.id && parentIds.has(v.id)));
     if (images.length === 0 || variants.length === 0) continue;
 
     const imageUrl = (path: string) => `${options.imageBaseUrl}${path}`;

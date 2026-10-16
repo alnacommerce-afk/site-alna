@@ -2,6 +2,7 @@ import { Await, createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { sellableVariants } from "@/lib/variants";
 import { formatCentsToBRL } from "@/lib/money";
 import heroAmbassador from "@/assets/brand/hero-ambassador-cutout.png";
 import { SiteHeader } from "@/components/site/site-header";
@@ -59,7 +60,7 @@ async function fetchCatalog(): Promise<{
         .select(
           `id, title, slug, category_id, created_at,
              product_images(storage_path, alt_text, position),
-             product_variants(price_cents, compare_at_price_cents)`,
+             product_variants(id, parent_variant_id, price_cents, compare_at_price_cents)`,
         )
         .eq("status", "published")
         .order("created_at", { ascending: false }),
@@ -69,7 +70,7 @@ async function fetchCatalog(): Promise<{
       const images = [...(p.product_images ?? [])].sort((a, b) => a.position - b.position);
       const thumbnail = images[0];
       const variants = p.product_variants ?? [];
-      const cheapest = variants.reduce<(typeof variants)[number] | null>((min, v) => {
+      const cheapest = sellableVariants(variants).reduce<(typeof variants)[number] | null>((min, v) => {
         if (!min || v.price_cents < min.price_cents) return v;
         return min;
       }, null);

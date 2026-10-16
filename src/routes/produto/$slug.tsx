@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
+import { sellableVariants } from "@/lib/variants";
 import { useCart } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
@@ -40,6 +41,8 @@ type VariantRow = {
   compare_at_price_cents: number | null;
   sku: string;
   stock_quantity: number;
+  parent_variant_id?: string | null;
+  cover_image_path?: string | null;
 };
 type ReviewRow = {
   id: string;
@@ -53,7 +56,12 @@ type RelatedRow = {
   title: string;
   slug: string;
   product_images: { storage_path: string; alt_text: string; position: number }[];
-  product_variants: { price_cents: number; compare_at_price_cents: number | null }[];
+  product_variants: {
+    id: string;
+    parent_variant_id: string | null;
+    price_cents: number;
+    compare_at_price_cents: number | null;
+  }[];
 };
 
 type ProductExtras = { related: RelatedRow[]; reviews: ReviewRow[] };
@@ -68,7 +76,7 @@ async function fetchExtras(productId: string, categoryId: string | null): Promis
         .select(
           `id, title, slug,
            product_images(storage_path, alt_text, position),
-           product_variants(price_cents, compare_at_price_cents)`,
+           product_variants(id, parent_variant_id, price_cents, compare_at_price_cents)`,
         )
         .eq("category_id", categoryId ?? "")
         .eq("status", "published")
@@ -152,7 +160,7 @@ export const Route = createFileRoute("/produto/$slug")({
          category_id,
          categories(name, slug),
          product_images(id, storage_path, alt_text, position),
-         product_variants(id, name, price_cents, compare_at_price_cents, sku, stock_quantity, gtin_ean)`,
+         product_variants(id, name, price_cents, compare_at_price_cents, sku, stock_quantity, gtin_ean, parent_variant_id, cover_image_path)`,
       )
       .eq("slug", params.slug)
       .eq("status", "published")
@@ -188,7 +196,7 @@ export const Route = createFileRoute("/produto/$slug")({
     const thumbnail = images[0]
       ? supabase.storage.from("product-media").getPublicUrl(images[0].storage_path).data.publicUrl
       : undefined;
-    const variants = product.product_variants ?? [];
+    const variants = sellableVariants(product.product_variants ?? []);
     const name = product.title.trim();
     const title = (product.seo_title || product.title).trim();
     const description =
@@ -254,7 +262,7 @@ export const Route = createFileRoute("/produto/$slug")({
 function RelatedProductCard({ product }: { product: RelatedRow }) {
   const images = [...(product.product_images ?? [])].sort((a, b) => a.position - b.position);
   const thumbnail = images[0];
-  const variants = product.product_variants ?? [];
+  const variants = sellableVariants(product.product_variants ?? []);
   const cheapest = variants.reduce<(typeof variants)[number] | null>((min, v) => {
     if (!min || v.price_cents < min.price_cents) return v;
     return min;
@@ -431,6 +439,12 @@ function ProdutoPage() {
     [product],
   );
   const variants = (product?.product_variants ?? []) as VariantRow[];
+  const sellable = sellableVariants(variants);
+  // Primária que tem secundárias: o cliente escolhe a secundária (tamanho), a primária só agrupa (cor).
+  const primaryGroups = variants
+    .filter((p) => variants.some((c) => c.parent_variant_id === p.id))
+    .map((p) => ({ primary: p, children: sellable.filter((c) => c.parent_variant_id === p.id) }));
+  const flatOptions = sellable.filter((v) => !v.parent_variant_id);
 
   const parsedVideo = product?.video_url ? toEmbedUrl(product.video_url) : null;
   // Our own cover image (set in the admin) wins over any automatic thumbnail.
@@ -449,7 +463,10 @@ function ProdutoPage() {
   // Com 1 só variação não há escolha real — vem pré-selecionada. Com mais de uma, começa vazio: o
   // cliente precisa escolher pelo menos uma pra continuar, e pode marcar mais de uma ao mesmo tempo.
   const [selectedVariantIds, setSelectedVariantIds] = useState<string[]>(
-    variants.length === 1 && variants[0] ? [variants[0].id] : [],
+    sellable.length === 1 && sellable[0] ? [sellable[0].id] : [],
+  );
+  const [activePrimaryId, setActivePrimaryId] = useState<string | null>(
+    () => primaryGroups[0]?.primary.id ?? null,
   );
   const [quantity, setQuantity] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("pix");
@@ -461,7 +478,7 @@ function ProdutoPage() {
   } | null>(null);
   const [shippingError, setShippingError] = useState<string | null>(null);
 
-  const selectedVariants = variants.filter((v) => selectedVariantIds.includes(v.id));
+  const selectedVariants = sellable.filter((v) => selectedVariantIds.includes(v.id));
   const hasSelection = selectedVariants.length > 0;
   const selectedMedia = media[selectedImageIndex] ?? media[0];
   const showingVideo = selectedMedia?.kind === "video";
@@ -503,7 +520,7 @@ function ProdutoPage() {
   // selecionada (produto recém-aberto, com mais de uma variação), cai pra mais barata de todas —
   // nunca mostra R$ 0,00 no topo só porque o cliente ainda não escolheu.
   const singleSelected = selectedVariants.length === 1 ? selectedVariants[0] : null;
-  const cheapestOfAll = variants.reduce<VariantRow | null>(
+  const cheapestOfAll = sellable.reduce<VariantRow | null>(
     (min, v) => (!min || v.price_cents < min.price_cents ? v : min),
     null,
   );
@@ -817,16 +834,73 @@ function ProdutoPage() {
             </RadioGroup>
           </div>
 
-          {variants.length > 1 ? (
+          {primaryGroups.length > 0 ? (
+            <div className="mt-5 space-y-3">
+              <Label>
+                Variação{" "}
+                {!hasSelection ? <span className="text-destructive">(escolha ao menos uma)</span> : null}
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {primaryGroups.map(({ primary, children }) => {
+                  const active = activePrimaryId === primary.id;
+                  const coverPath =
+                    primary.cover_image_path ??
+                    children.find((c) => c.cover_image_path)?.cover_image_path ??
+                    null;
+                  const coverUrl = coverPath
+                    ? supabase.storage.from("product-media").getPublicUrl(coverPath).data.publicUrl
+                    : images[0]
+                      ? supabase.storage.from("product-media").getPublicUrl(images[0].storage_path).data
+                          .publicUrl
+                      : null;
+                  return (
+                    <button
+                      key={primary.id}
+                      type="button"
+                      onClick={() => setActivePrimaryId(primary.id)}
+                      className={`flex items-center gap-2 rounded-md border p-1.5 pr-3 text-sm ${
+                        active ? "border-[#15803d] bg-[#15803d]/5" : "border-[#12294f]/15"
+                      }`}
+                    >
+                      {coverUrl ? (
+                        <img src={coverUrl} alt="" className="h-10 w-10 rounded object-cover" loading="lazy" />
+                      ) : null}
+                      <span className="font-medium">{primary.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {activePrimaryId ? (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {(primaryGroups.find((g) => g.primary.id === activePrimaryId)?.children ?? []).map((v) => {
+                    const checked = selectedVariantIds.includes(v.id);
+                    const outOfStock = v.stock_quantity <= 0;
+                    return (
+                      <label
+                        key={v.id}
+                        className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
+                          checked ? "border-[#15803d] bg-[#15803d]/5" : "border-[#12294f]/15"
+                        } ${outOfStock ? "opacity-50" : ""}`}
+                      >
+                        <Checkbox checked={checked} onCheckedChange={() => toggleVariant(v.id)} />
+                        <span className="flex-1">{v.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {outOfStock ? "sem estoque" : formatCentsToBRL(v.price_cents)}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
+          ) : flatOptions.length > 1 ? (
             <div className="mt-5 space-y-1.5">
               <Label>
                 Variação{" "}
-                {!hasSelection ? (
-                  <span className="text-destructive">(escolha ao menos uma)</span>
-                ) : null}
+                {!hasSelection ? <span className="text-destructive">(escolha ao menos uma)</span> : null}
               </Label>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {variants.map((v) => {
+                {flatOptions.map((v) => {
                   const checked = selectedVariantIds.includes(v.id);
                   const outOfStock = v.stock_quantity <= 0;
                   return (

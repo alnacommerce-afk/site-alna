@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { sellableVariants } from "@/lib/variants";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
 import { Button } from "@/components/ui/button";
@@ -28,17 +29,19 @@ function useCheapSuggestions() {
       const { data, error } = await supabase
         .from("product_variants")
         .select(
-          "id, name, price_cents, stock_quantity, products!inner(title, slug, status, product_images(storage_path, position))",
+          "id, parent_variant_id, name, price_cents, stock_quantity, products!inner(title, slug, status, product_images(storage_path, position))",
         )
         .eq("products.status", "published")
-        .gt("stock_quantity", 0)
         .order("price_cents", { ascending: true })
-        .limit(60);
+        .limit(500);
       if (error) throw error;
 
       const seen = new Set<string>();
       const result: Suggestion[] = [];
-      for (const row of data ?? []) {
+      // Só o que o cliente pode comprar e que tem estoque (primária com secundárias não entra).
+      const buyable = sellableVariants(data ?? []).filter((row) => row.stock_quantity > 0);
+      for (const row of buyable) {
+        if (result.length >= 60) break;
         const product = row.products;
         if (!product || seen.has(product.slug)) continue;
         seen.add(product.slug);
