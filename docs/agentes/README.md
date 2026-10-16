@@ -11,7 +11,7 @@
 
 **Regras comuns:** só acrescentam nos diários; cada entrada identifica o computador; a decisão do dono vai para `docs/DECISOES.md`; nenhum funcionário aplica mudança, envia algo a terceiros ou cria cobrança sem o "ok, aplique" do dono.
 
-**Onda 2** (só quando a Onda 1 estiver estável e tiver pego um erro real): Detetive, Cofre, Caixa, Estoquista, Carteiro, Vitrine. **Em andamento:** Detetive criado (`detetive`, diário `docs/agentes/detetive.md`), aguardando o primeiro teste real; os demais aguardam a aprovação do dono, um a um.
+**Onda 2** (só quando a Onda 1 estiver estável e tiver pego um erro real): Detetive, Cofre, Caixa, Estoquista, Carteiro, Vitrine. **Em andamento:** Detetive criado (`detetive`, diário `docs/agentes/detetive.md`) e Cofre criado (`cofre`, diário `docs/agentes/cofre.md`), aguardando os primeiros testes reais; os demais aguardam a aprovação do dono, um a um.
 **Onda 3:** Vendedor, Arquiteto, Revisor.
 **Limite:** no máximo oito ativos ao mesmo tempo. Os demais ficam guardados até alguém pedir.
 
