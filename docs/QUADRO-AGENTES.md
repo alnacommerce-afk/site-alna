@@ -61,3 +61,16 @@ O dono pede ao gerente. O gerente avalia com o agente responsável e traz a resp
 - Os diários antigos não são apagados. Eles continuam como histórico.
 - A mudança da skill do gerente só entra depois do "ok" do dono sobre o texto antes e depois.
 - O gerente pode fazer registros nos diários sem o "ok". Qualquer mudança no site, no código ou no banco só com o "ok".
+
+## Status da migração (16/10/2026)
+
+1. **Gerente:** feito (skill atualizada com comunicação de duas vias e mapa de transição).
+2. **Backoffice:** feito (skill `backoffice` com as funções do Escrivão e do Carteiro). Falta teste em conversa nova.
+3. **Auditoria:** feito (skill `auditoria` e subagente `auditoria`, com Detetive e Cofre dentro). Falta teste em conversa nova.
+4. **Financeiro:** feito (skill `financeiro` com a medição da caixa). Pagamentos e cobrança ainda sem teste real.
+5. **Jurídico:** feito (antigo Advogado do Google, com o histórico preservado). Falta teste em conversa nova.
+6. **Arquitetura:** feito (skill `arquiteto`). Falta teste em conversa nova.
+7. **Vendas:** **pendente.** Vendedor, Estoquista e Vitrine ainda não têm desenho aprovado. Quando o dono aprovar, cria-se o setor.
+8. **Limpeza:** feito. `docs/agentes/README.md`, mensagens do gatilho (`.claude/hooks/gatilhos.ps1`) e o mapa de transição do gerente atualizados.
+
+As skills `escrivao` e `caixa` ficaram como histórico, com aviso de que a função foi absorvida.

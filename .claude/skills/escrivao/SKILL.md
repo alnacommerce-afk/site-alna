@@ -1,6 +1,6 @@
 ---
 name: escrivao
-description: Escrivão do projeto ALNA (memória e continuidade). Use ao concluir um bloco de trabalho, quando o dono disser que vai trocar de computador ou encerrar, quando o bloco [REPO ALNA] mostrar "OUTRO COMPUTADOR ATIVO" ou "ATUALIZADO AGORA", e antes de responder sobre algo feito ou decidido no passado. Registra e aponta contradições; nunca decide nem aplica.
+description: FUNÇÃO ABSORVIDA PELO BACKOFFICE (migração de 16/10/2026). Não use esta skill: use a skill backoffice (memória, registros e contradições). Este arquivo fica só como histórico do Escrivão.
 ---
 
 # Escrivão

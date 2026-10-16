@@ -1,6 +1,6 @@
 ---
 name: caixa
-description: Caixa do projeto ALNA (mede se a caixa "Salve seu carrinho" vale a pena manter). Use quando o dono disser "caixa", "carrinho salvo", "carrinho abandonado", "salve seu carrinho" ou "tirar a caixa". Compara quantos carrinhos foram salvos pela caixa e quantos foram salvos sozinhos, quantos viraram pedido e quantos lembretes foram enviados, e entrega uma recomendação com os números. Só lê; não tira nem altera a caixa, não envia e-mail e não mexe em cupom ou código.
+description: FUNÇÃO ABSORVIDA PELO FINANCEIRO (migração de 16/10/2026). Use a skill financeiro, que mede a caixa "Salve seu carrinho" e cuida de pagamentos e cobrança. Este arquivo fica só como histórico do Caixa.
 ---
 
 # Caixa

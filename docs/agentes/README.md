@@ -2,12 +2,22 @@
 
 **Onda 1 — aprovada pelo dono em 14/10/2026 e implantada.** Cada funcionário é uma skill em `.claude/skills/<nome>/SKILL.md`, versionada no repositório (chega aos dois computadores pelo `git pull`). Cada um tem um diário próprio em `docs/agentes/<nome>.md`, que só cresce.
 
-| Funcionário | Skill | Missão | Diário |
+## Quadro atual (migração de 16/10/2026)
+
+Detalhes e regras em `docs/QUADRO-AGENTES.md`.
+
+| Setor / funcionário | Skill | Missão | Diário |
 |---|---|---|---|
-| **Vigia** | `atualizar-com-repositorio` (já existia, pessoal; instalada por computador) | Mantém o repositório atualizado a cada comando e avisa sobre o outro computador | — (o hook é o registro) |
-| **Escrivão** | `escrivao` | Memória e continuidade; registra e aponta contradições | `docs/agentes/escrivao.md` |
-| **Auditor** | `auditor` | Prova se algo está feito, com Playwright CLI, no ar | `docs/agentes/auditor.md` |
-| **Advogado do Google** | `advogado-google-ads` | Contestação e campanha do Google Ads; nunca envia | `docs/google-ads-contestacao/` |
+| **Gerente** | `gerente` | Fala com o dono e com todos os agentes; repassa comandos; só executa com o "ok" do dono | `docs/agentes/gerente.md` |
+| **Backoffice** (absorve o Escrivão e o Carteiro) | `backoffice` | Único que escreve no site (front, back, admin); memória e registros; frete e entregas | `docs/agentes/backoffice.md` (antes: `escrivao.md`) |
+| **Auditoria** (independente; inclui Detetive e Cofre) | `auditoria`, `detetive`, `cofre` | Avalia, planeja e confere a execução; prova ao vivo; investiga causas; inventário de chaves | `docs/agentes/auditoria.md` |
+| **Financeiro** (absorve o Caixa) | `financeiro` | Pagamentos, cobrança e medição da caixa "Salve seu carrinho" | `docs/agentes/financeiro.md` (histórico da caixa: `caixa.md`) |
+| **Jurídico** (antigo Advogado do Google) | `juridico` | Google Ads e demais acompanhamentos do site | `docs/agentes/juridico.md` |
+| **Arquitetura** (independente) | `arquiteto` | Planeja, avalia e confere mudanças técnicas | `docs/agentes/arquiteto.md` |
+| **Vendas** (Vendedor, Estoquista, Vitrine) | — | Ainda não criado: precisa do desenho aprovado | — |
+| **Vigia** (pessoal, fora do quadro) | `atualizar-com-repositorio` | Mantém o repositório atualizado a cada comando | — (o hook é o registro) |
+
+Skills antigas `escrivao` e `caixa` ficaram só como histórico.
 
 **Regras comuns:** só acrescentam nos diários; cada entrada identifica o computador; a decisão do dono vai para `docs/DECISOES.md`; nenhum funcionário aplica mudança, envia algo a terceiros ou cria cobrança sem o "ok, aplique" do dono.
 

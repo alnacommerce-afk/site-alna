@@ -40,15 +40,17 @@ Se o pedido bate com mais de uma linha, todas entram. Se não bate com nenhuma, 
 ## Mapa de transição (enquanto a migração não acontece)
 Os setores acima ainda estão sendo criados. Até lá, cada um é atendido pelo funcionário atual:
 
-| Setor novo | Atendido hoje por | Situação |
+| Setor | Skill atual | Situação |
 |---|---|---|
-| Backoffice (Escrivão) | `escrivao` | Ativo |
-| Backoffice (Carteiro) | — | Falta: funcionário não criado |
-| Auditoria | `auditor`, `detetive`, `cofre` | Ativos (Detetive e Cofre ainda como skills separadas) |
-| Financeiro | `caixa` (só a medição da caixa) | Parcial: falta pagamentos e cobrança |
-| Vendas (Vendedor, Estoquista, Vitrine) | — | Falta: nenhum criado |
-| Jurídico | `advogado-google-ads` | Ativo, ainda com o nome antigo |
+| Backoffice (memória e registros, antes Escrivão) | `backoffice` | Ativo, sem teste real ainda |
+| Backoffice (frete e entregas, antes Carteiro) | `backoffice` | Ativo como função, sem teste real ainda |
+| Auditoria (com Detetive e Cofre) | `auditoria`, `detetive`, `cofre` | Ativos |
+| Financeiro (antes Caixa) | `financeiro` | Ativo: medição da caixa. Pagamentos e cobrança sem teste real ainda |
+| Vendas (Vendedor, Estoquista, Vitrine) | — | Falta: nenhum criado. Precisa do desenho aprovado |
+| Jurídico (antes Advogado do Google) | `juridico` | Ativo |
 | Arquiteto | `arquiteto` | Ativo |
+
+As skills `escrivao` e `caixa` ficaram só como histórico. Não as acione.
 
 Quando um setor faltar, o gerente diz "falta: X" no plano e não improvisa.
 

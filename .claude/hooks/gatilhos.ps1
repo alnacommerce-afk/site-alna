@@ -23,14 +23,14 @@ if ($Evento -eq 'Prompt') {
   if ($obj -and $obj.prompt) { $p = [string]$obj.prompt }
   $msgs = @()
   if ($p -match '(?i)google ads|\bads\b|contesta|suspens|635-244|campanha do google') {
-    $msgs += '[GERENTE] O pedido toca o Google Ads: siga a tabela de roteamento e acione o Advogado do Google. Nada e enviado sem o seu ok.'
+    $msgs += '[GERENTE] O pedido toca o Google Ads: siga a tabela de roteamento e acione o Juridico. Nada e enviado sem o seu ok.'
   }
   if ($p -match '(?i)publiquei|confere|subiu|est[aa] no ar') {
-    $msgs += '[GERENTE] Pedido de verificacao de publicacao: acione o Auditor (so leitura, ao vivo). Se achar algo errado, apresente o plano e espere o seu ok.'
+    $msgs += '[GERENTE] Pedido de verificacao de publicacao: acione a Auditoria (so leitura, ao vivo). Se achar algo errado, apresente o plano e espere o seu ok.'
   }
   if ($msgs.Count -gt 0) { Emit ($msgs -join ' ') 'UserPromptSubmit' }
 }
 elseif ($Evento -eq 'Commit') {
-  Emit '[GERENTE] Houve commit ou push: acione o Escrivao para registrar o bloco no diario (docs/SESSOES.md). Registre no proximo commit; nao crie commit so para registrar.' 'PostToolUse'
+  Emit '[GERENTE] Houve commit ou push: acione o Backoffice para registrar o bloco no diario (docs/SESSOES.md). Registre no proximo commit; nao crie commit so para registrar.' 'PostToolUse'
 }
 exit 0
