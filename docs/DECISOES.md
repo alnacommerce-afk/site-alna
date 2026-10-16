@@ -143,3 +143,4 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **16/10** — Dono: a **origem** do carrinho é a **primeira** (como o cliente entrou: `caixa` ou `automatico`); salvamentos seguintes não mudam a origem. Função `save-cart` publicada nessa regra (versão 15).
 - **16/10** — Dono: **manter** a caixa "Salve seu carrinho". A próxima leitura para decidir ajuste ou retirada fica entre 30/10 e 06/11/2026, com pelo menos algumas dezenas de carrinhos.
 - **16/10** — Dono: os carrinhos salvos pelos e-mails de teste do dono (`aleqs.santos`, `informacoes.asm`, `alnaexpedicao`) contam como clientes reais na análise do Caixa.
+- **16/10** — Dono: **liberou o limite** de funcionários ativos (antes eram no máximo oito). Depois, o dono avalia quais funcionários guardar para remover outros. Próximo funcionário: **Carteiro**, aguardando a aprovação do desenho.

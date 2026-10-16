@@ -13,7 +13,7 @@
 
 **Onda 2** (só quando a Onda 1 estiver estável e tiver pego um erro real): Detetive, Cofre, Caixa, Estoquista, Carteiro, Vitrine. **Em andamento:** Detetive (`detetive`), Cofre (`cofre`) e Caixa (`caixa`) criados, aguardando os primeiros testes reais; os demais aguardam a aprovação do dono, um a um.
 **Onda 3:** Vendedor, Arquiteto, Revisor.
-**Limite:** no máximo oito ativos ao mesmo tempo. Os demais ficam guardados até alguém pedir.
+**Limite:** liberado pelo dono em 16/10/2026 (sem limite fixo por enquanto). Depois, o dono decide quais funcionários guardar para remover outros. Os demais ficam guardados até alguém pedir.
 
 ## Atualização 14/10/2026 — gerente e Auditor como subagente
 - **Gerente** (`gerente`): único ponto de contato com o dono. Segue a tabela de roteamento fixa, apresenta o plano e só executa depois do "ok". Coordena os funcionários e entrega relatório por funcionário. Diário: `docs/agentes/gerente.md`.
