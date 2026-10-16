@@ -85,16 +85,18 @@ export function cartItemsKey(items: CartItem[]) {
   return items.map((i) => `${i.variantId}:${i.quantity}`).join("|");
 }
 
+/** `source` says where the save came from: the "Salve seu carrinho" box or the automatic save. */
 export async function saveCartWithEmail(
   email: string,
   phone: string,
   items: CartItem[],
+  source?: "caixa" | "automatico",
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     const resp = await fetch(`${FUNCTIONS_URL}/save-cart`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, phone: phone || undefined, items: toLines(items) }),
+      body: JSON.stringify({ email, phone: phone || undefined, items: toLines(items), source }),
     });
     const json = await resp.json().catch(() => ({}));
     if (!resp.ok || typeof json.token !== "string") {
@@ -123,7 +125,7 @@ export function canAutoSaveCart(): boolean {
 export async function autoSaveCart(items: CartItem[]) {
   if (items.length === 0 || !canAutoSaveCart()) return;
   const info = getSavedCheckoutInfo();
-  await saveCartWithEmail((info.email ?? "").trim(), info.phone ?? "", items);
+  await saveCartWithEmail((info.email ?? "").trim(), info.phone ?? "", items, "automatico");
 }
 
 /** Sends the current items of an already saved cart (called, debounced, whenever the cart changes). */

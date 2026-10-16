@@ -61,7 +61,7 @@ export function SaveCartBox({ restoredState }: { restoredState?: SavedCartState 
       return;
     }
     setSaving(true);
-    const result = await saveCartWithEmail(email.trim(), phone, items);
+    const result = await saveCartWithEmail(email.trim(), phone, items, "caixa");
     setSaving(false);
     if (!result.ok) {
       setError(result.error);
