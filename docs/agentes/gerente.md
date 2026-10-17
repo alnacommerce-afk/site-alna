@@ -61,3 +61,32 @@ Ok do dono para direcionar. Nenhum plano foi executado; cada setor monta o seu p
 - Contabilidade (MEI, LTDA, NF, conta Asaas antiga) → sem setor no quadro; decisão do dono.
 - Pix de teste sem pagar → ação manual do dono.
 - Revisor → ainda não criado.
+
+## 2026-10-16 — Computador HOME — desenho do Backoffice em duas sub-skills (proposta; nada aplicado)
+- Ordem do dono: Backoffice com uma sub-skill executora (executa para todos os setores) e uma de memória (acompanha e salva o conhecimento, como os outros setores). A execução não pode depender da memória.
+- Próximo passo: o Arquiteto desenha os arquivos e o fluxo; o gerente mostra o texto antes e depois ao dono. Só aplica com "ok, aplique".
+- Pergunta em aberto: a função de frete e entregas (Carteiro) fica com a executora ou com a de memória?
+
+## 2026-10-16 — Computador HOME — divisão do Backoffice confirmada pelo dono (nada aplicado)
+- Memória: registros, acompanhamento de frete e entregas, ajustes de documentos de registro e guarda do conhecimento.
+- Executora: só executa os planos aprovados (arquivos do site, admin e banco).
+- Pergunta sobre o frete respondida: fica com a memória. Próximo passo: o Arquiteto desenha os arquivos; texto antes e depois ao dono; só aplica com "ok, aplique".
+
+## 2026-10-16 — Computador HOME — regra do conhecimento confirmada pelo dono
+- Cada setor guarda o que ele mesmo fez. O Arquiteto guarda o que o Arquiteto fez. A execução da executora fica registrada na memória do Backoffice.
+- Conflito C1 do plano do Backoffice resolvido (ver `docs/planos/backoffice-duas-sub-skills.md`).
+
+## 2026-10-16 — Computador HOME — nomes das sub-skills do Backoffice escolhidos pelo dono (nada aplicado)
+- Nomes: **Executor do Backoffice** e **Memória do Backoffice**. Pasta da executora: `backoffice-executor`. Pasta da memória: `backoffice` (a atual, para preservar o histórico e as referências).
+- Próximo passo: P1 do plano (`docs/planos/backoffice-duas-sub-skills.md`), só com "ok, aplique".
+
+## 2026-10-16 — Computador HOME — ajuste das skills aplicado (ordem do dono: "ajuste todas as skill")
+- Criada `.claude/skills/backoffice-executor/` (Executor do Backoffice). Skill `backoffice` reescrita como Memória do Backoffice.
+- Sete skills de setor (`arquiteto`, `auditoria`, `estoquista`, `financeiro`, `juridico`, `vendedor`, `vitrine`) trocaram "Backoffice" por "Executor do Backoffice".
+- Tabela de roteamento e mapa de transição do gerente atualizados (P4).
+- Não aplicado ainda: P5 (gatilho em `.claude/hooks/gatilhos.ps1`, linha 34), P6 (QUADRO e README), P7 e P8 (registro e teste em sessão nova).
+- Nada foi commitado.
+
+## 2026-10-16 — Computador HOME — gatilho de SESSOES ajustado (P5)
+- `.claude/hooks/gatilhos.ps1`, linha 34: o aviso de commit agora aciona a Memória do Backoffice. Texto sem acento, como o resto do arquivo.
+- Pendente: P6 (QUADRO e README), P7 e P8 (teste em sessão nova). Nada commitado.

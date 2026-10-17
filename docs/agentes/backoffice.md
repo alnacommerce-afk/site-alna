@@ -14,3 +14,8 @@ Histórico anterior: o Escrivão continua registrando em `docs/agentes/escrivao.
 - Ajuste de documento no Google Ads (STATUS.md) e linha 62 de PENDENCIAS.md (INPI): depois do ok.
 - Registro desta sessão em docs/SESSOES.md.
 - Testes 1 a 4 da Onda 1 no Computador TRABALHO: planejar com a Auditoria.
+
+## 2026-10-16 — Computador HOME — virou Memória do Backoffice (ajuste das skills)
+- A função de execução saiu desta skill e foi para a Executor do Backoffice (`backoffice-executor`).
+- A Memória fica com: registros em `docs/SESSOES.md`, acompanhamento de frete e entregas, contradições, documentos de registro (com ok) e acompanhamento das execuções da Executor.
+- Pendente: teste em sessão nova e o gatilho de SESSOES em `.claude/hooks/gatilhos.ps1`.

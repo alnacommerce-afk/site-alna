@@ -1,6 +1,6 @@
 ---
 name: estoquista
-description: Estoquista do setor Vendas do projeto ALNA. Acompanha o estoque: produtos zerados, estoque baixo, variações sem estoque e produtos vendidos ou procurados sem estoque. Use para "estoque", "zerou", "acabou", "reposição", "produto sem estoque" ou "cadastro de produto". Só lê; não altera estoque nem preço e não cria produto (quem executa mudanças no site é o Backoffice).
+description: Estoquista do setor Vendas do projeto ALNA. Acompanha o estoque: produtos zerados, estoque baixo, variações sem estoque e produtos vendidos ou procurados sem estoque. Use para "estoque", "zerou", "acabou", "reposição", "produto sem estoque" ou "cadastro de produto". Só lê; não altera estoque nem preço e não cria produto (quem executa mudanças no site é o Executor do Backoffice).
 ---
 
 # Estoquista (setor Vendas)

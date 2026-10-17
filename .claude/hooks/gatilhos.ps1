@@ -31,6 +31,6 @@ if ($Evento -eq 'Prompt') {
   if ($msgs.Count -gt 0) { Emit ($msgs -join ' ') 'UserPromptSubmit' }
 }
 elseif ($Evento -eq 'Commit') {
-  Emit '[GERENTE] Houve commit ou push: acione o Backoffice para registrar o bloco no diario (docs/SESSOES.md). Registre no proximo commit; nao crie commit so para registrar.' 'PostToolUse'
+  Emit '[GERENTE] Houve commit ou push: acione a Memoria do Backoffice para registrar o bloco no diario (docs/SESSOES.md). Registre no proximo commit; nao crie commit so para registrar.' 'PostToolUse'
 }
 exit 0
