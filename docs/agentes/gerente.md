@@ -37,3 +37,11 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, pedido recebido,
 - **Pendências por funcionário:** Detetive (teste em sessão nova; Asaas antiga do pedido 8433b1a9 não conferida); Cofre (dono confirmar se houve geração nova de `finmarket_hub_api` em 12/10; a data é de gravação, não prova de troca; teste em sessão nova); Caixa (sem ação agora; próxima leitura entre 30/10 e 06/11 com dezenas de carrinhos); Estoquista, Carteiro e Vitrine (aguardam aprovação do desenho, um a um; Carteiro é o próximo).
 - **Fora da Onda 2, marcado pelo Escrivão como aberto:** prazo de oposição ao INPI da marca ALNA (10/10/2026) sem registro de que foi feita; cabeçalho e data do lembrete em `docs/google-ads-contestacao/STATUS.md` ainda contraditórios.
 - **Ok recebido:** não aplicável (relatório). Nada alterado no site, no código ou no banco.
+
+## 2026-10-16 — Computador HOME — decisões do dono sobre o relatório de pendências (sem execução)
+- Jurídico: INPI encerrado. Pedido depositado 11/02/2026, publicado 03/03/2026, prazo de 60 dias sem oposição; em análise. Registrado em `docs/DECISOES.md`.
+- Vendedor: passa a exigir o "ok" do dono antes de qualquer envio. Pendente: enviar o link ou o texto da campanha de 27/10 para aprovação. Nenhum link existe ainda; o envio de teste depende de "ok" do dono.
+- Vitrine: forma atual aprovada.
+- Auditoria (Cofre): não houve geração nova de `finmarket_hub_api` em 12/10; a chave é a mesma desde 19/09.
+- Financeiro: aprovado.
+- Nada foi enviado, publicado nem alterado no site.

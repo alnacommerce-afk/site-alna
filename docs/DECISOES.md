@@ -151,3 +151,13 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **16/10** — Dono: os **lembretes de carrinho abandonado** (conteúdo) ficam com **Vendas**; as medições ficam com **Financeiro**.
 - **16/10** — Dono: os **cupons de marketing** são do **Vendas**. O **Financeiro** registra o valor da venda e sabe que ela usou cupom.
 - **16/10** — Dono: a **primeira tarefa do Vendedor** é acompanhar a campanha de 27/10: se deu efeito, gerou engajamento, e com os dados planejar ajuste ou manter como está.
+- **16/10** — Dono (INPI): a oposição não é mais necessária. O pedido da marca ALNA foi depositado em 11/02/2026 e publicado em 03/03/2026; o prazo de 60 dias para manifestação de terceiros passou sem oposição; o processo está em análise pelo INPI. A pendência "oposição até 10/10/2026" (`PENDENCIAS.md`) fica encerrada.
+- **16/10** — Dono: o Vendedor passa a exigir o "ok" do dono antes de qualquer e-mail ou campanha sair (inclusive a campanha de 27/10).
+- **16/10** — Dono: a forma atual da vitrine (produtos) está aprovada.
+- **16/10** — Dono: a chave `finmarket_hub_api` não foi gerada de novo em 12/10; é a mesma desde a criação (19/09). A data de 12/10 é só de gravação no Vault.
+- **16/10** — Dono: o formato atual do Financeiro está aprovado.
+- **16/10** — Dono: o Backoffice está aprovado.
+- **16/10** — Dono: campanha de 27/10 com **2 cupons**, um de recompra e outro de novidades; **cada e-mail usa apenas 1 cupom**. Plano a ser feito pelo Backoffice com o Vendedor; aplicação só com "ok, aplique".
+- **16/10** — Dono: cupom de boas-vindas fica em **2%** por enquanto, com monitoramento.
+- **16/10** — Dono: e-mail de pesquisa já estava ajustado (avaliado pelo gerente: sem promessa de desconto e sem urgência; a recompensa de 5% continua não anunciada).
+- **16/10** — Dono: pede ajuste do carrinho de 24h para ficar em conformidade (detalhe a confirmar).
