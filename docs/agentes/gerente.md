@@ -90,3 +90,7 @@ Ok do dono para direcionar. Nenhum plano foi executado; cada setor monta o seu p
 ## 2026-10-16 — Computador HOME — gatilho de SESSOES ajustado (P5)
 - `.claude/hooks/gatilhos.ps1`, linha 34: o aviso de commit agora aciona a Memória do Backoffice. Texto sem acento, como o resto do arquivo.
 - Pendente: P6 (QUADRO e README), P7 e P8 (teste em sessão nova). Nada commitado.
+
+## 2026-10-16 — Computador HOME — QUADRO e README atualizados (P6)
+- `docs/QUADRO-AGENTES.md` e `docs/agentes/README.md`: Backoffice dividido em Executor do Backoffice (`backoffice-executor`) e Memória do Backoffice (`backoffice`). Vendas marcada como criada em 16/10.
+- Pendente: P8 (teste em conversa nova). Nada commitado.
