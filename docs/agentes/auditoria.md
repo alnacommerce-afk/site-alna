@@ -39,3 +39,9 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
 - Verificado ao vivo (curl, só leitura): `alna.sale/atacado` HTTP 200, sem redirecionamento, 13,8 KB, 0,10–0,29 s; título "Atacado de Utilidades Domésticas, Toalhas e Cozinha | ALNA"; "Quem somos" presente; sem `<form>`. AdsBot-Google recebe 200.
 - `store.alna.sale/atacado` também HTTP 200, 28 KB; 1ª medida 3,2 s (frio), depois 1,4 s, 0,9 s e 0,5 s.
 - Veredito: **FEITO** (no ar). Não verificado: navegador real (console/celular), preço e frete.
+
+## 2026-10-16 — Computador HOME — pedido direcionado pelo gerente (planejamento; nada executado)
+- Estoque de 100 unidades em 51 de 54 variações, gravado em lote às 16:14 UTC de 16/10: investigar a causa (Detetive).
+- Teste visual da variação primária com um produto que tenha secundárias, depois da fase 2.
+- Onda 1 no Computador TRABALHO (testes 1 a 4 e instalador): planejar a repetição, junto com o Backoffice.
+- Pedido 8433b1a9: conferir a cobrança na Asaas antiga (Detetive), em conjunto com o Financeiro.

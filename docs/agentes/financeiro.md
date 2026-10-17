@@ -8,3 +8,6 @@ Histórico anterior da caixa "Salve seu carrinho" continua em `docs/agentes/caix
 - Setor Financeiro criado. Absorve a função do Caixa (medição da caixa) e passa a cuidar de pagamentos e cobrança.
 - Decisão do dono registrada: manter a caixa "Salve seu carrinho". Próxima leitura entre 30/10 e 06/11/2026.
 - Teste pendente: sessão nova dentro de `C:\Users\Pichau\dev\site-alna`, com a pergunta "financeiro, a caixa Salve seu carrinho vale a pena?".
+
+## 2026-10-16 — Computador HOME — pedido direcionado pelo gerente (leitura; nada executado)
+- Pedido 8433b1a9: conferir a cobrança na Asaas antiga, com a Auditoria (Detetive).

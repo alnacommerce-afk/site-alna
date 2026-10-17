@@ -45,3 +45,19 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, pedido recebido,
 - Auditoria (Cofre): não houve geração nova de `finmarket_hub_api` em 12/10; a chave é a mesma desde 19/09.
 - Financeiro: aprovado.
 - Nada foi enviado, publicado nem alterado no site.
+
+## 2026-10-16 — Computador HOME — direcionamento das tarefas pendentes (sem execução)
+Ok do dono para direcionar. Nenhum plano foi executado; cada setor monta o seu plano e espera o "ok" para aplicar.
+- Campanha de 27/10 com 2 cupons (recompra e novidades; 1 cupom por e-mail) → Vendedor (regra e texto); Backoffice (código e cupom novo) depois do ok.
+- Carrinho de 24h, ajuste de conformidade → Vendedor. Falta o dono dizer o que mudar.
+- Estoque de 100 unidades em 51 de 54 variações, gravado em lote às 16:14 UTC de 16/10 → Estoquista (contagem real); Auditoria (causa, com o Detetive).
+- Cupom de boas-vindas em 2%, com monitoramento → Vendedor.
+- Pesquisa: anunciar ou não os 5% → Vendedor, depois da decisão do dono.
+- Foto da variação primária (fase 2) → Vitrine e Arquiteto (regra, depois da escolha do dono); Auditoria faz o teste visual.
+- Google Ads: cabeçalho e lembrete contraditórios em STATUS.md; linha 62 de PENDENCIAS.md (INPI) → Jurídico (conteúdo); Backoffice (ajuste com ok).
+- Onda 1 no Computador TRABALHO (testes 1 a 4 e instalador) → Auditoria e Backoffice; depende da decisão sobre a regra da Onda 2.
+- Registro desta sessão em docs/SESSOES.md → Backoffice.
+- Pedido 8433b1a9, cobrança na Asaas antiga → Financeiro (leitura); Auditoria (Detetive).
+- Contabilidade (MEI, LTDA, NF, conta Asaas antiga) → sem setor no quadro; decisão do dono.
+- Pix de teste sem pagar → ação manual do dono.
+- Revisor → ainda não criado.

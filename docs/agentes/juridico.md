@@ -8,3 +8,7 @@ O estado do caso fica em `docs/google-ads-contestacao/STATUS.md`, não aqui. Est
 
 ## 2026-10-14 — teste 3 (leitura)
 - Skill não acionada nesta conversa ("Unknown skill"). Leitura manual de `STATUS.md`: 3ª recusada 13/10; decisão só a partir de 20/10 e só com fato novo. Pendente: corrigir cabeçalho "2ª recusada" e o lembrete (16/10 vs 20/10) no `STATUS.md`, com o seu ok.
+
+## 2026-10-16 — Computador HOME — pedido direcionado pelo gerente (leitura; nada executado)
+- INPI: encerrado pelo dono (prazo de oposição passou sem contestação; processo em análise).
+- STATUS.md: cabeçalho e data do lembrete contraditórios. Conteúdo com o Jurídico; ajuste de documento com o Backoffice, depois do ok.
