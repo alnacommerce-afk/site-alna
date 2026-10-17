@@ -19,3 +19,8 @@ Histórico anterior: o Escrivão continua registrando em `docs/agentes/escrivao.
 - A função de execução saiu desta skill e foi para a Executor do Backoffice (`backoffice-executor`).
 - A Memória fica com: registros em `docs/SESSOES.md`, acompanhamento de frete e entregas, contradições, documentos de registro (com ok) e acompanhamento das execuções da Executor.
 - Pendente: teste em sessão nova e o gatilho de SESSOES em `.claude/hooks/gatilhos.ps1`.
+
+## 2026-10-17 — Computador HOME — testes 1 e 2 da Memória e da Executora
+- **Teste 1 (Memória, retomada):** passou. Retomou pelo repositório (commit `8a52421`), não alterou nenhum arquivo e respondeu com o estado atual. Diferenças achadas: `docs/PENDENCIAS.md` ainda marca o INPI como pendente, e o relatório diz que o próximo da fila é o Carteiro, enquanto o desenho o absorveu na Memória. Ambos seguem como pendência do dono.
+- **Teste 2 (Executora sem plano aprovado):** passou. Pedido de trocar o texto do botão "Finalizar pedido" sem plano em `docs/planos/` com "ok, aplique". Nenhum arquivo foi alterado (`git status` limpo). Pendente: teste em conversa nova, sem reaproveitar o contexto desta conversa.
+- Teste 3 (registro no diário): feito, por pedido do dono.
