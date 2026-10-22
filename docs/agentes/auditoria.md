@@ -45,3 +45,10 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
 - Teste visual da variação primária com um produto que tenha secundárias, depois da fase 2.
 - Onda 1 no Computador TRABALHO (testes 1 a 4 e instalador): planejar a repetição, junto com o Backoffice.
 - Pedido 8433b1a9: conferir a cobrança na Asaas antiga (Detetive), em conjunto com o Financeiro.
+
+## 2026-10-17 — Computador HOME — conferência ao vivo após publicação no Lovable (só leitura, via curl)
+- Pedido do dono: "publiquei no Lovable, verifique se ainda tem pendências".
+- FEITO (HTTP 200): `store.alna.sale/loja`, `alna.sale/`, `alna.sale/atacado`, `store.alna.sale/atacado`, `store.alna.sale/checkout`, `store.alna.sale/sobre`, `store.alna.sale/contato`, `www.alna.cc` (chega à home), `alnacommerce.com`. AdsBot em `alna.sale/atacado` respondeu 200.
+- PARCIAL: `store.alna.sale/produto/short-masculino` responde 200 e tem dados estruturados de produto com 16 ofertas. Produto com 16 secundárias e 4 primárias/simples. Não consegui ver a grade no navegador: falta a conferência visual (primária → secundárias) e a regra de "não vende primária".
+- NÃO CONCLUSIVO: `alna.cc` sem `www` responde 403 em HTTP e falha no handshake TLS em HTTPS (curl). Na conferência de 13/10 estava verificado. Precisa reconferir pelo navegador antes de dizer que está fora do ar.
+- Não alterei nada no site.

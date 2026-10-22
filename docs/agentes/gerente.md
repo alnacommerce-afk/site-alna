@@ -94,3 +94,45 @@ Ok do dono para direcionar. Nenhum plano foi executado; cada setor monta o seu p
 ## 2026-10-16 — Computador HOME — QUADRO e README atualizados (P6)
 - `docs/QUADRO-AGENTES.md` e `docs/agentes/README.md`: Backoffice dividido em Executor do Backoffice (`backoffice-executor`) e Memória do Backoffice (`backoffice`). Vendas marcada como criada em 16/10.
 - Pendente: P8 (teste em conversa nova). Nada commitado.
+
+## 2026-10-19 — Computador HOME — relatório diário das 18h (R3 testado, sem publicar)
+- Dono confirmou a conta de serviço do GA4. Plano em `docs/planos/relatorio-diario-18h.md`.
+- Teste de leitura (só SELECT) dos números de 17 e 18/10, horário de Brasília. Pedidos pagos = `RECEIVED` ou `CONFIRMED`.
+- 17/10: 1 carrinho salvo real; 1 pedido pago real (R$ 37,38). 18/10: zero carrinho e zero pedido pago.
+- Pedidos e carrinhos dos e-mails de teste do dono aparecem separados.
+- Acessos: não consultados ainda (exige a função que usa a conta de serviço do GA4).
+- Pendente: R4 a R6 (função de montagem, envio agendado) só com o ok do dono.
+
+## 2026-10-19 — Computador HOME — relatório diário das 18h ATIVADO (ordem do dono)
+- Migração `relatorio_diario_discord_18h` aplicada: funções `relatorio_diario_texto()` (monta o texto, só leitura) e `relatorio_diario_enviar()` (envia ao Discord pelo webhook do Vault). Acesso revogado para anon e authenticated.
+- Agendamento `relatorio-diario-18h-brasilia` (job 9): todo dia às 21h UTC, que são 18h em Brasília.
+- Trava: só envia a partir de 20/10/2026 (horário de Brasília).
+- Prévia de 18/10 gerada (não enviada): marketing com zero carrinho e zero compra; acessos marcados como "sem dado ainda".
+- Pendente: acessos do GA4 ainda não entram no relatório; decisões de "carrinho" e "compra" (plano, itens 2 e 3) seguem como padrão proposto.
+
+## 2026-10-19 — Computador HOME — painel dos setores (conhecimento salvo para a apresentação das 18h)
+Consulta feita nos diários de cada setor e no estado do banco (`agent_task`, `agent_handoff`).
+
+**Backoffice (Executor e Memória):** testes 1 a 3 da skill concluídos; Executora recusa mudança sem plano aprovado. Pendente: registro desta sessão em `SESSOES.md` (Memória); ajuste do `STATUS.md` do Google Ads e da linha 62 do `PENDENCIAS.md` (INPI), só com ok.
+
+**Auditoria:** conferência ao vivo das páginas principais, sem erro (HTTP 200; robô do Google abre o atacado). Parcial: visual da variação `short-masculino` (16 secundárias) ainda não conferido no navegador. Não conclusivo: `alna.cc` sem `www` (403 e falha de TLS) — precisa conferir pelo navegador.
+
+**Arquiteto:** plano de continuidade aplicado (tabelas `agent_task` e `agent_handoff` no Supabase, com acesso fechado). RAG parcialmente aplicado (extensão vector, tabela `kb_chunk`, função de busca, script de indexação). Indexação bloqueada pelo limite da Voyage (3 requisições por minuto sem forma de pagamento). Pendente: chave da LLM de resposta; função de consulta só com ok.
+
+**Financeiro:** pedido 8433b1a9 ainda sem conferência na cobrança da Asaas antiga. Medição da caixa com próxima leitura entre 30/10 e 06/11.
+
+**Jurídico:** INPI encerrado (prazo passou sem oposição; processo em análise). Nada enviado ao Google; nova decisão só depois de 20/10 e com fato novo. Pendente: cabeçalho e data do lembrete no `STATUS.md`.
+
+**Vendas (Vendedor, Estoquista, Vitrine):** campanha de 27/10 com 2 cupons aguarda o plano do Vendedor e o ok do dono; cupom de boas-vindas em 2% com monitoramento; carrinho de 24h aguarda o que ajustar. Estoquista: 51 de 54 variações com 100 unidades, a confirmar. Vitrine: foto da variação primária aguarda a escolha do dono.
+
+**Relatório diário das 18h:** ativo desde 19/10 (job `relatorio-diario-18h-brasilia`, 21h UTC), envia a partir de 20/10. Números de 17/10: 1 carrinho real e 1 compra real (R$ 37,38); 18/10 zerado. Acessos do GA4 ainda não entram no relatório: precisa de uma nova função, aguardando ok.
+
+**Pendências do dono (consolidadas):** regra da foto da variação primária; confirmar os 51 estoques de 100 unidades; ajuste do carrinho de 24h; 5% da pesquisa; decisão sobre o Carteiro; forma de pagamento na Voyage (ou aguardar o limite); publicação da função de acessos do GA4.
+
+## 2026-10-22 — Computador HOME — GA4 no relatório diário (ordem do dono: "pode seguir com o GA4")
+- Voyage removido: script local, tabela `kb_chunk` e função `kb_buscar` apagados (decisão do dono).
+- Relatório das 18h confirmado pelo dono nos dias 20 e 21/10.
+- Migração `relatorio_diario_via_edge_function`: token no Vault (gerado no banco, não aparece em texto), funções `relatorio_webhook_url` e `relatorio_token_valido` só para service role. Envio antigo (só SQL) removido. Agendamento `relatorio-diario-18h-brasilia` agora chama a Edge Function `relatorio-diario`.
+- Edge Function `relatorio-diario` publicada (verify_jwt = false; protegida pelo token). Usa a integração GA4 já existente (`_shared/google-analytics-auth.ts`).
+- Teste manual em 22/10: resposta 200, acessos de 21/10 = 6 usuários, 7 sessões, 23 visualizações. Mensagem de teste enviada ao Discord.
+- Pendente: commit de `supabase/functions/relatorio-diario/`, `supabase/config.toml` e `docs/` (não feito).

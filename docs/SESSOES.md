@@ -107,3 +107,11 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Teste 1:** nenhum registro nos diários sobre o que era; o dono não lembra. Fica para definir.
 - **Pendente:** repetir os testes 1 a 4 no Computador TRABALHO (com a ferramenta do Auditor instalada lá); corrigir o cabeçalho e o lembrete do `STATUS.md` (com o ok do dono); Pix de teste (dono); Google Ads só após 20/10 e com fato novo.
 - **Próximo passo:** amanhã, orientar o dono nos testes da Onda 1.
+
+## 2026-10-15 a 17/10 — Computador HOME e Computador TRABALHO — registro retroativo (Memória do Backoffice)
+- **Motivo:** o diário parou em 14/10, enquanto houve mais de 30 commits entre 15 e 17/10. Esta entrada junta o que está no `git log` (fonte: commits de `ab687b1` a `92ba304`).
+- **Atribuição não verificada:** o `git log` não diz qual computador fez cada commit de 15/10 a 16/10. A presença do TRABALHO é de 16/10 19:46. Os commits de variações, Caixa e carrinho desse período são desse intervalo, mas a origem exata fica para confirmar com o dono.
+- **Computador HOME:** Vendas criada (Vendedor, Estoquista, Vitrine), migração do quadro (Backoffice dividido em Executor e Memória), registros de direcionamento, testes 1 a 3 da skill do Backoffice (17/10), diários atualizados.
+- **Decisões do dono no período:** em `docs/DECISOES.md`, de 15/10 a 17/10.
+- **Pendências abertas:** em `agent_handoff` (Supabase), última versão de 17/10.
+- **Continuidade a partir de agora:** tabelas `agent_task` e `agent_handoff` no Supabase (migração `agent_continuidade_tarefas_e_handoff`, aplicada em 19/10).
