@@ -39,7 +39,7 @@ const AVERAGE_WINDOW_DAYS = 90;
 
 type VariantRow = {
   id: string;
-  sku: string;
+  sku: string | null;
   name: string;
   price_cents: number;
   compare_at_price_cents: number | null;

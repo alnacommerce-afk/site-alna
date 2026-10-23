@@ -5,13 +5,15 @@ export const variantFormSchema = z.object({
   // Chave só do formulário (identifica a primária antes de ser salva, para a secundária apontar para ela).
   localKey: z.string().optional(),
   name: z.string().min(1, "Informe o nome da variação"),
-  sku: z.string().min(1, "Informe o SKU"),
+  // SKU é obrigatório só quando a variação se vende (sem secundárias). A regra fica em productFormSchema.
+  sku: z.string().optional(),
   gtinEan: z.string().optional(),
   stockQuantity: z.string().optional(),
 });
 
 // Variação secundária: liga-se a uma primária (parentKey = localKey dela) e pode ter foto de capa (coverKey = chave da foto).
 export const secondaryVariantFormSchema = variantFormSchema.extend({
+  sku: z.string().trim().min(1, "Informe o SKU da variação secundária"),
   parentKey: z.string().min(1, "Relacione a variação com uma primária"),
   coverKey: z.string().optional(),
 });
@@ -40,6 +42,15 @@ export const productFormSchema = z.object({
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
   seoKeywords: z.array(z.string()).optional(),
+}).superRefine((valores, ctx) => {
+  // Primária que tem secundárias não precisa de SKU: a venda usa o SKU da secundária.
+  // Primária sem secundárias é a própria variação vendida, então o SKU é obrigatório.
+  valores.variants.forEach((v, i) => {
+    const temSecundaria = (valores.secondaryVariants ?? []).some((s) => s.parentKey === v.localKey);
+    if (!temSecundaria && !(v.sku ?? "").trim()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["variants", i, "sku"], message: "Informe o SKU" });
+    }
+  });
 });
 
 export type VariantFormValues = z.infer<typeof variantFormSchema>;
@@ -55,6 +66,7 @@ export const emptyVariant: VariantFormValues = {
 
 export const emptySecondaryVariant: SecondaryVariantFormValues = {
   ...emptyVariant,
+  sku: "",
   parentKey: "",
   coverKey: "",
 };

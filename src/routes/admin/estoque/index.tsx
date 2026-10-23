@@ -22,7 +22,7 @@ export const Route = createFileRoute("/admin/estoque/")({
 
 type StockRow = {
   id: string;
-  sku: string;
+  sku: string | null;
   name: string;
   stock_quantity: number;
   productTitle: string;

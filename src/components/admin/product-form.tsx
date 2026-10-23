@@ -286,7 +286,7 @@ export function ProductForm({ productId }: { productId?: string }) {
           id: v.id,
           localKey: v.id,
           name: v.name,
-          sku: v.sku,
+          sku: v.sku ?? "",
           gtinEan: v.gtin_ean ?? "",
           stockQuantity: String(v.stock_quantity),
         }));
@@ -298,7 +298,7 @@ export function ProductForm({ productId }: { productId?: string }) {
           parentKey: v.parent_variant_id ?? "",
           coverKey: (productImages ?? []).find((img) => img.storage_path === v.cover_image_path)?.id ?? "",
           name: v.name,
-          sku: v.sku,
+          sku: v.sku ?? "",
           gtinEan: v.gtin_ean ?? "",
           stockQuantity: String(v.stock_quantity),
         }));
@@ -429,7 +429,38 @@ export function ProductForm({ productId }: { productId?: string }) {
       return;
     }
 
+    // Antes de gravar: SKU repetido no próprio cadastro ou já usado em outra variação do banco.
+    const skusDoFormulario = [
+      ...values.variants.map((v) => ({ sku: (v.sku ?? "").trim(), nome: v.name, id: v.id })),
+      ...(values.secondaryVariants ?? []).map((s) => ({ sku: (s.sku ?? "").trim(), nome: s.name, id: s.id })),
+    ];
+    const skusVistos = new Set<string>();
+    for (const s of skusDoFormulario) {
+      if (!s.sku) continue; // primária com secundárias pode não ter SKU
+      if (skusVistos.has(s.sku)) {
+        toast.error(`O SKU "${s.sku}" está repetido no próprio cadastro (variação "${s.nome}"). Cada variação precisa de um SKU diferente.`);
+        return;
+      }
+      skusVistos.add(s.sku);
+    }
+    const skusParaBuscar = skusDoFormulario.map((s) => s.sku).filter(Boolean);
+    const { data: skusNoBanco, error: erroBuscaSku } = skusParaBuscar.length
+      ? await supabase.from("product_variants").select("id, sku, products(title)").in("sku", skusParaBuscar)
+      : { data: [], error: null };
+    if (erroBuscaSku) {
+      toast.error("Não foi possível verificar os SKUs agora. Tente de novo.");
+      return;
+    }
+    const idsDoFormulario = new Set(skusDoFormulario.map((s) => s.id).filter(Boolean));
+    const conflito = (skusNoBanco ?? []).find((e) => !idsDoFormulario.has(e.id));
+    if (conflito) {
+      const tituloOutro = (conflito as { products?: { title?: string } | null }).products?.title ?? "outro produto";
+      toast.error(`O SKU "${conflito.sku}" já está em uso no produto "${tituloOutro}". Troque o SKU desta variação.`);
+      return;
+    }
+
     setSaving(true);
+    let produtoCriadoId: string | null = null;
     try {
       let currentProductId: string;
       const fiscalAndSeoPayload = {
@@ -462,6 +493,7 @@ export function ProductForm({ productId }: { productId?: string }) {
           .single();
         if (error || !data) throw error ?? new Error("Falha ao criar produto.");
         currentProductId = data.id;
+        produtoCriadoId = data.id;
       } else {
         currentProductId = productId!;
         const { error } = await supabase
@@ -502,7 +534,7 @@ export function ProductForm({ productId }: { productId?: string }) {
         const commonFields = {
           product_id: currentProductId,
           name: variant.name,
-          sku: variant.sku,
+          sku: (variant.sku ?? "").trim() || null,
           gtin_ean: variant.gtinEan || null,
         };
 
@@ -644,7 +676,19 @@ export function ProductForm({ productId }: { productId?: string }) {
       toast.success(mode === "create" ? "Produto criado." : "Produto atualizado.");
       router.navigate({ to: "/admin/catalogo" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao salvar o produto.");
+      // Se o produto acabou de ser criado e as variações falharam, desfaz para não ficar salvo pela metade.
+      if (produtoCriadoId) {
+        await supabase.from("product_variants").delete().eq("product_id", produtoCriadoId);
+        await supabase.from("products").delete().eq("id", produtoCriadoId);
+      }
+      // Erros do banco (PostgREST) não são instância de Error: pega a mensagem e o código reais.
+      const codigo = (err as { code?: string } | null)?.code;
+      const mensagem = (err as { message?: string } | null)?.message;
+      toast.error(
+        codigo === "23505"
+          ? "Este SKU já está cadastrado em outra variação. Troque o SKU e tente de novo."
+          : mensagem || "Erro ao salvar o produto.",
+      );
     } finally {
       setSaving(false);
       setPendingValues(null);
@@ -1100,7 +1144,12 @@ export function ProductForm({ productId }: { productId?: string }) {
                         name={`variants.${index}.sku`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>SKU</FormLabel>
+                            <FormLabel>
+                              SKU{" "}
+                              <span className="text-xs font-normal text-muted-foreground">
+                                (opcional se esta variação tiver secundária: a venda usa o SKU da secundária)
+                              </span>
+                            </FormLabel>
                             <FormControl>
                               <Input {...field} placeholder="ALNA-0001" />
                             </FormControl>

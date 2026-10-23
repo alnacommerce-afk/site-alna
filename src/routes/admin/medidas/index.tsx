@@ -23,7 +23,7 @@ type Field = "height" | "width" | "length" | "weight";
 
 type MeasureRow = {
   id: string;
-  sku: string;
+  sku: string | null;
   name: string;
   productTitle: string;
   height_cm: number | null;

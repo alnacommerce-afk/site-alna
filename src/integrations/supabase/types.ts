@@ -939,7 +939,7 @@ export type Database = {
           price_cents: number
           product_id: string
           shipping_cost_pct: number
-          sku: string
+          sku: string | null
           stock_quantity: number
           tax_rate_pct: number
           updated_at: string
@@ -968,7 +968,7 @@ export type Database = {
           price_cents: number
           product_id: string
           shipping_cost_pct?: number
-          sku: string
+          sku: string | null
           stock_quantity?: number
           tax_rate_pct?: number
           updated_at?: string
@@ -997,7 +997,7 @@ export type Database = {
           price_cents?: number
           product_id?: string
           shipping_cost_pct?: number
-          sku?: string
+          sku?: string | null
           stock_quantity?: number
           tax_rate_pct?: number
           updated_at?: string

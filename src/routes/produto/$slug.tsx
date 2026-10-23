@@ -39,7 +39,7 @@ type VariantRow = {
   name: string;
   price_cents: number;
   compare_at_price_cents: number | null;
-  sku: string;
+  sku: string | null;
   stock_quantity: number;
   parent_variant_id?: string | null;
   cover_image_path?: string | null;

@@ -136,3 +136,17 @@ Consulta feita nos diários de cada setor e no estado do banco (`agent_task`, `a
 - Edge Function `relatorio-diario` publicada (verify_jwt = false; protegida pelo token). Usa a integração GA4 já existente (`_shared/google-analytics-auth.ts`).
 - Teste manual em 22/10: resposta 200, acessos de 21/10 = 6 usuários, 7 sessões, 23 visualizações. Mensagem de teste enviada ao Discord.
 - Pendente: commit de `supabase/functions/relatorio-diario/`, `supabase/config.toml` e `docs/` (não feito).
+
+## 2026-10-22 — Computador HOME — correção do cadastro de produto (SKU repetido)
+- Causa: o banco tem regra de SKU único (`product_variants_sku_key`), então recusa SKU repetido, mas o formulário não avisava antes e mostrava só "Erro ao salvar o produto.".
+- Problema extra encontrado: o produto era gravado antes das variações; se uma variação falhasse, o produto ficava salvo pela metade.
+- Correção feita em `src/components/admin/product-form.tsx` (não commitada): aviso de SKU repetido no próprio cadastro e de SKU já usado em outro produto, antes de salvar; mensagem real do banco; desfazer o produto recém-criado se as variações falharem.
+- Verificação: TypeScript sem erros. Teste no navegador ainda não feito.
+- Limite: na edição, o título é gravado antes das variações; a checagem de SKU reduz o risco, mas não elimina.
+
+## 2026-10-22 — Computador HOME — regra do SKU: primária com secundária não precisa de SKU (ordem do dono)
+- Banco: `product_variants.sku` passa a aceitar nulo (migração `sku_opcional_na_primaria_com_secundaria`). O índice UNIQUE continua: várias linhas sem SKU são aceitas.
+- Formulário: SKU da primária é opcional quando ela tem secundária (regra no `superRefine` de `src/lib/admin/product-schema.ts`). Primária sem secundária continua exigindo SKU. Secundária sempre exige SKU.
+- Salvamento: SKU vazio da primária grava `null`. Checagem de SKU repetido ignora SKU vazio.
+- Tipos e telas de estoque, precificação, medidas e página do produto aceitam SKU nulo.
+- Verificação: TypeScript sem erros. Teste no admin ainda não feito.
