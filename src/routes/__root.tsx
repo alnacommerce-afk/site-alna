@@ -143,6 +143,7 @@ function RootComponent() {
     // Loaded with a dynamic import so the Supabase client stays out of the entry bundle.
     const runAnalytics = () =>
       void import("../lib/analytics/ga4").then((m) => m.injectGa4IfConfigured());
+      void import("../lib/analytics/meta-pixel").then((m) => m.injectMetaPixelIfConfigured());
     if (typeof window.requestIdleCallback === "function") {
       const handle = window.requestIdleCallback(runAnalytics, { timeout: 4000 });
       return () => window.cancelIdleCallback(handle);

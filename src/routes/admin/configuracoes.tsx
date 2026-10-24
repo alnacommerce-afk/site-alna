@@ -41,6 +41,7 @@ type SettingsForm = {
   freeShippingThreshold: string;
   ga4MeasurementId: string;
   ga4PropertyId: string;
+  metaPixelId: string;
 };
 
 const emptyForm: SettingsForm = {
@@ -66,6 +67,7 @@ const emptyForm: SettingsForm = {
   freeShippingThreshold: "",
   ga4MeasurementId: "",
   ga4PropertyId: "",
+  metaPixelId: "",
 };
 
 function ConfiguracoesPage() {
@@ -108,6 +110,7 @@ function ConfiguracoesPage() {
         freeShippingThreshold: formatCentsToInput(data.free_shipping_threshold_cents) || "0,00",
         ga4MeasurementId: data.ga4_measurement_id ?? "",
         ga4PropertyId: data.ga4_property_id ?? "",
+        metaPixelId: data.meta_pixel_id ?? "",
       });
       setLoading(false);
     }
@@ -150,6 +153,7 @@ function ConfiguracoesPage() {
         free_shipping_threshold_cents: parseCentsFromInput(form.freeShippingThreshold),
         ga4_measurement_id: form.ga4MeasurementId || null,
         ga4_property_id: form.ga4PropertyId || null,
+        meta_pixel_id: form.metaPixelId.trim() || null,
       })
       .eq("id", "default");
 
@@ -413,6 +417,22 @@ function ConfiguracoesPage() {
                 <p className="text-xs text-muted-foreground">
                   Número da propriedade (analytics.google.com &gt; Admin &gt; Detalhes da
                   propriedade) — usado para consultar visitantes em tempo real.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label htmlFor="meta-pixel-id">Meta Pixel ID</Label>
+                <Input
+                  id="meta-pixel-id"
+                  value={form.metaPixelId}
+                  onChange={(e) => setField("metaPixelId", e.target.value)}
+                  placeholder="1234567890123456"
+                  inputMode="numeric"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Número do pixel criado no Gerenciador de Eventos da Meta (business.facebook.com &gt;
+                  Gerenciador de Eventos). Vazio = pixel desligado.
                 </p>
               </div>
             </div>

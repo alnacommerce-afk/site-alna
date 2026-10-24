@@ -150,3 +150,9 @@ Consulta feita nos diários de cada setor e no estado do banco (`agent_task`, `a
 - Salvamento: SKU vazio da primária grava `null`. Checagem de SKU repetido ignora SKU vazio.
 - Tipos e telas de estoque, precificação, medidas e página do produto aceitam SKU nulo.
 - Verificação: TypeScript sem erros. Teste no admin ainda não feito.
+
+## 2026-10-24 — Computador HOME — Meta Pixel preparado (ordem do dono: "crie um pixel para o site")
+- Migração `site_settings_meta_pixel_id`: coluna `meta_pixel_id` em `site_settings`.
+- Código: `src/lib/analytics/meta-pixel.ts` (carrega o fbevents só se houver ID), chamado em `src/routes/__root.tsx`; campo "Meta Pixel ID" em `src/routes/admin/configuracoes.tsx`; tipos atualizados. TypeScript sem erros.
+- Limite: o ID do pixel é gerado pela Meta. Não criei na Meta; o dono cola o ID no admin.
+- Pendente: resposta sobre aviso de cookies/privacidade antes de colar o ID; publicação pelo Lovable; verificação do disparo no site depois.

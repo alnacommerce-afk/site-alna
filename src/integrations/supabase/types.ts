@@ -1166,6 +1166,7 @@ export type Database = {
           facebook_url: string | null
           free_shipping_threshold_cents: number
           ga4_measurement_id: string | null
+          meta_pixel_id: string | null
           ga4_property_id: string | null
           id: string
           instagram_handle: string | null
@@ -1195,6 +1196,7 @@ export type Database = {
           facebook_url?: string | null
           free_shipping_threshold_cents?: number
           ga4_measurement_id?: string | null
+          meta_pixel_id?: string | null
           ga4_property_id?: string | null
           id?: string
           instagram_handle?: string | null
@@ -1224,6 +1226,7 @@ export type Database = {
           facebook_url?: string | null
           free_shipping_threshold_cents?: number
           ga4_measurement_id?: string | null
+          meta_pixel_id?: string | null
           ga4_property_id?: string | null
           id?: string
           instagram_handle?: string | null
@@ -1292,6 +1295,7 @@ export type Database = {
           facebook_url: string | null
           free_shipping_threshold_cents: number
           ga4_measurement_id: string | null
+          meta_pixel_id: string | null
           ga4_property_id: string | null
           id: string
           instagram_handle: string | null
