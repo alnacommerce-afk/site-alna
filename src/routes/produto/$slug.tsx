@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Await, createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Maximize2, Minus, Play, Plus, ShieldCheck, Star, Truck, Undo2 } from "lucide-react";
 import { toast } from "sonner";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import { sellableVariants } from "@/lib/variants";
 import { useCart } from "@/lib/cart/cart-context";
+import { trackMeta } from "@/lib/analytics/meta-events";
 import { getSavedCheckoutInfo, saveCheckoutInfo } from "@/lib/checkout/saved-info";
 import { fetchShippingQuote, onlyDigits } from "@/lib/shipping/quote";
 import { RestockNotifyBox } from "@/components/site/restock-notify-box";
@@ -478,7 +479,17 @@ function ProdutoPage() {
   } | null>(null);
   const [shippingError, setShippingError] = useState<string | null>(null);
 
-  const selectedVariants = sellable.filter((v) => selectedVariantIds.includes(v.id));
+  useEffect(() => {
+    if (!product) return;
+    trackMeta("ViewContent", {
+      content_ids: [product.id],
+      content_name: product.title,
+      content_type: "product",
+      currency: "BRL",
+    });
+  }, [product]);
+
+  const selectedVariants =sellable.filter((v) => selectedVariantIds.includes(v.id));
   const hasSelection = selectedVariants.length > 0;
   const selectedMedia = media[selectedImageIndex] ?? media[0];
   const showingVideo = selectedMedia?.kind === "video";
@@ -604,6 +615,13 @@ function ProdutoPage() {
         },
         quantity,
       );
+      trackMeta("AddToCart", {
+        content_ids: [variant.id],
+        content_name: product.title,
+        content_type: "product",
+        value: (variant.price_cents * quantity) / 100,
+        currency: "BRL",
+      });
       added++;
     }
 

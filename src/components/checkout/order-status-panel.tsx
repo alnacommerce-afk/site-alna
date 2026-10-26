@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
 import { useOrderStatus } from "@/lib/checkout/use-order-status";
+import { trackMetaPurchaseOnce } from "@/lib/analytics/meta-events";
 import { Button } from "@/components/ui/button";
 
 const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
@@ -120,6 +121,15 @@ export function OrderStatusPanel({ orderId }: { orderId: string | null }) {
     void regeneratePix();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, orderId]);
+
+  // Compra confirmada (Pix pago ou cartão aprovado): um evento Purchase por pedido.
+  useEffect(() => {
+    if (!data) return;
+    const { order } = data;
+    if (order.status === "paid" || order.status === "shipped" || order.status === "completed") {
+      trackMetaPurchaseOnce(order.id, order.total_cents);
+    }
+  }, [data]);
 
   function copyPixCode() {
     if (!data?.pix?.payload) return;

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { formatCentsToBRL } from "@/lib/money";
 import { cardFeePercentFor, grossUpForCardFee, pixTotalCents } from "@/lib/payment-fees";
 import { useCart } from "@/lib/cart/cart-context";
+import { trackMeta } from "@/lib/analytics/meta-events";
 import {
   getSavedCheckoutInfo,
   saveCheckoutInfo,
@@ -48,6 +49,20 @@ function CheckoutPage() {
   const [resultOpen, setResultOpen] = useState(false);
   const [resultOrderId, setResultOrderId] = useState<string | null>(null);
   const saved = useMemo(() => getSavedCheckoutInfo(), []);
+
+  // Início do checkout: uma vez por visita, com o que estava no carrinho (o carrinho carrega depois da primeira tela).
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (checkoutTracked.current || items.length === 0) return;
+    checkoutTracked.current = true;
+    trackMeta("InitiateCheckout", {
+      content_ids: items.map((i) => i.variantId),
+      content_type: "product",
+      num_items: items.reduce((sum, i) => sum + i.quantity, 0),
+      value: subtotalCents / 100,
+      currency: "BRL",
+    });
+  }, [items, subtotalCents]);
 
   const [name, setName] = useState(saved.name ?? "");
   const [cpf, setCpf] = useState(saved.cpf ?? "");
