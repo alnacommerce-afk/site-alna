@@ -52,3 +52,18 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
 - PARCIAL: `store.alna.sale/produto/short-masculino` responde 200 e tem dados estruturados de produto com 16 ofertas. Produto com 16 secundárias e 4 primárias/simples. Não consegui ver a grade no navegador: falta a conferência visual (primária → secundárias) e a regra de "não vende primária".
 - NÃO CONCLUSIVO: `alna.cc` sem `www` responde 403 em HTTP e falha no handshake TLS em HTTPS (curl). Na conferência de 13/10 estava verificado. Precisa reconferir pelo navegador antes de dizer que está fora do ar.
 - Não alterei nada no site.
+
+## 2026-10-28 — Computador HOME — Publicação da home (alna.sale, commit 1091bed), só leitura ao vivo
+- Método: navegador embutido, `https://alna.sale/` em 375 px (celular). Sem login, sem formulário, sem pedido.
+- FEITO (verificado ao vivo):
+  - Cabeçalho em uma linha só: altura 60 px.
+  - Botão de menu hambúrguer presente.
+  - E-mail fora do menu (itens: Loja, Categorias, Sobre, Contato, Minha conta, Carrinho).
+  - "Veja todos os produtos" com topo em 621 px: visível sem rolar a tela de 812 px.
+  - Banners da mesa e do frete com texto sobre a foto (posicionamento absoluto).
+  - Faixa de frete lendo o valor do admin: "acima de R$ 150" nos dois pontos.
+  - Console sem erros.
+- PENDENTE DE PUBLICAÇÃO (ainda não está no ar, não é falha):
+  - Conta e carrinho ainda aparecem como ícones no cabeçalho do celular (commit local, não enviado).
+  - Logo oficial do WhatsApp ainda não aparece; o ícone atual é o de balão genérico (mesmo motivo).
+- Veredito: FEITO para o commit 1091bed; os dois itens acima aguardam a próxima publicação.
