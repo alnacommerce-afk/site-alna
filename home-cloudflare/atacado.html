@@ -130,7 +130,7 @@ ul{padding-left:1.25rem}li{margin:.35rem 0}
    <h2>Condições para compras em quantidade</h2>
    <ul>
     <li><strong>5% de desconto</strong> em compras acima de R$ 250,00 em produtos: use o cupom <strong>ALNA5%OFF</strong> no carrinho.</li>
-    <li><strong>Frete grátis</strong> acima do valor mínimo da loja, para todo o Brasil.</li>
+    <li><strong>Frete grátis</strong> <span data-frete-min="acima de {valor}">acima do valor mínimo</span>, para todo o Brasil.</li>
     <li><strong>4% de desconto</strong> pagando no Pix (sobre o valor dos produtos).</li>
     <li><strong>Nota fiscal</strong> para pessoa física e para empresas (CNPJ).</li>
     <li>Pagamento por Pix ou cartão de crédito em até 12 parcelas.</li>
@@ -198,6 +198,20 @@ window.addEventListener('load',function(){
  };
  if('requestIdleCallback' in window)requestIdleCallback(go,{timeout:4000});else setTimeout(go,2000);
 });
+</script>
+<script>
+(function(){
+var U='https://ogxsdptftgxrujkfscvi.supabase.co',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9neHNkcHRmdGd4cnVqa2ZzY3ZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5ODE2NTgsImV4cCI6MjEwNDU1NzY1OH0.eC3EFZat4294qTfiggxwbxCyKzGLSTaJjoT284EwRM4';
+function brl(c){var r=c/100;return 'R$ '+(Number.isInteger(r)?String(r):r.toFixed(2).replace('.',','));}
+function run(){
+fetch(U+'/rest/v1/site_settings?select=free_shipping_threshold_cents&id=eq.default',{headers:{apikey:K,Accept:'application/json'}})
+.then(function(r){return r.ok?r.json():[];})
+.then(function(d){var c=d&&d[0]&&d[0].free_shipping_threshold_cents;if(!(c>0))return;var t=brl(c);var els=document.querySelectorAll('[data-frete-min]');for(var i=0;i<els.length;i++)els[i].textContent=els[i].getAttribute('data-frete-min').replace('{valor}',t);})
+.catch(function(){});
+}
+function later(){if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:3000});else setTimeout(run,1500);}
+if(document.readyState==='complete')later();else addEventListener('load',later);
+})();
 </script>
 </body>
 </html>

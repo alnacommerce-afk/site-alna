@@ -156,3 +156,15 @@ Consulta feita nos diários de cada setor e no estado do banco (`agent_task`, `a
 - Código: `src/lib/analytics/meta-pixel.ts` (carrega o fbevents só se houver ID), chamado em `src/routes/__root.tsx`; campo "Meta Pixel ID" em `src/routes/admin/configuracoes.tsx`; tipos atualizados. TypeScript sem erros.
 - Limite: o ID do pixel é gerado pela Meta. Não criei na Meta; o dono cola o ID no admin.
 - Pendente: resposta sobre aviso de cookies/privacidade antes de colar o ID; publicação pelo Lovable; verificação do disparo no site depois.
+
+## 2026-10-24 — Computador HOME — ID do Meta Pixel do site salvo (novo pixel criado pelo dono)
+- Novo pixel do site: ID 1097091249886096 (criado no Gerenciador de Eventos, opção "Pixel da Meta somente").
+- Gravado em `site_settings.meta_pixel_id` (banco), o mesmo valor do campo do admin.
+- Ainda não está no ar: o carregamento só vai ao site depois da publicação pelo Lovable.
+- Pendentes: decisão do dono sobre aviso de cookies/privacidade; pixels antigos (AlnaCommerce Pixel 3833309533642714, ASM Tur Pixel) não foram mexidos.
+
+## 2026-10-24 — Computador HOME — verificação ao vivo do Meta Pixel (Auditoria, só leitura + 1 ajuste de permissão)
+- Após a publicação: o visitante anônimo recebia 401 ao ler `site_settings` (sem permissão de SELECT para o papel anon). O pixel ficava desligado.
+- Ajuste aplicado (migração `site_settings_meta_pixel_leitura_publica`): `grant select (meta_pixel_id) on site_settings to anon`. Só essa coluna. Os demais campos continuam fechados.
+- Conferido no navegador em store.alna.sale/loja: `fbevents.js` carregado e `fbq` definido com o ID 1097091249886096.
+- Pendente: confirmar no Gerenciador de Eventos que o PageView chegou; decisão do dono sobre aviso de cookies/privacidade (o pixel já está ativo no site).

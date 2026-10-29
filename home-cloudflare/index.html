@@ -193,7 +193,7 @@ p,h1,h2{margin:0}
    <img src="/assets/hero-setembro-face.webp" width="1344" height="752" fetchpriority="high" decoding="async" alt="Modelo da ALNA sorrindo com os braços abertos, indicando as ofertas do mês e o frete grátis">
    <div class="badges">
     <div class="badge b-pink"><svg class="ic"><use href="#i-flame"/></svg><div><small>Até</small><strong>20% OFF</strong><small>em toda a loja</small></div></div>
-    <div class="badge b-white"><svg class="ic"><use href="#i-truck"/></svg><div><small>Aqui tem</small><strong>Frete grátis</strong><small>acima do valor mínimo</small></div></div>
+    <div class="badge b-white"><svg class="ic"><use href="#i-truck"/></svg><div><small>Aqui tem</small><strong>Frete grátis</strong><small data-frete-min="acima de {valor}">acima do valor mínimo</small></div></div>
    </div>
   </div>
   <div class="hero-txt">
@@ -235,7 +235,7 @@ p,h1,h2{margin:0}
   <div class="txt"><div><div>
    <span class="tag">Oferta especial</span>
    <h2>Frete grátis</h2>
-   <p class="sub">em compras acima do valor mínimo — confira na loja</p>
+   <p class="sub">em compras <span data-frete-min="acima de {valor}">acima do valor mínimo</span> — confira na loja</p>
    <a class="btn btn-green" href="https://store.alna.sale/loja">Aproveitar agora →</a>
   </div></div></div>
  </section>
@@ -337,6 +337,20 @@ window.addEventListener('load',function(){
 </script>
 <script>
 (function(){var b=document.querySelector('.menu-btn'),n=document.getElementById('nav-main');if(!b||!n)return;b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});})();
+</script>
+<script>
+(function(){
+var U='https://ogxsdptftgxrujkfscvi.supabase.co',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9neHNkcHRmdGd4cnVqa2ZzY3ZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5ODE2NTgsImV4cCI6MjEwNDU1NzY1OH0.eC3EFZat4294qTfiggxwbxCyKzGLSTaJjoT284EwRM4';
+function brl(c){var r=c/100;return 'R$ '+(Number.isInteger(r)?String(r):r.toFixed(2).replace('.',','));}
+function run(){
+fetch(U+'/rest/v1/site_settings?select=free_shipping_threshold_cents&id=eq.default',{headers:{apikey:K,Accept:'application/json'}})
+.then(function(r){return r.ok?r.json():[];})
+.then(function(d){var c=d&&d[0]&&d[0].free_shipping_threshold_cents;if(!(c>0))return;var t=brl(c);var els=document.querySelectorAll('[data-frete-min]');for(var i=0;i<els.length;i++)els[i].textContent=els[i].getAttribute('data-frete-min').replace('{valor}',t);})
+.catch(function(){});
+}
+function later(){if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:3000});else setTimeout(run,1500);}
+if(document.readyState==='complete')later();else addEventListener('load',later);
+})();
 </script>
 </body>
 </html>
