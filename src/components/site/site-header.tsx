@@ -41,7 +41,7 @@ export function SiteHeader() {
               {formatCentsToBRL(freeShippingThresholdCents)}
             </span>
           ) : null}
-          <span className="flex items-center gap-1.5">
+          <span className="hidden items-center gap-1.5 sm:flex">
             <Truck className="h-3.5 w-3.5" /> Frete para todo o Brasil
           </span>
           <span className="hidden items-center gap-1.5 sm:flex">
@@ -87,7 +87,7 @@ export function SiteHeader() {
       </div>
 
       <nav className="border-t border-[#12294f]/10">
-        <div className="mx-auto flex max-w-6xl items-center gap-6 overflow-x-auto px-4 py-2.5 text-sm font-semibold tracking-wide text-[#12294f]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 overflow-x-auto px-4 py-2.5 text-[13px] font-semibold tracking-wide text-[#12294f] sm:justify-start sm:gap-6 sm:text-sm">
           <a href={SITE_URL} className="shrink-0 whitespace-nowrap hover:text-[#15803d]">
             HOME
           </a>

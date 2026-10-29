@@ -335,24 +335,12 @@ function RatingSummary({ extras }: { extras: Promise<ProductExtras> }) {
 
 function ReviewsSection({ extras }: { extras: Promise<ProductExtras> }) {
   return (
-    <section className="border-t py-12">
-      <div className="mx-auto max-w-4xl px-4">
-        <h2 className="text-lg font-bold text-[#12294f]">Avaliações de quem comprou</h2>
-        <Await
-          promise={extras}
-          fallback={
-            <div className="mt-5 space-y-4" aria-busy="true">
-              <Skeleton className="h-20 w-full rounded-lg" />
-              <Skeleton className="h-20 w-full rounded-lg" />
-            </div>
-          }
-        >
-          {({ reviews }) =>
-            reviews.length === 0 ? (
-              <p className="reveal mt-4 text-sm text-muted-foreground">
-                Ainda não há avaliações para este produto. Seja o primeiro a comprar!
-              </p>
-            ) : (
+    <Await promise={extras} fallback={null}>
+      {({ reviews }) =>
+        reviews.length === 0 ? null : (
+          <section className="border-t py-12">
+            <div className="mx-auto max-w-4xl px-4">
+              <h2 className="text-lg font-bold text-[#12294f]">Avaliações de quem comprou</h2>
               <div className="mt-5 space-y-4">
                 {reviews.map((review, index) => (
                   <Reveal key={review.id} index={index}>
@@ -376,11 +364,11 @@ function ReviewsSection({ extras }: { extras: Promise<ProductExtras> }) {
                   </Reveal>
                 ))}
               </div>
-            )
-          }
-        </Await>
-      </div>
-    </section>
+            </div>
+          </section>
+        )
+      }
+    </Await>
   );
 }
 
@@ -1020,6 +1008,15 @@ function ProdutoPage() {
                 ? "Adicionar ao carrinho"
                 : "Produto indisponível"}
           </Button>
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            Devolução em até 7 dias, com frete de devolução por nossa conta.{" "}
+            <Link
+              to="/politica-de-troca-e-devolucao"
+              className="font-semibold text-[#12294f] underline underline-offset-2"
+            >
+              Ver política
+            </Link>
+          </p>
 
           <div className="mt-6 grid grid-cols-2 gap-4 border-t pt-6 sm:grid-cols-4">
             {[

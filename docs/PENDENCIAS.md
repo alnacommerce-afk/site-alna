@@ -1,6 +1,6 @@
 # Pendências e ponto de retomada — loja ALNA
 
-**Última atualização: 14/10/2026 — Google Ads: 3ª contestação (6452570506) recusada em 13/10, confirmada pelo dono. Próxima avaliação em 20/10, só com fato novo.** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
+**Última atualização: 28/10/2026 — site: ajustes de cabeçalho, produto e frete aplicados (ver `docs/DECISOES.md`, seção "Site: cabeçalho, produto e frete (28/10)"); pendências do site em `docs/planos/auditoria-ponta-a-ponta-2026-10-28.md`.** Google Ads — 14/10/2026: 3ª contestação (6452570506) recusada em 13/10, confirmada pelo dono. Próxima avaliação em 20/10, só com fato novo.** Este arquivo existe para qualquer sessão (em qualquer máquina) retomar exatamente de onde parou.
 Ao começar uma conversa: ler este arquivo, `AGENTS.md`, a memória (`MEMORY.md`) e, se o assunto for Google Ads, `docs/google-ads-contestacao/STATUS.md`.
 Ao terminar algo ou receber novidade do dono: atualizar aqui (e no STATUS.md do Google Ads), commit + push + espelho no Drive.
 
