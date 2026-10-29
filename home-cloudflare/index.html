@@ -108,6 +108,22 @@ p,h1,h2{margin:0}
 .frete h2{margin-top:.75rem;font-size:1.875rem;font-weight:900;line-height:.95;text-align:center}
 .frete p.sub{margin-top:.5rem;font-size:1rem;font-weight:700}
 .frete .btn{margin-top:1.25rem}
+@media(max-width:767px){
+ .mesa,.frete{position:relative;height:340px}
+ .mesa img,.frete img{position:absolute;inset:0;width:100%;height:100%}
+ .mesa .txt,.frete .txt{position:absolute;padding:0;display:block;text-align:left;color:#12294f}
+ .mesa .txt>div,.frete .txt>div,.frete .txt>div>div{max-width:none;margin:0;padding:0}
+ .mesa .txt{top:14px;left:49%;right:6px;bottom:auto}
+ .mesa .kick{color:#15803d}
+ .mesa h2{font-size:1.125rem;line-height:1.2;color:#12294f}
+ .mesa p.sub{display:none}
+ .mesa .btn{margin-top:.625rem;padding:.4rem .75rem;font-size:.8rem}
+ .frete .txt{top:12px;left:6px;width:40%;right:auto;bottom:auto;background:#fff;padding:.4rem .5rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(18,41,79,.18)}
+ .frete .tag{font-size:.55rem;padding:.15rem .45rem}
+ .frete h2{font-size:1.25rem;line-height:1.1;color:#12294f;margin-top:.25rem;white-space:nowrap}
+ .frete p.sub{font-size:.72rem;line-height:1.25;color:#12294f;margin-top:.2rem}
+ .frete .btn{position:absolute;left:0;top:180px;margin:0;padding:.4rem .75rem;font-size:.8rem}
+}
 @media(min-width:768px){
  .mesa,.frete{position:relative}
  .mesa img{position:absolute;inset:0;height:100%;object-position:35% 0}
