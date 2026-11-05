@@ -191,3 +191,10 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **28/10** — Home no celular: cabeçalho em uma linha só (logo, conta, carrinho, WhatsApp só com o ícone e menu). O botão "Veja todos os produtos" passou a aparecer sem rolar a tela. Desktop mantém o texto "WhatsApp". → `home-cloudflare/index.html` (`.wa-txt` e bloco `@media(max-width:767px)`).
 - **28/10** — Home no celular: conta e carrinho saem do cabeçalho (já estão no menu). Ícone do WhatsApp trocado pelo logo oficial (Simple Icons, CC0), em verde sobre botão branco. Desktop mantém o botão verde com texto. → `home-cloudflare/index.html` (`#i-whatsapp` e bloco `@media(max-width:767px)`).
 - **29/10** — Home no celular: o banner principal sobe 14 px, cortando pela metade o espaço vazio acima da cabeça da modelo (sem mudar a altura da área que vem depois). Só para telas até 639 px. → `home-cloudflare/index.html` (`.hero-img` no bloco `@media(max-width:639px)`).
+
+## LGPD e cookies
+- **05/11** — Banner de cookies aplicado (dono: "sim", após o plano de 04/11 com o botão "Rejeitar" incluído). Cores do site; desktop no canto inferior esquerdo, celular centralizado embaixo. Botões "Aceitar todos", "Rejeitar" e "Gerenciar Preferências" (análise de uso e publicidade). Link "Preferências de cookies" no rodapé para trocar a escolha.
+  Efeito: GA4 e Meta Pixel só carregam após o aceite (loja: `analytics` e `marketing`; Home: só `analytics`). Quem recusa não entra nos números de visita e de conversão de anúncio.
+  Onde: `src/components/site/cookie-consent-banner.tsx`, `src/lib/cookies/consent.ts`, `src/routes/__root.tsx`, `src/components/site/site-footer.tsx`, `home-cloudflare/consent.js` (Home e /atacado; o `<script>` do GA4 foi trocado por ele).
+  A escolha é guardada no navegador (`alna_cookie_consent`): loja (store.alna.sale) e Home (alna.sale) não compartilham. Não está no banco, então não serve de prova de consentimento.
+  Ainda sem commit; testado no navegador (desktop e celular) e com build.

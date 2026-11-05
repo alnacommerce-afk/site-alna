@@ -293,6 +293,7 @@ p,h1,h2{margin:0}
    <a href="https://store.alna.sale/termos-de-uso">Termos de uso</a>
    <a href="https://store.alna.sale/politica-de-troca-e-devolucao">Trocas e devoluções</a>
    <a href="https://store.alna.sale/contato">Contato</a>
+   <a href="#" data-cookie-prefs>Preferências de cookies</a>
    <a href="mailto:contato@alna.sale">contato@alna.sale</a>
    <a href="https://www.instagram.com/store.alna.sale" target="_blank" rel="noopener noreferrer" aria-label="Instagram da ALNA"><svg class="ic" style="font-size:1rem"><use href="#i-insta"/></svg></a>
   </nav>
@@ -343,21 +344,7 @@ p,h1,h2{margin:0}
  }catch(e){}
 })();
 </script>
-<script>
-/* GA4 (same property as the store). Loaded only after the page finished loading and the browser is
-   idle, so it never competes with first paint. The ID is public; keep it in sync with Admin > Configurações. */
-window.addEventListener('load',function(){
- var go=function(){
-  var id='G-DP9VE6XSRF';
-  window.dataLayer=window.dataLayer||[];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js',new Date());
-  gtag('config',id,{linker:{domains:['alna.sale','store.alna.sale']}});
-  var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(s);
- };
- if('requestIdleCallback' in window)requestIdleCallback(go,{timeout:4000});else setTimeout(go,2000);
-});
-</script>
+<script src="/consent.js" defer></script>
 <script>
 (function(){var b=document.querySelector('.menu-btn'),n=document.getElementById('nav-main');if(!b||!n)return;b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});})();
 </script>

@@ -6,6 +6,7 @@ import { CONTACT_EMAIL, SITE_URL } from "@/lib/site-urls";
 import { COMPANY } from "@/lib/company";
 import logoAlnaTransparent from "@/assets/brand/logo-alna.png";
 import { WHATSAPP_URL } from "@/components/site/whatsapp-float-button";
+import { openCookiePreferences } from "@/lib/cookies/consent";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -107,6 +108,11 @@ export function SiteFooter() {
               <Link to="/politica-de-privacidade" className="hover:text-white">
                 Política de Privacidade
               </Link>
+            </li>
+            <li>
+              <button type="button" onClick={openCookiePreferences} className="text-left hover:text-white">
+                Preferências de cookies
+              </button>
             </li>
             <li>
               <Link to="/termos-de-uso" className="hover:text-white">

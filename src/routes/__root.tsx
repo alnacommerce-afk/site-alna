@@ -16,6 +16,8 @@ import { CartProvider } from "../lib/cart/cart-context";
 import { captureReferralCodeFromUrl } from "../lib/referral/referral-code";
 import { captureCampaignFromUrl } from "../lib/marketing/campaign-tracking";
 import { capturePendingCouponFromUrl } from "../lib/marketing/pending-coupon";
+import { CookieConsentBanner } from "../components/site/cookie-consent-banner";
+import { onCookieConsentChanged, readCookieConsent } from "../lib/cookies/consent";
 
 function NotFoundComponent() {
   return (
@@ -141,16 +143,27 @@ function RootComponent() {
     capturePendingCouponFromUrl();
     // Analytics is not needed for the first paint — run it once the browser is idle.
     // Loaded with a dynamic import so the Supabase client stays out of the entry bundle.
+    // LGPD: GA4 and Meta Pixel only load after the visitor allows them in the cookie banner.
     const runAnalytics = () => {
-      void import("../lib/analytics/ga4").then((m) => m.injectGa4IfConfigured());
-      void import("../lib/analytics/meta-pixel").then((m) => m.injectMetaPixelIfConfigured());
+      const consent = readCookieConsent();
+      if (consent?.analytics) void import("../lib/analytics/ga4").then((m) => m.injectGa4IfConfigured());
+      if (consent?.marketing) {
+        void import("../lib/analytics/meta-pixel").then((m) => m.injectMetaPixelIfConfigured());
+      }
     };
+    const offConsent = onCookieConsentChanged(runAnalytics);
+    let cancelIdle: () => void;
     if (typeof window.requestIdleCallback === "function") {
       const handle = window.requestIdleCallback(runAnalytics, { timeout: 4000 });
-      return () => window.cancelIdleCallback(handle);
+      cancelIdle = () => window.cancelIdleCallback(handle);
+    } else {
+      const timeout = window.setTimeout(runAnalytics, 2000);
+      cancelIdle = () => window.clearTimeout(timeout);
     }
-    const timeout = window.setTimeout(runAnalytics, 2000);
-    return () => window.clearTimeout(timeout);
+    return () => {
+      cancelIdle();
+      offConsent();
+    };
   }, []);
 
   return (
@@ -158,6 +171,7 @@ function RootComponent() {
       <CartProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <CookieConsentBanner />
         <Toaster />
       </CartProvider>
     </QueryClientProvider>

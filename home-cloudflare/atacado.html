@@ -174,6 +174,7 @@ ul{padding-left:1.25rem}li{margin:.35rem 0}
    <a href="https://store.alna.sale/termos-de-uso">Termos de uso</a>
    <a href="https://store.alna.sale/politica-de-troca-e-devolucao">Trocas e devoluções</a>
    <a href="https://store.alna.sale/contato">Contato</a>
+   <a href="#" data-cookie-prefs>Preferências de cookies</a>
    <a href="mailto:contato@alna.sale">contato@alna.sale</a>
   </nav>
  </div>
@@ -184,21 +185,7 @@ function sync(){var more=c.scrollWidth>c.clientWidth+4;for(var i=0;i<b.length;i+
 for(var i=0;i<b.length;i++){b[i].addEventListener('click',function(){var d=this.className.indexOf('next')>-1?1:-1;c.scrollBy({left:d*(c.firstElementChild.offsetWidth+16),behavior:'smooth'});});}
 sync();addEventListener('resize',sync);})();
 </script>
-<script>
-/* GA4 (same property as the store). Loaded only after the page finished loading and the browser is idle,
-   so it never competes with first paint. Same pattern as the Home (index.html). */
-window.addEventListener('load',function(){
- var go=function(){
-  var id='G-DP9VE6XSRF';
-  window.dataLayer=window.dataLayer||[];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js',new Date());
-  gtag('config',id,{linker:{domains:['alna.sale','store.alna.sale']}});
-  var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(s);
- };
- if('requestIdleCallback' in window)requestIdleCallback(go,{timeout:4000});else setTimeout(go,2000);
-});
-</script>
+<script src="/consent.js" defer></script>
 <script>
 (function(){
 var U='https://ogxsdptftgxrujkfscvi.supabase.co',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9neHNkcHRmdGd4cnVqa2ZzY3ZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5ODE2NTgsImV4cCI6MjEwNDU1NzY1OH0.eC3EFZat4294qTfiggxwbxCyKzGLSTaJjoT284EwRM4';
