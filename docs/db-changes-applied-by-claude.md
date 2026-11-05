@@ -397,3 +397,9 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Efeito imediato: nenhum na loja (a página do cliente ainda não lê as colunas novas). Dados existentes: nenhuma linha com primária (0 de todas as variações).
 - Reverter (se preciso): `drop trigger trg_check_variant_parent on public.product_variants; drop function public.check_variant_parent(); alter table public.product_variants drop column parent_variant_id, drop column cover_image_path;`
 - Código da fase 1 (mesmo commit): `src/components/admin/product-form.tsx`, `src/lib/admin/product-schema.ts`, `src/integrations/supabase/types.ts`.
+
+## 05/11/2026 — pedidos do titular (LGPD)
+- Migração `20261105000000_lgpd_data_requests` (apply_migration, projeto ogxsdptftgxrujkfscvi): tabela `data_requests` (protocolo, tipo, nome, e-mail, WhatsApp opcional, detalhes, status, datas); RLS ligado: anon/authenticated só inserem com status `recebido`; só admin lê e altera; função `create_data_request` (security definer, execute para anon/authenticated) grava e devolve o protocolo.
+- Verificação: chamada da função testada dentro de bloco que dá erro de propósito (a linha não fica gravada).
+- Aviso do advisor (esperado): `create_data_request` é executável por anon, porque é o formulário público.
+- Reverter (se preciso): `drop function public.create_data_request(text,text,text,text,text); drop table public.data_requests;`

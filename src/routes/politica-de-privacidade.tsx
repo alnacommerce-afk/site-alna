@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CONTACT_EMAIL } from "@/lib/site-urls";
 
 import { LegalPageLayout, LegalSection } from "@/components/site/legal-page-layout";
+import { LgpdRequestForm } from "@/components/site/lgpd-request-form";
 
 const SITE_URL = "https://store.alna.sale/politica-de-privacidade";
 
@@ -121,6 +122,15 @@ function PoliticaDePrivacidadePage() {
         </p>
       </LegalSection>
 
+      <LegalSection heading="5.1 Exercer meus direitos">
+        <p>
+          Use o formulário abaixo para pedir o que a LGPD garante. Você recebe um protocolo para
+          acompanhar o pedido. Também pode falar pelo WhatsApp ou pelo e-mail indicados na seção 8.
+        </p>
+        <div className="mt-4">
+          <LgpdRequestForm />
+        </div>
+      </LegalSection>
       <LegalSection heading="6. Segurança e retenção dos dados">
         <p>
           Adotamos medidas técnicas e organizacionais razoáveis para proteger seus dados contra
