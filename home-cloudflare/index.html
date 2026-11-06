@@ -45,7 +45,7 @@ p,h1,h2{margin:0}
 .hero-cta:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 18px 34px -8px rgba(22,163,74,.7)}
 .hero-cta b{font-size:1.1rem;font-weight:900;letter-spacing:.01em;line-height:1.15}
 .hero-cta span{font-size:.75rem;font-weight:700;letter-spacing:.03em;opacity:.95}
-@keyframes hero-cta-pulse{0%,100%{box-shadow:0 14px 30px -8px rgba(22,163,74,.6)}50%{box-shadow:0 14px 34px -4px rgba(22,163,74,.85)}}
+@keyframes hero-cta-pulse{0%,100%{transform:scale(1);box-shadow:0 14px 30px -8px rgba(22,163,74,.6)}50%{transform:scale(1.03);box-shadow:0 14px 34px -4px rgba(22,163,74,.85),0 0 0 6px rgba(22,163,74,.15)}}
 @media(prefers-reduced-motion:reduce){.hero-cta{animation:none;transition:none}.hero-cta:hover{transform:none}}
 
 /* header */
@@ -65,7 +65,7 @@ p,h1,h2{margin:0}
 .hero{background:#0f2247;overflow:hidden}
 .hero-img{position:relative}
 .hero-img img{width:100%;height:480px;object-fit:cover;object-position:top}
-@media(max-width:639px){.hero-img{height:480px;overflow:hidden}.hero-img img{height:494px;position:relative;top:-14px}}
+@media(max-width:639px){.hero-img{height:432px;overflow:hidden}.hero-img img{height:494px;position:relative;top:-14px}.badges{top:278px}}
 .badges{position:absolute;left:0;right:0;top:58%;display:flex;flex-direction:column;align-items:center;gap:.75rem;padding:0 1rem 1rem}
 .badge{display:flex;align-items:center;gap:.625rem;border-radius:1rem;padding:.625rem 1rem;box-shadow:0 20px 25px -5px rgba(0,0,0,.3);text-align:left;line-height:1.15}
 .badge .ic{font-size:1.5rem}
