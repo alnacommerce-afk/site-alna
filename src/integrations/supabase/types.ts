@@ -85,6 +85,72 @@ export type Database = {
           },
         ]
       }
+      agent_handoff: {
+        Row: {
+          commit_ref: string | null
+          computador: string
+          id: string
+          pendencias: Json
+          registrado_em: string
+          resumo: string
+        }
+        Insert: {
+          commit_ref?: string | null
+          computador: string
+          id?: string
+          pendencias?: Json
+          registrado_em?: string
+          resumo: string
+        }
+        Update: {
+          commit_ref?: string | null
+          computador?: string
+          id?: string
+          pendencias?: Json
+          registrado_em?: string
+          resumo?: string
+        }
+        Relationships: []
+      }
+      agent_task: {
+        Row: {
+          atualizado_em: string
+          commit_ref: string | null
+          computador: string | null
+          criado_em: string
+          dono: string | null
+          id: string
+          publicado_em: string | null
+          setor: string
+          status: string
+          titulo: string
+        }
+        Insert: {
+          atualizado_em?: string
+          commit_ref?: string | null
+          computador?: string | null
+          criado_em?: string
+          dono?: string | null
+          id?: string
+          publicado_em?: string | null
+          setor: string
+          status: string
+          titulo: string
+        }
+        Update: {
+          atualizado_em?: string
+          commit_ref?: string | null
+          computador?: string | null
+          criado_em?: string
+          dono?: string | null
+          id?: string
+          publicado_em?: string | null
+          setor?: string
+          status?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -208,6 +274,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      data_requests: {
+        Row: {
+          created_at: string
+          details: string | null
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          protocol: string
+          request_type: string
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          protocol?: string
+          request_type: string
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          protocol?: string
+          request_type?: string
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: []
       }
       email_send_log: {
         Row: {
@@ -968,7 +1073,7 @@ export type Database = {
           price_cents: number
           product_id: string
           shipping_cost_pct?: number
-          sku: string | null
+          sku?: string | null
           stock_quantity?: number
           tax_rate_pct?: number
           updated_at?: string
@@ -1166,11 +1271,11 @@ export type Database = {
           facebook_url: string | null
           free_shipping_threshold_cents: number
           ga4_measurement_id: string | null
-          meta_pixel_id: string | null
           ga4_property_id: string | null
           id: string
           instagram_handle: string | null
           marketing_last_campaign_at: string | null
+          meta_pixel_id: string | null
           phone: string | null
           razao_social: string | null
           referral_reward_percent: number
@@ -1196,11 +1301,11 @@ export type Database = {
           facebook_url?: string | null
           free_shipping_threshold_cents?: number
           ga4_measurement_id?: string | null
-          meta_pixel_id?: string | null
           ga4_property_id?: string | null
           id?: string
           instagram_handle?: string | null
           marketing_last_campaign_at?: string | null
+          meta_pixel_id?: string | null
           phone?: string | null
           razao_social?: string | null
           referral_reward_percent?: number
@@ -1226,11 +1331,11 @@ export type Database = {
           facebook_url?: string | null
           free_shipping_threshold_cents?: number
           ga4_measurement_id?: string | null
-          meta_pixel_id?: string | null
           ga4_property_id?: string | null
           id?: string
           instagram_handle?: string | null
           marketing_last_campaign_at?: string | null
+          meta_pixel_id?: string | null
           phone?: string | null
           razao_social?: string | null
           referral_reward_percent?: number
@@ -1278,6 +1383,16 @@ export type Database = {
         Args: { p_integration_id: string }
         Returns: undefined
       }
+      create_data_request: {
+        Args: {
+          p_details: string
+          p_email: string
+          p_name: string
+          p_phone: string
+          p_request_type: string
+        }
+        Returns: string
+      }
       get_customer_user_id: { Args: { p_email: string }; Returns: string }
       get_integration_secret: {
         Args: { p_integration_id: string }
@@ -1295,11 +1410,11 @@ export type Database = {
           facebook_url: string | null
           free_shipping_threshold_cents: number
           ga4_measurement_id: string | null
-          meta_pixel_id: string | null
           ga4_property_id: string | null
           id: string
           instagram_handle: string | null
           marketing_last_campaign_at: string | null
+          meta_pixel_id: string | null
           phone: string | null
           razao_social: string | null
           referral_reward_percent: number
@@ -1329,6 +1444,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      relatorio_token_valido: { Args: { t: string }; Returns: boolean }
+      relatorio_webhook_url: { Args: never; Returns: string }
       set_integration_secret: {
         Args: { p_integration_id: string; p_secret_value: string }
         Returns: undefined
