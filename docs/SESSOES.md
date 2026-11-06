@@ -115,3 +115,11 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Decisões do dono no período:** em `docs/DECISOES.md`, de 15/10 a 17/10.
 - **Pendências abertas:** em `agent_handoff` (Supabase), última versão de 17/10.
 - **Continuidade a partir de agora:** tabelas `agent_task` e `agent_handoff` no Supabase (migração `agent_continuidade_tarefas_e_handoff`, aplicada em 19/10).
+
+## 2026-11-06 — Computador HOME — espaço do frete e pulso do botão da Home
+- **Pedido do dono:** reduzir pela metade o espaço entre o card "Frete grátis" e o selo "ALNA" no celular; avaliar a cor do botão "Veja todos os produtos" (psicologia das cores, pesquisa na internet); depois "deixe o verde e o pulso pode fazer"; depois "faça todos os commits" e "e push"; por fim "atualize os docs".
+- **Feito:** espaço reduzido de ~96 px para ~51 px (CSS, `.hero-img` 432 px e `.badges` 278 px); verde avaliado com contraste (3,3:1 com texto branco; sugestão #15803d ≈ 5:1, não aplicada); pulso discreto aplicado (escala 1 → 1,03 a cada 2,4 s, respeita "reduzir movimento"); plano em `docs/planos/cta-hero-mobile-2026-11-06.md`; verificado no navegador em 375 px.
+- **Commits:** `22075bd` (Home + docs); merge `af04994` com 6 commits remotos (mudanças em `src/integrations/supabase/types.ts`, `previewAuthStorage.ts` e `.lovable/`, de outra origem, não tocadas aqui); enviado em `main`.
+- **Não verificado:** build e site publicado depois do push.
+- **Pendente do dono:** rótulo de apoio "Toque para ver os produtos"; decisão sobre o contraste do verde; teste A/B de amarelo com medição no GA4.
+- **Próximo passo:** a Memória do Backoffice deve registrar este bloco em `docs/SESSOES.md` no próximo commit (já registrado aqui).
