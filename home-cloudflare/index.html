@@ -164,10 +164,10 @@ p,h1,h2{margin:0}
 .contact .wrap{display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center}
 .contact p{color:#fff;font-size:1.125rem;font-weight:600}
 .foot{background:#0f2247;color:rgba(255,255,255,.8);font-size:.875rem;padding:2rem 0}
-.foot .wrap{display:flex;flex-direction:column;align-items:center;gap:1rem;justify-content:space-between}
-.foot nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem 1.25rem}
+.foot .wrap{display:flex;flex-direction:column;align-items:flex-start;gap:1.25rem}
+.foot p{line-height:1.5}
+.foot nav{display:flex;flex-direction:column;align-items:flex-start;gap:.5rem}
 .foot a:hover{color:#fff}
-@media(min-width:640px){.foot .wrap{flex-direction:row}}
 
 /* queued reveal — each block fades/slides in once its image is ready */
 .js .blk{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;will-change:opacity,transform}
@@ -286,7 +286,7 @@ p,h1,h2{margin:0}
 
 <footer class="foot">
  <div class="wrap">
-  <p>© <span id="y">2026</span> ALNA COMMERCE LTDA · CNPJ 57.135.009/0001-27 · R. Luiz Rafael Flor, 450, Nova Brasília, Brusque/SC, CEP 88.352-553</p>
+  <p>© <span id="y">2026</span> ALNA Commerce LTDA<br>CNPJ 57.135.009/0001-27<br>R. Luiz Rafael Flor, 450, Brusque/SC</p>
   <nav aria-label="Rodapé">
    <a href="https://store.alna.sale/sobre">Sobre</a>
    <a href="https://store.alna.sale/politica-de-privacidade">Privacidade</a>
@@ -294,7 +294,6 @@ p,h1,h2{margin:0}
    <a href="https://store.alna.sale/politica-de-troca-e-devolucao">Trocas e devoluções</a>
    <a href="https://store.alna.sale/contato">Contato</a>
    <a href="#" data-cookie-prefs>Preferências de cookies</a>
-   <a href="mailto:contato@alna.sale">contato@alna.sale</a>
    <a href="https://www.instagram.com/store.alna.sale" target="_blank" rel="noopener noreferrer" aria-label="Instagram da ALNA"><svg class="ic" style="font-size:1rem"><use href="#i-insta"/></svg></a>
   </nav>
  </div>
