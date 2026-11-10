@@ -1379,6 +1379,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auditoria_resumo: { Args: never; Returns: Json }
       clear_integration_secret: {
         Args: { p_integration_id: string }
         Returns: undefined
