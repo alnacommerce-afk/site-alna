@@ -274,7 +274,7 @@ function ConexoesPage() {
             const hasSecret = !!connection.secret_id;
 
             return (
-              <Card key={connection.id}>
+              <Card key={connection.id} id={connection.id}>
                 <CardContent className="space-y-3 p-5">
                   <div className="flex items-center justify-between gap-4">
                     <div>

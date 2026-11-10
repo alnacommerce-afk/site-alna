@@ -12,12 +12,10 @@ const ANUNCIO_PATHS = [
   "/admin/catalogo",
   "/admin/marketing/precificacao",
   "/admin/estoque",
-  "/admin/medidas",
+  "/admin/categorias",
 ];
 const MARKETING_PATHS = [
   "/admin/marketing/cupons",
-  "/admin/marketing/campanhas",
-  "/admin/marketing/gasto-frete",
   "/admin/marketing/fluxo-email",
   "/admin/marketing/email-marketing",
   "/admin/marketing/carrinhos",
@@ -25,18 +23,25 @@ const MARKETING_PATHS = [
   "/admin/marketing/nps",
   "/admin/marketing/ideias-post",
 ];
+const FRETE_PATHS = ["/admin/marketing/gasto-frete", "/admin/medidas"];
+const METRICAS_PATHS = ["/admin/metricas", "/admin/marketing/campanhas"];
+const CONEXOES_PATHS = ["/admin/conexoes"];
+const CONFIGURACOES_PATHS = ["/admin/configuracoes", ...CONEXOES_PATHS];
 
 // A menu section that folds like a drawer: click the title to hide/show its items. It opens by itself
-// when the current page belongs to it, and remembers the last choice in this browser.
+// when the current page belongs to it, and remembers the last choice in this browser. A section can
+// hold other sections (nested = true gives it a deeper indent).
 function NavGroup({
   id,
   title,
   paths,
+  nested = false,
   children,
 }: {
   id: string;
   title: string;
   paths: string[];
+  nested?: boolean;
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
@@ -66,7 +71,7 @@ function NavGroup({
   }
 
   return (
-    <div className="mt-3">
+    <div className={nested ? "mt-1" : "mt-3"}>
       <button
         type="button"
         onClick={toggle}
@@ -82,12 +87,40 @@ function NavGroup({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="flex flex-col gap-1 pt-1 [&>a]:pl-6" inert={!open}>
+          <div className="flex flex-col gap-1 pt-1 [&>a]:pl-6 [&>div]:pl-3" inert={!open}>
             {children}
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+// One clickable entry. `hash` points to a section of the page (e.g. #envio-frete); the highlight
+// only lights up when the hash matches, so two entries on the same page don't both look selected.
+function NavItem({
+  to,
+  hash,
+  exact = false,
+  className = "",
+  children,
+}: {
+  to: string;
+  hash?: string;
+  exact?: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      to={to}
+      {...(hash ? { hash } : {})}
+      activeOptions={{ exact, includeHash: true }}
+      className={`rounded-md px-3 py-2 hover:bg-accent ${className}`}
+      activeProps={{ className: "bg-accent font-medium" }}
+    >
+      {children}
+    </Link>
   );
 }
 
@@ -112,162 +145,64 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
-      <aside className="flex w-56 shrink-0 flex-col border-r bg-muted/30 p-4">
+      <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col overflow-y-auto border-r bg-muted/30 p-4">
         <Link to="/admin" className="mb-6 block text-sm font-semibold">
           Alna Admin
         </Link>
         <nav className="flex flex-col gap-1 text-sm">
-          <Link
-            to="/admin"
-            activeOptions={{ exact: true }}
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
+          <NavItem to="/admin" exact>
             Visão Geral
-          </Link>
-          <Link
-            to="/admin/categorias"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Categorias
-          </Link>
-          <Link
-            to="/admin/pedidos"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Pedidos
-          </Link>
-          <Link
-            to="/admin/clientes"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Clientes
-          </Link>
+          </NavItem>
+          <NavItem to="/admin/pedidos">Pedidos</NavItem>
+          <NavItem to="/admin/clientes">Clientes</NavItem>
+
           <NavGroup id="anuncio" title="Anúncio" paths={ANUNCIO_PATHS}>
-          <Link
-            to="/admin/catalogo"
-            className="rounded-md px-3 py-2 pl-6 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Catálogo
-          </Link>
-          <Link
-            to="/admin/marketing/precificacao"
-            className="rounded-md px-3 py-2 pl-6 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Precificação
-          </Link>
-          <Link
-            to="/admin/estoque"
-            className="flex items-center gap-1.5 rounded-md px-3 py-2 pl-6 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Estoque
-            {lowStockCount > 0 && (
-              <CircleAlert
-                className="h-4 w-4 text-red-600"
-                aria-label={`${lowStockCount} SKU(s) com estoque abaixo de ${LOW_STOCK_THRESHOLD}`}
-              />
-            )}
-          </Link>
-          <Link
-            to="/admin/medidas"
-            className="rounded-md px-3 py-2 pl-6 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Medidas
-          </Link>
+            <NavItem to="/admin/catalogo">Catálogo</NavItem>
+            <NavItem to="/admin/marketing/precificacao">Precificação</NavItem>
+            <NavItem to="/admin/estoque" className="flex items-center gap-1.5">
+              Estoque
+              {lowStockCount > 0 && (
+                <CircleAlert
+                  className="h-4 w-4 text-red-600"
+                  aria-label={`${lowStockCount} SKU(s) com estoque abaixo de ${LOW_STOCK_THRESHOLD}`}
+                />
+              )}
+            </NavItem>
+            <NavItem to="/admin/categorias">Categorias</NavItem>
           </NavGroup>
+
           <NavGroup id="marketing" title="Marketing" paths={MARKETING_PATHS}>
-          <Link
-            to="/admin/marketing/cupons"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Cupons
-          </Link>
-          <Link
-            to="/admin/marketing/campanhas"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Campanhas link UTM
-          </Link>
-          <Link
-            to="/admin/marketing/gasto-frete"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Gasto com frete
-          </Link>
-          <Link
-            to="/admin/marketing/fluxo-email"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Fluxo de E-mail
-          </Link>
-          <Link
-            to="/admin/marketing/email-marketing"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            E-mail marketing
-          </Link>
-          <Link
-            to="/admin/marketing/carrinhos"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Carrinhos abandonados
-          </Link>
-          <Link
-            to="/admin/emails"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            E-mails enviados
-          </Link>
-          <Link
-            to="/admin/marketing/nps"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            NPS
-          </Link>
-          <Link
-            to="/admin/marketing/ideias-post"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Ideias de Post
-          </Link>
+            <NavItem to="/admin/marketing/cupons">Cupons</NavItem>
+            <NavItem to="/admin/marketing/fluxo-email">Fluxo de E-mail</NavItem>
+            <NavItem to="/admin/marketing/email-marketing">E-mail marketing</NavItem>
+            <NavItem to="/admin/marketing/carrinhos">Carrinhos abandonados</NavItem>
+            <NavItem to="/admin/emails">E-mails enviados</NavItem>
+            <NavItem to="/admin/marketing/nps">NPS</NavItem>
+            <NavItem to="/admin/marketing/ideias-post">Ideias de Post</NavItem>
           </NavGroup>
-          <Link
-            to="/admin/metricas"
-            className="mt-3 rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Métricas
-          </Link>
-          <Link
-            to="/admin/conexoes"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Conexões de API
-          </Link>
-          <Link
-            to="/admin/configuracoes"
-            className="rounded-md px-3 py-2 hover:bg-accent"
-            activeProps={{ className: "bg-accent font-medium" }}
-          >
-            Configurações
-          </Link>
+
+          <NavGroup id="frete" title="Frete" paths={FRETE_PATHS}>
+            <NavItem to="/admin/marketing/gasto-frete">Gasto com frete</NavItem>
+            <NavItem to="/admin/medidas">Medidas</NavItem>
+          </NavGroup>
+
+          <NavGroup id="metricas" title="Métricas" paths={METRICAS_PATHS}>
+            <NavItem to="/admin/metricas">Minhas métricas</NavItem>
+            <NavItem to="/admin/marketing/campanhas">Campanhas link UTM</NavItem>
+          </NavGroup>
+
+          <NavGroup id="configuracoes" title="Configurações" paths={CONFIGURACOES_PATHS}>
+            <NavItem to="/admin/configuracoes">Dados da loja</NavItem>
+            <NavItem to="/admin/configuracoes" hash="envio-frete">
+              Envio / Frete
+            </NavItem>
+            <NavGroup id="conexoes" title="Conexões de API" paths={CONEXOES_PATHS} nested>
+              <NavItem to="/admin/conexoes">Todas as conexões</NavItem>
+              <NavItem to="/admin/conexoes" hash="google_analytics">
+                Google Analytics
+              </NavItem>
+            </NavGroup>
+          </NavGroup>
         </nav>
         <Button
           variant="ghost"

@@ -290,7 +290,7 @@ function ConfiguracoesPage() {
             />
           </div>
 
-          <div className="space-y-4 border-t pt-4">
+          <div id="envio-frete" className="space-y-4 border-t pt-4">
             <div>
               <h2 className="text-sm font-semibold text-[#12294f]">Envio / Frete</h2>
               <p className="text-xs text-muted-foreground">
