@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatCentsToBRL } from "@/lib/money";
 import { useCart } from "@/lib/cart/cart-context";
 import logoAlna from "@/assets/brand/logo-alna.png";
+import { WHATSAPP_URL, WhatsappIcon } from "@/components/site/whatsapp-float-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,6 +88,15 @@ export function SiteHeader() {
             <ShoppingCart className="h-4 w-4" />
             <span className="hidden sm:inline">Carrinho</span> {itemCount}
           </Link>
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Falar no WhatsApp"
+            className="flex items-center text-[#25d366] hover:opacity-80"
+          >
+            <WhatsappIcon className="h-6 w-6" />
+          </a>
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}

@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
-import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
 
 export function LegalPageLayout({
   title,
@@ -26,7 +25,6 @@ export function LegalPageLayout({
       </section>
       <article className="mx-auto max-w-3xl px-4 py-12">{children}</article>
       <SiteFooter />
-      <WhatsappFloatButton />
     </div>
   );
 }

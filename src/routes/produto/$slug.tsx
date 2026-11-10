@@ -14,7 +14,6 @@ import { RestockNotifyBox } from "@/components/site/restock-notify-box";
 import { SiteHeader } from "@/components/site/site-header";
 import { FreeShippingBanner } from "@/components/site/free-shipping-progress";
 import { SiteFooter } from "@/components/site/site-footer";
-import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
 import { Reveal } from "@/components/site/reveal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SITE_URL as HOME_URL } from "@/lib/site-urls";
@@ -508,7 +507,6 @@ function ProdutoPage() {
           </Link>
         </div>
         <SiteFooter />
-        <WhatsappFloatButton />
       </div>
     );
   }
@@ -1050,7 +1048,6 @@ function ProdutoPage() {
       <RelatedSection extras={extras} />
 
       <SiteFooter />
-      <WhatsappFloatButton />
     </div>
   );
 }

@@ -18,7 +18,6 @@ import { FreeShippingProgress } from "@/components/site/free-shipping-progress";
 import { PromotedCouponBox } from "@/components/site/promoted-coupon-box";
 import { CompleteOrderSuggestions } from "@/components/site/complete-order-suggestions";
 import { SiteFooter } from "@/components/site/site-footer";
-import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -429,7 +428,6 @@ function CarrinhoPage() {
       </div>
 
       <SiteFooter />
-      <WhatsappFloatButton />
     </div>
   );
 }

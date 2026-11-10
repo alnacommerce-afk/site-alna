@@ -8,7 +8,6 @@ import heroAmbassador from "@/assets/brand/hero-ambassador-cutout.png";
 import { SiteHeader } from "@/components/site/site-header";
 import { FreeShippingBanner } from "@/components/site/free-shipping-progress";
 import { SiteFooter } from "@/components/site/site-footer";
-import { WhatsappFloatButton } from "@/components/site/whatsapp-float-button";
 import { WelcomePopupLoader } from "@/components/site/welcome-popup-loader";
 import { Reveal } from "@/components/site/reveal";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -455,7 +454,6 @@ function LojaPage() {
       </main>
 
       <SiteFooter />
-      <WhatsappFloatButton />
       <WelcomePopupLoader />
     </div>
   );
