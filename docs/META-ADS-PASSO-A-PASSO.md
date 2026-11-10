@@ -17,7 +17,7 @@ Tenha à mão:
 - Um **perfil pessoal do Facebook** do responsável (✅ necessário para criar o portfólio empresarial; você pode criar até 2 portfólios pessoalmente) — se usar um e-mail só da empresa, melhor (ex.: `contato@alna.sale`, **somente se você consegue abrir essa caixa**).
 - **Razão social e CNPJ:** ALNA COMMERCE LTDA · 57.135.009/0001-27 · R. Luiz Rafael Flor, 450, Nova Brasília, Brusque/SC, CEP 88.352-553 · site `https://alna.sale` · telefone (51) 99491-1125.
 - **Cartão de crédito/débito da empresa** (ou o que for pagar os anúncios). Quem adiciona a forma de pagamento precisa ser **administrador** (✅).
-- Logo da ALNA (`home-cloudflare/assets/logo-alna.png`) e o Instagram **@store.alna.sale**.
+- Logo da ALNA (`home-cloudflare/assets/logo-alna.png`) e o Instagram **@alna.sale**.
 - O celular com o **WhatsApp do número comercial** (51) 99491-1125.
 
 ## Etapa 2 — Criar o portfólio empresarial (antigo Business Manager)
@@ -65,7 +65,7 @@ Preencha: descrição curta ("Utensílios de madeira, toalhas e roupas para comp
    - **Idade:** 25–60. **Posicionamentos:** automáticos (Advantage+), no começo.
    - **Público:** 🔎 comece **amplo** (a Meta aprende sozinha) e use *interesses* como sinal: "restaurantes", "padarias", "lojas de decoração", "toalhas", "empreendedorismo/varejo" (🔎 os nomes variam). Em B2B, o mais forte costuma ser o **texto do anúncio** falar para quem compra em quantidade.
 4. **Anúncio (nível 3):**
-   - **Identidade:** Página ALNA + Instagram @store.alna.sale.
+   - **Identidade:** Página ALNA + Instagram @alna.sale.
    - **Formato:** **Carrossel** com 3 cartões (✅ aceita imagem, vídeo, carrossel e apresentação de slides) ou **imagem única**.
    - **Texto principal (variação A):** "Compra em quantidade para o seu negócio 💚 Utensílios de madeira para cozinha, toalhas e roupas, com nota fiscal e entrega para todo o Brasil. 5% de desconto acima de R$ 250 e 4% no Pix. Chame no WhatsApp e monte seu pedido."
    - **Texto principal (variação B):** "Padaria, restaurante ou loja? Tábuas, pilão, rolo de massa e toalhas de banho e rosto para revenda. Sem pedido mínimo. Fale com a gente."

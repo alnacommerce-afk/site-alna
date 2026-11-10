@@ -403,3 +403,5 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Verificação: chamada da função testada dentro de bloco que dá erro de propósito (a linha não fica gravada).
 - Aviso do advisor (esperado): `create_data_request` é executável por anon, porque é o formulário público.
 - Reverter (se preciso): `drop function public.create_data_request(text,text,text,text,text); drop table public.data_requests;`
+
+- **10/11** — `site_settings` (id `default`): `instagram_handle` alterado de `store.alna.sale` para `alna.sale` (pedido do dono; update de 1 linha, reversível).

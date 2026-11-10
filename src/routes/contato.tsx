@@ -53,7 +53,7 @@ function ContatoPage() {
           </li>
           <li>
             Instagram:{" "}
-            <a href="https://www.instagram.com/store.alna.sale" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/alna.sale" target="_blank" rel="noopener noreferrer">
               @store.alna.sale
             </a>
           </li>

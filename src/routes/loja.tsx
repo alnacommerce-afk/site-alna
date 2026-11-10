@@ -1,5 +1,6 @@
 import { Await, createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { sellableVariants } from "@/lib/variants";
@@ -19,6 +20,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const SITE_URL = "https://store.alna.sale/loja";
 
@@ -248,6 +257,12 @@ function Catalog({
     priceBounds.max,
   ]);
   const [sort, setSort] = useState<SortOption>("relevancia");
+  // Mobile only: the category list lives in a bottom drawer; picking one filters and closes it.
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const pickCategory = (id: string | null) => {
+    setSelectedCategoryId(id);
+    setCategoriesOpen(false);
+  };
 
   const filteredProducts = useMemo(() => {
     let list = products;
@@ -282,7 +297,55 @@ function Catalog({
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 py-10 sm:grid-cols-[220px_1fr]">
       <aside className="space-y-8">
-        <div>
+        <div className="sm:hidden">
+          <Sheet open={categoriesOpen} onOpenChange={setCategoriesOpen}>
+            <SheetTrigger asChild>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between rounded-xl border-2 border-[#15803d] bg-white px-4 py-3 text-sm font-bold text-[#12294f]"
+              >
+                Veja nossas categorias
+                <ChevronDown className="h-4 w-4 text-[#15803d]" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto rounded-t-2xl">
+              <SheetHeader>
+                <SheetTitle className="text-left text-[#12294f]">Categorias</SheetTitle>
+                <SheetDescription className="sr-only">Escolha uma categoria para filtrar os produtos.</SheetDescription>
+              </SheetHeader>
+              <ul className="mt-2 space-y-1 pb-6 text-sm">
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => pickCategory(null)}
+                    className={`block w-full rounded-lg px-2 py-3 text-left ${
+                      selectedCategoryId === null ? "font-bold text-[#15803d]" : "text-[#12294f]"
+                    }`}
+                  >
+                    Todos os produtos
+                  </button>
+                </li>
+                {categories.map((category) => (
+                  <li key={category.id}>
+                    <button
+                      type="button"
+                      onClick={() => pickCategory(category.id)}
+                      className={`block w-full rounded-lg px-2 py-3 text-left ${
+                        selectedCategoryId === category.id
+                          ? "font-bold text-[#15803d]"
+                          : "text-[#12294f]"
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        <div className="hidden sm:block">
           <h2 className="text-sm font-bold uppercase tracking-wide text-[#12294f]">Categorias</h2>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
@@ -400,7 +463,7 @@ function LojaPage() {
 
       <main>
       <section className="relative overflow-hidden bg-gradient-to-br from-[#fcfbf8] via-[#fcfbf8] to-[#f5e6bd]">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-2 px-4 py-8 sm:grid-cols-[1fr_320px] sm:gap-6 sm:py-10">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-2 px-4 pb-0 pt-6 sm:grid-cols-[1fr_320px] sm:gap-6 sm:py-10">
           <div className="reveal text-center sm:text-left">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#15803d] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
               Loja ALNA
@@ -413,7 +476,7 @@ function LojaPage() {
               e carinho para o seu dia a dia.
             </p>
           </div>
-          <div className="relative mx-auto h-[280px] w-full max-w-[300px] overflow-hidden sm:h-[360px] sm:max-w-none">
+          <div className="relative mx-auto h-[220px] w-full max-w-[300px] overflow-hidden sm:h-[360px] sm:max-w-none">
             {/* Glow quente atrás dela — funde a temperatura de cor do estúdio (neutra) com o
                 gradiente creme/dourado da seção, em vez de ela "flutuar" sobre um fundo cru. */}
             <div className="absolute left-1/2 top-[6%] h-[80%] w-[85%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(245,230,189,0.6),transparent_75%)]" />
@@ -437,7 +500,7 @@ function LojaPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-4 pt-6">
+      <div className="mx-auto max-w-6xl px-4 pt-3 sm:pt-6">
         <FreeShippingBanner />
       </div>
 
