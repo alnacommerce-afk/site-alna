@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ChevronDown,
   CreditCard,
   Gift,
+  Menu,
   Search,
   ShieldCheck,
   ShoppingCart,
   Truck,
   User,
+  X,
 } from "lucide-react";
 import { useCategories, useSiteSettings } from "@/lib/site-data";
 import { SITE_URL } from "@/lib/site-urls";
@@ -28,6 +31,7 @@ export function SiteHeader() {
   const { data: categories = [], isLoading: loadingCategories } = useCategories();
   const { data: settings, isLoading: loadingSettings } = useSiteSettings();
   const freeShippingThresholdCents = settings?.free_shipping_threshold_cents ?? null;
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="relative z-30 bg-white shadow-sm">
@@ -83,24 +87,47 @@ export function SiteHeader() {
             <ShoppingCart className="h-4 w-4" />
             <span className="hidden sm:inline">Carrinho</span> {itemCount}
           </Link>
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="site-menu"
+            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#e2e8f0] bg-white text-[#12294f] md:hidden"
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </nav>
       </div>
 
-      <nav className="border-t border-[#12294f]/10">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 overflow-x-auto px-4 py-2.5 text-[13px] font-semibold tracking-wide text-[#12294f] sm:justify-start sm:gap-6 sm:text-sm">
-          <a href={SITE_URL} className="shrink-0 whitespace-nowrap hover:text-[#15803d]">
+      <nav
+        id="site-menu"
+        aria-label="Principal"
+        className={`border-t border-[#12294f]/10 ${menuOpen ? "block" : "hidden"} md:block`}
+      >
+        <div className="mx-auto flex max-w-6xl flex-col px-4 text-sm font-semibold tracking-wide text-[#12294f] md:flex-row md:items-center md:justify-start md:gap-6 md:py-2.5">
+          <a
+            href={SITE_URL}
+            className="whitespace-nowrap border-b border-[#12294f]/10 py-3 hover:text-[#15803d] md:border-0 md:py-0"
+          >
             HOME
           </a>
           <Link
             to="/loja"
             search={{ categoria: undefined }}
-            className="shrink-0 whitespace-nowrap hover:text-[#15803d]"
+            className="whitespace-nowrap border-b border-[#12294f]/10 py-3 hover:text-[#15803d] md:border-0 md:py-0"
           >
             LOJA
           </Link>
+          <a
+            href={`${SITE_URL}/atacado`}
+            className="whitespace-nowrap border-b border-[#12294f]/10 py-3 hover:text-[#15803d] md:border-0 md:py-0"
+          >
+            ATACADO
+          </a>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex shrink-0 items-center gap-1 whitespace-nowrap outline-none hover:text-[#15803d]">
+            <DropdownMenuTrigger className="flex items-center gap-1 whitespace-nowrap border-b border-[#12294f]/10 py-3 text-left outline-none hover:text-[#15803d] md:border-0 md:py-0">
               CATEGORIAS
               <ChevronDown className="h-3.5 w-3.5" />
             </DropdownMenuTrigger>
@@ -127,10 +154,16 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link to="/sobre" className="shrink-0 whitespace-nowrap hover:text-[#15803d]">
+          <Link
+            to="/sobre"
+            className="whitespace-nowrap border-b border-[#12294f]/10 py-3 hover:text-[#15803d] md:border-0 md:py-0"
+          >
             SOBRE
           </Link>
-          <Link to="/contato" className="shrink-0 whitespace-nowrap hover:text-[#15803d]">
+          <Link
+            to="/contato"
+            className="whitespace-nowrap py-3 hover:text-[#15803d] md:py-0"
+          >
             CONTATO
           </Link>
         </div>

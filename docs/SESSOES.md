@@ -142,3 +142,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito:** commit `76a8c10` (relatório das 18h com auditoria diária, migração `auditoria_resumo`, `docs/auditorias/`, registros nos docs); push `612fd6e..76a8c10` em `main`.
 - **Não feito:** migração não aplicada no banco por esta sessão; função `relatorio-diario` não publicada; build e site não conferidos.
 - **Próximo passo:** dono decide se quer aplicar a migração e publicar a função.
+
+## 2026-11-10 — Computador HOME — cabeçalho do alna.sale e menu da loja
+- **Pedido do dono:** cabeçalho de `/atacado` igual ao da Home; fixo no topo nas páginas do alna.sale; menu da loja com Atacado dentro do sanduíche, sem WhatsApp e com faixa verde e carrinho como estão.
+- **Feito:** cabeçalho da Home copiado para `/atacado` (sticky em Home e `/atacado`); menu da loja em `src/components/site/site-header.tsx` com ATACADO; `tsc` ok; `/atacado` conferido em 375 px (menu e sticky).
+- **Não feito:** loja não conferida rodando; cabeçalho da loja não fixo (não foi pedido).
+- **Próximo passo:** o dono publica no Lovable e pede "publiquei, confere se subiu".
