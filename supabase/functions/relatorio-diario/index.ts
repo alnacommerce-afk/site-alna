@@ -42,6 +42,32 @@ async function acessosGa4(admin: ReturnType<typeof createClient>) {
   return { usuarios: valores[0], sessoes: valores[1], visualizacoes: valores[2] };
 }
 
+// Páginas que a auditoria diária confere (GET, sem login e sem compra).
+const PAGINAS = [
+  { nome: "Home", url: "https://alna.sale/" },
+  { nome: "Atacado", url: "https://alna.sale/atacado" },
+  { nome: "Loja", url: "https://store.alna.sale/loja" },
+  { nome: "Carrinho", url: "https://store.alna.sale/carrinho" },
+  { nome: "Checkout", url: "https://store.alna.sale/checkout" },
+];
+
+async function verificarPagina(p: { nome: string; url: string }) {
+  const inicio = Date.now();
+  try {
+    const r = await fetch(p.url, { redirect: "follow", signal: AbortSignal.timeout(8000) });
+    const segundos = (Date.now() - inicio) / 1000;
+    const tempo = `${segundos.toFixed(2).replace(".", ",")} s`;
+    if (r.status !== 200) return `• ${p.nome}: ERRO ${r.status} (${tempo})`;
+    return `• ${p.nome}: OK, ${tempo}${segundos > 2 ? " ⚠ lenta" : ""}`;
+  } catch {
+    return `• ${p.nome}: FORA DO AR`;
+  }
+}
+
+const dataHora = (iso: string | null) =>
+  iso ? new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(iso)) : "nunca";
+const diasDesde = (iso: string | null) => (iso ? (Date.now() - new Date(iso).getTime()) / 86400000 : Infinity);
+
 Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -53,14 +79,16 @@ Deno.serve(async (req) => {
     if (!tokenOk) return jsonResponse({ error: "não autorizado" }, 401);
 
     const { inicio, fim, dataOntem } = intervaloDeOntem(new Date());
-    const [pedidosRes, carrinhosRes, tarefasRes] = await Promise.all([
+    const [pedidosRes, carrinhosRes, resumoRes, paginas] = await Promise.all([
       admin.from("orders").select("total_cents, customer_email").in("payment_status", ["RECEIVED", "CONFIRMED"]).gte("created_at", inicio).lt("created_at", fim),
       admin.from("abandoned_carts").select("email").gte("created_at", inicio).lt("created_at", fim),
-      admin.from("agent_task").select("setor, titulo, status").gte("atualizado_em", new Date(Date.now() - 24 * 3600 * 1000).toISOString()),
+      admin.rpc("auditoria_resumo"),
+      Promise.all(PAGINAS.map(verificarPagina)),
     ]);
-    if (pedidosRes.error || carrinhosRes.error || tarefasRes.error) {
-      throw new Error(pedidosRes.error?.message ?? carrinhosRes.error?.message ?? tarefasRes.error?.message);
+    if (pedidosRes.error || carrinhosRes.error || resumoRes.error) {
+      throw new Error(pedidosRes.error?.message ?? carrinhosRes.error?.message ?? resumoRes.error?.message);
     }
+    const resumo = (resumoRes.data ?? {}) as Record<string, string | number | null>;
 
     const pedidos = pedidosRes.data ?? [];
     const pagos = pedidos.filter((p) => !ehTeste(p.customer_email));
@@ -78,7 +106,22 @@ Deno.serve(async (req) => {
       acessos = `indisponível hoje (${erro instanceof Error ? erro.message.slice(0, 80) : "erro"})`;
     }
 
-    const setores = (tarefasRes.data ?? []).map((t) => `• ${t.setor}: ${t.titulo} (${t.status})`).join("\n") || "• nenhuma tarefa tocada";
+    // Auditoria automática do dia: itens numerados (A1, A2...) para o dono responder pelo número no chat.
+    const ultimoPedido = resumo.ultimo_pedido_qualquer as string | null;
+    const ultimoCarrinho = resumo.ultimo_carrinho_salvo as string | null;
+    const ultimaTarefa = resumo.ultima_tarefa_agente as string | null;
+    const falhas = Number(resumo.agendamentos_com_falha_24h ?? 0);
+    const estoque100 = Number(resumo.variantes_estoque_100 ?? 0);
+    const hoje = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date());
+    const auditoria = [
+      `**A1. Páginas:**`,
+      ...paginas,
+      `**A2. Pedidos:** ${diasDesde(ultimoPedido) > 3 ? "⚠" : "OK"} último pedido criado em ${dataHora(ultimoPedido)}`,
+      `**A3. Carrinhos salvos:** ${diasDesde(ultimoCarrinho) > 3 ? "⚠" : "OK"} último em ${dataHora(ultimoCarrinho)}`,
+      `**A4. Agendamentos:** ${falhas > 0 ? `⚠ ${falhas} falha(s) nas últimas 24 h` : "OK, nenhuma falha nas últimas 24 h"}`,
+      `**A5. Setores (registro no banco):** ${diasDesde(ultimaTarefa) > 3 ? `⚠ sem registro desde ${dataHora(ultimaTarefa)}` : `OK, último registro em ${dataHora(ultimaTarefa)}`}`,
+      `**A6. Estoque:** ${estoque100} variações com 100 unidades, aguardando confirmação do dono`,
+    ];
 
     const texto = [
       `**Relatório de ${dataOntem}**`,
@@ -88,10 +131,10 @@ Deno.serve(async (req) => {
       `• Carrinhos salvos: ${carrinhosReais} (testes do dono: ${carrinhosTeste})`,
       `• Compras pagas: ${pagos.length}, ${reais(valor)} (testes do dono: ${pagosTeste})`,
       "",
-      "**Setores (tarefas tocadas nas últimas 24h):**",
-      setores,
+      `**AUDITORIA DIÁRIA (automática) — ${hoje}**`,
+      ...auditoria,
       "",
-      "Nada foi publicado sem o seu ok.",
+      "Responda pelo número do item (ex.: A2). Nada foi publicado sem o seu ok.",
     ].join("\n");
 
     const { data: webhook, error: erroWebhook } = await admin.rpc("relatorio_webhook_url");

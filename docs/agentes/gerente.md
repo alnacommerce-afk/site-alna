@@ -168,3 +168,9 @@ Consulta feita nos diários de cada setor e no estado do banco (`agent_task`, `a
 - Ajuste aplicado (migração `site_settings_meta_pixel_leitura_publica`): `grant select (meta_pixel_id) on site_settings to anon`. Só essa coluna. Os demais campos continuam fechados.
 - Conferido no navegador em store.alna.sale/loja: `fbevents.js` carregado e `fbq` definido com o ID 1097091249886096.
 - Pendente: confirmar no Gerenciador de Eventos que o PageView chegou; decisão do dono sobre aviso de cookies/privacidade (o pixel já está ativo no site).
+
+## 2026-11-07 — Computador HOME — auditoria semanal e diário (registro retroativo de 24/10 a 06/11)
+- **Lacuna:** nenhuma entrada do Gerente entre 24/10 e 06/11. Mudanças no repositório nesse período (ver `git log`): Meta Pixel, banner de cookies, formulário LGPD (05/11), ajustes da Home no celular (06/11) e rodapé (07/11). Nenhum plano de execução foi registrado nesse intervalo.
+- **Pedido do dono (07/11):** auditoria semanal, relatório no Discord com título "AUDITORIA SEMANAL", correção da falha de ligação, retestes e atualização dos docs.
+- **Feito (com a ordem do dono):** relatório das 18h corrigido (migração `auditoria_resumo`, Edge Function `relatorio-diario` v3), testado com envio ao Discord. Relatório semanal em `docs/auditorias/auditoria-semanal-2026-11-07.md`.
+- **Não feito:** RAG (aguarda decisão do dono: provedor de embeddings e chave da LLM); pedido 8433b1a9 (aguarda decisão do dono); estoque das 64 variantes (aguarda confirmação do dono).

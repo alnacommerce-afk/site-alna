@@ -123,3 +123,16 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Não verificado:** build e site publicado depois do push.
 - **Pendente do dono:** rótulo de apoio "Toque para ver os produtos"; decisão sobre o contraste do verde; teste A/B de amarelo com medição no GA4.
 - **Próximo passo:** a Memória do Backoffice deve registrar este bloco em `docs/SESSOES.md` no próximo commit (já registrado aqui).
+
+## 2026-11-07 — Computador HOME — auditoria semanal, correção do relatório das 18h
+- **Pedido do dono:** auditoria semanal de todos os setores; relatório no Discord com título "AUDITORIA SEMANAL"; corrigir a falha de ligação do relatório; retestar alna.cc; avaliar segurança do banco; confirmar as páginas; conferir o pedido 8433b1a9; diagnosticar o RAG; atualizar o diário do gerente.
+- **Feito:** migração `auditoria_resumo` (só leitura, só service_role); Edge Function `relatorio-diario` v3 com a seção "AUDITORIA DIÁRIA (automática)" (itens A1 a A6), testada com envio ao Discord em 07/11 (HTTP 200, `enviado: true`). Relatório semanal em `docs/auditorias/auditoria-semanal-2026-11-07.md`.
+- **Causa da falha de ligação:** a seção "Setores" lia `agent_task` das últimas 24 h; a tabela não é atualizada desde 19/10.
+- **Não commitado** nesta data: migração, Edge Function, docs. Commit só com ordem do dono.
+
+## 2026-11-06 a 2026-11-10 — Computador HOME — Home e /atacado (esta conversa)
+- **Pedidos do dono:** espaço do frete no celular pela metade; avaliar a cor e o pulso do botão "Veja todos os produtos"; rodapé em coluna sem e-mail e sem "Contato"; botões do /atacado com o estilo do botão da Home; remover "Falar no WhatsApp" do bloco principal; selos "Oferta especial" (Home) e "Ofertas especiais" (/atacado).
+- **Feito:** commits `22075bd`, `81178ff`, `726d7e4`, `80e7ad5`, `b5e0bc3` (enviados ao `main`; merges com remoto em `af04994` e `612fd6e`). Arquivos: `home-cloudflare/index.html`, `home-cloudflare/atacado.html`, `docs/planos/cta-hero-mobile-2026-11-06.md`, `docs/planos/auditoria-ponta-a-ponta-2026-10-28.md`.
+- **Não feito:** entrada de 07/11 em `docs/DECISOES.md` sem commit (arquivo com alterações de outra sessão). Build e site publicado não conferidos depois dos pushes.
+- **Atenção:** o commit do merge `612fd6e` trouxe `.lovable/plan.md` e `src/integrations/supabase/types.ts`, de outra origem.
+- **Próximo passo:** o dono decide o commit do trabalho de 07/11 de outra sessão e as decisões de cor, rótulo e teste (ver `docs/PENDENCIAS.md`).
