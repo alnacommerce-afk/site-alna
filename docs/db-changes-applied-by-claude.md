@@ -410,3 +410,6 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Migração `lista_negra_e_utm_no_carrinho`: tabela `public.blocked_emails` (e-mail, motivo, criado_em) com RLS (só admin lê, inclui e remove); coluna `abandoned_carts.utm_campaign`.
 - `cron.schedule('relatorio-marketing-13h-brasilia', '0 16 * * *', ...)`: chama `relatorio-diario` com `modo: "marketing"`. O job existente das 21h UTC continua como estava (modo padrão `setores`).
 - Edge functions publicadas: `save-cart` (versão 21, lista negra e `utm_campaign`) e `relatorio-diario` (versão 8, modos marketing e setores).
+
+## 11/11/2026 — trava da lista negra no pedido
+- Migração `lista_negra_bloqueia_pedido`: função `public.bloqueia_pedido_lista_negra()` e trigger `orders_lista_negra` (BEFORE INSERT em `orders`) que recusa pedido de e-mail presente em `blocked_emails`. Testado com inserção revertida.
