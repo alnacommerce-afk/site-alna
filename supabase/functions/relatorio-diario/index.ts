@@ -42,6 +42,29 @@ async function acessosGa4(admin: ReturnType<typeof createClient>) {
   return { usuarios: valores[0], sessoes: valores[1], visualizacoes: valores[2] };
 }
 
+// Pessoas que chegaram por link com UTM ontem: sessões com campanha preenchida no GA4. O GA4 marca
+// como "(not set)" a sessão sem utm_campaign, então ela fica de fora. É uma estimativa por campanha.
+async function usuariosUtmGa4(admin: ReturnType<typeof createClient>) {
+  const credenciais = await loadGa4Credentials(admin);
+  if (!credenciais) return null;
+  const res = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${credenciais.propertyId}:runReport`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${credenciais.accessToken}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      dateRanges: [{ startDate: "yesterday", endDate: "yesterday" }],
+      metrics: [{ name: "activeUsers" }],
+      dimensionFilter: {
+        notExpression: {
+          filter: { fieldName: "sessionCampaignName", stringFilter: { matchType: "EXACT", value: "(not set)" } },
+        },
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`GA4 ${res.status}: ${await res.text()}`);
+  const json = await res.json();
+  return Number(json.rows?.[0]?.metricValues?.[0]?.value ?? 0);
+}
+
 // Páginas que a auditoria diária confere (GET, sem login e sem compra).
 const PAGINAS = [
   { nome: "Home", url: "https://alna.sale/" },
@@ -99,11 +122,18 @@ Deno.serve(async (req) => {
     const carrinhosTeste = carrinhos.length - carrinhosReais;
 
     let acessos = "sem dado (GA4 não configurado)";
+    let utm = "sem dado";
     try {
       const g = await acessosGa4(admin);
       if (g) acessos = `${g.usuarios} usuários, ${g.sessoes} sessões, ${g.visualizacoes} visualizações de página`;
     } catch (erro) {
       acessos = `indisponível hoje (${erro instanceof Error ? erro.message.slice(0, 80) : "erro"})`;
+    }
+    try {
+      const u = await usuariosUtmGa4(admin);
+      if (u !== null) utm = `${u} ${u === 1 ? "pessoa" : "pessoas"}`;
+    } catch (erro) {
+      utm = `indisponível hoje (${erro instanceof Error ? erro.message.slice(0, 80) : "erro"})`;
     }
 
     // Auditoria automática do dia: itens numerados (A1, A2...) para o dono responder pelo número no chat.
@@ -128,6 +158,7 @@ Deno.serve(async (req) => {
       "",
       "**Marketing (dados reais do dia):**",
       `• Acessos: ${acessos}`,
+      `• Pessoas que chegaram por link UTM: ${utm}`,
       `• Carrinhos salvos: ${carrinhosReais} (testes do dono: ${carrinhosTeste})`,
       `• Compras pagas: ${pagos.length}, ${reais(valor)} (testes do dono: ${pagosTeste})`,
       "",
