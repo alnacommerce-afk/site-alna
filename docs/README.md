@@ -16,6 +16,8 @@
 | **Passo a passo para ligar o outro computador** (instalador, teste de continuidade, regras do dia a dia) | [`PASSO-A-PASSO-OUTRO-COMPUTADOR.md`](PASSO-A-PASSO-OUTRO-COMPUTADOR.md) |
 | **Diário das sessões**: quem fez o quê em qual computador (Computador HOME e o outro) | [`SESSOES.md`](SESSOES.md) |
 | Relatório de vendas do FinMarket HUB (campos, parâmetros, como testar) | [`sales-report-finmarket.md`](sales-report-finmarket.md) |
+| **Planos** de ajustes (Home, CTA, auditoria ponta a ponta, RAG e outros) | [`planos/`](planos/) |
+| **Auditorias** semanais (relatório com páginas, pedidos, carrinhos e setores) | [`auditorias/`](auditorias/) |
 | Integrações de marketing (Meta, Google, feeds) | [`marketing-integrations.md`](marketing-integrations.md) |
 | Regras permanentes de trabalho (sócio, velocidade, Lovable) | [`../AGENTS.md`](../AGENTS.md) |
 | Medidas de velocidade da Home | `../home-cloudflare/README.md` |
