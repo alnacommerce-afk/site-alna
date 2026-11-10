@@ -2,6 +2,8 @@
 
 Status (atualizado em 28/10): **aplicados** — ocultar avaliações vazias, linha de devolução sob o botão de compra, faixa do topo e menu da loja no celular, menu hambúrguer e remoção do e-mail do menu na home. **Pendentes** — texto do tamanho 68x140 (admin), frete "a partir de R$ X" na home (decisão do dono), explicação da soma de descontos no atacado, ícones de divergência no admin do catálogo. Cada ajuste passa pela avaliação de peso e de velocidade antes de ser aplicado.
 
+**Conhecimento fixo para a auditoria (dono, 07/11/2026):** o preço de referência "20% OFF" é real. Não tem data de fim: todo mês é feita uma leitura de mercado e decidido o desconto que a loja consegue dar. Portanto, o item H2 abaixo não é mais "promoção com validade a confirmar"; a auditoria deve conferir apenas se o desconto exibido bate com o desconto vigente do mês e se o texto diz "do mês", sem prometer prazo fixo.
+
 ## Escopo e limites do teste
 
 - **Testado:** home (alna.sale), loja (/loja), atacado, uma página de produto (Toalha Paris), carrinho com 1 item (depois removido), checkout (tela de dados, sem enviar), sobre, contato, política de trocas. Versão desktop e mobile (375 px).
