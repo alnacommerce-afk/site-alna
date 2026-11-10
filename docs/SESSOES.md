@@ -128,7 +128,7 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Pedido do dono:** auditoria semanal de todos os setores; relatório no Discord com título "AUDITORIA SEMANAL"; corrigir a falha de ligação do relatório; retestar alna.cc; avaliar segurança do banco; confirmar as páginas; conferir o pedido 8433b1a9; diagnosticar o RAG; atualizar o diário do gerente.
 - **Feito:** migração `auditoria_resumo` (só leitura, só service_role); Edge Function `relatorio-diario` v3 com a seção "AUDITORIA DIÁRIA (automática)" (itens A1 a A6), testada com envio ao Discord em 07/11 (HTTP 200, `enviado: true`). Relatório semanal em `docs/auditorias/auditoria-semanal-2026-11-07.md`.
 - **Causa da falha de ligação:** a seção "Setores" lia `agent_task` das últimas 24 h; a tabela não é atualizada desde 19/10.
-- **Não commitado** nesta data: migração, Edge Function, docs. Commit só com ordem do dono.
+- **Commitado em `76a8c10` (10/11).** Trabalho de 07/11 (migração, Edge Function, docs) entrou no `main` com o mesmo commit. Migração ainda não confirmada como aplicada no banco; função `relatorio-diario` não publicada.
 
 ## 2026-11-06 a 2026-11-10 — Computador HOME — Home e /atacado (esta conversa)
 - **Pedidos do dono:** espaço do frete no celular pela metade; avaliar a cor e o pulso do botão "Veja todos os produtos"; rodapé em coluna sem e-mail e sem "Contato"; botões do /atacado com o estilo do botão da Home; remover "Falar no WhatsApp" do bloco principal; selos "Oferta especial" (Home) e "Ofertas especiais" (/atacado).
@@ -136,3 +136,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Não feito:** entrada de 07/11 em `docs/DECISOES.md` sem commit (arquivo com alterações de outra sessão). Build e site publicado não conferidos depois dos pushes.
 - **Atenção:** o commit do merge `612fd6e` trouxe `.lovable/plan.md` e `src/integrations/supabase/types.ts`, de outra origem.
 - **Próximo passo:** o dono decide o commit do trabalho de 07/11 de outra sessão e as decisões de cor, rótulo e teste (ver `docs/PENDENCIAS.md`).
+
+## 2026-11-10 — Computador HOME — commit e push do trabalho de 07/11
+- **Pedido do dono:** commitar e enviar o trabalho de 07/11 da árvore; atualizar os docs.
+- **Feito:** commit `76a8c10` (relatório das 18h com auditoria diária, migração `auditoria_resumo`, `docs/auditorias/`, registros nos docs); push `612fd6e..76a8c10` em `main`.
+- **Não feito:** migração não aplicada no banco por esta sessão; função `relatorio-diario` não publicada; build e site não conferidos.
+- **Próximo passo:** dono decide se quer aplicar a migração e publicar a função.
