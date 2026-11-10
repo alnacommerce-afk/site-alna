@@ -151,6 +151,24 @@ export type Database = {
         }
         Relationships: []
       }
+      blocked_emails: {
+        Row: {
+          criado_em: string
+          email: string
+          motivo: string | null
+        }
+        Insert: {
+          criado_em?: string
+          email: string
+          motivo?: string | null
+        }
+        Update: {
+          criado_em?: string
+          email?: string
+          motivo?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string

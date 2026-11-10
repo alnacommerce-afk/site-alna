@@ -405,3 +405,8 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 - Reverter (se preciso): `drop function public.create_data_request(text,text,text,text,text); drop table public.data_requests;`
 
 - **10/11** — `site_settings` (id `default`): `instagram_handle` alterado de `store.alna.sale` para `alna.sale` (pedido do dono; update de 1 linha, reversível).
+
+## 11/11/2026 — lista negra, UTM no carrinho e agendamento do relatório de marketing
+- Migração `lista_negra_e_utm_no_carrinho`: tabela `public.blocked_emails` (e-mail, motivo, criado_em) com RLS (só admin lê, inclui e remove); coluna `abandoned_carts.utm_campaign`.
+- `cron.schedule('relatorio-marketing-13h-brasilia', '0 16 * * *', ...)`: chama `relatorio-diario` com `modo: "marketing"`. O job existente das 21h UTC continua como estava (modo padrão `setores`).
+- Edge functions publicadas: `save-cart` (versão 21, lista negra e `utm_campaign`) e `relatorio-diario` (versão 8, modos marketing e setores).

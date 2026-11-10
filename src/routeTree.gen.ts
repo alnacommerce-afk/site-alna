@@ -24,6 +24,7 @@ import { Route as AdminClientesRouteImport } from './routes/admin/clientes'
 import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminEmailsRouteImport } from './routes/admin/emails'
+import { Route as AdminListaNegraRouteImport } from './routes/admin/lista-negra'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminMetricasRouteImport } from './routes/admin/metricas'
 import { Route as ContaIndexRouteImport } from './routes/conta/index'
@@ -125,6 +126,11 @@ const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
 const AdminEmailsRoute = AdminEmailsRouteImport.update({
   id: '/admin/emails',
   path: '/admin/emails',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminListaNegraRoute = AdminListaNegraRouteImport.update({
+  id: '/admin/lista-negra',
+  path: '/admin/lista-negra',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -281,6 +287,7 @@ export interface FileRoutesByFullPath {
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/lista-negra': typeof AdminListaNegraRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/carrinho': typeof ContaCarrinhoRoute
@@ -324,6 +331,7 @@ export interface FileRoutesByTo {
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/lista-negra': typeof AdminListaNegraRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/carrinho': typeof ContaCarrinhoRoute
@@ -368,6 +376,7 @@ export interface FileRoutesById {
   '/admin/conexoes': typeof AdminConexoesRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/lista-negra': typeof AdminListaNegraRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/metricas': typeof AdminMetricasRoute
   '/conta/carrinho': typeof ContaCarrinhoRoute
@@ -413,6 +422,7 @@ export interface FileRouteTypes {
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
+    | '/admin/lista-negra'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/carrinho'
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
+    | '/admin/lista-negra'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/carrinho'
@@ -499,6 +510,7 @@ export interface FileRouteTypes {
     | '/admin/conexoes'
     | '/admin/configuracoes'
     | '/admin/emails'
+    | '/admin/lista-negra'
     | '/admin/login'
     | '/admin/metricas'
     | '/conta/carrinho'
@@ -543,6 +555,7 @@ export interface RootRouteChildren {
   AdminConexoesRoute: typeof AdminConexoesRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
+  AdminListaNegraRoute: typeof AdminListaNegraRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMetricasRoute: typeof AdminMetricasRoute
   ContaCarrinhoRoute: typeof ContaCarrinhoRoute
@@ -677,6 +690,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/emails'
       fullPath: '/admin/emails'
       preLoaderRoute: typeof AdminEmailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/lista-negra': {
+      id: '/admin/lista-negra'
+      path: '/admin/lista-negra'
+      fullPath: '/admin/lista-negra'
+      preLoaderRoute: typeof AdminListaNegraRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -879,6 +899,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConexoesRoute: AdminConexoesRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminEmailsRoute: AdminEmailsRoute,
+  AdminListaNegraRoute: AdminListaNegraRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMetricasRoute: AdminMetricasRoute,
   ContaCarrinhoRoute: ContaCarrinhoRoute,

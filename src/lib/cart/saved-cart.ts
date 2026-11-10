@@ -4,6 +4,7 @@
 // until the shopper has saved their cart.
 import type { CartItem } from "@/lib/cart/cart-context";
 import { getSavedCheckoutInfo } from "@/lib/checkout/saved-info";
+import { getCampaignCode } from "@/lib/marketing/campaign-tracking";
 
 const FUNCTIONS_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1`;
 const STORAGE_KEY = "alna_saved_cart";
@@ -96,7 +97,14 @@ export async function saveCartWithEmail(
     const resp = await fetch(`${FUNCTIONS_URL}/save-cart`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, phone: phone || undefined, items: toLines(items), source }),
+      body: JSON.stringify({
+        email,
+        phone: phone || undefined,
+        items: toLines(items),
+        source,
+        // Campanha do link (utm_campaign) que trouxe a pessoa: permite medir carrinhos por link.
+        utm_campaign: getCampaignCode() ?? undefined,
+      }),
     });
     const json = await resp.json().catch(() => ({}));
     if (!resp.ok || typeof json.token !== "string") {

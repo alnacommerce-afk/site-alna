@@ -65,8 +65,9 @@ Deno.serve(async (req) => {
       reminder_2_sent_at: string | null;
       stopped_at: string | null;
       source: string | null;
+      utm_campaign: string | null;
     } | null = null;
-    const columns = "id, token, email, recovered_at, reminder_1_sent_at, reminder_2_sent_at, stopped_at, source";
+    const columns = "id, token, email, recovered_at, reminder_1_sent_at, reminder_2_sent_at, stopped_at, source, utm_campaign";
     if (token) {
       const { data } = await admin.from("abandoned_carts").select(columns).eq("token", token).maybeSingle();
       row = data;
@@ -79,6 +80,14 @@ Deno.serve(async (req) => {
       row = data;
     } else {
       return jsonResponse({ error: "Informe o e-mail." }, 400);
+    }
+
+    // Lista negra (admin): e-mail bloqueado não guarda carrinho. A resposta é a mesma de erro comum, para não
+    // confirmar ao robô que o e-mail foi reconhecido.
+    const emailAlvo = (row ? row.email : emailRaw).toLowerCase();
+    if (emailAlvo && body.action !== "stop") {
+      const { data: bloqueado } = await admin.from("blocked_emails").select("email").eq("email", emailAlvo).maybeSingle();
+      if (bloqueado) return jsonResponse({ error: "Não foi possível salvar o carrinho agora." }, 403);
     }
 
     if (body.action === "stop") {
@@ -98,11 +107,16 @@ Deno.serve(async (req) => {
     };
     const phone = cleanPhone(body.phone);
     const source = body.source === "caixa" || body.source === "automatico" ? body.source : null;
+    // utm_campaign: só letras, números, traço, ponto e sublinhado; a primeira campanha que trouxe a pessoa fica.
+    const utm =
+      typeof body.utm_campaign === "string" && /^[\w.-]{1,100}$/.test(body.utm_campaign.trim())
+        ? body.utm_campaign.trim()
+        : null;
 
     if (!row) {
       const { data: created, error } = await admin
         .from("abandoned_carts")
-        .insert({ email: emailRaw, phone, source, ...cartFields })
+        .insert({ email: emailRaw, phone, source, utm_campaign: utm, ...cartFields })
         .select("token")
         .single();
       if (error || !created) throw error ?? new Error("Falha ao salvar o carrinho.");
@@ -118,6 +132,7 @@ Deno.serve(async (req) => {
     if (phone) update.phone = phone;
     // The origin is the first one: a later save (box or automatic) does not change how the cart came in.
     if (source && !row.source) update.source = source;
+    if (utm && !row.utm_campaign) update.utm_campaign = utm;
     if (token === "" && emailRaw) {
       // The shopper typed the e-mail again and consented again: reminders are welcome again.
       update.stopped_at = null;

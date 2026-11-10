@@ -155,6 +155,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </NavItem>
           <NavItem to="/admin/pedidos">Pedidos</NavItem>
           <NavItem to="/admin/clientes">Clientes</NavItem>
+          <NavItem to="/admin/lista-negra">Lista negra</NavItem>
 
           <NavGroup id="anuncio" title="Anúncio" paths={ANUNCIO_PATHS}>
             <NavItem to="/admin/catalogo">Catálogo</NavItem>
