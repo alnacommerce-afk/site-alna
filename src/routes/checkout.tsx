@@ -92,7 +92,10 @@ function CheckoutPage() {
   const [shippingError, setShippingError] = useState<string | null>(null);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] = useState<"pix" | "credit_card">("pix");
+  // Vem da escolha feita na página do produto (ou da última vez aqui); sem isso voltava sempre para o Pix.
+  const [paymentMethod, setPaymentMethod] = useState<"pix" | "credit_card">(() =>
+    getSavedCheckoutInfo().paymentMethod === "cartao" ? "credit_card" : "pix",
+  );
   const [installmentCount, setInstallmentCount] = useState(1);
   const [cardNumber, setCardNumber] = useState("");
   const [cardHolder, setCardHolder] = useState("");
@@ -435,7 +438,11 @@ function CheckoutPage() {
               </h2>
               <RadioGroup
                 value={paymentMethod}
-                onValueChange={(v) => setPaymentMethod(v as "pix" | "credit_card")}
+                onValueChange={(v) => {
+                  const method = v === "credit_card" ? "credit_card" : "pix";
+                  setPaymentMethod(method);
+                  saveCheckoutInfo({ paymentMethod: method === "credit_card" ? "cartao" : "pix" });
+                }}
                 className="grid grid-cols-2 gap-2"
               >
                 <label

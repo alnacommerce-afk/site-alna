@@ -16,6 +16,8 @@ export type SavedCheckoutInfo = {
   neighborhood: string;
   city: string;
   state: string;
+  // Forma de pagamento escolhida (Pix ou cartão). Fica guardada para não voltar ao Pix na página seguinte.
+  paymentMethod: "pix" | "cartao";
 };
 
 const STORAGE_KEY = "alna_checkout_info";

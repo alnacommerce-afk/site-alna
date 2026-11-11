@@ -457,7 +457,9 @@ function ProdutoPage() {
     () => primaryGroups[0]?.primary.id ?? null,
   );
   const [quantity, setQuantity] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("pix");
+  const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">(() =>
+    getSavedCheckoutInfo().paymentMethod === "cartao" ? "cartao" : "pix",
+  );
   const [cep, setCep] = useState(() => getSavedCheckoutInfo().zip ?? "");
   const [checkingShipping, setCheckingShipping] = useState(false);
   const [shippingResult, setShippingResult] = useState<{
@@ -816,7 +818,11 @@ function ProdutoPage() {
             <Label>Forma de pagamento</Label>
             <RadioGroup
               value={paymentMethod}
-              onValueChange={(v) => setPaymentMethod(v as "pix" | "cartao")}
+              onValueChange={(v) => {
+                const method = v === "cartao" ? "cartao" : "pix";
+                setPaymentMethod(method);
+                saveCheckoutInfo({ paymentMethod: method });
+              }}
               className="grid grid-cols-2 gap-2"
             >
               <label
