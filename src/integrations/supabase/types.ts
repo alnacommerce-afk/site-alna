@@ -33,6 +33,7 @@ export type Database = {
           subtotal_cents: number
           summary: string | null
           token: string
+          utm_campaign: string | null
           whatsapp_contacted_at: string | null
         }
         Insert: {
@@ -53,6 +54,7 @@ export type Database = {
           subtotal_cents?: number
           summary?: string | null
           token?: string
+          utm_campaign?: string | null
           whatsapp_contacted_at?: string | null
         }
         Update: {
@@ -73,6 +75,7 @@ export type Database = {
           subtotal_cents?: number
           summary?: string | null
           token?: string
+          utm_campaign?: string | null
           whatsapp_contacted_at?: string | null
         }
         Relationships: [
