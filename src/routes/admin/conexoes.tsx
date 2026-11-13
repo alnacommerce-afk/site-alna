@@ -84,7 +84,7 @@ const CONNECTION_HELP: Record<string, string> = {
   finmarket_hub_skus:
     'Usada pelo site para buscar SKUs e custos no FinMarket HUB, todo dia de madrugada. Cole a chave gerada por ele e o endereço (ex: https://app.finmarkethub.com — sem "/skus" no final).',
   google_analytics:
-    "Mostra o número de visitantes em tempo real na Visão Geral. Cole abaixo o conteúdo INTEIRO do arquivo JSON da conta de serviço do Google Cloud (com acesso de leitor na propriedade GA4). Também é preciso preencher o Measurement ID e o Property ID em Admin > Configurações.",
+    "Mostra o número de visitantes em tempo real na Visão Geral. Cole abaixo o conteúdo INTEIRO do arquivo JSON da conta de serviço do Google Cloud (com acesso de leitor na propriedade GA4). Também é preciso preencher o Measurement ID e o Property ID no bloco \"Google Analytics: IDs\" desta página.",
 };
 
 function ConexoesPage() {
@@ -98,6 +98,8 @@ function ConexoesPage() {
   const [connectionToClear, setConnectionToClear] = useState<Connection | null>(null);
   const [connectionToRegenerate, setConnectionToRegenerate] = useState<Connection | null>(null);
   const [generatedKey, setGeneratedKey] = useState<{ id: string; value: string } | null>(null);
+  const [gaIds, setGaIds] = useState({ measurementId: "", propertyId: "" });
+  const [savingGaIds, setSavingGaIds] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -152,7 +154,35 @@ function ConexoesPage() {
 
   useEffect(() => {
     load();
+    // Measurement ID e Property ID do Google Analytics ficam no mesmo registro das configurações da loja.
+    supabase
+      .rpc("get_site_settings_admin")
+      .then(({ data }) => {
+        if (!data) return;
+        setGaIds({
+          measurementId: data.ga4_measurement_id ?? "",
+          propertyId: data.ga4_property_id ?? "",
+        });
+      });
   }, []);
+
+  async function saveGaIds() {
+    setSavingGaIds(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .update({
+        ga4_measurement_id: gaIds.measurementId.trim() || null,
+        ga4_property_id: gaIds.propertyId.trim() || null,
+      })
+      .eq("id", "default");
+    setSavingGaIds(false);
+
+    if (error) {
+      toast.error("Não foi possível salvar os IDs do Google Analytics.");
+      return;
+    }
+    toast.success("IDs do Google Analytics salvos.");
+  }
 
   async function toggleStatus(connection: Connection) {
     const nextStatus = connection.status === "connected" ? "pending" : "connected";
@@ -269,6 +299,43 @@ function ConexoesPage() {
         <p className="text-sm text-muted-foreground">Carregando...</p>
       ) : (
         <div className="grid max-w-3xl gap-4">
+          <Card>
+            <CardContent className="space-y-3 p-5">
+              <p className="font-medium text-[#12294f]">Google Analytics: IDs</p>
+              <p className="text-xs text-muted-foreground">
+                Measurement ID ativa o rastreamento de visitas no site (Administrar &gt; Fluxos de
+                dados). Property ID é usado para consultar visitantes em tempo real e os relatórios
+                (Administrar &gt; Detalhes da propriedade). A chave JSON da conta de serviço está
+                logo abaixo.
+              </p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <Label htmlFor="ga4-measurement-id">Measurement ID</Label>
+                  <Input
+                    id="ga4-measurement-id"
+                    value={gaIds.measurementId}
+                    onChange={(e) => setGaIds((prev) => ({ ...prev, measurementId: e.target.value }))}
+                    placeholder="G-XXXXXXXXXX"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="ga4-property-id">Property ID</Label>
+                  <Input
+                    id="ga4-property-id"
+                    value={gaIds.propertyId}
+                    onChange={(e) => setGaIds((prev) => ({ ...prev, propertyId: e.target.value }))}
+                    placeholder="123456789"
+                    inputMode="numeric"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button size="sm" onClick={saveGaIds} disabled={savingGaIds}>
+                  {savingGaIds ? "Salvando..." : "Salvar IDs"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
           {connections.map((connection) => {
             const needsSecret = SECRET_INTEGRATIONS.has(connection.id);
             const hasSecret = !!connection.secret_id;

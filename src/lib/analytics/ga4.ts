@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 // Injects the GA4 tracking snippet only if an admin has set a Measurement ID (Admin >
-// Configurações) — the site ships with no tracking by default.
+// Conexões de API, bloco "Google Analytics: IDs") — the site ships with no tracking by default.
 let injected = false;
 
 export async function injectGa4IfConfigured() {

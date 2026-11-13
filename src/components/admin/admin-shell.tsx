@@ -197,12 +197,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <NavItem to="/admin/configuracoes" hash="envio-frete">
               Envio / Frete
             </NavItem>
-            <NavGroup id="conexoes" title="Conexões de API" paths={CONEXOES_PATHS} nested>
-              <NavItem to="/admin/conexoes">Todas as conexões</NavItem>
-              <NavItem to="/admin/conexoes" hash="google_analytics">
-                Google Analytics
-              </NavItem>
-            </NavGroup>
+            <NavItem to="/admin/conexoes">Conexões de API</NavItem>
           </NavGroup>
         </nav>
         <Button
