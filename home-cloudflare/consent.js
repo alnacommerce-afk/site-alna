@@ -26,6 +26,12 @@
     s.async = true;
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
     document.head.appendChild(s);
+    // Google Tag Manager (GTM-P5PV9CFG): mesmo aceite do GA4, mesma hora. Não criar aqui o GA4 de novo.
+    window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    var g = document.createElement('script');
+    g.async = true;
+    g.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-P5PV9CFG';
+    document.head.appendChild(g);
   }
 
   var css = '' +

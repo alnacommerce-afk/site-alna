@@ -146,7 +146,10 @@ function RootComponent() {
     // LGPD: GA4 and Meta Pixel only load after the visitor allows them in the cookie banner.
     const runAnalytics = () => {
       const consent = readCookieConsent();
-      if (consent?.analytics) void import("../lib/analytics/ga4").then((m) => m.injectGa4IfConfigured());
+      if (consent?.analytics) {
+        void import("../lib/analytics/ga4").then((m) => m.injectGa4IfConfigured());
+        void import("../lib/analytics/gtm").then((m) => m.injectGtm());
+      }
       if (consent?.marketing) {
         void import("../lib/analytics/meta-pixel").then((m) => m.injectMetaPixelIfConfigured());
       }

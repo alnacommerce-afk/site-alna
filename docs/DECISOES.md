@@ -1,5 +1,7 @@
 # Livro de decisões — por que as coisas são como são
 
+- **13/11/2026 — Google Tag Manager instalado junto do GA4 (código pronto, não publicado).** Dono: contêiner `GTM-P5PV9CFG`; "Sim, assim" após a recomendação: manter o GA4 `G-DP9VE6XSRF` como está e carregar o GTM só depois do aceite de "Análise de uso" (LGPD), na mesma hora do GA4 (para não pesar na primeira tela). Motivo: deixar o site pronto para novas ferramentas de medição sem repetir código. Regra: não criar no GTM uma tag GA4 com o mesmo ID (contaria a visita em dobro). → `home-cloudflare/consent.js` (Home e /atacado), `src/lib/analytics/gtm.ts` e `src/routes/__root.tsx` (loja). Pendente: publicar, conferir ao vivo e medir PageSpeed.
+
 Para responder "por que fizemos assim?" ou "o que combinamos sobre X?" sem depender de memória de conversa. **Regra:** toda decisão do dono (ou fato que ele pode
 perguntar depois) é registrada aqui **no mesmo commit** em que for aplicada. Formato: data — decisão — motivo/palavras do dono — onde está no código/arquivos.
 Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e dizer por quê (evita reaplicar sem querer).
