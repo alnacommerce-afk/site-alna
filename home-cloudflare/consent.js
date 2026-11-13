@@ -2,7 +2,7 @@
    O GA4 só carrega depois que o visitante aceita "Análise de uso". Carrega com a página ociosa,
    para não competir com a primeira pintura. A escolha fica no navegador do visitante. */
 (function () {
-  var KEY = 'alna_cookie_consent', GA_ID = 'G-DP9VE6XSRF';
+  var KEY = 'alna_cookie_consent', GA_ID = 'G-HXX69DW2QK';
 
   function read() {
     try {

@@ -1,5 +1,7 @@
 # Livro de decisões — por que as coisas são como são
 
+- **13/11/2026 — GA4 trocado para o novo fluxo.** Dono: "vamos atualizar para esse novo fluxo". Fluxo "alna sale" (https://alna.sale): ID de medição `G-HXX69DW2QK`, propriedade `564286365`. Antes: `G-DP9VE6XSRF` e propriedade `554769095` (histórico continua na propriedade antiga; a nova começa do zero). Motivo: o dono criou o fluxo novo na tela de captura. Efeito: relatório diário do Discord e card do admin passam a ler a propriedade nova; exige que a conta de serviço tenha acesso de leitura a ela (pendente de confirmação). → `home-cloudflare/consent.js` (Home), `site_settings` (loja; ver `docs/db-changes-applied-by-claude.md`), `src/lib/analytics/gtm.ts` (comentário).
+
 - **13/11/2026 — Google Tag Manager instalado junto do GA4 (código pronto, não publicado).** Dono: contêiner `GTM-P5PV9CFG`; "Sim, assim" após a recomendação: manter o GA4 `G-DP9VE6XSRF` como está e carregar o GTM só depois do aceite de "Análise de uso" (LGPD), na mesma hora do GA4 (para não pesar na primeira tela). Motivo: deixar o site pronto para novas ferramentas de medição sem repetir código. Regra: não criar no GTM uma tag GA4 com o mesmo ID (contaria a visita em dobro). → `home-cloudflare/consent.js` (Home e /atacado), `src/lib/analytics/gtm.ts` e `src/routes/__root.tsx` (loja). Pendente: publicar, conferir ao vivo e medir PageSpeed.
 
 Para responder "por que fizemos assim?" ou "o que combinamos sobre X?" sem depender de memória de conversa. **Regra:** toda decisão do dono (ou fato que ele pode

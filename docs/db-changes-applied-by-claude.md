@@ -413,3 +413,6 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 
 ## 11/11/2026 — trava da lista negra no pedido
 - Migração `lista_negra_bloqueia_pedido`: função `public.bloqueia_pedido_lista_negra()` e trigger `orders_lista_negra` (BEFORE INSERT em `orders`) que recusa pedido de e-mail presente em `blocked_emails`. Testado com inserção revertida.
+
+## 13/11/2026 — troca para o novo fluxo do GA4
+- `site_settings` (id `default`): `ga4_measurement_id` de `G-DP9VE6XSRF` para `G-HXX69DW2QK`; `ga4_property_id` de `554769095` para `564286365`. Update de 1 linha, reversível (valores antigos acima). Dono confirmou o fluxo e o ID da propriedade.

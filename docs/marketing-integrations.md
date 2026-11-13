@@ -9,15 +9,17 @@ Não presuma que nenhuma dessas precisa ser criada — todas já existem e estã
 
 - **Google Search Console** — duas propriedades, ambas "Propriedade de domínio" (verificação por DNS,
   mais forte que tag HTML): `alna.sale` e `store.alna.sale`. Sitemaps das duas já cadastrados.
-- **Google Analytics 4** — Measurement ID `G-DP9VE6XSRF`, Property ID `554769095`
-  (`site_settings.ga4_measurement_id` / `ga4_property_id`). Linker configurado entre `alna.sale` e
+- **Google Analytics 4** — Measurement ID `G-HXX69DW2QK`, Property ID `564286365` (trocados em 13/11/2026;
+  antes eram `G-DP9VE6XSRF` e `554769095`, propriedade antiga com o histórico até a troca)
+  (`site_settings.ga4_measurement_id` / `ga4_property_id`). Pendente: confirmar que a conta de serviço tem
+  acesso de leitura à propriedade `564286365`, senão o relatório diário e o card do admin dão erro. Linker configurado entre `alna.sale` e
   `store.alna.sale` (evita contar uma visita que passa de um domínio pro outro como duas sessões).
   Falta a chave de conta de serviço (`google_analytics` no Vault) pro card "visitantes agora" do
   `/admin` funcionar — sem ela ele mostra "não configurado" (não afeta a coleta de dados em si).
 - **Google Tag Manager** — contêiner `GTM-P5PV9CFG` (informado pelo dono em 13/11/2026). Carrega junto
   do GA4, só após o aceite de "Análise de uso" (Home/`/atacado` em `home-cloudflare/consent.js`; loja em
   `src/lib/analytics/gtm.ts` via `src/routes/__root.tsx`). **Regra:** não criar no GTM uma tag GA4 com o ID
-  `G-DP9VE6XSRF`, senão a visita conta em dobro. Pendente: publicar, testar a instalação e medir PageSpeed.
+  `G-HXX69DW2QK`, senão a visita conta em dobro. Pendente: publicar, testar a instalação e medir PageSpeed.
 - **Google Merchant Center** — conta "Alna", ID `5856969666`. Fonte de dados única ("PRODUCTS
   SOURCE 1"), tipo "Arquivo (URL)", busca automática diária às 00:00, listagens gratuitas ativas.
 

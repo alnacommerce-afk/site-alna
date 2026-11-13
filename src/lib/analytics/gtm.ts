@@ -1,6 +1,6 @@
 // Google Tag Manager (contêiner GTM-P5PV9CFG). Carrega só depois que o visitante aceita
 // "Análise de uso" no banner de cookies (LGPD), junto com o GA4, e uma única vez por página.
-// Atenção: o GA4 (G-DP9VE6XSRF) continua instalado direto; por isso NÃO criar dentro do GTM uma
+// Atenção: o GA4 (G-HXX69DW2QK) continua instalado direto; por isso NÃO criar dentro do GTM uma
 // tag de configuração do mesmo GA4, senão a visita conta em dobro.
 const GTM_ID = "GTM-P5PV9CFG";
 let injected = false;
