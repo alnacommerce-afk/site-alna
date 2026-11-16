@@ -3,7 +3,7 @@
 ## Análise de visitantes — 16/11/2026
 - [x] Ler o plano anterior e conferir as três páginas mais visitadas.
 - [x] Conferir os fundamentos de busca e o acesso aos relatórios do Google.
-- [ ] Registrar e apresentar as prioridades de divulgação sem aplicar ajustes comerciais.
+- [x] Registrar as prioridades de divulgação sem aplicar ajustes comerciais; proposta aguarda aprovação do dono.
 
 - [x] Conferir publicamente o recebimento atual: MX do alna.sale aponta para Cloudflare Email Routing; isso não confirma encaminhamentos ativos nem entrega.
 - [ ] Confirmar lista de caixas e responsáveis — aguarda o dono.
