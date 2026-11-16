@@ -5,6 +5,12 @@
 const GTM_ID = "GTM-P5PV9CFG";
 let injected = false;
 
+declare global {
+  interface Window {
+    dataLayer?: Record<string, unknown>[];
+  }
+}
+
 export function injectGtm() {
   if (injected || typeof document === "undefined") return;
   injected = true;
