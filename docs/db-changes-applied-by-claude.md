@@ -1,5 +1,8 @@
 # Mudanças de banco aplicadas direto no Supabase (fora de `supabase/migrations/`)
 
+## 16/11/2026 — Verificação obrigatória (somente código/dependência)
+Tipo de `window.dataLayer` declarado em `src/lib/analytics/gtm.ts`; `@supabase/supabase-js` alinhado à versão 2.119.0 em package.json/bun.lock para resolver a dependência ausente no verificador. Nenhuma alteração no banco, política, função publicada ou medição comercial. Reversão: remover a declaração e restaurar a versão anterior da dependência, ciente de que os erros de verificação voltam.
+
 Estas mudanças foram aplicadas pelo Claude via ferramenta de migração do Supabase em 01–07/10/2026. **Não estão em
 `supabase/migrations/` de propósito**: se o Lovable tentasse reaplicar arquivos de migração que já existem no banco, a
 publicação poderia falhar. Este documento é o registro do que existe no banco, para reconstruir se for preciso.
