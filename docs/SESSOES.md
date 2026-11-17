@@ -152,5 +152,5 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 ## 2026-11-12 — Computador HOME — checkout (forma de pagamento) e relatórios do Discord
 - **Pedido do dono:** (1) corrigir a forma de pagamento que volta para Pix no checkout; (2) mensagens do Discord das 13h e 18h em blocos e parágrafos; (3) commit e push.
 - **Feito:** checkout mantém Pix ou cartão (commit `3cce2c7`, push feito em `main`); `supabase/functions/relatorio-diario/index.ts` reescrito nas duas mensagens; testado com serviços simulados (13h e 18h geram o texto; GA4 fora do ar não quebra); docs atualizados (`PENDENCIAS.md`, `DECISOES.md`, este diário).
-- **Não feito:** função não publicada no Supabase; loja não publicada no Lovable; Discord real não testado com a mensagem nova.
-- **Próximo passo:** dono decide publicar a função `relatorio-diario` e publica a loja no Lovable.
+- **Não feito:** loja não publicada no Lovable; conteúdo da mensagem no Discord não conferido pelo Claude (sem acesso ao canal do webhook). Função publicada no Supabase como versão 9, verificada em 16/11.
+- **Próximo passo:** dono publica a loja no Lovable e confere a mensagem das 13h no Discord.
