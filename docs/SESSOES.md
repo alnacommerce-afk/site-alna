@@ -154,3 +154,10 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito:** checkout mantém Pix ou cartão (commit `3cce2c7`, push feito em `main`); `supabase/functions/relatorio-diario/index.ts` reescrito nas duas mensagens; testado com serviços simulados (13h e 18h geram o texto; GA4 fora do ar não quebra); docs atualizados (`PENDENCIAS.md`, `DECISOES.md`, este diário).
 - **Não feito:** loja não publicada no Lovable; conteúdo da mensagem no Discord não conferido pelo Claude (sem acesso ao canal do webhook). Função publicada no Supabase como versão 9, verificada em 16/11.
 - **Próximo passo:** dono publica a loja no Lovable e confere a mensagem das 13h no Discord.
+
+## 2026-11-21 — Computador HOME — precificação (margem p/ promo, imposto por cima) e taxas da Asaas no checkout
+- **Pedido do dono:** (1) coluna "Margem p/ promo" na precificação, padrão 0; (2) imposto somado por cima do valor de venda, arredondado em centavos; (3) desconto no anúncio em 0% até o Google entender; (4) checkout: a loja recebe o valor do anúncio, o cliente paga a taxa da Asaas (cartão e Pix), com a loja subsidiando os 4% do Pix; taxas lidas pela API; (5) commit e push.
+- **Feito:** coluna `margem_promo_pct` criada no banco (aditiva, padrão 0); tela de precificação com o novo cálculo (commits `364f7bb` e `0a81b91`); função somente leitura `asaas-fees` publicada e conferida contra a tela da conta; `_shared/asaas-fees.ts` e checkout (`cf37825`) prontos, com `tsc` ok no front; docs atualizados (`DECISOES.md`, `PENDENCIAS.md`, `db-changes-applied-by-claude.md`).
+- **Não feito:** `checkout-create` não publicado na Supabase (espera o front ir ao ar no Lovable, para o total do Pix bater); nenhum pagamento de teste feito (geraria cobrança); preços da loja mudam quando alguém abrir a precificação depois da publicação (66 produtos descem, média R$ 0,37, medido antes).
+- **Divergência:** a API informa validade da promoção até 08/01/2027; a tela da conta mostra 14/12/2026. O código segue a API.
+- **Próximo passo:** dono publica o front no Lovable e avisa; depois publico `checkout-create` e confiro um Pix e um cartão de teste (valor exato do anúncio).
