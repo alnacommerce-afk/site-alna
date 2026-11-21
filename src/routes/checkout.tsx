@@ -578,9 +578,7 @@ function CheckoutPage() {
               ) : null}
               {feeCents > 0 ? (
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {paymentMethod === "pix" ? "Taxa do Pix" : `Taxa do cartão (${installmentCount}x)`}
-                  </span>
+                  <span className="text-muted-foreground">Taxa de processamento</span>
                   <span>+{formatCentsToBRL(feeCents)}</span>
                 </div>
               ) : null}
