@@ -96,7 +96,21 @@ function AdminOverviewPage() {
   useEffect(() => {
     let cancelled = false;
     async function loadVisitors() {
-      const { data, error } = await supabase.functions.invoke("ga4-realtime-visitors");
+      // Only call once a valid session exists; otherwise the function answers 401 "Não autenticado."
+      let { data: sessionData } = await supabase.auth.getSession();
+      const expiresAt = sessionData.session?.expires_at ?? 0;
+      if (!sessionData.session || expiresAt * 1000 < Date.now() + 30_000) {
+        const refreshed = await supabase.auth.refreshSession();
+        sessionData = { session: refreshed.data.session };
+      }
+      if (cancelled) return;
+      if (!sessionData.session) {
+        setVisitors({ status: "error", message: "Sessão expirada. Entre novamente para ver os visitantes." });
+        return;
+      }
+      const { data, error } = await supabase.functions.invoke("ga4-realtime-visitors", {
+        headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
+      });
       if (cancelled) return;
       if (error) {
         // supabase-js returns data: null on any non-2xx response — the JSON body we actually sent
