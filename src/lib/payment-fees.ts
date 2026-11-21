@@ -1,29 +1,52 @@
-// Mirrors the fee table in supabase/functions/checkout-create/index.ts — used here only to show
-// the customer an accurate preview total before submitting. The edge function is the source of
-// truth that actually charges the card; keep both in sync.
-// Asaas "Cobranças online" promotional fees, valid until 14/12/2026 (see Asaas > Minha conta >
-// Taxas). TODO revisar antes de 14/12/2026: padrão vira 2,99/3,49/3,99% (mesma taxa fixa).
+// Espelha as taxas do checkout (supabase/functions/checkout-create) para mostrar ao cliente o total certo
+// antes de confirmar. As taxas vêm da API da Asaas (função `asaas-fees`); enquanto não chegam, usa os
+// valores de contingência abaixo. O servidor é quem cobra de verdade: mantenha os dois alinhados.
+import { supabase } from "@/integrations/supabase/client";
+
+// Desconto do Pix: a loja subsidia os 4%, aplicado só sobre os produtos (depois dos cupons).
 export const PIX_DISCOUNT = 0.04;
 
-/** Pix total: the 4% discount applies ONLY to the products (after coupons); shipping is charged in full. */
-export function pixTotalCents(productsAfterCouponCents: number, shippingCents: number): number {
-  return Math.round(productsAfterCouponCents * (1 - PIX_DISCOUNT)) + shippingCents;
+export type FeeTier = { max: number; pct: number };
+type FeeRates = { tiers: FeeTier[]; cardFixedCents: number; pixFixedCents: number };
+
+// Contingência: promoção vigente conhecida. Só vale se a API não responder.
+let rates: FeeRates = {
+  tiers: [
+    { max: 1, pct: 0.0199 },
+    { max: 6, pct: 0.0249 },
+    { max: 12, pct: 0.0299 },
+  ],
+  cardFixedCents: 49,
+  pixFixedCents: 99,
+};
+
+/** Carrega as taxas vigentes da conta pela API. Se falhar, mantém a contingência. */
+export async function loadAccountRates(): Promise<void> {
+  try {
+    const { data, error } = await supabase.functions.invoke("asaas-fees", { method: "GET" });
+    if (error || !data || data.source !== "api") return;
+    rates = {
+      tiers: data.card.tiers as FeeTier[],
+      cardFixedCents: Number(data.card.fixedCents),
+      pixFixedCents: Number(data.pix.fixedCents),
+    };
+  } catch {
+    // mantém a contingência
+  }
 }
 
-const CARD_FEE_TIERS: { max: number; pct: number }[] = [
-  { max: 1, pct: 0.0199 },
-  { max: 6, pct: 0.0249 },
-  { max: 12, pct: 0.0299 },
-];
-const CARD_FIXED_FEE_CENTS = 49;
+/** Pix: produtos com o desconto de 4% (loja subsidia) + frete integral + taxa fixa do Pix (cliente paga). */
+export function pixTotalCents(productsAfterCouponCents: number, shippingCents: number): number {
+  return Math.round(productsAfterCouponCents * (1 - PIX_DISCOUNT)) + shippingCents + rates.pixFixedCents;
+}
 
 export function cardFeePercentFor(installmentCount: number): number {
-  const tier = CARD_FEE_TIERS.find((t) => installmentCount <= t.max);
-  return (tier ?? CARD_FEE_TIERS[CARD_FEE_TIERS.length - 1])!.pct;
+  const tier = rates.tiers.find((t) => installmentCount <= t.max);
+  return (tier ?? rates.tiers[rates.tiers.length - 1])!.pct;
 }
 
-/** Total charged to the customer so the store nets exactly `baseCents` after Asaas's fee. */
+/** Total do cartão para que a loja receba exatamente `baseCents` depois da taxa da Asaas. */
 export function grossUpForCardFee(baseCents: number, installmentCount: number): number {
   const pct = cardFeePercentFor(installmentCount);
-  return Math.round((baseCents + CARD_FIXED_FEE_CENTS) / (1 - pct));
+  return Math.round((baseCents + rates.cardFixedCents) / (1 - pct));
 }

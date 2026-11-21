@@ -245,3 +245,10 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **Toalha TOA_PAISAGEM_1** (exemplo do dono): margem p/ promo 20%, desconto 0%. Venda 28,29 → anúncio R$ 28,57 pelo novo cálculo (antes 28,93).
 - **Impacto medido no banco (21/11, antes de publicar):** 66 produtos com custo: todos descem (média −R$ 0,37). As 5 sem custo não mudam.
 - **Desconto no anúncio:** fica em 0% até o dono criar a promoção; o mecanismo de desconto ainda será conferido nessa hora.
+
+## 21/11/2026 — Checkout: taxa da Asaas paga pelo cliente, loja recebe o valor do anúncio
+- **Decisão do dono:** a loja recebe sempre o valor do anúncio líquido. O cliente paga a taxa da Asaas por cima, em todas as formas. Pix: a loja subsidia os 4% de desconto e o cliente paga a taxa fixa do Pix por cima.
+- **Taxas lidas da API** (`GET /v3/myAccount/fees/`) pela função `asaas-fees` (somente leitura) e por `_shared/asaas-fees.ts` no checkout. Cache de 1h; contingência com a promoção conhecida se a API falhar.
+- **Leitura de 21/11 (API):** cartão 1x 1,99%, 2–6x 2,49%, 7–12x 2,99% (promocional), taxa fixa R$ 0,49; Pix taxa fixa R$ 0,99 (promocional). Padrão: 2,99/3,49/3,99% e Pix R$ 1,99.
+- **Divergência a confirmar:** a API informa validade da promoção até **08/01/2027**, enquanto a tela da conta mostra **14/12/2026**. O código segue a data da API.
+- **Pendente:** publicar o front (checkout e payment-fees) no Lovable antes de publicar a função `checkout-create`, para o total mostrado bater com o cobrado.

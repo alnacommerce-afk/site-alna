@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
-import { cardFeePercentFor, grossUpForCardFee, pixTotalCents } from "@/lib/payment-fees";
+import { cardFeePercentFor, grossUpForCardFee, loadAccountRates, pixTotalCents } from "@/lib/payment-fees";
 import { useCart } from "@/lib/cart/cart-context";
 import { trackMeta } from "@/lib/analytics/meta-events";
 import {
@@ -49,6 +49,12 @@ function CheckoutPage() {
   const [resultOpen, setResultOpen] = useState(false);
   const [resultOrderId, setResultOrderId] = useState<string | null>(null);
   const saved = useMemo(() => getSavedCheckoutInfo(), []);
+
+  // Taxas vigentes da Asaas (API). Ao carregar, a tela recalcula os totais com elas.
+  const [, setRatesLoaded] = useState(false);
+  useEffect(() => {
+    loadAccountRates().then(() => setRatesLoaded(true));
+  }, []);
 
   // Início do checkout: uma vez por visita, com o que estava no carrinho (o carrinho carrega depois da primeira tela).
   const checkoutTracked = useRef(false);

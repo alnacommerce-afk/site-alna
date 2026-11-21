@@ -14,6 +14,7 @@ import { notifyPaymentConfirmed } from "../_shared/notify-payment-confirmed.ts";
 import { packOrder } from "../_shared/package-dimensions.ts";
 import { reportPaymentProblem } from "../_shared/payment-alert.ts";
 import { qualifiesForFreeShipping, readFreeShippingThresholdCents } from "../_shared/free-shipping.ts";
+import { getAccountRates, type AccountRates } from "../_shared/asaas-fees.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,15 +26,8 @@ const JT_EXPRESS_SERVICE_ID = "33";
 const PIX_DISCOUNT = 0.04;
 const ASAAS_API = "https://api.asaas.com/v3";
 
-// Asaas "Cobranças online" fees for this account (see Asaas > Minha conta > Taxas).
-// Promotional pricing is valid until 14/12/2026 — after that, switch to the standard column.
-// TODO revisar antes de 14/12/2026: promo 1,99/2,49/2,99% -> padrão 2,99/3,49/3,99% (+ R$0,49 fixo).
-const CARD_FEE_TIERS: { max: number; pct: number }[] = [
-  { max: 1, pct: 0.0199 },
-  { max: 6, pct: 0.0249 },
-  { max: 12, pct: 0.0299 },
-];
-const CARD_FIXED_FEE_CENTS = 49;
+// Taxas da Asaas (cartão e Pix) são lidas da API a cada checkout (cache de 1h), para acompanhar a
+// promoção e a tabela padrão sem mexer no código. Ver supabase/functions/_shared/asaas-fees.ts.
 
 type CheckoutItem = { variantId: string; quantity: number };
 type CheckoutBody = {
@@ -93,6 +87,7 @@ async function savePricingSnapshot(admin: any, input: {
   variants: Record<string, unknown>[];
   paymentMethod: string;
   installmentCount: number;
+  rates: AccountRates;
 }) {
   const n = (value: unknown) => (value == null ? null : Number(value));
   const rows = input.items.map((item) => {
@@ -120,21 +115,22 @@ async function savePricingSnapshot(admin: any, input: {
   const { error: payError } = await admin.from("order_payment_snapshot").upsert({
     order_id: input.orderId,
     pix_discount_pct: isPix ? Math.round(PIX_DISCOUNT * 10000) / 100 : null,
-    card_fee_pct: isPix ? null : Math.round(cardFeePercentFor(input.installmentCount) * 10000) / 100,
-    card_fee_fixed_cents: isPix ? null : CARD_FIXED_FEE_CENTS,
+    card_fee_pct: isPix ? null : Math.round(cardFeePercentFor(input.installmentCount, input.rates) * 10000) / 100,
+    card_fee_fixed_cents: isPix ? null : input.rates.card.fixedCents,
   }, { onConflict: "order_id" });
   if (payError) console.error("[checkout-create] snapshot do pagamento", payError);
 }
 
-function cardFeePercentFor(installmentCount: number) {
-  const tier = CARD_FEE_TIERS.find((t) => installmentCount <= t.max);
-  return (tier ?? CARD_FEE_TIERS[CARD_FEE_TIERS.length - 1]).pct;
+function cardFeePercentFor(installmentCount: number, rates: AccountRates) {
+  const tiers = rates.card.tiers;
+  const tier = tiers.find((t) => installmentCount <= t.max);
+  return (tier ?? tiers[tiers.length - 1]).pct;
 }
 
-/** Grosses up the amount so Alna nets exactly `baseCents` after Asaas's cut. */
-function grossUpForCardFee(baseCents: number, installmentCount: number) {
-  const pct = cardFeePercentFor(installmentCount);
-  const totalCents = Math.round((baseCents + CARD_FIXED_FEE_CENTS) / (1 - pct));
+/** Grosses up the amount so Alna nets exactly `baseCents` after Asaas's cut (% + taxa fixa). */
+function grossUpForCardFee(baseCents: number, installmentCount: number, rates: AccountRates) {
+  const pct = cardFeePercentFor(installmentCount, rates);
+  const totalCents = Math.round((baseCents + rates.card.fixedCents) / (1 - pct));
   return totalCents;
 }
 
@@ -370,12 +366,26 @@ Deno.serve(async (req) => {
     // charged amount (0 when eligible) goes into the order and the Asaas charge.
     const shippingCostCents = freeShipping ? 0 : carrierShippingCents;
 
+    // Taxas vigentes da conta (API Asaas). A chave fica no servidor (Vault), nunca vai ao navegador.
+    const asaasKey = await admin
+      .rpc("get_integration_secret", { p_integration_id: "payment_gateway" })
+      .then((r) => r.data as string | null);
+    if (!asaasKey) {
+      return jsonResponse(
+        { error: "Pagamento indisponível no momento (gateway não configurado)." },
+        503,
+      );
+    }
+    const rates = await getAccountRates(asaasKey);
+
     const baseTotalCents = subtotalCents - discountCents + shippingCostCents;
+    // Regra do dono: a loja recebe exatamente o valor do anúncio; a taxa da Asaas é paga pelo cliente.
+    // Pix: a loja subsidia os 4% de desconto e o cliente paga a taxa fixa do Pix por cima.
+    // Cartão: o total é aumentado pela taxa percentual da faixa de parcelas + a taxa fixa.
     const totalCents =
       body.paymentMethod === "pix"
-        ? // The Pix discount applies only to the products (after coupons); shipping is charged in full.
-          Math.round((subtotalCents - discountCents) * (1 - PIX_DISCOUNT)) + shippingCostCents
-        : grossUpForCardFee(baseTotalCents, installmentCount);
+        ? Math.round((subtotalCents - discountCents) * (1 - PIX_DISCOUNT)) + shippingCostCents + rates.pix.fixedCents
+        : grossUpForCardFee(baseTotalCents, installmentCount, rates);
 
     // 3. Find or create a Supabase Auth account for this customer (by e-mail), so they can log in
     // at /conta to track orders. Never touches the password of an existing account.
@@ -416,15 +426,6 @@ Deno.serve(async (req) => {
     }
 
     // 4. Find or create the Asaas customer.
-    const asaasKey = await admin
-      .rpc("get_integration_secret", { p_integration_id: "payment_gateway" })
-      .then((r) => r.data as string | null);
-    if (!asaasKey) {
-      return jsonResponse(
-        { error: "Pagamento indisponível no momento (gateway não configurado)." },
-        503,
-      );
-    }
     const cpfCnpj = onlyDigits(body.customer.cpfCnpj);
 
     const asaasHeaders = {
@@ -548,6 +549,7 @@ Deno.serve(async (req) => {
       variants,
       paymentMethod: body.paymentMethod,
       installmentCount,
+      rates,
     }).catch((error) => console.error("[checkout-create] falha ao salvar snapshot de preços", error));
     const edgeRuntime = (globalThis as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime;
     edgeRuntime?.waitUntil?.(snapshotJob);
