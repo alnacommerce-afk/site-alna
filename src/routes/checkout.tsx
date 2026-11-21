@@ -3,7 +3,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/lib/money";
-import { cardFeePercentFor, grossUpForCardFee, loadAccountRates, pixTotalCents } from "@/lib/payment-fees";
+import {
+  PIX_DISCOUNT,
+  cardFeePercentFor,
+  grossUpForCardFee,
+  loadAccountRates,
+  pixTotalCents,
+} from "@/lib/payment-fees";
 import { useCart } from "@/lib/cart/cart-context";
 import { trackMeta } from "@/lib/analytics/meta-events";
 import {
@@ -223,6 +229,15 @@ function CheckoutPage() {
       : paymentMethod === "pix"
         ? pixTotalCents(subtotalCents - discountCents, shippingCents ?? 0)
         : grossUpForCardFee(baseTotalCents, installmentCount);
+  // Linhas do resumo que explicam a diferença entre os valores e o total (só apresentação).
+  const pixDiscountCents =
+    paymentMethod === "pix" && baseTotalCents != null
+      ? subtotalCents - discountCents - Math.round((subtotalCents - discountCents) * (1 - PIX_DISCOUNT))
+      : 0;
+  const feeCents =
+    displayTotalCents != null && baseTotalCents != null
+      ? displayTotalCents - (baseTotalCents - pixDiscountCents)
+      : 0;
 
   async function handleSubmit() {
     if (items.length === 0) {
@@ -555,6 +570,20 @@ function CheckoutPage() {
                       : formatCentsToBRL(shippingCents)}
                 </span>
               </div>
+              {pixDiscountCents > 0 ? (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Desconto Pix (4% nos produtos)</span>
+                  <span className="text-[#15803d]">-{formatCentsToBRL(pixDiscountCents)}</span>
+                </div>
+              ) : null}
+              {feeCents > 0 ? (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {paymentMethod === "pix" ? "Taxa do Pix" : `Taxa do cartão (${installmentCount}x)`}
+                  </span>
+                  <span>+{formatCentsToBRL(feeCents)}</span>
+                </div>
+              ) : null}
               <div className="flex items-center justify-between border-t pt-2 text-base font-bold text-[#12294f]">
                 <span>Total</span>
                 <span>{displayTotalCents != null ? formatCentsToBRL(displayTotalCents) : "—"}</span>
