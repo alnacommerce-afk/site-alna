@@ -51,6 +51,7 @@ type VariantRow = {
   margin_pct: number;
   coupon_avg_pct: number;
   shipping_cost_pct: number;
+  margem_promo_pct: number;
   discount_pct: number;
   productTitle: string;
 };
@@ -61,14 +62,16 @@ type PctField =
   | "margin_pct"
   | "coupon_avg_pct"
   | "shipping_cost_pct"
+  | "margem_promo_pct"
   | "discount_pct";
-type PctDraftKey = "tax" | "card" | "margin" | "coupon" | "shipping" | "discount";
+type PctDraftKey = "tax" | "card" | "margin" | "coupon" | "shipping" | "promo" | "discount";
 const FIELD_TO_DRAFT_KEY: Record<PctField, PctDraftKey> = {
   tax_rate_pct: "tax",
   card_fee_pct: "card",
   margin_pct: "margin",
   coupon_avg_pct: "coupon",
   shipping_cost_pct: "shipping",
+  margem_promo_pct: "promo",
   discount_pct: "discount",
 };
 const FIELD_LABELS: Record<PctField, string> = {
@@ -77,6 +80,7 @@ const FIELD_LABELS: Record<PctField, string> = {
   margin_pct: "Margem",
   coupon_avg_pct: "Média em cupom",
   shipping_cost_pct: "Custo do frete",
+  margem_promo_pct: "Margem p/ promo",
   discount_pct: "Desconto no anúncio",
 };
 // Estas duas mexem no preço de TODA a loja na hora, então pedem uma confirmação com o antes e o depois.
@@ -94,6 +98,8 @@ function buildPctPayload(field: PctField, parsed: number) {
       return { coupon_avg_pct: parsed };
     case "shipping_cost_pct":
       return { shipping_cost_pct: parsed };
+    case "margem_promo_pct":
+      return { margem_promo_pct: parsed };
     case "discount_pct":
       return { discount_pct: parsed };
   }
@@ -106,6 +112,7 @@ const EMPTY_ROW_DRAFT: RowDraft = {
   margin: "0",
   coupon: "0",
   shipping: "0",
+  promo: "0",
   discount: "0",
 };
 
@@ -119,29 +126,36 @@ function computeVariantPricing(row: VariantRow) {
   const hasCost = row.cost_cents != null;
   const custoTotalCents =
     (row.cost_cents ?? 0) + (row.extra_cost_cents ?? 0) + (row.freight_cost_cents ?? 0);
+  // Preço normal: a margem p/ promo entra no divisor como as outras % (ela aumenta o preço normal).
   const denom =
     1 -
     (row.tax_rate_pct +
       row.card_fee_pct +
       row.margin_pct +
       row.coupon_avg_pct +
-      row.shipping_cost_pct) /
+      row.shipping_cost_pct +
+      row.margem_promo_pct) /
       100;
-  const precoCalculadoCents = hasCost && denom > 0 ? Math.round(custoTotalCents / denom) : null;
-  // Quanto do preço final vira imposto, cartão, margem, cupom e frete, em reais.
+  const precoNormalCents = hasCost && denom > 0 ? Math.round(custoTotalCents / denom) : null;
+  // Preço cobrado: o normal menos o desconto no anúncio. Sem desconto, cobrado = normal.
+  const descontoValido = row.discount_pct > 0 && row.discount_pct < 100;
+  const precoVendaCents =
+    precoNormalCents != null
+      ? descontoValido
+        ? Math.round(precoNormalCents * (1 - row.discount_pct / 100))
+        : precoNormalCents
+      : null;
+  // Preço "de" (riscado): só existe quando há desconto; é o preço normal que o cliente vê como referência.
+  const anuncioCents = precoNormalCents != null && descontoValido ? precoNormalCents : null;
+  // Quanto do preço normal vira imposto, cartão, margem, cupom e frete, em reais.
   const parte = (pct: number) =>
-    precoCalculadoCents != null ? Math.round(precoCalculadoCents * (pct / 100)) : null;
+    precoNormalCents != null ? Math.round(precoNormalCents * (pct / 100)) : null;
   const impostoCents = parte(row.tax_rate_pct);
   const cartaoCents = parte(row.card_fee_pct);
   const margemCents = parte(row.margin_pct);
   const cupomCents = parte(row.coupon_avg_pct);
   const freteCents = parte(row.shipping_cost_pct);
-  // Preço "de" (vitrine): mais alto que o preço calculado, de forma que aplicando o desconto do
-  // anúncio o cliente pague exatamente o preço calculado. Sem desconto, não existe preço "de".
-  const anuncioCents =
-    precoCalculadoCents != null && row.discount_pct > 0 && row.discount_pct < 100
-      ? Math.round(precoCalculadoCents / (1 - row.discount_pct / 100))
-      : null;
+  const margemPromoCents = parte(row.margem_promo_pct);
   return {
     hasCost,
     custoTotalCents,
@@ -150,8 +164,10 @@ function computeVariantPricing(row: VariantRow) {
     margemCents,
     cupomCents,
     freteCents,
+    margemPromoCents,
     anuncioCents,
-    precoCalculadoCents,
+    precoNormalCents,
+    precoVendaCents,
     denomValid: denom > 0,
   };
 }
@@ -194,6 +210,7 @@ function PrecificacaoPage() {
     margin: "",
     coupon: "",
     shipping: "",
+    promo: "",
     discount: "",
   });
   const [rowDrafts, setRowDrafts] = useState<Record<string, RowDraft>>({});
@@ -205,7 +222,7 @@ function PrecificacaoPage() {
     const { data, error } = await supabase
       .from("product_variants")
       .select(
-        "id, sku, name, price_cents, compare_at_price_cents, cost_cents, extra_cost_cents, freight_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, coupon_avg_pct, shipping_cost_pct, discount_pct, products!inner(title, status)",
+        "id, sku, name, price_cents, compare_at_price_cents, cost_cents, extra_cost_cents, freight_cost_cents, tax_rate_pct, card_fee_pct, margin_pct, coupon_avg_pct, shipping_cost_pct, margem_promo_pct, discount_pct, products!inner(title, status)",
       )
       .eq("products.status", "published")
       .order("sku");
@@ -230,6 +247,7 @@ function PrecificacaoPage() {
       margin_pct: v.margin_pct,
       coupon_avg_pct: v.coupon_avg_pct,
       shipping_cost_pct: v.shipping_cost_pct,
+      margem_promo_pct: v.margem_promo_pct,
       discount_pct: v.discount_pct,
       productTitle: (v.products as { title: string } | null)?.title ?? "",
     }));
@@ -244,6 +262,7 @@ function PrecificacaoPage() {
             margin: formatDecimalToInput(v.margin_pct),
             coupon: formatDecimalToInput(v.coupon_avg_pct),
             shipping: formatDecimalToInput(v.shipping_cost_pct),
+            promo: formatDecimalToInput(v.margem_promo_pct),
             discount: formatDecimalToInput(v.discount_pct),
           },
         ]),
@@ -258,17 +277,18 @@ function PrecificacaoPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Preço = Custo ÷ [1 − (imposto% + cartão% + margem% + cupom% + frete%)] e preço "de" = Preço ÷ (1 − desconto%) —
-  // ambos aplicados automaticamente no product_variants de cada anúncio sempre que o custo (API)
-  // ou qualquer % daquela variação mudam.
+  // Preço normal = Custo ÷ [1 − (imposto% + cartão% + margem% + cupom% + frete% + margem p/ promo%)].
+  // Preço cobrado = normal × (1 − desconto no anúncio%). Preço "de" = normal, só quando há desconto.
+  // Gravado automaticamente em product_variants (price_cents = cobrado; compare_at = "de") sempre
+  // que o custo (API) ou qualquer % daquela variação mudam.
   useEffect(() => {
     if (loading || applyingRef.current) return;
     const updates = rows
       .map((row) => ({ row, calc: computeVariantPricing(row) }))
       .filter(
         ({ row, calc }) =>
-          calc.precoCalculadoCents != null &&
-          (calc.precoCalculadoCents !== row.price_cents ||
+          calc.precoVendaCents != null &&
+          (calc.precoVendaCents !== row.price_cents ||
             calc.anuncioCents !== row.compare_at_price_cents),
       );
     if (updates.length === 0) return;
@@ -280,7 +300,7 @@ function PrecificacaoPage() {
         const { error } = await supabase
           .from("product_variants")
           .update({
-            price_cents: calc.precoCalculadoCents!,
+            price_cents: calc.precoVendaCents!,
             compare_at_price_cents: calc.anuncioCents,
           })
           .eq("id", row.id);
@@ -291,7 +311,7 @@ function PrecificacaoPage() {
               r.id === row.id
                 ? {
                     ...r,
-                    price_cents: calc.precoCalculadoCents!,
+                    price_cents: calc.precoVendaCents!,
                     compare_at_price_cents: calc.anuncioCents,
                   }
                 : r,
@@ -377,8 +397,8 @@ function PrecificacaoPage() {
     let after = 0;
     let changed = 0;
     for (const row of rows) {
-      const now = computeVariantPricing(row).precoCalculadoCents;
-      const next = computeVariantPricing({ ...row, [field]: value }).precoCalculadoCents;
+      const now = computeVariantPricing(row).precoVendaCents;
+      const next = computeVariantPricing({ ...row, [field]: value }).precoVendaCents;
       if (now == null || next == null) continue;
       before += now;
       after += next;
@@ -476,10 +496,11 @@ function PrecificacaoPage() {
         <div>
           <h1 className="text-xl font-semibold">Precificação</h1>
           <p className="text-sm text-muted-foreground">
-            Custo puxado do FinMarket HUB; imposto, cartão, margem, média em cupom, custo do frete e
-            desconto no anúncio por SKU — o preço de venda (e o "de" riscado, quando há desconto) é
-            calculado e aplicado sozinho, na hora em que qualquer % muda. Cupom e frete começam em
-            0%: preencha à mão ou use a média real das vendas (últimos {AVERAGE_WINDOW_DAYS} dias).
+            Custo puxado do FinMarket HUB; imposto, cartão, margem, média em cupom, custo do frete,
+            margem p/ promo e desconto no anúncio por SKU. O preço normal sobe com a margem p/ promo;
+            o desconto no anúncio desce o preço cobrado e mostra o normal riscado. Tudo é aplicado
+            sozinho quando qualquer % muda. Cupom, frete, margem p/ promo e desconto começam em 0%:
+            preencha à mão ou use a média real das vendas (últimos {AVERAGE_WINDOW_DAYS} dias).
           </p>
         </div>
         <Button type="button" variant="outline" size="sm" disabled={syncing} onClick={syncCosts}>
@@ -499,30 +520,30 @@ function PrecificacaoPage() {
           <Table className="table-fixed text-xs">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[14%]">SKU</TableHead>
-                <TableHead className="w-[9%]">Custo (API)</TableHead>
-                <TableHead className="w-[10%]">
+                <TableHead className="w-[12%]">SKU</TableHead>
+                <TableHead className="w-[8%]">Custo (API)</TableHead>
+                <TableHead className="w-[9%]">
                   {renderBulkHeader({
                     field: "tax_rate_pct",
                     draftKey: "tax",
                     title: "Imposto (% + R$)",
                   })}
                 </TableHead>
-                <TableHead className="w-[10%]">
+                <TableHead className="w-[9%]">
                   {renderBulkHeader({
                     field: "card_fee_pct",
                     draftKey: "card",
                     title: "Cartão (% + R$)",
                   })}
                 </TableHead>
-                <TableHead className="w-[10%]">
+                <TableHead className="w-[9%]">
                   {renderBulkHeader({
                     field: "margin_pct",
                     draftKey: "margin",
                     title: "Margem (% + R$)",
                   })}
                 </TableHead>
-                <TableHead className="w-[11%]">
+                <TableHead className="w-[10%]">
                   {renderBulkHeader({
                     field: "coupon_avg_pct",
                     draftKey: "coupon",
@@ -530,7 +551,7 @@ function PrecificacaoPage() {
                     suggestion: couponSuggestion,
                   })}
                 </TableHead>
-                <TableHead className="w-[11%]">
+                <TableHead className="w-[10%]">
                   {renderBulkHeader({
                     field: "shipping_cost_pct",
                     draftKey: "shipping",
@@ -538,14 +559,21 @@ function PrecificacaoPage() {
                     suggestion: shippingSuggestion,
                   })}
                 </TableHead>
-                <TableHead className="w-[11%]">
+                <TableHead className="w-[10%]">
+                  {renderBulkHeader({
+                    field: "margem_promo_pct",
+                    draftKey: "promo",
+                    title: "Margem p/ promo (% + R$)",
+                  })}
+                </TableHead>
+                <TableHead className="w-[10%]">
                   {renderBulkHeader({
                     field: "discount_pct",
                     draftKey: "discount",
                     title: "Desconto no anúncio",
                   })}
                 </TableHead>
-                <TableHead className="w-[14%]">Preço no anúncio</TableHead>
+                <TableHead className="w-[12%]">Preço no anúncio</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -602,21 +630,27 @@ function PrecificacaoPage() {
                       onBlur={() => saveRowPct(row.id, "shipping_cost_pct", draft.shipping)}
                     />
                     <PctCell
+                      value={draft.promo}
+                      reais={reais(calc.margemPromoCents)}
+                      onChange={(v) => setDraft(row.id, draft, "promo", v)}
+                      onBlur={() => saveRowPct(row.id, "margem_promo_pct", draft.promo)}
+                    />
+                    <PctCell
                       value={draft.discount}
                       onChange={(v) => setDraft(row.id, draft, "discount", v)}
                       onBlur={() => saveRowPct(row.id, "discount_pct", draft.discount)}
                     />
                     <TableCell className="font-semibold text-[#12294f]">
-                      {calc.precoCalculadoCents != null ? (
+                      {calc.precoVendaCents != null ? (
                         calc.anuncioCents != null ? (
                           <>
                             <p className="font-normal text-muted-foreground line-through">
                               {formatCentsToBRL(calc.anuncioCents)}
                             </p>
-                            <p>{formatCentsToBRL(calc.precoCalculadoCents)}</p>
+                            <p>{formatCentsToBRL(calc.precoVendaCents)}</p>
                           </>
                         ) : (
-                          formatCentsToBRL(calc.precoCalculadoCents)
+                          formatCentsToBRL(calc.precoVendaCents)
                         )
                       ) : !calc.denomValid ? (
                         <span className="text-destructive">soma dos % ≥ 100%</span>

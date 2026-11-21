@@ -1055,6 +1055,7 @@ export type Database = {
           gtin_ean: string | null
           id: string
           low_stock_alerted_at: string | null
+          margem_promo_pct: number
           margin_pct: number
           name: string
           package_height_cm: number | null
@@ -1084,6 +1085,7 @@ export type Database = {
           gtin_ean?: string | null
           id?: string
           low_stock_alerted_at?: string | null
+          margem_promo_pct?: number
           margin_pct?: number
           name: string
           package_height_cm?: number | null
@@ -1113,6 +1115,7 @@ export type Database = {
           gtin_ean?: string | null
           id?: string
           low_stock_alerted_at?: string | null
+          margem_promo_pct?: number
           margin_pct?: number
           name?: string
           package_height_cm?: number | null
