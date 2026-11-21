@@ -284,10 +284,6 @@ function Catalog({
   const [sort, setSort] = useState<SortOption>("relevancia");
   // Mobile only: the category list lives in a bottom drawer; picking one filters and closes it.
   const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const pickCategory = (id: string | null) => {
-    setSelectedCategoryId(id);
-    setCategoriesOpen(false);
-  };
 
   const filteredProducts = useMemo(() => {
     let list = products;
@@ -340,21 +336,23 @@ function Catalog({
               </SheetHeader>
               <ul className="mt-2 space-y-1 pb-6 text-sm">
                 <li>
-                  <button
-                    type="button"
-                    onClick={() => pickCategory(null)}
+                  <Link
+                    to="/loja"
+                    search={{ categoria: undefined }}
+                    onClick={() => setCategoriesOpen(false)}
                     className={`block w-full rounded-lg px-2 py-3 text-left ${
                       selectedCategoryId === null ? "font-bold text-[#15803d]" : "text-[#12294f]"
                     }`}
                   >
                     Todos os produtos
-                  </button>
+                  </Link>
                 </li>
                 {categories.map((category) => (
                   <li key={category.id}>
-                    <button
-                      type="button"
-                      onClick={() => pickCategory(category.id)}
+                    <Link
+                      to="/loja/$categoria"
+                      params={{ categoria: category.slug }}
+                      onClick={() => setCategoriesOpen(false)}
                       className={`block w-full rounded-lg px-2 py-3 text-left ${
                         selectedCategoryId === category.id
                           ? "font-bold text-[#15803d]"
@@ -362,7 +360,7 @@ function Catalog({
                       }`}
                     >
                       {category.name}
-                    </button>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -374,9 +372,9 @@ function Catalog({
           <h2 className="text-sm font-bold uppercase tracking-wide text-[#12294f]">Categorias</h2>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
-              <button
-                type="button"
-                onClick={() => setSelectedCategoryId(null)}
+              <Link
+                to="/loja"
+                search={{ categoria: undefined }}
                 className={`transition-colors ${
                   selectedCategoryId === null
                     ? "font-bold text-[#15803d]"
@@ -384,13 +382,13 @@ function Catalog({
                 }`}
               >
                 Todos os produtos
-              </button>
+              </Link>
             </li>
             {categories.map((category) => (
               <li key={category.id}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategoryId(category.id)}
+                <Link
+                  to="/loja/$categoria"
+                  params={{ categoria: category.slug }}
                   className={`transition-colors ${
                     selectedCategoryId === category.id
                       ? "font-bold text-[#15803d]"
@@ -398,7 +396,7 @@ function Catalog({
                   }`}
                 >
                   {category.name}
-                </button>
+                </Link>
               </li>
             ))}
           </ul>

@@ -252,3 +252,8 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **Leitura de 21/11 (API):** cartão 1x 1,99%, 2–6x 2,49%, 7–12x 2,99% (promocional), taxa fixa R$ 0,49; Pix taxa fixa R$ 0,99 (promocional). Padrão: 2,99/3,49/3,99% e Pix R$ 1,99.
 - **Divergência a confirmar:** a API informa validade da promoção até **08/01/2027**, enquanto a tela da conta mostra **14/12/2026**. O código segue a data da API.
 - **Pendente:** publicar o front (checkout e payment-fees) no Lovable antes de publicar a função `checkout-create`, para o total mostrado bater com o cobrado.
+
+## 21/11/2026 — Loja: botões de categoria mudam o endereço
+- **Decisão do dono:** ao clicar numa categoria na barra lateral (e na gaveta do celular), a página vai para /loja/<categoria>; "Todos os produtos" vai para /loja. Antes os botões só filtravam na mesma página e o endereço não mudava.
+- **Onde está:** src/routes/loja.tsx (componente Catalog): os botões viraram links (TanStack Link).
+- **Verificado (dev local):** clique em Toalhas, Cozinha, Ferramentas e Todos os produtos muda a URL e marca a categoria certa; gaveta do celular funciona e fecha ao escolher.
