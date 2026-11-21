@@ -3,7 +3,8 @@
 **21/11/2026 — Precificação e checkout (estado atual):**
 - No ar: tela de precificação com coluna "Margem p/ promo" (padrão 0). Desconto no anúncio em 0% em todas as variações (até o Google entender).
 - Commits no GitHub (`0a81b91`, `cf37825`): imposto somado por cima do valor de venda; checkout com a taxa da Asaas paga pelo cliente (cartão e Pix), taxas lidas pela API.
-- Pendente do dono: publicar o front no Lovable e avisar. Depois, publico `checkout-create` na Supabase e confiro com um Pix e um cartão de teste.
+- Front publicado no Lovable e conferido ao vivo (21/11). Função `checkout-create` publicada na Supabase (21/11, 18:14, via Supabase CLI).
+- Falta: fazer um pedido pequeno de teste (Pix e cartão) e conferir se o valor cobrado bate com o total mostrado e se a loja recebe o valor do anúncio.
 - Divergência a confirmar: a API informa validade da promoção até 08/01/2027; a tela da conta mostra 14/12/2026. O código segue a API.
 - Preços: quando a precificação for aberta depois da publicação, 66 produtos descem em média R$ 0,37 (medido antes).
 - Google (Merchant Center, conta 5856969666): aviso de Deturpação. Não pedir análise antes de confirmar que o preço riscado e a loja estão corretos.
