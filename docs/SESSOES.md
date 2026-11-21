@@ -161,3 +161,10 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Não feito:** `checkout-create` não publicado na Supabase (espera o front ir ao ar no Lovable, para o total do Pix bater); nenhum pagamento de teste feito (geraria cobrança); preços da loja mudam quando alguém abrir a precificação depois da publicação (66 produtos descem, média R$ 0,37, medido antes).
 - **Divergência:** a API informa validade da promoção até 08/01/2027; a tela da conta mostra 14/12/2026. O código segue a API.
 - **Próximo passo:** dono publica o front no Lovable e avisa; depois publico `checkout-create` e confiro um Pix e um cartão de teste (valor exato do anúncio).
+
+## 2026-11-21 (fim do dia) — Computador HOME — checkout publicado e docs
+- **Feito:** front publicado no Lovable (conferido ao vivo: checkout carrega `asaas-fees`); função `checkout-create` publicada na Supabase pelo Supabase CLI (login neste computador, 18:14); `asaas-fees` publicada e conferida (cartão 1x 1,99%, 2–6x 2,49%, 7–12x 2,99%, taxa fixa R$ 0,49; Pix R$ 0,99; promoção informada até 08/01/2027).
+- **Commits no GitHub:** `0a81b91`, `cf37825`, `f0243c3`, `beff716` (pendências), `1b0cbab` (pendências do checkout).
+- **Não enviado de propósito:** `src/routes/loja.tsx` (alteração local de outra sessão, nos botões de categoria) e a nota correspondente em `docs/DECISOES.md`; `supabase/.temp/` (criada pelo CLI, não deve ir ao GitHub).
+- **Não feito:** pedido de teste (Pix e cartão) para conferir o valor cobrado. Gera cobrança real; só com ok do dono.
+- **Próximo passo:** o dono decide sobre o pedido de teste; conferir a data da promoção (14/12 na tela, 08/01/2027 na API).
