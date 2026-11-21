@@ -238,3 +238,10 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **Agora:** cobrado = normal × (1 − desconto%); "de" = normal, só quando há desconto. Com margem p/ promo 0% e desconto 0%, nada muda.
 - **Estado no dia:** todas as 71 variações com desconto 0% e sem "de" (confirmado no banco e na página ao vivo da toalha TOA_PAISAGEM_1).
 - **Pendente:** publicar no Lovable (o código só vai ao ar com a publicação) e conferir ao vivo com um produto de teste.
+
+## 21/11/2026 — Precificação: imposto somado por cima do valor de venda
+- **Decisão do dono:** o imposto é % do valor de venda e é somado por cima. Venda = custo ÷ (1 − cartão − margem − margem p/ promo − cupom − frete). Anúncio = venda + imposto (arredondado para centavos: 0,3843 → 0,38; 0,3859 → 0,39). Ex.: venda 35 → imposto 0,35 → anúncio 35,35.
+- **Margem p/ promo** entra no divisor como as outras taxas (dono).
+- **Toalha TOA_PAISAGEM_1** (exemplo do dono): margem p/ promo 20%, desconto 0%. Venda 28,29 → anúncio R$ 28,57 pelo novo cálculo (antes 28,93).
+- **Impacto medido no banco (21/11, antes de publicar):** 66 produtos com custo: todos descem (média −R$ 0,37). As 5 sem custo não mudam.
+- **Desconto no anúncio:** fica em 0% até o dono criar a promoção; o mecanismo de desconto ainda será conferido nessa hora.

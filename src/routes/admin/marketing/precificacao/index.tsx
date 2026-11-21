@@ -126,47 +126,48 @@ function computeVariantPricing(row: VariantRow) {
   const hasCost = row.cost_cents != null;
   const custoTotalCents =
     (row.cost_cents ?? 0) + (row.extra_cost_cents ?? 0) + (row.freight_cost_cents ?? 0);
-  // Preço normal: a margem p/ promo entra no divisor como as outras % (ela aumenta o preço normal).
+  // Valor de venda (o que sobra para custo e lucro) = custo ÷ (1 − cartão − margem − margem p/ promo −
+  // cupom − frete). O imposto NÃO entra aqui: ele é somado por cima do valor de venda.
   const denom =
     1 -
-    (row.tax_rate_pct +
-      row.card_fee_pct +
+    (row.card_fee_pct +
       row.margin_pct +
+      row.margem_promo_pct +
       row.coupon_avg_pct +
-      row.shipping_cost_pct +
-      row.margem_promo_pct) /
+      row.shipping_cost_pct) /
       100;
-  const precoNormalCents = hasCost && denom > 0 ? Math.round(custoTotalCents / denom) : null;
-  // Preço cobrado: o normal menos o desconto no anúncio. Sem desconto, cobrado = normal.
+  const vendaNormalCents = hasCost && denom > 0 ? Math.round(custoTotalCents / denom) : null;
+  // Com desconto no anúncio, o valor de venda cai na mesma proporção.
   const descontoValido = row.discount_pct > 0 && row.discount_pct < 100;
-  const precoVendaCents =
-    precoNormalCents != null
+  const vendaCents =
+    vendaNormalCents != null
       ? descontoValido
-        ? Math.round(precoNormalCents * (1 - row.discount_pct / 100))
-        : precoNormalCents
+        ? Math.round(vendaNormalCents * (1 - row.discount_pct / 100))
+        : vendaNormalCents
       : null;
-  // Preço "de" (riscado): só existe quando há desconto; é o preço normal que o cliente vê como referência.
-  const anuncioCents = precoNormalCents != null && descontoValido ? precoNormalCents : null;
-  // Quanto do preço normal vira imposto, cartão, margem, cupom e frete, em reais.
-  const parte = (pct: number) =>
-    precoNormalCents != null ? Math.round(precoNormalCents * (pct / 100)) : null;
-  const impostoCents = parte(row.tax_rate_pct);
-  const cartaoCents = parte(row.card_fee_pct);
-  const margemCents = parte(row.margin_pct);
-  const cupomCents = parte(row.coupon_avg_pct);
-  const freteCents = parte(row.shipping_cost_pct);
-  const margemPromoCents = parte(row.margem_promo_pct);
+  // Imposto = % do valor de venda, arredondado para centavos (0,3843 → 0,38; 0,3859 → 0,39).
+  const pctDe = (base: number | null, pct: number) =>
+    base != null ? Math.round((base * pct) / 100) : null;
+  const impostoCents = pctDe(vendaCents, row.tax_rate_pct);
+  // Preço que o cliente paga = valor de venda + imposto somado por cima.
+  const precoVendaCents =
+    vendaCents != null && impostoCents != null ? vendaCents + impostoCents : null;
+  // Preço "de" (riscado): o preço normal (sem desconto), só quando há desconto.
+  const anuncioCents =
+    vendaNormalCents != null && descontoValido
+      ? vendaNormalCents + (pctDe(vendaNormalCents, row.tax_rate_pct) ?? 0)
+      : null;
   return {
     hasCost,
     custoTotalCents,
     impostoCents,
-    cartaoCents,
-    margemCents,
-    cupomCents,
-    freteCents,
-    margemPromoCents,
+    cartaoCents: pctDe(vendaCents, row.card_fee_pct),
+    margemCents: pctDe(vendaCents, row.margin_pct),
+    cupomCents: pctDe(vendaCents, row.coupon_avg_pct),
+    freteCents: pctDe(vendaCents, row.shipping_cost_pct),
+    margemPromoCents: pctDe(vendaCents, row.margem_promo_pct),
     anuncioCents,
-    precoNormalCents,
+    vendaCents,
     precoVendaCents,
     denomValid: denom > 0,
   };
