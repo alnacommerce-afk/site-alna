@@ -89,8 +89,8 @@ export function SiteFooter() {
               categories.map((category) => (
                 <li key={category.id}>
                   <Link
-                    to="/loja"
-                    search={{ categoria: category.slug }}
+                    to="/loja/$categoria"
+                    params={{ categoria: category.slug }}
                     className="hover:text-white"
                   >
                     {category.name}

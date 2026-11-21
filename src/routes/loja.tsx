@@ -1,4 +1,4 @@
-import { Await, createFileRoute, Link } from "@tanstack/react-router";
+import { Await, createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
@@ -31,6 +31,18 @@ import {
 
 const SITE_URL = "https://store.alna.sale/loja";
 
+// Categorias com endereço próprio (/loja/<slug>). Um slug fora desta lista não tem página própria.
+export const CATEGORIAS_LOJA: Record<string, string> = {
+  cozinha: "Cozinha",
+  toalhas: "Toalhas",
+  roupas: "Roupas",
+  ferramentas: "Ferramentas",
+};
+
+export function nomeDaCategoriaLoja(slug: string): string | undefined {
+  return Object.prototype.hasOwnProperty.call(CATEGORIAS_LOJA, slug) ? CATEGORIAS_LOJA[slug] : undefined;
+}
+
 type CategoryRow = { id: string; name: string; slug: string };
 type ProductCard = {
   id: string;
@@ -55,7 +67,7 @@ const SORT_LABELS: Record<SortOption, string> = {
 
 // The catalog is fetched WITHOUT blocking the response: the page shell is sent right away and the
 // filters/products stream in as soon as the database answers (see <Await> in LojaPage).
-async function fetchCatalog(): Promise<{
+export async function fetchCatalog(): Promise<{
   categories: CategoryRow[];
   products: ProductCard[];
   failed: boolean;
@@ -115,6 +127,13 @@ export const Route = createFileRoute("/loja")({
     categoria:
       typeof search["categoria"] === "string" ? (search["categoria"] as string) : undefined,
   }),
+  // Links antigos (/loja?categoria=cozinha) vão para o endereço próprio da categoria.
+  beforeLoad: ({ search }) => {
+    const slug = search.categoria;
+    if (slug && nomeDaCategoriaLoja(slug)) {
+      throw redirect({ to: "/loja/$categoria", params: { categoria: slug } });
+    }
+  },
   loader: () => ({ catalog: fetchCatalog() }),
   head: () => ({
     meta: [
@@ -130,8 +149,14 @@ export const Route = createFileRoute("/loja")({
     ],
     links: [{ rel: "canonical", href: SITE_URL }],
   }),
-  component: LojaPage,
+  component: LojaRoute,
 });
+
+function LojaRoute() {
+  const { catalog } = Route.useLoaderData();
+  const { categoria } = Route.useSearch();
+  return <LojaPage catalog={catalog} categoria={categoria} />;
+}
 
 function discountPercent(price: number, compareAt: number | null): number | null {
   if (!compareAt || compareAt <= price) return null;
@@ -453,10 +478,13 @@ function Catalog({
   );
 }
 
-function LojaPage() {
-  const { catalog } = Route.useLoaderData();
-  const { categoria } = Route.useSearch();
-
+export function LojaPage({
+  catalog,
+  categoria,
+}: {
+  catalog: ReturnType<typeof fetchCatalog>;
+  categoria: string | undefined;
+}) {
   return (
     <div className="min-h-screen bg-white">
       <SiteHeader />

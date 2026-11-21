@@ -32,6 +32,7 @@ import { Route as ContaCarrinhoRouteImport } from './routes/conta/carrinho'
 import { Route as ContaLoginRouteImport } from './routes/conta/login'
 import { Route as ContaRedefinirSenhaRouteImport } from './routes/conta/redefinir-senha'
 import { Route as ContaSenhaRouteImport } from './routes/conta/senha'
+import { Route as LojaCategoriaRouteImport } from './routes/loja_.$categoria'
 import { Route as PedidoOrderIdRouteImport } from './routes/pedido/$orderId'
 import { Route as PesquisaOrderIdRouteImport } from './routes/pesquisa/$orderId'
 import { Route as ProdutoSlugRouteImport } from './routes/produto/$slug'
@@ -168,6 +169,11 @@ const ContaSenhaRoute = ContaSenhaRouteImport.update({
   path: '/conta/senha',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LojaCategoriaRoute = LojaCategoriaRouteImport.update({
+  id: '/loja_/$categoria',
+  path: '/loja/$categoria',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PedidoOrderIdRoute = PedidoOrderIdRouteImport.update({
   id: '/pedido/$orderId',
   path: '/pedido/$orderId',
@@ -294,6 +300,7 @@ export interface FileRoutesByFullPath {
   '/conta/login': typeof ContaLoginRoute
   '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
+  '/loja/$categoria': typeof LojaCategoriaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
@@ -338,6 +345,7 @@ export interface FileRoutesByTo {
   '/conta/login': typeof ContaLoginRoute
   '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
+  '/loja/$categoria': typeof LojaCategoriaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
@@ -383,6 +391,7 @@ export interface FileRoutesById {
   '/conta/login': typeof ContaLoginRoute
   '/conta/redefinir-senha': typeof ContaRedefinirSenhaRoute
   '/conta/senha': typeof ContaSenhaRoute
+  '/loja_/$categoria': typeof LojaCategoriaRoute
   '/pedido/$orderId': typeof PedidoOrderIdRoute
   '/pesquisa/$orderId': typeof PesquisaOrderIdRoute
   '/produto/$slug': typeof ProdutoSlugRoute
@@ -429,6 +438,7 @@ export interface FileRouteTypes {
     | '/conta/login'
     | '/conta/redefinir-senha'
     | '/conta/senha'
+    | '/loja/$categoria'
     | '/pedido/$orderId'
     | '/pesquisa/$orderId'
     | '/produto/$slug'
@@ -473,6 +483,7 @@ export interface FileRouteTypes {
     | '/conta/login'
     | '/conta/redefinir-senha'
     | '/conta/senha'
+    | '/loja/$categoria'
     | '/pedido/$orderId'
     | '/pesquisa/$orderId'
     | '/produto/$slug'
@@ -517,6 +528,7 @@ export interface FileRouteTypes {
     | '/conta/login'
     | '/conta/redefinir-senha'
     | '/conta/senha'
+    | '/loja_/$categoria'
     | '/pedido/$orderId'
     | '/pesquisa/$orderId'
     | '/produto/$slug'
@@ -562,6 +574,7 @@ export interface RootRouteChildren {
   ContaLoginRoute: typeof ContaLoginRoute
   ContaRedefinirSenhaRoute: typeof ContaRedefinirSenhaRoute
   ContaSenhaRoute: typeof ContaSenhaRoute
+  LojaCategoriaRoute: typeof LojaCategoriaRoute
   PedidoOrderIdRoute: typeof PedidoOrderIdRoute
   PesquisaOrderIdRoute: typeof PesquisaOrderIdRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
@@ -748,6 +761,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContaSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/loja_/$categoria': {
+      id: '/loja_/$categoria'
+      path: '/loja/$categoria'
+      fullPath: '/loja/$categoria'
+      preLoaderRoute: typeof LojaCategoriaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pedido/$orderId': {
       id: '/pedido/$orderId'
       path: '/pedido/$orderId'
@@ -906,6 +926,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContaLoginRoute: ContaLoginRoute,
   ContaRedefinirSenhaRoute: ContaRedefinirSenhaRoute,
   ContaSenhaRoute: ContaSenhaRoute,
+  LojaCategoriaRoute: LojaCategoriaRoute,
   PedidoOrderIdRoute: PedidoOrderIdRoute,
   PesquisaOrderIdRoute: PesquisaOrderIdRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,

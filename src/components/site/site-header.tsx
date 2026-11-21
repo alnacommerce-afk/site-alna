@@ -149,7 +149,7 @@ export function SiteHeader() {
               ) : (
                 categories.map((category) => (
                   <DropdownMenuItem key={category.id} asChild>
-                    <Link to="/loja" search={{ categoria: category.slug }}>
+                    <Link to="/loja/$categoria" params={{ categoria: category.slug }}>
                       {category.name}
                     </Link>
                   </DropdownMenuItem>
