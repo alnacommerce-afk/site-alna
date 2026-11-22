@@ -7,7 +7,11 @@
 - Falta: fazer um pedido pequeno de teste (Pix e cartão) e conferir se o valor cobrado bate com o total mostrado e se a loja recebe o valor do anúncio.
 - Divergência a confirmar: a API informa validade da promoção até 08/01/2027; a tela da conta mostra 14/12/2026. O código segue a API.
 - Preços: quando a precificação for aberta depois da publicação, 66 produtos descem em média R$ 0,37 (medido antes).
-- Google (Merchant Center, conta 5856969666): aviso de Deturpação. Não pedir análise antes de confirmar que o preço riscado e a loja estão corretos.
+- Google (Merchant Center, conta 5856969666): aviso de Deturpação, recebido por e-mail em 21/11 às 23h17 e ainda ativo. O botão "Discordo desse problema" ficou ativo depois de "Confirmar dados". **Não pedir análise ainda** (cada pedido conta; limite de três).
+- Conferido em 21/11 (ao vivo):
+  - Política de troca: `https://store.alna.sale/politica-de-troca-e-devolucao` responde 200 e traz razão social, CNPJ e endereço; prazo de 7 dias, frete de devolução por nossa conta, Código de Defesa do Consumidor. (O endereço `/troca-e-devolucao` que citei antes dá 404; o correto é o primeiro.)
+  - Preço riscado: nenhuma das 71 variações tem preço "de" nem desconto no anúncio (0% em todas, confirmado no banco).
+  - Margem p/ promo: **todas as 71 variações estão com 20%** (confirmado no banco). Isso muda o preço da loja inteira: a toalha passou de R$ 19,89 para R$ 28,57. Precisa ser confirmado com o dono se é o que ele quer.
 
 **16/11/2026 — Análise de visitantes:** site publicado: `/loja` e camiseta UV retornam 200 e mostram produtos; `/admin` leva ao login. Fundamentos de busca aprovados na verificação atual. Search Console disponível sem propriedade verificada que cubra a loja; não foi possível confirmar desempenho/indexação. Prioridade proposta: confirmar descrição da camiseta (título unissex, embalagem feminina), depois divulgar produtos existentes para interessados reais com links identificados. Aguardar aprovação e confirmação do produto; nenhuma alteração comercial aplicada. Plano curto salvo em Files. Correções obrigatórias da verificação aplicadas; resultado `build OK` às 10:54:44 UTC. Não houve publicação nesta sessão.
 
