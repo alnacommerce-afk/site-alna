@@ -96,12 +96,12 @@ p,h1,h2{margin:0}
 .bn img{width:100%;height:320px;object-fit:cover}
 .js .bn img{opacity:0;transform:scale(1.04);transition:opacity .9s ease .1s,transform 1.2s ease .1s}
 .js .in .bn img,.js .bn.in img{opacity:1;transform:none}
-.mesa img{object-position:35% 0}
-.mesa .txt{padding:2rem 1rem;text-align:center;color:#fff}
-.mesa .kick{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f5a623}
-.mesa h2{margin-top:.25rem;font-size:1.5rem;font-weight:700}
-.mesa p.sub{margin-top:.75rem;font-size:.875rem;color:rgba(255,255,255,.8)}
-.mesa .btn{margin-top:1.25rem}
+.setor img{object-position:50% 0}
+.setor .txt{padding:2rem 1rem;text-align:center;color:#fff}
+.setor .kick{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f5a623}
+.setor h2{margin-top:.25rem;font-size:1.5rem;font-weight:700}
+.setor p.sub{margin-top:.75rem;font-size:.875rem;color:rgba(255,255,255,.8)}
+.setor .btn{margin-top:1.25rem}
 .frete{background:#fff}
 .frete img{object-position:80% 0}
 .frete .txt{padding:2rem 1rem;text-align:center}
@@ -115,37 +115,38 @@ p,h1,h2{margin:0}
  .wa .wa-logo{display:block;width:1.5rem;height:1.5rem;fill:currentColor}
  .wa-txt{display:none}
  .acts .iconbtn{display:none}
- .mesa,.frete{position:relative;height:340px}
- .mesa img,.frete img{position:absolute;inset:0;width:100%;height:100%}
- .mesa .txt,.frete .txt{position:absolute;padding:0;display:block;text-align:left;color:#12294f}
- .mesa .txt>div,.frete .txt>div,.frete .txt>div>div{max-width:none;margin:0;padding:0}
- .mesa .txt{top:14px;left:49%;right:6px;bottom:auto}
- .mesa .kick{color:#15803d}
- .mesa h2{font-size:1.125rem;line-height:1.2;color:#12294f}
- .mesa p.sub{display:none}
- .mesa .btn{margin-top:.625rem;padding:.4rem .75rem;font-size:.8rem}
+ .setor img{object-position:100% 0 !important}
+ .setor,.frete{position:relative;height:340px}
+ .setor img,.frete img{position:absolute;inset:0;width:100%;height:100%}
+ .setor .txt,.frete .txt{position:absolute;padding:0;display:block;text-align:left;color:#12294f}
+ .setor .txt>div,.frete .txt>div,.frete .txt>div>div{max-width:none;margin:0;padding:0}
+ .setor .txt{top:12px;left:6px;width:46%;right:auto;bottom:auto;background:#fff;padding:.5rem .6rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(18,41,79,.18)}
+ .setor .kick{color:#15803d}
+ .setor h2{font-size:1rem;line-height:1.2;color:#12294f}
+ .setor p.sub{display:none}
+ .setor .btn{margin-top:.625rem;padding:.4rem .75rem;font-size:.8rem}
  .frete .txt{top:12px;left:6px;width:40%;right:auto;bottom:auto;background:#fff;padding:.4rem .5rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(18,41,79,.18)}
  .frete .tag{font-size:.55rem;padding:.15rem .45rem}
  .frete h2{font-size:1.25rem;line-height:1.1;color:#12294f;margin-top:.25rem;white-space:nowrap}
  .frete p.sub{font-size:.72rem;line-height:1.25;color:#12294f;margin-top:.2rem}
  .frete .btn{position:absolute;left:0;top:216px;margin:0;padding:.4rem .7rem;font-size:.75rem}
- .mesa::after{content:"";position:absolute;left:0;right:0;bottom:0;height:96px;background:linear-gradient(to bottom,rgba(255,198,26,0),#ffc61a);pointer-events:none}
+ .setor::after{content:"";position:absolute;left:0;right:0;bottom:0;height:96px;background:linear-gradient(to bottom,rgba(255,198,26,0),#ffc61a);pointer-events:none}
 }
 @media(min-width:768px){
- .mesa,.frete{position:relative}
- .mesa img{position:absolute;inset:0;height:100%;object-position:35% 0}
- .mesa{min-height:520px}
- .mesa::after{content:"";position:absolute;inset:0;background:linear-gradient(to left,#12294f,rgba(18,41,79,.8),rgba(18,41,79,.1));pointer-events:none}
- .mesa .txt{position:relative;z-index:1;max-width:72rem;margin:0 auto;min-height:520px;display:flex;align-items:center;justify-content:flex-end;padding:3.5rem 1rem;text-align:right}
- .mesa .txt>div{max-width:24rem}
+ .setor,.frete{position:relative}
+ .setor img{position:absolute;inset:0;height:100%;object-position:35% 0}
+ .setor{min-height:520px}
+ .setor::after{content:"";position:absolute;inset:0;background:linear-gradient(to left,#12294f,rgba(18,41,79,.8),rgba(18,41,79,.1));pointer-events:none}
+ .setor .txt{position:relative;z-index:1;max-width:72rem;margin:0 auto;min-height:520px;display:flex;align-items:center;justify-content:flex-end;padding:3.5rem 1rem;text-align:right}
+ .setor .txt>div{max-width:24rem}
  .frete img{height:520px}
  .frete .txt{position:absolute;inset:0;display:flex;align-items:center;padding:0;text-align:left}
  .frete .txt>div{width:100%;max-width:72rem;margin:0 auto;padding:0 1rem}
  .frete .txt>div>div{max-width:24rem}
  .frete h2{font-size:2.25rem;color:#fff;text-align:left}.frete p.sub{font-size:1.125rem;color:#fff}
 }
-@media(min-width:1024px){.mesa,.mesa .txt{min-height:600px}.frete img{height:600px}.frete h2{font-size:3rem}}
-@media(min-width:1280px){.mesa,.mesa .txt{min-height:680px}.frete img{height:680px}}
+@media(min-width:1024px){.setor,.setor .txt{min-height:600px}.frete img{height:600px}.frete h2{font-size:3rem}}
+@media(min-width:1280px){.setor,.setor .txt{min-height:680px}.frete img{height:680px}}
 
 /* about */
 .about{background:#fcfbf8;padding:3.5rem 0}
@@ -244,13 +245,43 @@ p,h1,h2{margin:0}
   </div>
  </section>
 
- <section class="bn mesa blk" aria-label="Cama, mesa e banho">
-  <img data-bn loading="lazy" decoding="async" src="/assets/banner-mesa.webp" width="1344" height="752" alt="Cliente organizando a mesa de jantar com utensílios de madeira e louças ALNA">
+ <section class="bn setor blk" aria-label="Cozinha">
+  <img data-bn loading="lazy" decoding="async" src="/assets/setor-cozinha.webp" width="1344" height="752" style="object-position:55% 0" alt="Cliente com colheres de madeira na cozinha da ALNA">
   <div class="txt"><div>
-   <p class="kick">Cama, mesa e banho</p>
-   <h2 style="text-align:inherit">Transforme sua mesa em um momento especial.</h2>
-   <p class="sub">Louças, utensílios de madeira e toalhas que unem beleza e praticidade em cada detalhe.</p>
-   <a class="btn btn-green" href="https://store.alna.sale/loja">Ver produtos →</a>
+   <p class="kick">Cozinha</p>
+   <h2 style="text-align:inherit">Utensílios de madeira para o seu dia a dia.</h2>
+   <p class="sub">Colheres, utensílios e itens práticos para cozinhar com mais conforto.</p>
+   <a class="btn btn-green" href="https://store.alna.sale/loja/cozinha">Ver cozinha →</a>
+  </div></div>
+ </section>
+
+ <section class="bn setor blk" aria-label="Toalhas e banho">
+  <img data-bn loading="lazy" decoding="async" src="/assets/setor-toalhas.webp" width="1344" height="752" style="object-position:55% 0" alt="Cliente ao lado de toalhas brancas e creme da ALNA no banheiro">
+  <div class="txt"><div>
+   <p class="kick">Toalhas e banho</p>
+   <h2 style="text-align:inherit">Toalhas macias para o seu banho.</h2>
+   <p class="sub">Toalhas que unem maciez e praticidade no seu banheiro.</p>
+   <a class="btn btn-green" href="https://store.alna.sale/loja/toalhas">Ver toalhas →</a>
+  </div></div>
+ </section>
+
+ <section class="bn setor blk" aria-label="Roupas fitness">
+  <img data-bn loading="lazy" decoding="async" src="/assets/setor-roupas.webp" width="1344" height="752" style="object-position:55% 0" alt="Cliente ao lado de um cabideiro com roupas fitness da ALNA">
+  <div class="txt"><div>
+   <p class="kick">Roupas</p>
+   <h2 style="text-align:inherit">Roupas fitness para treinar e viver.</h2>
+   <p class="sub">Peças confortáveis para o seu treino e o seu dia.</p>
+   <a class="btn btn-green" href="https://store.alna.sale/loja/roupas">Ver roupas →</a>
+  </div></div>
+ </section>
+
+ <section class="bn setor blk" aria-label="Ferramentas">
+  <img data-bn loading="lazy" decoding="async" src="/assets/setor-ferramentas.webp" width="1344" height="752" style="object-position:55% 0" alt="Cliente em uma oficina de madeira com ferramentas da ALNA">
+  <div class="txt"><div>
+   <p class="kick">Ferramentas</p>
+   <h2 style="text-align:inherit">Ferramentas práticas para a sua casa.</h2>
+   <p class="sub">Itens úteis para resolver o dia a dia com praticidade.</p>
+   <a class="btn btn-green" href="https://store.alna.sale/loja/ferramentas">Ver ferramentas →</a>
   </div></div>
  </section>
 
