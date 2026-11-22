@@ -257,3 +257,9 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **Decisão do dono:** ao clicar numa categoria na barra lateral (e na gaveta do celular), a página vai para /loja/<categoria>; "Todos os produtos" vai para /loja. Antes os botões só filtravam na mesma página e o endereço não mudava.
 - **Onde está:** src/routes/loja.tsx (componente Catalog): os botões viraram links (TanStack Link).
 - **Verificado (dev local):** clique em Toalhas, Cozinha, Ferramentas e Todos os produtos muda a URL e marca a categoria certa; gaveta do celular funciona e fecha ao escolher.
+
+## 21/11/2026 — Preço sem desconto por 30 dias (margem p/ promo 20% em todas as variações)
+- **Decisão do dono:** todas as 71 variações com **margem p/ promo 20%** e **desconto no anúncio 0%**, por 30 dias, para o preço normal ficar como preço praticado (regra do Google sobre preço "de", ver PENDENCIAS). Depois dos 30 dias, o dono recoloca o desconto.
+- **Efeito no cliente (medido no banco):** os 66 produtos com custo sobem em média 44% (cerca de R$ 8,97 por item). Ex.: toalha TOA_PAISAGEM_1, de R$ 19,89 para R$ 28,57.
+- **Início:** 21/11/2026. **Revisão prevista:** 21/12/2026, quando o dono decide o desconto.
+- **Pendente:** não pedir análise no Merchant Center antes da revisão; o Google precisa do histórico de preço normal.
