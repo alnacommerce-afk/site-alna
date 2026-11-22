@@ -7,7 +7,7 @@
 - Falta: fazer um pedido pequeno de teste (Pix e cartão) e conferir se o valor cobrado bate com o total mostrado e se a loja recebe o valor do anúncio.
 - Divergência a confirmar: a API informa validade da promoção até 08/01/2027; a tela da conta mostra 14/12/2026. O código segue a API.
 - Preços: quando a precificação for aberta depois da publicação, 66 produtos descem em média R$ 0,37 (medido antes).
-- Google (Merchant Center, conta 5856969666): aviso de Deturpação, recebido por e-mail em 21/11 às 23h17 e ainda ativo. O botão "Discordo desse problema" ficou ativo depois de "Confirmar dados". **Não pedir análise ainda** (cada pedido conta; limite de três).
+- Google (Merchant Center, conta 5856969666): aviso de Deturpação, recebido por e-mail em 21/11 às 23h17 e ainda ativo. O botão "Discordo desse problema" ficou ativo depois de "Confirmar dados". **Análise solicitada pelo dono em 21/11/2026 (Merchant Center mostra "A análise foi solicitada em 21 de nov. de 2026").** Não pedir de novo enquanto ela estiver em andamento (cada pedido conta; limite de três). Aguardar o resultado; se recusada, aguardar antes de pedir outra. Pendente: conferir se o feed de produtos (Fontes de dados) está com o mesmo preço da loja (ex.: toalha R$ 28,57).
 - Conferido em 21/11 (ao vivo):
   - Política de troca: `https://store.alna.sale/politica-de-troca-e-devolucao` responde 200 e traz razão social, CNPJ e endereço; prazo de 7 dias, frete de devolução por nossa conta, Código de Defesa do Consumidor. (O endereço `/troca-e-devolucao` que citei antes dá 404; o correto é o primeiro.)
   - Preço riscado: nenhuma das 71 variações tem preço "de" nem desconto no anúncio (0% em todas, confirmado no banco).
