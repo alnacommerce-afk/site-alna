@@ -93,10 +93,17 @@ p,h1,h2{margin:0}
 
 /* banners */
 .bn{background:#12294f;overflow:hidden}
+.bn+.bn::before{content:"";display:block;height:10px;background:linear-gradient(90deg,#12294f 0%,#f5a623 50%,#15803d 100%)}
 .bn img{width:100%;height:320px;object-fit:cover}
 .js .bn img{opacity:0;transform:scale(1.04);transition:opacity .9s ease .1s,transform 1.2s ease .1s}
 .js .in .bn img,.js .bn.in img{opacity:1;transform:none}
 .setor img{object-position:50% 0}
+.setor{cursor:pointer}
+.setor .cover{position:absolute;inset:0;z-index:0}
+.setor .txt{pointer-events:none}
+.setor .btn{position:relative;z-index:1;pointer-events:auto;animation:setor-cta-pulse 2.4s ease-in-out infinite}
+@keyframes setor-cta-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@media(prefers-reduced-motion:reduce){.setor .btn{animation:none}}
 .setor .txt{padding:2rem 1rem;text-align:center;color:#fff}
 .setor .kick{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#f5a623}
 .setor h2{margin-top:.25rem;font-size:1.5rem;font-weight:700}
@@ -115,29 +122,30 @@ p,h1,h2{margin:0}
  .wa .wa-logo{display:block;width:1.5rem;height:1.5rem;fill:currentColor}
  .wa-txt{display:none}
  .acts .iconbtn{display:none}
- .setor img{object-position:100% 0 !important}
- .setor,.frete{position:relative;height:340px}
- .setor img,.frete img{position:absolute;inset:0;width:100%;height:100%}
- .setor .txt,.frete .txt{position:absolute;padding:0;display:block;text-align:left;color:#12294f}
+ .setor{position:relative;background:#fff}
+ .setor img{position:relative;display:block;width:100%;height:auto;aspect-ratio:16/9}
+ .frete{position:relative;height:340px}
+ .frete img{position:absolute;inset:0;width:100%;height:100%}
+ .frete .txt{position:absolute;padding:0;display:block;text-align:left;color:#12294f}
  .setor .txt>div,.frete .txt>div,.frete .txt>div>div{max-width:none;margin:0;padding:0}
- .setor .txt{top:12px;left:6px;width:46%;right:auto;bottom:auto;background:#fff;padding:.5rem .6rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(18,41,79,.18)}
+ .setor .txt{position:static;display:block;padding:1rem 1rem 1.25rem;text-align:left;color:#12294f}
  .setor .kick{color:#15803d}
- .setor h2{font-size:1rem;line-height:1.2;color:#12294f}
+ .setor h2{font-size:1.25rem;line-height:1.2;color:#12294f}
  .setor p.sub{display:none}
- .setor .btn{margin-top:.625rem;padding:.4rem .75rem;font-size:.8rem}
+ .setor .btn{margin-top:.75rem;padding:.6rem 1rem;font-size:.9rem}
  .frete .txt{top:12px;left:6px;width:40%;right:auto;bottom:auto;background:#fff;padding:.4rem .5rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(18,41,79,.18)}
  .frete .tag{font-size:.55rem;padding:.15rem .45rem}
  .frete h2{font-size:1.25rem;line-height:1.1;color:#12294f;margin-top:.25rem;white-space:nowrap}
  .frete p.sub{font-size:.72rem;line-height:1.25;color:#12294f;margin-top:.2rem}
  .frete .btn{position:absolute;left:0;top:216px;margin:0;padding:.4rem .7rem;font-size:.75rem}
- .setor::after{content:"";position:absolute;left:0;right:0;bottom:0;height:96px;background:linear-gradient(to bottom,rgba(255,198,26,0),#ffc61a);pointer-events:none}
+ .setor::after{display:none}
 }
 @media(min-width:768px){
  .setor,.frete{position:relative}
  .setor img{position:absolute;inset:0;height:100%;object-position:35% 0}
  .setor{min-height:520px}
  .setor::after{content:"";position:absolute;inset:0;background:linear-gradient(to left,#12294f,rgba(18,41,79,.8),rgba(18,41,79,.1));pointer-events:none}
- .setor .txt{position:relative;z-index:1;max-width:72rem;margin:0 auto;min-height:520px;display:flex;align-items:center;justify-content:flex-end;padding:3.5rem 1rem;text-align:right}
+ .setor .txt{position:relative;max-width:72rem;margin:0 auto;min-height:520px;display:flex;align-items:center;justify-content:flex-end;padding:3.5rem 1rem;text-align:right}
  .setor .txt>div{max-width:24rem}
  .frete img{height:520px}
  .frete .txt{position:absolute;inset:0;display:flex;align-items:center;padding:0;text-align:left}
@@ -246,6 +254,7 @@ p,h1,h2{margin:0}
  </section>
 
  <section class="bn setor blk" aria-label="Cozinha">
+  <a class="cover" href="https://store.alna.sale/loja/cozinha" aria-label="Ver cozinha"></a>
   <img data-bn loading="lazy" decoding="async" src="/assets/setor-cozinha.webp" width="1344" height="752" style="object-position:55% 0" alt="Cliente com colheres de madeira na cozinha da ALNA">
   <div class="txt"><div>
    <p class="kick">Cozinha</p>
@@ -256,6 +265,7 @@ p,h1,h2{margin:0}
  </section>
 
  <section class="bn setor blk" aria-label="Toalhas e banho">
+  <a class="cover" href="https://store.alna.sale/loja/toalhas" aria-label="Ver toalhas"></a>
   <img data-bn loading="lazy" decoding="async" src="/assets/setor-toalhas.webp" width="1344" height="752" style="object-position:55% 0" alt="Cliente ao lado de toalhas brancas e creme da ALNA no banheiro">
   <div class="txt"><div>
    <p class="kick">Toalhas e banho</p>
@@ -266,6 +276,7 @@ p,h1,h2{margin:0}
  </section>
 
  <section class="bn setor blk" aria-label="Roupas fitness">
+  <a class="cover" href="https://store.alna.sale/loja/roupas" aria-label="Ver roupas"></a>
   <img data-bn loading="lazy" decoding="async" src="/assets/setor-roupas.webp" width="1344" height="752" style="object-position:55% 0" alt="Cliente ao lado de um cabideiro com roupas fitness da ALNA">
   <div class="txt"><div>
    <p class="kick">Roupas</p>
@@ -276,6 +287,7 @@ p,h1,h2{margin:0}
  </section>
 
  <section class="bn setor blk" aria-label="Ferramentas">
+  <a class="cover" href="https://store.alna.sale/loja/ferramentas" aria-label="Ver ferramentas"></a>
   <img data-bn loading="lazy" decoding="async" src="/assets/setor-ferramentas.webp" width="1344" height="752" style="object-position:55% 0" alt="Cliente em uma oficina de madeira com ferramentas da ALNA">
   <div class="txt"><div>
    <p class="kick">Ferramentas</p>

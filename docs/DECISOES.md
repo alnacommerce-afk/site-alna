@@ -268,6 +268,8 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **Decisão do dono:** aprovou aplicar na Home os banners das cenas da embaixadora (rosto e corpo fiéis à foto oficial, roupa e posição trocadas). Cada banner leva à categoria do setor: Cozinha → /loja/cozinha, Toalhas e banho → /loja/toalhas, Roupas fitness → /loja/roupas, Ferramentas → /loja/ferramentas. O banner de frete grátis continua indo para /loja.
 - **Substituiu:** o banner "Cama, mesa e banho" (`banner-mesa.webp`, agora sem uso na Home; arquivo mantido).
 - **Onde está:** `home-cloudflare/index.html` (seção do carrossel, classe `.setor`; CSS antes `.mesa`). Arquivos novos: `home-cloudflare/assets/setor-cozinha.webp`, `setor-toalhas.webp`, `setor-roupas.webp`, `setor-ferramentas.webp`.
-- **Encaixe:** no celular, cartão branco no canto superior esquerdo com a imagem deslocada para a direita, para o texto não cobrir o rosto. No computador, texto à direita sobre a imagem, como o banner anterior.
+- **Encaixe (atualizado em 22/11, depois de o dono ver no celular):** no celular a imagem aparece inteira (16:9) e o texto fica abaixo dela, em fundo branco, sem cobrir rosto nem produto; a faixa amarela sobre a base da foto saiu. No computador, texto à direita sobre a imagem, como antes.
+- **Clique:** qualquer ponto do banner leva ao setor (link escondido por cima da imagem); o botão "Ver ..." é link próprio e pulsa como o botão principal da Home.
+- **Separação entre banners:** faixa de 10 px com degradê azul-marinho → dourado → verde entre um banner e o seguinte, para não parecerem um bloco único.
 - **Peso e velocidade:** quatro imagens de 38 a 54 KB, todas com carregamento preguiçoso e abaixo da primeira tela. A primeira tela não muda. Ao rolar, carregam cerca de 170 KB a mais (menos os 60 KB do banner antigo). Não medido no celular ainda.
 - **Pendente:** a cena da caixa com fita (`setor-caixa`, gerada, não aplicada) e o rosto a conferir com a foto oficial.

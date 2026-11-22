@@ -67,3 +67,17 @@ Acrescenta sempre; nunca apaga. Cada entrada: data, computador, o que foi verifi
   - Conta e carrinho ainda aparecem como ícones no cabeçalho do celular (commit local, não enviado).
   - Logo oficial do WhatsApp ainda não aparece; o ícone atual é o de balão genérico (mesmo motivo).
 - Veredito: FEITO para o commit 1091bed; os dois itens acima aguardam a próxima publicação.
+
+## 21/11/2026 — Conferência ao vivo: categorias da loja (commit 6429183)
+- **Computador:** HOME. **Tipo:** só leitura, navegador integrado, store.alna.sale ao vivo.
+- **Computador (desktop, 1ª checagem):** em /loja/toalhas a barra mostra Todos os produtos→/loja, Cozinha→/loja/cozinha, Toalhas→/loja/toalhas, Roupas→/loja/roupas, Ferramentas→/loja/ferramentas. Clique em Roupas, Cozinha, Ferramentas, Todos os produtos e Toalhas: a URL mudou em cada um, a categoria ficou em negrito e a contagem de produtos mudou (7, 9, 3, 28, 9).
+- **Celular (375x812):** a gaveta "Veja nossas categorias" abriu, Ferramentas levou a /loja/ferramentas (3 produtos) e a gaveta fechou.
+- **Console:** sem erros.
+- **Observação (não é deste ajuste):** ao entrar na categoria aparece o pop-up "Seja bem-vindo" com cupom de 2
+## 21/11/2026 — Conferência ao vivo: categorias da loja (commit 6429183)
+- **Computador:** HOME. **Tipo:** só leitura, navegador integrado, store.alna.sale ao vivo.
+- **Desktop:** em /loja/toalhas a barra mostra Todos os produtos→/loja, Cozinha→/loja/cozinha, Toalhas→/loja/toalhas, Roupas→/loja/roupas, Ferramentas→/loja/ferramentas. Clique em Roupas, Cozinha, Ferramentas, Todos os produtos e Toalhas: a URL mudou em cada um, a categoria ficou em negrito e a contagem de produtos mudou (7, 9, 3, 28, 9).
+- **Celular (375x812):** a gaveta "Veja nossas categorias" abriu, Ferramentas levou a /loja/ferramentas (3 produtos) e a gaveta fechou.
+- **Console:** sem erros.
+- **Observação (não é deste ajuste):** ao entrar numa categoria aparece o pop-up "Seja bem-vindo" com cupom de 2%, a captação de e-mail já existente.
+- **Veredito:** FEITO para os botões de categoria (desktop e celular). Não verificado: o restante da loja e o robô do Google.
