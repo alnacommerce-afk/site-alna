@@ -25,8 +25,7 @@ const MARKETING_PATHS = [
 ];
 const FRETE_PATHS = ["/admin/marketing/gasto-frete", "/admin/medidas"];
 const METRICAS_PATHS = ["/admin/metricas", "/admin/marketing/campanhas"];
-const CONEXOES_PATHS = ["/admin/conexoes"];
-const CONFIGURACOES_PATHS = ["/admin/configuracoes", ...CONEXOES_PATHS];
+const CONFIGURACOES_PATHS = ["/admin/configuracoes"];
 
 // A menu section that folds like a drawer: click the title to hide/show its items. It opens by itself
 // when the current page belongs to it, and remembers the last choice in this browser. A section can
@@ -193,12 +192,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </NavGroup>
 
           <NavGroup id="configuracoes" title="Configurações" paths={CONFIGURACOES_PATHS}>
-            <NavItem to="/admin/configuracoes">Dados da loja</NavItem>
-            <NavItem to="/admin/configuracao">Configuração</NavItem>
-            <NavItem to="/admin/configuracoes" hash="envio-frete">
-              Envio / Frete
-            </NavItem>
-            <NavItem to="/admin/conexoes">Conexões de API</NavItem>
+            <NavItem to="/admin/configuracoes/dado-loja">Dados da loja</NavItem>
+            <NavItem to="/admin/configuracoes/configuracao">Configuração</NavItem>
+            <NavItem to="/admin/configuracoes/envio-frete">Envio / Frete</NavItem>
+            <NavItem to="/admin/configuracoes/conexoes">Conexões de API</NavItem>
           </NavGroup>
         </nav>
         <Button

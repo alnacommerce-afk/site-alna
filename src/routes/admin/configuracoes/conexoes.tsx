@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export const Route = createFileRoute("/admin/conexoes")({
+export const Route = createFileRoute("/admin/configuracoes/conexoes")({
   head: () => ({
     meta: [{ name: "robots", content: "noindex, nofollow" }],
   }),

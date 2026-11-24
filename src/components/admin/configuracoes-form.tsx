@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -11,12 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 
-export const Route = createFileRoute("/admin/configuracoes")({
-  head: () => ({
-    meta: [{ name: "robots", content: "noindex, nofollow" }],
-  }),
-  component: ConfiguracoesPage,
-});
 
 type SettingsForm = {
   storeName: string;
@@ -66,7 +59,7 @@ const emptyForm: SettingsForm = {
   metaPixelId: "",
 };
 
-function ConfiguracoesPage() {
+export function ConfiguracoesForm({ section }: { section: "dado-loja" | "envio-frete" }) {
   const [form, setForm] = useState<SettingsForm>(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -168,14 +161,18 @@ function ConfiguracoesPage() {
   return (
     <AdminShell>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold">Configurações</h1>
+        <h1 className="text-xl font-semibold">{section === "dado-loja" ? "Dados da loja" : "Envio / Frete"}</h1>
         <p className="text-sm text-muted-foreground">
-          Dados da empresa e contato exibidos no site (rodapé, políticas e WhatsApp).
+          {section === "dado-loja"
+            ? "Dados da empresa e contato exibidos no site (rodapé, políticas e WhatsApp)."
+            : "Endereço de origem e frete grátis usados no site e no checkout."}
         </p>
       </div>
 
       <Card className="max-w-2xl">
         <CardContent className="space-y-6 p-6">
+          {section === "dado-loja" ? (
+          <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1">
               <Label htmlFor="store-name">Nome da loja</Label>
@@ -282,6 +279,10 @@ function ConfiguracoesPage() {
             />
           </div>
 
+          </>
+          ) : null}
+
+          {section === "envio-frete" ? (
           <div id="envio-frete" className="space-y-4 border-t pt-4">
             <div>
               <h2 className="text-sm font-semibold text-[#12294f]">Envio / Frete</h2>
@@ -375,6 +376,9 @@ function ConfiguracoesPage() {
             </div>
           </div>
 
+          ) : null}
+
+          {section === "dado-loja" ? (
           <div className="space-y-4 border-t pt-4">
             <div>
               <h2 className="text-sm font-semibold text-[#12294f]">Meta Pixel</h2>
@@ -396,6 +400,7 @@ function ConfiguracoesPage() {
               </div>
             </div>
           </div>
+          ) : null}
 
           <div className="flex justify-end border-t pt-4">
             <Button onClick={handleSave} disabled={saving}>

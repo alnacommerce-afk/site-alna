@@ -174,3 +174,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito:** nova tela `/admin/configuracao` (src/routes/admin/configuracao.tsx) só com as duas opções exclusivas (transparente | Asaas) e botão Salvar; removida a seção de checkout de `/admin/configuracoes` (Dados da loja e Envio/Frete voltam a ser só o que eram); item "Configuração" no menu; `routeTree.gen.ts` regenerado pelo build; `tsc` sem erros.
 - **Não feito:** publicar a tela no Lovable; publicar a função `checkout-create` na Supabase (a opção da Asaas só funciona depois disso); compra de teste (depende do dono).
 - **Próximo passo:** dono publica o site e publica a função; depois testamos com uma compra de teste, com ok do dono.
+
+## 2026-11-24 — Computador HOME — Configurações separadas por endereço
+- **Pedido do dono:** cada item do menu com o seu endereço e só o seu conteúdo: `/admin/configuracoes/dado-loja`, `/admin/configuracoes/configuracao`, `/admin/configuracoes/envio-frete`, `/admin/configuracoes/conexoes`.
+- **Feito:** formulário de Dados da loja e Envio/Frete em `src/components/admin/configuracoes-form.tsx` (uma seção por tela); telas novas em `src/routes/admin/configuracoes/`; Configuração e Conexões movidas para a pasta; menu e link da home atualizados; `/admin/configuracoes` e `/admin/conexoes` antigos foram removidos. Build e `tsc` sem erros.
+- **Ponto a confirmar:** o Meta Pixel ficou em "Dados da loja". Se o dono preferir em "Conexões", é mover.
+- **Não feito:** publicar no Lovable.

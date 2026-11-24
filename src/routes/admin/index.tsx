@@ -167,7 +167,7 @@ function AdminOverviewPage() {
             {visitors.status === "not_configured" ? (
               <p className="mt-1 text-xs text-muted-foreground">
                 Conecte o Google Analytics em{" "}
-                <Link to="/admin/conexoes" className="underline">
+                <Link to="/admin/configuracoes/conexoes" className="underline">
                   Conexões de API
                 </Link>{" "}
                 para ativar.

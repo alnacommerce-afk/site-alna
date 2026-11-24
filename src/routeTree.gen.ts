@@ -21,9 +21,6 @@ import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminClientesRouteImport } from './routes/admin/clientes'
-import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
-import { Route as AdminConfiguracaoRouteImport } from './routes/admin/configuracao'
-import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminEmailsRouteImport } from './routes/admin/emails'
 import { Route as AdminListaNegraRouteImport } from './routes/admin/lista-negra'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
@@ -40,6 +37,10 @@ import { Route as ProdutoSlugRouteImport } from './routes/produto/$slug'
 import { Route as AdminCatalogoIndexRouteImport } from './routes/admin/catalogo/index'
 import { Route as AdminCatalogoNovoRouteImport } from './routes/admin/catalogo/novo'
 import { Route as AdminCategoriasIndexRouteImport } from './routes/admin/categorias/index'
+import { Route as AdminConfiguracoesConexoesRouteImport } from './routes/admin/configuracoes/conexoes'
+import { Route as AdminConfiguracoesConfiguracaoRouteImport } from './routes/admin/configuracoes/configuracao'
+import { Route as AdminConfiguracoesDadoLojaRouteImport } from './routes/admin/configuracoes/dado-loja'
+import { Route as AdminConfiguracoesEnvioFreteRouteImport } from './routes/admin/configuracoes/envio-frete'
 import { Route as AdminEstoqueIndexRouteImport } from './routes/admin/estoque/index'
 import { Route as AdminMedidasIndexRouteImport } from './routes/admin/medidas/index'
 import { Route as AdminPedidosIndexRouteImport } from './routes/admin/pedidos/index'
@@ -113,21 +114,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminClientesRoute = AdminClientesRouteImport.update({
   id: '/admin/clientes',
   path: '/admin/clientes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminConexoesRoute = AdminConexoesRouteImport.update({
-  id: '/admin/conexoes',
-  path: '/admin/conexoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminConfiguracaoRoute = AdminConfiguracaoRouteImport.update({
-  id: '/admin/configuracao',
-  path: '/admin/configuracao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
-  id: '/admin/configuracoes',
-  path: '/admin/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminEmailsRoute = AdminEmailsRouteImport.update({
@@ -210,6 +196,30 @@ const AdminCategoriasIndexRoute = AdminCategoriasIndexRouteImport.update({
   path: '/admin/categorias/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminConfiguracoesConexoesRoute =
+  AdminConfiguracoesConexoesRouteImport.update({
+    id: '/admin/configuracoes/conexoes',
+    path: '/admin/configuracoes/conexoes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminConfiguracoesConfiguracaoRoute =
+  AdminConfiguracoesConfiguracaoRouteImport.update({
+    id: '/admin/configuracoes/configuracao',
+    path: '/admin/configuracoes/configuracao',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminConfiguracoesDadoLojaRoute =
+  AdminConfiguracoesDadoLojaRouteImport.update({
+    id: '/admin/configuracoes/dado-loja',
+    path: '/admin/configuracoes/dado-loja',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminConfiguracoesEnvioFreteRoute =
+  AdminConfiguracoesEnvioFreteRouteImport.update({
+    id: '/admin/configuracoes/envio-frete',
+    path: '/admin/configuracoes/envio-frete',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminEstoqueIndexRoute = AdminEstoqueIndexRouteImport.update({
   id: '/admin/estoque/',
   path: '/admin/estoque/',
@@ -296,9 +306,6 @@ export interface FileRoutesByFullPath {
   '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/clientes': typeof AdminClientesRoute
-  '/admin/conexoes': typeof AdminConexoesRoute
-  '/admin/configuracao': typeof AdminConfiguracaoRoute
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/lista-negra': typeof AdminListaNegraRoute
   '/admin/login': typeof AdminLoginRoute
@@ -314,6 +321,10 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/conta/': typeof ContaIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
+  '/admin/configuracoes/conexoes': typeof AdminConfiguracoesConexoesRoute
+  '/admin/configuracoes/configuracao': typeof AdminConfiguracoesConfiguracaoRoute
+  '/admin/configuracoes/dado-loja': typeof AdminConfiguracoesDadoLojaRoute
+  '/admin/configuracoes/envio-frete': typeof AdminConfiguracoesEnvioFreteRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
   '/admin/estoque/': typeof AdminEstoqueIndexRoute
@@ -342,9 +353,6 @@ export interface FileRoutesByTo {
   '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/clientes': typeof AdminClientesRoute
-  '/admin/conexoes': typeof AdminConexoesRoute
-  '/admin/configuracao': typeof AdminConfiguracaoRoute
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/lista-negra': typeof AdminListaNegraRoute
   '/admin/login': typeof AdminLoginRoute
@@ -360,6 +368,10 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/conta': typeof ContaIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
+  '/admin/configuracoes/conexoes': typeof AdminConfiguracoesConexoesRoute
+  '/admin/configuracoes/configuracao': typeof AdminConfiguracoesConfiguracaoRoute
+  '/admin/configuracoes/dado-loja': typeof AdminConfiguracoesDadoLojaRoute
+  '/admin/configuracoes/envio-frete': typeof AdminConfiguracoesEnvioFreteRoute
   '/admin/catalogo': typeof AdminCatalogoIndexRoute
   '/admin/categorias': typeof AdminCategoriasIndexRoute
   '/admin/estoque': typeof AdminEstoqueIndexRoute
@@ -389,9 +401,6 @@ export interface FileRoutesById {
   '/sobre': typeof SobreRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/clientes': typeof AdminClientesRoute
-  '/admin/conexoes': typeof AdminConexoesRoute
-  '/admin/configuracao': typeof AdminConfiguracaoRoute
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/lista-negra': typeof AdminListaNegraRoute
   '/admin/login': typeof AdminLoginRoute
@@ -407,6 +416,10 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/conta/': typeof ContaIndexRoute
   '/admin/catalogo/novo': typeof AdminCatalogoNovoRoute
+  '/admin/configuracoes/conexoes': typeof AdminConfiguracoesConexoesRoute
+  '/admin/configuracoes/configuracao': typeof AdminConfiguracoesConfiguracaoRoute
+  '/admin/configuracoes/dado-loja': typeof AdminConfiguracoesDadoLojaRoute
+  '/admin/configuracoes/envio-frete': typeof AdminConfiguracoesEnvioFreteRoute
   '/admin/catalogo/': typeof AdminCatalogoIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
   '/admin/estoque/': typeof AdminEstoqueIndexRoute
@@ -437,9 +450,6 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/termos-de-uso'
     | '/admin/clientes'
-    | '/admin/conexoes'
-    | '/admin/configuracao'
-    | '/admin/configuracoes'
     | '/admin/emails'
     | '/admin/lista-negra'
     | '/admin/login'
@@ -455,6 +465,10 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/conta/'
     | '/admin/catalogo/novo'
+    | '/admin/configuracoes/conexoes'
+    | '/admin/configuracoes/configuracao'
+    | '/admin/configuracoes/dado-loja'
+    | '/admin/configuracoes/envio-frete'
     | '/admin/catalogo/'
     | '/admin/categorias/'
     | '/admin/estoque/'
@@ -483,9 +497,6 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/termos-de-uso'
     | '/admin/clientes'
-    | '/admin/conexoes'
-    | '/admin/configuracao'
-    | '/admin/configuracoes'
     | '/admin/emails'
     | '/admin/lista-negra'
     | '/admin/login'
@@ -501,6 +512,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/conta'
     | '/admin/catalogo/novo'
+    | '/admin/configuracoes/conexoes'
+    | '/admin/configuracoes/configuracao'
+    | '/admin/configuracoes/dado-loja'
+    | '/admin/configuracoes/envio-frete'
     | '/admin/catalogo'
     | '/admin/categorias'
     | '/admin/estoque'
@@ -529,9 +544,6 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/termos-de-uso'
     | '/admin/clientes'
-    | '/admin/conexoes'
-    | '/admin/configuracao'
-    | '/admin/configuracoes'
     | '/admin/emails'
     | '/admin/lista-negra'
     | '/admin/login'
@@ -547,6 +559,10 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/conta/'
     | '/admin/catalogo/novo'
+    | '/admin/configuracoes/conexoes'
+    | '/admin/configuracoes/configuracao'
+    | '/admin/configuracoes/dado-loja'
+    | '/admin/configuracoes/envio-frete'
     | '/admin/catalogo/'
     | '/admin/categorias/'
     | '/admin/estoque/'
@@ -576,9 +592,6 @@ export interface RootRouteChildren {
   SobreRoute: typeof SobreRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   AdminClientesRoute: typeof AdminClientesRoute
-  AdminConexoesRoute: typeof AdminConexoesRoute
-  AdminConfiguracaoRoute: typeof AdminConfiguracaoRoute
-  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   AdminListaNegraRoute: typeof AdminListaNegraRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -594,6 +607,10 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   ContaIndexRoute: typeof ContaIndexRoute
   AdminCatalogoNovoRoute: typeof AdminCatalogoNovoRoute
+  AdminConfiguracoesConexoesRoute: typeof AdminConfiguracoesConexoesRoute
+  AdminConfiguracoesConfiguracaoRoute: typeof AdminConfiguracoesConfiguracaoRoute
+  AdminConfiguracoesDadoLojaRoute: typeof AdminConfiguracoesDadoLojaRoute
+  AdminConfiguracoesEnvioFreteRoute: typeof AdminConfiguracoesEnvioFreteRoute
   AdminCatalogoIndexRoute: typeof AdminCatalogoIndexRoute
   AdminCategoriasIndexRoute: typeof AdminCategoriasIndexRoute
   AdminEstoqueIndexRoute: typeof AdminEstoqueIndexRoute
@@ -695,27 +712,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/clientes'
       fullPath: '/admin/clientes'
       preLoaderRoute: typeof AdminClientesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/conexoes': {
-      id: '/admin/conexoes'
-      path: '/admin/conexoes'
-      fullPath: '/admin/conexoes'
-      preLoaderRoute: typeof AdminConexoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/configuracao': {
-      id: '/admin/configuracao'
-      path: '/admin/configuracao'
-      fullPath: '/admin/configuracao'
-      preLoaderRoute: typeof AdminConfiguracaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/configuracoes': {
-      id: '/admin/configuracoes'
-      path: '/admin/configuracoes'
-      fullPath: '/admin/configuracoes'
-      preLoaderRoute: typeof AdminConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/emails': {
@@ -830,6 +826,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/configuracoes/conexoes': {
+      id: '/admin/configuracoes/conexoes'
+      path: '/admin/configuracoes/conexoes'
+      fullPath: '/admin/configuracoes/conexoes'
+      preLoaderRoute: typeof AdminConfiguracoesConexoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/configuracoes/configuracao': {
+      id: '/admin/configuracoes/configuracao'
+      path: '/admin/configuracoes/configuracao'
+      fullPath: '/admin/configuracoes/configuracao'
+      preLoaderRoute: typeof AdminConfiguracoesConfiguracaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/configuracoes/dado-loja': {
+      id: '/admin/configuracoes/dado-loja'
+      path: '/admin/configuracoes/dado-loja'
+      fullPath: '/admin/configuracoes/dado-loja'
+      preLoaderRoute: typeof AdminConfiguracoesDadoLojaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/configuracoes/envio-frete': {
+      id: '/admin/configuracoes/envio-frete'
+      path: '/admin/configuracoes/envio-frete'
+      fullPath: '/admin/configuracoes/envio-frete'
+      preLoaderRoute: typeof AdminConfiguracoesEnvioFreteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/estoque/': {
       id: '/admin/estoque/'
       path: '/admin/estoque'
@@ -936,9 +960,6 @@ const rootRouteChildren: RootRouteChildren = {
   SobreRoute: SobreRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
   AdminClientesRoute: AdminClientesRoute,
-  AdminConexoesRoute: AdminConexoesRoute,
-  AdminConfiguracaoRoute: AdminConfiguracaoRoute,
-  AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   AdminListaNegraRoute: AdminListaNegraRoute,
   AdminLoginRoute: AdminLoginRoute,
@@ -954,6 +975,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   ContaIndexRoute: ContaIndexRoute,
   AdminCatalogoNovoRoute: AdminCatalogoNovoRoute,
+  AdminConfiguracoesConexoesRoute: AdminConfiguracoesConexoesRoute,
+  AdminConfiguracoesConfiguracaoRoute: AdminConfiguracoesConfiguracaoRoute,
+  AdminConfiguracoesDadoLojaRoute: AdminConfiguracoesDadoLojaRoute,
+  AdminConfiguracoesEnvioFreteRoute: AdminConfiguracoesEnvioFreteRoute,
   AdminCatalogoIndexRoute: AdminCatalogoIndexRoute,
   AdminCategoriasIndexRoute: AdminCategoriasIndexRoute,
   AdminEstoqueIndexRoute: AdminEstoqueIndexRoute,

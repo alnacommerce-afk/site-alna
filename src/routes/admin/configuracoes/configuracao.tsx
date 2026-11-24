@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/admin/configuracao")({
+export const Route = createFileRoute("/admin/configuracoes/configuracao")({
   head: () => ({
     meta: [{ name: "robots", content: "noindex, nofollow" }],
   }),
