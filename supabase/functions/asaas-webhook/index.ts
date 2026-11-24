@@ -19,11 +19,13 @@ function jsonResponse(body: unknown, status = 200) {
 }
 
 const PAID_EVENTS = new Set(["PAYMENT_CONFIRMED", "PAYMENT_RECEIVED"]);
-const FAILED_EVENTS = new Set([
+// Recusas do cartão NÃO cancelam o pedido: o cliente pode tentar outro cartão na mesma cobrança e, se
+// pagar, a aprovação (PAID_EVENTS) coloca o pedido como pago. Só a cobrança apagada cancela o pedido.
+const REFUSED_EVENTS = new Set([
   "PAYMENT_CREDIT_CARD_CAPTURE_REFUSED",
   "PAYMENT_REPROVED_BY_RISK_ANALYSIS",
-  "PAYMENT_DELETED",
 ]);
+const FAILED_EVENTS = new Set(["PAYMENT_DELETED"]);
 const REFUNDED_EVENTS = new Set(["PAYMENT_REFUNDED", "PAYMENT_PARTIALLY_REFUNDED"]);
 
 Deno.serve(async (req) => {

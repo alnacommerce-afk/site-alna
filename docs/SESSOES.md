@@ -185,3 +185,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Pedido do dono:** cliente de primeira compra precisa entender o que vai acontecer ao pagar com cartão, sem desconfiança.
 - **Feito:** a janela "Processando pagamento" passa a explicar, no modo Asaas e no cartão: que vai para a página segura da Asaas, que o cartão não passa pela loja, que a confirmação chega por e-mail, e o WhatsApp para dúvidas. Pix e modo transparente seguem com a mensagem atual.
 - **Não feito:** publicar no Lovable; publicar a função `checkout-create` na Supabase (sem ela, o modo Asaas dá erro ao finalizar).
+
+## 2026-11-24 (noite) — Computador HOME — recusa do cartão não cancela mais o pedido
+- **Caso:** pedido de teste 10a9ccb1 (R$ 47,10, cartão 1x na página da Asaas). A 1ª tentativa foi recusada e o pedido foi cancelado; a 2ª foi aprovada, mas o pedido ficou cancelado porque a regra só aceitava pendente → pago.
+- **Decisão do dono:** uma recusa não encerra o pedido; o cliente pode tentar outro cartão na mesma cobrança. Quando a cobrança for paga, o pedido passa a pago.
+- **Feito:** `asaas-webhook` — recusas do cartão (PAYMENT_CREDIT_CARD_CAPTURE_REFUSED e PAYMENT_REPROVED_BY_RISK_ANALYSIS) deixam o pedido pendente; só PAYMENT_DELETED cancela. Pedido 10a9ccb1 atualizado para pago (dados).
+- **Não feito:** publicar a função `asaas-webhook` na Supabase; enviar a confirmação de pagamento ao cliente do pedido 10a9ccb1 (o e-mail não saiu); decidir se o pedido de teste (R$ 47,10) fica como venda ou é estornado.
