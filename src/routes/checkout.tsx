@@ -632,7 +632,25 @@ function CheckoutPage() {
           {resultOrderId ? (
             <OrderStatusPanel orderId={resultOrderId} />
           ) : (
-            <p className="py-8 text-center text-sm text-muted-foreground">Processando pagamento...</p>
+            paymentMethod === "credit_card" && checkoutMode === "asaas" ? (
+              <div className="space-y-4 py-4 text-sm text-[#12294f]">
+                <p className="text-center font-semibold">Estamos preparando o seu pagamento</p>
+                <p className="text-muted-foreground">
+                  Em alguns segundos você será levado para a <strong>página segura da Asaas</strong>, empresa
+                  especializada em pagamentos. Não feche esta janela.
+                </p>
+                <ol className="list-decimal space-y-2 pl-5 text-muted-foreground">
+                  <li>Lá você digita os dados do seu cartão e confirma o pagamento.</li>
+                  <li>Os dados do cartão são enviados direto para a Asaas. A ALNA não vê nem guarda o número do seu cartão.</li>
+                  <li>Depois do pagamento, a própria Asaas mostra a confirmação. A confirmação do pedido também chega no seu e-mail.</li>
+                </ol>
+                <p className="text-xs text-muted-foreground">
+                  Ficou com alguma dúvida? Fale com a gente pelo WhatsApp (51) 99491-1125.
+                </p>
+              </div>
+            ) : (
+              <p className="py-8 text-center text-sm text-muted-foreground">Processando pagamento...</p>
+            )
           )}
         </DialogContent>
       </Dialog>

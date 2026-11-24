@@ -180,3 +180,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito:** formulário de Dados da loja e Envio/Frete em `src/components/admin/configuracoes-form.tsx` (uma seção por tela); telas novas em `src/routes/admin/configuracoes/`; Configuração e Conexões movidas para a pasta; menu e link da home atualizados; `/admin/configuracoes` e `/admin/conexoes` antigos foram removidos. Build e `tsc` sem erros.
 - **Ponto a confirmar:** o Meta Pixel ficou em "Dados da loja". Se o dono preferir em "Conexões", é mover.
 - **Não feito:** publicar no Lovable.
+
+## 2026-11-24 (fim) — Computador HOME — mensagem de orientação no checkout da Asaas
+- **Pedido do dono:** cliente de primeira compra precisa entender o que vai acontecer ao pagar com cartão, sem desconfiança.
+- **Feito:** a janela "Processando pagamento" passa a explicar, no modo Asaas e no cartão: que vai para a página segura da Asaas, que o cartão não passa pela loja, que a confirmação chega por e-mail, e o WhatsApp para dúvidas. Pix e modo transparente seguem com a mensagem atual.
+- **Não feito:** publicar no Lovable; publicar a função `checkout-create` na Supabase (sem ela, o modo Asaas dá erro ao finalizar).
