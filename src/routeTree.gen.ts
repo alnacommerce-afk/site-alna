@@ -22,6 +22,7 @@ import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminClientesRouteImport } from './routes/admin/clientes'
 import { Route as AdminConexoesRouteImport } from './routes/admin/conexoes'
+import { Route as AdminConfiguracaoRouteImport } from './routes/admin/configuracao'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin/configuracoes'
 import { Route as AdminEmailsRouteImport } from './routes/admin/emails'
 import { Route as AdminListaNegraRouteImport } from './routes/admin/lista-negra'
@@ -117,6 +118,11 @@ const AdminClientesRoute = AdminClientesRouteImport.update({
 const AdminConexoesRoute = AdminConexoesRouteImport.update({
   id: '/admin/conexoes',
   path: '/admin/conexoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConfiguracaoRoute = AdminConfiguracaoRouteImport.update({
+  id: '/admin/configuracao',
+  path: '/admin/configuracao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
@@ -291,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/conexoes': typeof AdminConexoesRoute
+  '/admin/configuracao': typeof AdminConfiguracaoRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/lista-negra': typeof AdminListaNegraRoute
@@ -336,6 +343,7 @@ export interface FileRoutesByTo {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/conexoes': typeof AdminConexoesRoute
+  '/admin/configuracao': typeof AdminConfiguracaoRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/lista-negra': typeof AdminListaNegraRoute
@@ -382,6 +390,7 @@ export interface FileRoutesById {
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/conexoes': typeof AdminConexoesRoute
+  '/admin/configuracao': typeof AdminConfiguracaoRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/lista-negra': typeof AdminListaNegraRoute
@@ -429,6 +438,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/admin/clientes'
     | '/admin/conexoes'
+    | '/admin/configuracao'
     | '/admin/configuracoes'
     | '/admin/emails'
     | '/admin/lista-negra'
@@ -474,6 +484,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/admin/clientes'
     | '/admin/conexoes'
+    | '/admin/configuracao'
     | '/admin/configuracoes'
     | '/admin/emails'
     | '/admin/lista-negra'
@@ -519,6 +530,7 @@ export interface FileRouteTypes {
     | '/termos-de-uso'
     | '/admin/clientes'
     | '/admin/conexoes'
+    | '/admin/configuracao'
     | '/admin/configuracoes'
     | '/admin/emails'
     | '/admin/lista-negra'
@@ -565,6 +577,7 @@ export interface RootRouteChildren {
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   AdminClientesRoute: typeof AdminClientesRoute
   AdminConexoesRoute: typeof AdminConexoesRoute
+  AdminConfiguracaoRoute: typeof AdminConfiguracaoRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   AdminListaNegraRoute: typeof AdminListaNegraRoute
@@ -689,6 +702,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/conexoes'
       fullPath: '/admin/conexoes'
       preLoaderRoute: typeof AdminConexoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/configuracao': {
+      id: '/admin/configuracao'
+      path: '/admin/configuracao'
+      fullPath: '/admin/configuracao'
+      preLoaderRoute: typeof AdminConfiguracaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/configuracoes': {
@@ -917,6 +937,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermosDeUsoRoute: TermosDeUsoRoute,
   AdminClientesRoute: AdminClientesRoute,
   AdminConexoesRoute: AdminConexoesRoute,
+  AdminConfiguracaoRoute: AdminConfiguracaoRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   AdminListaNegraRoute: AdminListaNegraRoute,

@@ -168,3 +168,9 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Não enviado de propósito:** `src/routes/loja.tsx` (alteração local de outra sessão, nos botões de categoria) e a nota correspondente em `docs/DECISOES.md`; `supabase/.temp/` (criada pelo CLI, não deve ir ao GitHub).
 - **Não feito:** pedido de teste (Pix e cartão) para conferir o valor cobrado. Gera cobrança real; só com ok do dono.
 - **Próximo passo:** o dono decide sobre o pedido de teste; conferir a data da promoção (14/12 na tela, 08/01/2027 na API).
+
+## 2026-11-24 — Computador HOME — Configuração do checkout (página própria)
+- **Pedido do dono:** a seção "Configuração" deve conter só a escolha do checkout; nome da loja e envio/frete ficam em outras telas.
+- **Feito:** nova tela `/admin/configuracao` (src/routes/admin/configuracao.tsx) só com as duas opções exclusivas (transparente | Asaas) e botão Salvar; removida a seção de checkout de `/admin/configuracoes` (Dados da loja e Envio/Frete voltam a ser só o que eram); item "Configuração" no menu; `routeTree.gen.ts` regenerado pelo build; `tsc` sem erros.
+- **Não feito:** publicar a tela no Lovable; publicar a função `checkout-create` na Supabase (a opção da Asaas só funciona depois disso); compra de teste (depende do dono).
+- **Próximo passo:** dono publica o site e publica a função; depois testamos com uma compra de teste, com ok do dono.
