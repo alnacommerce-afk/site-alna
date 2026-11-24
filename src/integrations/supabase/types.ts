@@ -1299,6 +1299,7 @@ export type Database = {
           id: string
           instagram_handle: string | null
           marketing_last_campaign_at: string | null
+          checkout_mode: string
           meta_pixel_id: string | null
           phone: string | null
           razao_social: string | null
@@ -1329,6 +1330,7 @@ export type Database = {
           id?: string
           instagram_handle?: string | null
           marketing_last_campaign_at?: string | null
+          checkout_mode?: string
           meta_pixel_id?: string | null
           phone?: string | null
           razao_social?: string | null
@@ -1359,6 +1361,7 @@ export type Database = {
           id?: string
           instagram_handle?: string | null
           marketing_last_campaign_at?: string | null
+          checkout_mode?: string
           meta_pixel_id?: string | null
           phone?: string | null
           razao_social?: string | null
@@ -1439,6 +1442,7 @@ export type Database = {
           id: string
           instagram_handle: string | null
           marketing_last_campaign_at: string | null
+          checkout_mode: string
           meta_pixel_id: string | null
           phone: string | null
           razao_social: string | null

@@ -156,9 +156,6 @@ Deno.serve(async (req) => {
     if (!body.shippingAddress?.zip) {
       return jsonResponse({ error: "Endereço de entrega incompleto." }, 400);
     }
-    if (body.paymentMethod === "credit_card" && !body.creditCard) {
-      return jsonResponse({ error: "Dados do cartão ausentes." }, 400);
-    }
 
     const installmentCount =
       body.paymentMethod === "credit_card" ? Math.min(12, Math.max(1, body.installmentCount ?? 1)) : 1;
@@ -294,9 +291,14 @@ Deno.serve(async (req) => {
     // 2. Real shipping quote (J&T Express only), same logic as calculate-shipping.
     const { data: settings } = await admin
       .from("site_settings")
-      .select("shipping_origin_zip, free_shipping_threshold_cents")
+      .select("shipping_origin_zip, free_shipping_threshold_cents, checkout_mode")
       .eq("id", "default")
       .maybeSingle();
+    // Modo escolhido no admin (Configuração). Só o cartão vai para a página da Asaas; o Pix segue no nosso site.
+    const asaasCheckout = settings?.checkout_mode === "asaas" && body.paymentMethod === "credit_card";
+    if (body.paymentMethod === "credit_card" && !asaasCheckout && !body.creditCard) {
+      return jsonResponse({ error: "Dados do cartão ausentes." }, 400);
+    }
     // The threshold comes ONLY from Admin > Configurações (no built-in default; see _shared/free-shipping.ts).
     const freeShippingThresholdCents = readFreeShippingThresholdCents(settings, "checkout-create");
     const freeShipping = qualifiesForFreeShipping(subtotalCents, freeShippingThresholdCents);
@@ -570,6 +572,7 @@ Deno.serve(async (req) => {
 
     let paymentResult: Record<string, unknown>;
     let pixQrCode: { encodedImage: string; payload: string; expirationDate: string } | null = null;
+    let invoiceUrl: string | null = null;
 
     if (body.paymentMethod === "pix") {
       const payResp = await fetch(`${ASAAS_API}/payments`, {
@@ -587,6 +590,30 @@ Deno.serve(async (req) => {
         headers: asaasHeaders,
       });
       if (qrResp.ok) pixQrCode = await qrResp.json();
+    } else if (asaasCheckout) {
+      // Checkout da Asaas: a cobrança é criada sem dados de cartão e o cliente digita o cartão na página
+      // da Asaas (invoiceUrl). Parcelas = as que o cliente escolheu nas nossas telas, com o total calculado
+      // pela taxa da faixa de parcelas (vinda da API). A confirmação vem do webhook, não da volta do cliente.
+      const installmentValueCents = Math.round(totalCents / installmentCount);
+      const payResp = await fetch(`${ASAAS_API}/payments`, {
+        method: "POST",
+        headers: asaasHeaders,
+        body: JSON.stringify({
+          ...basePaymentPayload,
+          billingType: "CREDIT_CARD",
+          installmentCount: installmentCount > 1 ? installmentCount : undefined,
+          installmentValue: installmentCount > 1 ? installmentValueCents / 100 : undefined,
+        }),
+      });
+      const payJson = await payResp.json();
+      if (!payResp.ok) {
+        await admin.from("orders").update({ status: "cancelled", payment_status: "DECLINED" }).eq("id", orderId);
+        const message = payJson?.errors?.[0]?.description ?? "Não foi possível abrir o pagamento com cartão.";
+        return jsonResponse({ error: message }, 400);
+      }
+      paymentResult = payJson;
+      invoiceUrl = (payJson.invoiceUrl as string | undefined) ?? null;
+      if (!invoiceUrl) throw new Error("Asaas não devolveu o link de pagamento do cartão.");
     } else {
       const installmentValueCents = Math.round(totalCents / installmentCount);
       const cc = body.creditCard!;
@@ -686,6 +713,7 @@ Deno.serve(async (req) => {
       paymentMethod: body.paymentMethod,
       status: paymentResult.status,
       pix: pixQrCode,
+      invoiceUrl,
     });
   } catch (error) {
     console.error("[checkout-create]", error);

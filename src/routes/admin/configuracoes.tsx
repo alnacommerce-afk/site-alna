@@ -40,6 +40,7 @@ type SettingsForm = {
   shippingCarrierPreference: string;
   freeShippingThreshold: string;
   metaPixelId: string;
+  checkoutMode: "transparente" | "asaas";
 };
 
 const emptyForm: SettingsForm = {
@@ -64,6 +65,7 @@ const emptyForm: SettingsForm = {
   shippingCarrierPreference: "",
   freeShippingThreshold: "",
   metaPixelId: "",
+  checkoutMode: "transparente",
 };
 
 function ConfiguracoesPage() {
@@ -105,6 +107,7 @@ function ConfiguracoesPage() {
         shippingCarrierPreference: data.shipping_carrier_preference ?? "",
         freeShippingThreshold: formatCentsToInput(data.free_shipping_threshold_cents) || "0,00",
         metaPixelId: data.meta_pixel_id ?? "",
+        checkoutMode: data.checkout_mode === "asaas" ? "asaas" : "transparente",
       });
       setLoading(false);
     }
@@ -146,6 +149,7 @@ function ConfiguracoesPage() {
         shipping_carrier_preference: form.shippingCarrierPreference || null,
         free_shipping_threshold_cents: parseCentsFromInput(form.freeShippingThreshold),
         meta_pixel_id: form.metaPixelId.trim() || null,
+        checkout_mode: form.checkoutMode,
       })
       .eq("id", "default");
 
@@ -280,6 +284,48 @@ function ConfiguracoesPage() {
               value={form.businessHours}
               onChange={(e) => setField("businessHours", e.target.value)}
             />
+          </div>
+
+          <div id="configuracao" className="space-y-4 border-t pt-4">
+            <div>
+              <h2 className="text-sm font-semibold text-[#12294f]">Configuração do checkout</h2>
+              <p className="text-xs text-muted-foreground">
+                Escolha uma opção. Só uma pode ficar marcada.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label className="flex cursor-pointer items-start gap-3 rounded-md border p-3 text-sm">
+                <input
+                  type="radio"
+                  name="checkout-mode"
+                  className="mt-1"
+                  checked={form.checkoutMode === "transparente"}
+                  onChange={() => setField("checkoutMode", "transparente")}
+                />
+                <span>
+                  <span className="font-medium">Checkout transparente</span>
+                  <span className="block text-xs text-muted-foreground">
+                    O cliente digita os dados do cartão no nosso site (como hoje).
+                  </span>
+                </span>
+              </label>
+              <label className="flex cursor-pointer items-start gap-3 rounded-md border p-3 text-sm">
+                <input
+                  type="radio"
+                  name="checkout-mode"
+                  className="mt-1"
+                  checked={form.checkoutMode === "asaas"}
+                  onChange={() => setField("checkoutMode", "asaas")}
+                />
+                <span>
+                  <span className="font-medium">Checkout da Asaas</span>
+                  <span className="block text-xs text-muted-foreground">
+                    No cartão, o cliente é levado para a página da Asaas para digitar os dados. O Pix
+                    continua no nosso site.
+                  </span>
+                </span>
+              </label>
+            </div>
           </div>
 
           <div id="envio-frete" className="space-y-4 border-t pt-4">

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
+import { supabase } from "@/integrations/supabase/client";
 import { formatCentsToBRL } from "@/lib/money";
 import {
   PIX_DISCOUNT,
@@ -60,6 +61,19 @@ function CheckoutPage() {
   const [, setRatesLoaded] = useState(false);
   useEffect(() => {
     loadAccountRates().then(() => setRatesLoaded(true));
+  }, []);
+
+  // Modo do checkout escolhido no admin (Configuração). Lido do banco; padrão: transparente.
+  const [checkoutMode, setCheckoutMode] = useState<"transparente" | "asaas">("transparente");
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("checkout_mode")
+      .eq("id", "default")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.checkout_mode === "asaas") setCheckoutMode("asaas");
+      });
   }, []);
 
   // Início do checkout: uma vez por visita, com o que estava no carrinho (o carrinho carrega depois da primeira tela).
@@ -256,7 +270,7 @@ function CheckoutPage() {
       toast.error("Informe um CEP válido para calcular o frete antes de continuar.");
       return;
     }
-    if (paymentMethod === "credit_card" && (!cardNumber || !cardHolder || !cardMonth || !cardYear || !cardCcv)) {
+    if (paymentMethod === "credit_card" && checkoutMode !== "asaas" && (!cardNumber || !cardHolder || !cardMonth || !cardYear || !cardCcv)) {
       toast.error("Preencha os dados do cartão.");
       return;
     }
@@ -278,7 +292,7 @@ function CheckoutPage() {
           utmCampaign: getCampaignCode() ?? undefined,
           installmentCount: paymentMethod === "credit_card" ? installmentCount : undefined,
           creditCard:
-            paymentMethod === "credit_card"
+            paymentMethod === "credit_card" && checkoutMode !== "asaas"
               ? {
                   holderName: cardHolder,
                   number: cardNumber,
@@ -310,6 +324,11 @@ function CheckoutPage() {
         state,
       });
       clear();
+      if (json.invoiceUrl) {
+        // Checkout da Asaas: o cliente digita o cartão na página da Asaas. A confirmação vem do webhook.
+        window.location.assign(json.invoiceUrl as string);
+        return;
+      }
       setResultOrderId(json.orderId);
     } catch {
       setResultOpen(false);
@@ -484,6 +503,8 @@ function CheckoutPage() {
 
               {paymentMethod === "credit_card" ? (
                 <div className="space-y-3 rounded-md border border-[#12294f]/15 p-4">
+                  {checkoutMode !== "asaas" ? (
+                  <>
                   <div className="space-y-1">
                     <Label htmlFor="cardNumber">Número do cartão</Label>
                     <Input
@@ -512,6 +533,12 @@ function CheckoutPage() {
                       <Input id="cardCcv" maxLength={4} value={cardCcv} onChange={(e) => setCardCcv(e.target.value)} />
                     </div>
                   </div>
+                  </>
+                  ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Você será levado para a página segura da Asaas para digitar os dados do cartão.
+                  </p>
+                  )}
                   <div className="space-y-1">
                     <Label>Parcelas</Label>
                     <Select
