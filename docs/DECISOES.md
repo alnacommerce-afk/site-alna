@@ -281,3 +281,6 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **Pedido do dono:** ao mudar para pago, mandar a confirmação ao cliente, tenha havido tentativas recusadas ou não. Depois ele quer voltar o pedido de teste para pendente e pago para seguir o fluxo de e-mail.
 - **Feito:** `asaas-webhook` aceita a virada de pendente **ou cancelado** para pago (antes só pendente) e envia a confirmação nessa virada. Já pago, enviado, concluído ou estornado não recebe de novo.
 - **Não feito:** publicar `asaas-webhook` na Supabase (depende do dono); testar a virada com um pedido de teste (a Asaas precisa enviar o evento de pagamento).
+
+## 25/11/2026 — confirmação de pagamento confirmada em teste
+- O dono confirmou que o e-mail "Pagamento confirmado" chegou no teste do pedido 10a9ccb1 (ver entrada de 24/11 acima). A regra vale para todos os pedidos: pendente ou cancelado → pago envia a confirmação.
