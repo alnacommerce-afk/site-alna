@@ -206,3 +206,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Pedido do dono:** mandar a confirmação ao cliente sempre que o pedido virar pago, com ou sem tentativas recusadas.
 - **Feito:** `asaas-webhook` aceita pendente ou cancelado → pago e envia a confirmação (detalhes em `docs/DECISOES.md`, 24/11).
 - **Não feito:** publicar `asaas-webhook` na Supabase; e-mail do pedido 10a9ccb1 ainda não enviado.
+
+## 2026-11-25 — Computador HOME — teste do e-mail de confirmação (pedido 10a9ccb1)
+- **Pedido do dono:** voltar o pedido de teste para pendente e depois para pago, para o cliente receber o e-mail "Pagamento confirmado".
+- **Feito:** pedido voltado para pendente (dados, `payment_status` PENDING) e aviso simulado de PAYMENT_CONFIRMED enviado ao `asaas-webhook` pelo banco (pg_net). Resposta 200; pedido voltou a pago (CONFIRMED); e-mail `payment_confirmed` registrado em `email_send_log` às 02:14 UTC (25/11).
+- **Observação:** o e-mail "Não conseguimos concluir o pedido #10a9ccb1" (23:28, 24/11) saiu com a regra antiga de recusa; o dono já sabe.
