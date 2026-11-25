@@ -196,3 +196,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Pedido do dono:** "sim, pode implementar essas três mudanças" (guardar a fatura, botão na página do pedido, e-mail de recusa uma vez com "Tente novamente pagar seu pedido").
 - **Feito:** migração do banco (coluna `invoice_url`, marca `refused_email_sent_at`, template `order_refused`); `checkout-create` grava a fatura; `asaas-webhook` envia o e-mail de recusa uma vez quando o pedido está pendente; `get-order-status` devolve a fatura; página do pedido mostra "Tente novamente pagar seu pedido" e atualiza sozinha enquanto espera; tipos atualizados. TypeScript sem erros.
 - **Não feito / depende do dono:** publicar `checkout-create`, `asaas-webhook` e `get-order-status` na Supabase (CLI); publicar o site no Lovable; testar com cartão recusado de verdade (só com o "ok" dele); decidir se manda a confirmação de pagamento do pedido 10a9ccb1.
+
+## 2026-11-24 (publicação) — Computador HOME — cartão recusado publicado e conferido
+- **Feito pelo dono:** deploy das três funções na Supabase (checkout-create, asaas-webhook, get-order-status) e publicação do site no Lovable.
+- **Conferido pelo Claude:** lista de funções na Supabase (asaas-webhook v102 com `notifyCardRefused`; checkout-create v104; get-order-status v89, atualizadas depois do commit 7b4d3ad); o bundle da página `/pedido/<id>` no ar contém "Tente novamente pagar seu pedido".
+- **Não feito:** teste com cartão recusado real (só com o "ok" do dono); confirmação de pagamento do pedido 10a9ccb1 segue sem decisão.
