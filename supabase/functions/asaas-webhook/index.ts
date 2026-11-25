@@ -4,7 +4,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { notifyPaymentConfirmed } from "../_shared/notify-payment-confirmed.ts";
 import { reportPaymentProblem } from "../_shared/payment-alert.ts";
-import { notifyOrderCancelled, notifyOrderRefunded } from "../_shared/notify-order-status.ts";
+import { notifyCardRefused, notifyOrderCancelled, notifyOrderRefunded } from "../_shared/notify-order-status.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -87,6 +87,12 @@ Deno.serve(async (req) => {
 
     const { error } = await admin.from("orders").update(update).eq("payment_id", payment.id);
     if (error) throw error;
+
+    // Cartão recusado: o pedido segue pendente e o cliente recebe o aviso para tentar outro cartão (uma vez
+    // por pedido; a claim em refused_email_sent_at impede reenvio quando a Asaas repete o evento).
+    if (REFUSED_EVENTS.has(eventType) && existingOrder && existingOrder.status === "pending") {
+      await notifyCardRefused(admin, existingOrder.id);
+    }
 
     if (orderStatus === "paid" && existingOrder && existingOrder.status === "pending") {
       await notifyPaymentConfirmed(admin, {

@@ -665,6 +665,8 @@ Deno.serve(async (req) => {
         payment_id: paymentResult.id as string,
         payment_status: paymentResult.status as string,
         status: isPaidNow ? "paid" : "pending",
+        // Checkout da Asaas: link da fatura, para o cliente tentar outro cartão pela página do pedido.
+        invoice_url: invoiceUrl ?? undefined,
       })
       .eq("id", orderId);
 

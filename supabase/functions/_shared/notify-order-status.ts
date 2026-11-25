@@ -119,6 +119,38 @@ export async function notifyOrderCancelled(admin: SupabaseClient, order: OrderFo
   });
 }
 
+/**
+ * "O cartão não foi aprovado — tente outro cartão". The order stays pending (the customer can pay the
+ * same Asaas invoice with another card), and the button goes back to the order page, which offers the
+ * retry. The claim on `orders.refused_email_sent_at` guarantees one e-mail per order, even when Asaas
+ * sends several refusal events for the same payment.
+ */
+export async function notifyCardRefused(admin: SupabaseClient, orderId: string) {
+  const { data: claimed } = await admin
+    .from("orders")
+    .update({ refused_email_sent_at: new Date().toISOString() })
+    .eq("id", orderId)
+    .is("refused_email_sent_at", null)
+    .select("id, customer_name, customer_email, total_cents")
+    .maybeSingle();
+  if (!claimed?.customer_email) return false;
+
+  const rendered = await renderEmailTemplate(admin, "order_refused", {
+    nome: claimed.customer_name ?? "cliente",
+    pedido_curto: claimed.id.slice(0, 8),
+    total: formatBRL(claimed.total_cents),
+    link_pedido: `${SITE_URL}/pedido/${claimed.id}`,
+  });
+  if (!rendered) return false;
+  await sendEmail(await getResendKey(admin), {
+    to: claimed.customer_email,
+    subject: rendered.subject,
+    html: rendered.html,
+    template: rendered.templateId,
+  });
+  return true;
+}
+
 /** The money went back to the customer. Callers send this once. */
 export async function notifyOrderRefunded(admin: SupabaseClient, order: OrderForStatusEmail) {
   if (!order.customer_email) return;

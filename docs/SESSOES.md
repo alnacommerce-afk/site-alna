@@ -191,3 +191,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Decisão do dono:** uma recusa não encerra o pedido; o cliente pode tentar outro cartão na mesma cobrança. Quando a cobrança for paga, o pedido passa a pago.
 - **Feito:** `asaas-webhook` — recusas do cartão (PAYMENT_CREDIT_CARD_CAPTURE_REFUSED e PAYMENT_REPROVED_BY_RISK_ANALYSIS) deixam o pedido pendente; só PAYMENT_DELETED cancela. Pedido 10a9ccb1 atualizado para pago (dados).
 - **Não feito:** publicar a função `asaas-webhook` na Supabase; enviar a confirmação de pagamento ao cliente do pedido 10a9ccb1 (o e-mail não saiu); decidir se o pedido de teste (R$ 47,10) fica como venda ou é estornado.
+
+## 2026-11-24 (noite, sessão) — Computador HOME — cartão recusado: nova tentativa e e-mail de recusa
+- **Pedido do dono:** "sim, pode implementar essas três mudanças" (guardar a fatura, botão na página do pedido, e-mail de recusa uma vez com "Tente novamente pagar seu pedido").
+- **Feito:** migração do banco (coluna `invoice_url`, marca `refused_email_sent_at`, template `order_refused`); `checkout-create` grava a fatura; `asaas-webhook` envia o e-mail de recusa uma vez quando o pedido está pendente; `get-order-status` devolve a fatura; página do pedido mostra "Tente novamente pagar seu pedido" e atualiza sozinha enquanto espera; tipos atualizados. TypeScript sem erros.
+- **Não feito / depende do dono:** publicar `checkout-create`, `asaas-webhook` e `get-order-status` na Supabase (CLI); publicar o site no Lovable; testar com cartão recusado de verdade (só com o "ok" dele); decidir se manda a confirmação de pagamento do pedido 10a9ccb1.

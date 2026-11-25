@@ -422,3 +422,7 @@ Cupons em uso: `ALNA5%OFF` (atacado, acima de R$ 250, divulgado no site com term
 
 ## 21/11/2026 — coluna "margem p/ promo" na precificação
 - Migração `margem_promo_pct` (arquivo `supabase/migrations/20261121000000_margem_promo_pct.sql`): `product_variants.margem_promo_pct numeric not null default 0`. Aditiva; não altera preço existente (todas as variações ficaram em 0). Reversível: `alter table public.product_variants drop column margem_promo_pct;`.
+
+## 24/11/2026 — cartão recusado: nova tentativa na fatura e e-mail de recusa
+- Migração `order_card_retry_invoice_and_refused_email`: `orders.invoice_url text` (link da fatura da Asaas, só pedidos de cartão no modo Asaas) e `orders.refused_email_sent_at timestamptz` (marca o e-mail de recusa, enviado uma vez por pedido). Template novo `email_templates.id = 'order_refused'` (assunto "O cartão não foi aprovado — tente outro cartão #...", botão "Tente novamente pagar seu pedido" para `/pedido/<id>`). Reversível: `alter table public.orders drop column invoice_url, drop column refused_email_sent_at; delete from public.email_templates where id = 'order_refused';`.
+- Código (precisa de publicação das funções pelo dono): `checkout-create` (grava `invoice_url`), `asaas-webhook` (e-mail de recusa com a claim), `get-order-status` (devolve `invoice_url`), `_shared/notify-order-status.ts` (`notifyCardRefused`). Site: página do pedido mostra o botão para pedidos de cartão pendentes com fatura.

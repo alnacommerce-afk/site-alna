@@ -189,6 +189,25 @@ export function OrderStatusPanel({ orderId }: { orderId: string | null }) {
     );
   }
 
+  // Cartão recusado (ou ainda não pago) numa fatura da Asaas: o cliente tenta de novo com outro cartão.
+  if (order.payment_method === "credit_card" && order.invoice_url) {
+    return (
+      <div className="py-6 text-center">
+        <h2 className="text-lg font-bold text-[#12294f]">Falta o pagamento do seu pedido</h2>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+          O pedido #{order.id.slice(0, 8)} ({formatCentsToBRL(order.total_cents)}) ainda aguarda o pagamento. Se o
+          cartão não foi aprovado, use o botão abaixo para tentar outro cartão.
+        </p>
+        <Button asChild className="mt-5 bg-[#15803d] hover:bg-[#15803d]/90">
+          <a href={order.invoice_url}>Tente novamente pagar seu pedido</a>
+        </Button>
+        <p className="mt-4 text-xs text-muted-foreground">
+          O pagamento é feito na página segura da Asaas. Assim que for aprovado, esta tela atualiza sozinha.
+        </p>
+      </div>
+    );
+  }
+
   if (pix) {
     return (
       <div className="py-4 text-center">

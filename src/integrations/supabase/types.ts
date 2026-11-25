@@ -809,8 +809,10 @@ export type Database = {
           payment_status: string | null
           pix_regenerated_at: string | null
           pix_regenerated_count: number
+          invoice_url: string | null
           posted_email_sent_at: string | null
           prepared_email_sent_at: string | null
+          refused_email_sent_at: string | null
           referrer_user_id: string | null
           reminder_10min_sent_at: string | null
           reminder_24h_sent_at: string | null
@@ -855,8 +857,10 @@ export type Database = {
           payment_status?: string | null
           pix_regenerated_at?: string | null
           pix_regenerated_count?: number
+          invoice_url?: string | null
           posted_email_sent_at?: string | null
           prepared_email_sent_at?: string | null
+          refused_email_sent_at?: string | null
           referrer_user_id?: string | null
           reminder_10min_sent_at?: string | null
           reminder_24h_sent_at?: string | null
@@ -901,8 +905,10 @@ export type Database = {
           payment_status?: string | null
           pix_regenerated_at?: string | null
           pix_regenerated_count?: number
+          invoice_url?: string | null
           posted_email_sent_at?: string | null
           prepared_email_sent_at?: string | null
+          refused_email_sent_at?: string | null
           referrer_user_id?: string | null
           reminder_10min_sent_at?: string | null
           reminder_24h_sent_at?: string | null

@@ -9,6 +9,7 @@ export type OrderStatusResponse = {
     status: string;
     payment_status: string | null;
     payment_method: string | null;
+    invoice_url: string | null;
     total_cents: number;
     installment_count: number;
     tracking_code: string | null;
@@ -41,7 +42,11 @@ export function useOrderStatus(orderId: string | null) {
   }, [orderId]);
 
   useEffect(() => {
-    if (!data || data.order.status !== "pending" || data.order.payment_method !== "pix") return;
+    // Pix: espera o pagamento. Cartão pela Asaas: espera o cliente tentar outro cartão na fatura.
+    const waitsPayment =
+      data?.order.payment_method === "pix" ||
+      (data?.order.payment_method === "credit_card" && !!data?.order.invoice_url);
+    if (!data || data.order.status !== "pending" || !waitsPayment) return;
     const interval = setInterval(fetchStatus, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
