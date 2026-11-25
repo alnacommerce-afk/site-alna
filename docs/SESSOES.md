@@ -201,3 +201,8 @@ Registro feito em 14/10/2026 a partir da conversa; **datas exatas e detalhes fic
 - **Feito pelo dono:** deploy das três funções na Supabase (checkout-create, asaas-webhook, get-order-status) e publicação do site no Lovable.
 - **Conferido pelo Claude:** lista de funções na Supabase (asaas-webhook v102 com `notifyCardRefused`; checkout-create v104; get-order-status v89, atualizadas depois do commit 7b4d3ad); o bundle da página `/pedido/<id>` no ar contém "Tente novamente pagar seu pedido".
 - **Não feito:** teste com cartão recusado real (só com o "ok" do dono); confirmação de pagamento do pedido 10a9ccb1 segue sem decisão.
+
+## 2026-11-24 (noite) — Computador HOME — confirmação de pagamento em toda virada para pago
+- **Pedido do dono:** mandar a confirmação ao cliente sempre que o pedido virar pago, com ou sem tentativas recusadas.
+- **Feito:** `asaas-webhook` aceita pendente ou cancelado → pago e envia a confirmação (detalhes em `docs/DECISOES.md`, 24/11).
+- **Não feito:** publicar `asaas-webhook` na Supabase; e-mail do pedido 10a9ccb1 ainda não enviado.

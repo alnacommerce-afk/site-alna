@@ -79,9 +79,9 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     // A late "paid" event (Asaas sends CONFIRMED and then RECEIVED, and retries) must never drag an order that already
-    // moved on (shipped, completed, refunded, cancelled) back to "paid": it only moves pending -> paid.
+    // moved on (shipped, completed, refunded) back to "paid": it only moves pending or cancelled -> paid.
     // The payment_status text is still updated; refund, cancellation and the other transitions work as before.
-    const blockedPaidRegression = orderStatus === "paid" && !!existingOrder && existingOrder.status !== "pending";
+    const blockedPaidRegression = orderStatus === "paid" && !!existingOrder && !["pending", "cancelled"].includes(existingOrder.status);
     const update: Record<string, unknown> = { payment_status: payment.status ?? eventType };
     if (orderStatus && !blockedPaidRegression) update.status = orderStatus;
 
@@ -94,7 +94,9 @@ Deno.serve(async (req) => {
       await notifyCardRefused(admin, existingOrder.id);
     }
 
-    if (orderStatus === "paid" && existingOrder && existingOrder.status === "pending") {
+    // Qualquer virada para pago manda a confirmação, tenha o pedido tido tentativas recusadas ou não
+    // (pendente ou cancelado -> pago). Já pago/enviado/concluído/estornado não manda de novo.
+    if (orderStatus === "paid" && existingOrder && !blockedPaidRegression) {
       await notifyPaymentConfirmed(admin, {
         id: existingOrder.id,
         user_id: existingOrder.user_id,
