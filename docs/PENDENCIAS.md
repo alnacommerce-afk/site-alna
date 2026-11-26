@@ -160,3 +160,5 @@ Sem depender do Google Ads: (1) atacado B2B por WhatsApp; (2) Instagram/Facebook
 - Chamado **#2383706** (assunto "Remover redirecionamento e registros de site do alna.cc (manter e-mail)"), aberto pelo dono em 25/11/2026 às 23:07. Status: **não atendido**.
 - Pede a remoção do redirecionamento do "@" (www.alna.cc) e dos registros de endereço (A/AAAA/CNAME) do site; manter MX, SPF e DKIM (e-mail contato@alna.cc).
 - **Pendente:** acompanhar o chamado. Quando a Hostnet responder, testar `http://alna.cc`, `https://alna.cc` e `contato@alna.cc` (envio e recebimento). O teste de e-mail de 25/11 chegou ao Gmail asm.express.logistica.
+- **Retorno da Hostnet (26/11, atendente João Duarte):** a zona DNS de alna.cc só tem os apontamentos do e-mail. Verificado ao vivo: `http://alna.cc` e `https://alna.cc` sem resposta; registro MX presente (smtpzin1.f1.k8.com.br). O e-mail contato@alna.cc funcionou no teste de 25/11.
+- **Pendente do dono:** fechar o chamado #2383706 e fazer a Avaliação Final no painel. Conferir se a linha "@ → www.alna.cc" ainda aparece em Site > Redirecionamentos (a Hostnet não citou essa linha).
