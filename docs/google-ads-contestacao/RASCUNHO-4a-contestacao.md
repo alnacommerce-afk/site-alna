@@ -8,8 +8,8 @@ Antes de enviar, o Jurídico precisa aprovar e o dono precisa dar o ok por escri
 - **alnacommerce.com:** segue redirecionando (301) para https://alna.sale/ (conferido em 26/11/2026).
 - **Página /atacado:** responde 200 e 200 para o AdsBot (conferido em 26/11/2026; no dia do envio, conferir de novo).
 
-## Decisão que o dono precisa tomar (NÃO remover sem o ok do Jurídico)
-O dono pediu que a conta 962-967-1605 **não seja mencionada** na contestação. O Claude não recomenda isso: a 1ª e a 3ª contestações já declararam, e a conta teve campanhas em 2026 (R$ 89,93). Se a 4ª omitir a conta, ela contradiz o que o Google já recebeu e pode ser recusada de novo pelo mesmo motivo. Por isso o parágrafo abaixo fica no texto até o dono decidir por escrito.
+## Decisão do dono (26/11): opção B
+O dono decidiu que a conta 962-967-1605 **não é mencionada** na 4ª contestação. Parecer do Jurídico (26/11): a opção B só pode ser feita na forma restrita abaixo, sem afirmar que não há outras contas e sem contradizer a 3ª contestação. O dono confirmou por escrito (26/11): (1) nenhuma conta de Google Ads foi criada ou reativada desde 13/10; (2) a 962 segue pausada, sem campanhas veiculando; (3) a 3ª contestação enviada é a "VERSÃO FINAL PARA COLAR".
 
 ---
 
@@ -21,18 +21,13 @@ Desde a última contestação (13 de outubro de 2026) fizemos estas mudanças:
 
 2) **Domínio alnacommerce.com** segue redirecionando, com HTTPS válido, para https://alna.sale/.
 
-3) **Conta 962-967-1605 (outra Conta do Google, perfil de pagamentos distinto):** teve 3 campanhas Performance Max em 2026 (custo total R$ 89,93). Pelo que o sócio lembra, anunciavam a loja anterior da marca (alnacommerce.com); o Google marcou o destino como "Destino que não funciona". As campanhas foram removidas em 13 de outubro de 2026 e a conta não será usada. Corrige a 1ª contestação (8 de outubro) e a 2ª (13 de outubro).
+3) Na página de destino (store.alna.sale/atacado) há uma seção "Quem somos" com razão social, CNPJ, endereço e contatos, e foi retirado o texto "12x sem juros" para não haver afirmação imprecisa.
 
-4) Na página de destino (store.alna.sale/atacado) há uma seção "Quem somos" com razão social, CNPJ, endereço e contatos, e foi retirado o texto "12x sem juros" para não haver afirmação imprecisa.
-
-5) Já informado: o perfil de pagamentos desta conta está no nome da empresa (ALNA COMMERCE LTDA) e a verificação do anunciante foi concluída em 13 de outubro de 2026.
+4) Já informado: o perfil de pagamentos desta conta está no nome da empresa (ALNA COMMERCE LTDA) e a verificação do anunciante foi concluída em 13 de outubro de 2026.
 
 ## CAMPO 2 — Você quer incluir outras informações que não estavam na contestação anterior?
 
-Declaramos todas as contas de Google Ads do sócio:
-- 635-244-4697 (esta conta, ALNA COMMERCE LTDA, suspensa).
-- 962-967-1605 (outra Conta do Google): 3 campanhas Performance Max em 2026, removidas em 13/10/2026; hoje está pausada por prazo da verificação do anunciante e não será usada.
-- 172-390-8582 (outra Conta do Google): projeto antigo de 2022 (simulado de certificação, via hotmart), cancelado, sem relação com a ALNA e sem violação.
+Todas as contas de Google Ads do sócio foram declaradas na contestação de 13 de outubro de 2026, com a situação de cada uma. Desde então, não criamos nem reativamos nenhuma conta, e nenhuma campanha está em veiculação.
 
 Histórico dos domínios: começamos com alnacommerce.com (entre outros projetos paralelos do sócio). Depois compramos alna.cc, que começou a ser feito em WordPress. Em paralelo construímos a loja atual e compramos alna.sale para começar a indexá-la. **Hoje o alna.sale é o único endereço do site.** alnacommerce.com segue redirecionando para alna.sale; alna.cc serve só para e-mail.
 
@@ -45,8 +40,8 @@ Pedimos a reanálise, com transparência. Se houver outro motivo específico par
 ---
 
 ## Checklist antes de enviar (dia do envio)
-- [ ] Jurídico aprovou o texto.
-- [ ] Dono decidiu por escrito sobre o parágrafo da conta 962-967-1605 (manter, como está acima; ou outra versão aprovada pelo Jurídico).
+- [ ] Jurídico aprovou o texto (versão da opção B).
+- [x] Dono confirmou por escrito os 3 pontos da opção B (26/11).
 - [ ] Reverificar ao vivo no dia: `alnacommerce.com` → 301 para alna.sale; `alna.sale` 200; `store.alna.sale/atacado` 200 (inclusive AdsBot).
 - [x] Navegação segura conferida em 26/11/2026 (print do dono): alna.sale e store.alna.sale sem conteúdo não seguro.
 - [ ] Print de hoje do Search Console (Ações manuais e Problemas de segurança) para alna.sale e store.alna.sale.
