@@ -33,7 +33,7 @@ Histórico dos domínios: começamos com alnacommerce.com (entre outros projetos
 
 O motivo apontado na conta 635 foi "Página de destino não está funcionando" (verificação de 8 de outubro, 03:27). A página https://store.alna.sale/atacado é informativa, sem formulário de login ou de pagamento (apenas busca de produtos), e responde normalmente aos robôs do Google. A empresa é identificável: ALNA COMMERCE LTDA, CNPJ 57.135.009/0001-27, R. Luiz Rafael Flor, 450, Nova Brasília, Brusque/SC, ativa desde 03/09/2024, com razão social, CNPJ, endereço e contatos no rodapé de todas as páginas, inclusive login e checkout. Os dados de cartão são digitados somente no checkout, em HTTPS, e enviados à processadora de pagamentos; não os armazenamos.
 
-Em 13 de outubro de 2026, o Search Console de alna.sale e de store.alna.sale não indicava ações manuais nem problemas de segurança. Em 26 de novembro de 2026, a Navegação segura do Google informa "nenhum conteúdo não seguro foi encontrado" para alna.sale e store.alna.sale (última atualização do Google: 16 de outubro de 2026).
+Em 26 de novembro de 2026, o Search Console de alna.sale e de store.alna.sale não indica ações manuais nem problemas de segurança ("Nenhum problema foi detectado" nos dois itens, nas duas propriedades). Em 26 de novembro de 2026, a Navegação segura do Google informa "nenhum conteúdo não seguro foi encontrado" para alna.sale e store.alna.sale (última atualização do Google: 16 de outubro de 2026).
 
 Pedimos a reanálise, com transparência. Se houver outro motivo específico para a suspensão (uma página, um anúncio ou uma conta), pedimos que nos informem para corrigirmos. Ficamos à disposição para enviar documentos, como o cartão do CNPJ.
 
@@ -44,6 +44,6 @@ Pedimos a reanálise, com transparência. Se houver outro motivo específico par
 - [x] Dono confirmou por escrito os 3 pontos da opção B (26/11).
 - [ ] Reverificar ao vivo no dia: `alnacommerce.com` → 301 para alna.sale; `alna.sale` 200; `store.alna.sale/atacado` 200 (inclusive AdsBot).
 - [x] Navegação segura conferida em 26/11/2026 (print do dono): alna.sale e store.alna.sale sem conteúdo não seguro.
-- [ ] Print de hoje do Search Console (Ações manuais e Problemas de segurança) para alna.sale e store.alna.sale.
+- [x] Search Console conferido em 26/11/2026 (prints do dono): Ações manuais e Problemas de segurança, "Nenhum problema foi detectado", em alna.sale e store.alna.sale.
 - [ ] Dono confirma: não há resposta do Google desde 13/10 com motivo novo.
 - [ ] Enviar **uma única vez**.
