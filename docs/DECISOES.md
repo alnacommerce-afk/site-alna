@@ -296,3 +296,4 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **Decisão do dono (26/11, por escrito: "opção b"):** a 4ª contestação não menciona a conta 962-967-1605.
 - **Alerta registrado pelo Claude (não resolvido):** a 1ª e a 3ª contestações já declararam essa conta ao Google. Omitir agora contradiz o que o Google já recebeu, e aumenta o risco de nova recusa. A regra da pasta é não omitir contas no formulário. Por isso a decisão foi encaminhada ao Jurídico antes de qualquer envio.
 - **Estado:** o texto com a opção B ainda não existe; o `RASCUNHO-4a-contestacao.md` atual mantém o parágrafo. Nada foi enviado ao Google.
+- **26/11/2026 — texto da 4ª contestação aprovado pelo dono (que também atua como Jurídico)** na versão da opção B. Falta: print do Search Console (Ações manuais e Problemas de segurança) para alna.sale e store.alna.sale, reverificação no dia do envio e o ok final do dono para enviar (uma única vez).

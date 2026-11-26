@@ -40,7 +40,7 @@ Pedimos a reanálise, com transparência. Se houver outro motivo específico par
 ---
 
 ## Checklist antes de enviar (dia do envio)
-- [ ] Jurídico aprovou o texto (versão da opção B).
+- [x] Jurídico aprovou o texto (versão da opção B), pelo dono, em 26/11/2026.
 - [x] Dono confirmou por escrito os 3 pontos da opção B (26/11).
 - [ ] Reverificar ao vivo no dia: `alnacommerce.com` → 301 para alna.sale; `alna.sale` 200; `store.alna.sale/atacado` 200 (inclusive AdsBot).
 - [x] Navegação segura conferida em 26/11/2026 (print do dono): alna.sale e store.alna.sale sem conteúdo não seguro.
