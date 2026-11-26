@@ -291,3 +291,8 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 - **Efeito no Google Ads:** o item R5 (alna.cc com certificado e redirecionamento 301 para alna.sale) deixa de ser cumprido. Não está confirmado se o Google exige isso para contestar; a decisão é do dono e fica registrada aqui.
 - **Pendente do dono:** remover o apontamento do `alna.cc` no painel da Hostnet (o caminho exato ainda não foi confirmado na documentação oficial).
 - **Pendente do Claude:** atualizar `docs/google-ads-contestacao/STATUS.md` e `docs/PENDENCIAS.md` com esta decisão.
+
+## 26/11/2026 — 4ª contestação do Google Ads: texto sem o parágrafo da conta 962-967-1605 (opção B)
+- **Decisão do dono (26/11, por escrito: "opção b"):** a 4ª contestação não menciona a conta 962-967-1605.
+- **Alerta registrado pelo Claude (não resolvido):** a 1ª e a 3ª contestações já declararam essa conta ao Google. Omitir agora contradiz o que o Google já recebeu, e aumenta o risco de nova recusa. A regra da pasta é não omitir contas no formulário. Por isso a decisão foi encaminhada ao Jurídico antes de qualquer envio.
+- **Estado:** o texto com a opção B ainda não existe; o `RASCUNHO-4a-contestacao.md` atual mantém o parágrafo. Nada foi enviado ao Google.
