@@ -155,3 +155,8 @@ Sem depender do Google Ads: (1) atacado B2B por WhatsApp; (2) Instagram/Facebook
 - **Entregues em 13/10 (plano B):** modelos de mensagem e política do WhatsApp (`docs/WHATSAPP-ATACADO-MODELOS.md`), planilha de leads (`docs/modelos/leads-atacado.csv`) e passo a passo do Meta Ads do zero (`docs/META-ADS-PASSO-A-PASSO.md`). **Correção:** prospecção "fria" em massa por WhatsApp foi retirada (política do WhatsApp exige opt-in). Próximo passo do dono: Etapa 1–2 do guia do Meta (preparar dados e criar o portfólio) e mandar prints.
 
 **Atualização 10/11/2026 (cabeçalho):** cabeçalho do alna.sale igual em Home e `/atacado`, fixo no topo ao rolar; menu da loja (store.alna.sale) com Atacado dentro do sanduíche (publicar no Lovable e conferir).
+
+## 25/11/2026 — alna.cc: chamado aberto na Hostnet
+- Chamado **#2383706** (assunto "Remover redirecionamento e registros de site do alna.cc (manter e-mail)"), aberto pelo dono em 25/11/2026 às 23:07. Status: **não atendido**.
+- Pede a remoção do redirecionamento do "@" (www.alna.cc) e dos registros de endereço (A/AAAA/CNAME) do site; manter MX, SPF e DKIM (e-mail contato@alna.cc).
+- **Pendente:** acompanhar o chamado. Quando a Hostnet responder, testar `http://alna.cc`, `https://alna.cc` e `contato@alna.cc` (envio e recebimento). O teste de e-mail de 25/11 chegou ao Gmail asm.express.logistica.
