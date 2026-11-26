@@ -284,3 +284,10 @@ Quando algo for desfeito, **não apagar**: marcar como "DESFEITO em <data>" e di
 
 ## 25/11/2026 — confirmação de pagamento confirmada em teste
 - O dono confirmou que o e-mail "Pagamento confirmado" chegou no teste do pedido 10a9ccb1 (ver entrada de 24/11 acima). A regra vale para todos os pedidos: pendente ou cancelado → pago envia a confirmação.
+
+## 25/11/2026 — alna.cc: sai do apontamento; só o alna.sale fica como endereço
+- **Decisão do dono (25/11):** remover o `alna.cc` do apontamento (DNS) e deixar o `alna.sale` como único endereço da loja. A hospedagem já foi cancelada pelo dono, e o `alna.cc` está sem resposta desde então.
+- **Motivo:** o dono quer um único endereço e não quer manter redirecionamento. Ele sabe que o `alna.cc` deixa de responder.
+- **Efeito no Google Ads:** o item R5 (alna.cc com certificado e redirecionamento 301 para alna.sale) deixa de ser cumprido. Não está confirmado se o Google exige isso para contestar; a decisão é do dono e fica registrada aqui.
+- **Pendente do dono:** remover o apontamento do `alna.cc` no painel da Hostnet (o caminho exato ainda não foi confirmado na documentação oficial).
+- **Pendente do Claude:** atualizar `docs/google-ads-contestacao/STATUS.md` e `docs/PENDENCIAS.md` com esta decisão.
