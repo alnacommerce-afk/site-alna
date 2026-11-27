@@ -6,3 +6,4 @@
 
 **Classificação (Jurídico):** verificação de pagamento concluída. Isso não é aprovação da contestação. A conta segue suspensa e a análise da contestação (ID 6453360872) continua. Confirmar no e-mail do Google o que foi registrado.
 **Pendente:** saber qual foi a "compra" (valor e cobrança) e ler o e-mail de detalhes. Não fazer outro pagamento sem o seu ok.
+- **Dono (27/11, ~12:39):** a verificação foi paga com o **cartão da empresa** (confirmado pelo dono; pelo print anterior, o cartão principal da conta é Visa final 3981). Valor ainda não informado.
