@@ -1,6 +1,6 @@
 # Painel de situação — contestações do Google Ads
 
-**Última atualização:** 14/10/2026 — **3ª CONTESTAÇÃO (6452570506) RECUSADA em 13/10 (~13:53, Brasília); confirmado pelo dono em 14/10**
+**Última atualização:** 27/11/2026 — **4ª CONTESTAÇÃO (6453360872) ENVIADA em 26/11 e EM ANÁLISE** (print do dono, 27/11; ver a seção "Atualização 27/11/2026" abaixo). Histórico anterior: 3ª (6452570506) RECUSADA em 13/10 (~13:53, Brasília); confirmado pelo dono em 14/10.
 
 ## Situação atual
 - Conta **suspensa** (phishing / "página de destino não está funcionando"), desde 08/10/2026 03:27.
@@ -8,6 +8,14 @@
   **informações novas**. O banner do Ads confirma ("Se você tiver novas informações para apoiar a contestação original, envie uma nova").
 - **2ª contestação: ENVIADA em 13/10/2026 por volta das 10:30 (horário de Brasília, aproximado; tela "Contestação enviada — a análise geralmente leva de 1 a 3 dias úteis, mas pode demorar mais").** Texto em `RASCUNHO-2a-contestacao.md` (v3; o dono confirmou o que colou nos 2 campos — **pendente registrar se o parágrafo opcional das outras contas entrou**).
 - Não criar outra conta de Google Ads (contas ligadas/novas são suspensas na hora). Não cancelar a conta.
+
+## Atualização 27/11/2026 — 4ª contestação em análise (print do dono)
+- Ajuda rápida do Google Ads: "Em 26 de nov. de 2026, você enviou uma contestação de suspensão (**6453360872**) relacionada a: **Saldo pendente** e **Práticas comerciais inaceitáveis: phishing**. Não é possível veicular campanhas, criar contas nem enviar outras contestações durante a revisão. A análise costuma levar de 1 a 3 dias úteis, mas pode demorar mais."
+- **Novo:** o motivo "Saldo pendente" aparece junto com o phishing. Não estava nos registros. **Não sabemos se está ligado ao pagamento verificado em 27/11 (R$ 3,00) ou a outro saldo.** Confirmar com o dono em Faturamento/Pagamentos antes de qualquer texto.
+- Campanha da 635: URL final `https://store.alna.sale/atacado` (print).
+- Transcrição e análise: `ENTRADAS/2026-11-27-tela-em-analise.md`.
+- **Ainda não respondido pelo Google:** resultado da 4ª contestação. E o pedido de identidade e comprovante de pagamento (e-mail de 27/11, até ~27/12/2026): dono ainda não localizou o lugar de envio.
+- **Regras durante a análise:** não criar conta, não criar campanha, não enviar outra contestação, não mexer no `/atacado` de forma que piore a velocidade.
 
 ## Regra "pode abrir"
 Pode abrir a 2ª contestação quando **todos os itens BLOQUEANTES** abaixo estiverem **FEITO** e reverificados no dia do envio.
